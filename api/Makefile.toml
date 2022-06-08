@@ -1,0 +1,22 @@
+[config]
+skip_core_tasks = true
+
+[tasks.coverage]
+description = "Test with coverage"
+script = '''
+#!/usr/bin/env bash
+set -euo pipefail
+
+source scripts/setup-postgres.bash
+cargo tarpaulin --features test-postgres "$@"
+'''
+
+[tasks.test]
+description = "Test"
+script = '''
+#!/usr/bin/env bash
+set -euo pipefail
+
+source scripts/setup-postgres.bash
+cargo test --features test-postgres "$@"
+'''
