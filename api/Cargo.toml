@@ -1,0 +1,106 @@
+[package]
+name = "hoarder"
+version = "0.1.0"
+edition = "2021"
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+
+[features]
+default = ["tls"]
+tls = ["axum-server/tls-rustls"]
+
+[dependencies.anyhow]
+version = "1.0.57"
+
+[dependencies.async-graphql]
+version = "4.0.1"
+features = ["chrono", "unblock", "uuid08"]
+
+[dependencies.async-graphql-axum]
+version = "4.0.1"
+
+[dependencies.async-trait]
+version = "0.1.53"
+
+[dependencies.axum]
+version = "0.5.4"
+features = ["default", "http2"]
+
+[dependencies.axum-server]
+version = "0.4.0"
+
+[dependencies.base64]
+version = "0.13.0"
+
+[dependencies.chrono]
+version = "0.4.19"
+
+[dependencies.derive_more]
+version = "0.99.0"
+
+[dependencies.env_logger]
+version = "0.9.0"
+
+[dependencies.envy]
+version = "0.4.2"
+
+[dependencies.futures]
+version = "0.3.21"
+features = ["alloc", "io-compat"]
+default-features = false
+
+[dependencies.indexmap]
+version = "1.8.1"
+features = ["serde"]
+
+[dependencies.log]
+version = "0.4.16"
+
+[dependencies.notify]
+version = "4.0.17"
+
+[dependencies.prometheus-client]
+version = "0.15.1"
+
+[dependencies.sea-query]
+version = "0.25.0"
+features = ["postgres-array", "postgres-chrono", "postgres-json", "postgres-uuid", "sqlx-postgres", "thread-safe"]
+
+[dependencies.serde]
+version = "1.0.137"
+features = ["derive"]
+
+[dependencies.serde_json]
+version = "1.0.81"
+
+[dependencies.serde_with]
+version = "1.14.0"
+
+[dependencies.sqlx]
+version = "0.5.13"
+features = ["chrono", "json", "postgres", "runtime-tokio-rustls", "tls", "uuid"]
+
+[dependencies.thiserror]
+version = "1.0.31"
+
+[dependencies.tokio]
+version = "1.18.0"
+features = ["macros", "net", "process", "rt-multi-thread", "signal"]
+
+[dependencies.tokio-stream]
+version = "0.1.8"
+
+[dependencies.uuid]
+version = "0.8.2"
+
+[dev-dependencies.indoc]
+version = "1.0.4"
+
+[dev-dependencies.mockall]
+version = "0.11.0"
+
+[dev-dependencies.pretty_assertions]
+version = "1.2.1"
