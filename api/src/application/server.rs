@@ -24,25 +24,22 @@ use crate::{
         graphql::{self, mutation::Mutation, query::Query},
         thumbnails::{self, ThumbnailURLFactory, ThumbnailsHandler},
     },
-    domain::{
-        repository,
-        service::{
-            external_services::ExternalServicesService,
-            media::MediaService,
-            tags::TagsService,
-        },
+    domain::service::{
+        external_services::ExternalServicesServiceInterface,
+        media::MediaServiceInterface,
+        tags::TagsServiceInterface,
     },
 };
 
 #[derive(Clone, Constructor)]
-pub struct Engine<ExternalServicesRepository, MediaRepository, ReplicasRepository, SourcesRepository, TagsRepository, TagTypesRepository> {
+pub struct Engine<ExternalServicesService, MediaService, TagsService> {
     port: u16,
     tls: Option<(String, String)>,
     thumbnail_url_factory: ThumbnailURLFactory,
-    thumbnails_handler: ThumbnailsHandler<MediaRepository, ReplicasRepository, SourcesRepository>,
-    external_services_service: ExternalServicesService<ExternalServicesRepository>,
-    media_service: MediaService<MediaRepository, ReplicasRepository, SourcesRepository>,
-    tags_service: TagsService<TagsRepository, TagTypesRepository>,
+    thumbnails_handler: ThumbnailsHandler<MediaService>,
+    external_services_service: ExternalServicesService,
+    media_service: MediaService,
+    tags_service: TagsService,
 }
 
 #[derive(Debug, Error)]
@@ -53,15 +50,11 @@ pub enum EngineError {
     Certificate,
 }
 
-impl<ExternalServicesRepository, MediaRepository, ReplicasRepository, SourcesRepository, TagsRepository, TagTypesRepository>
-    Engine<ExternalServicesRepository, MediaRepository, ReplicasRepository, SourcesRepository, TagsRepository, TagTypesRepository>
+impl<ExternalServicesService, MediaService, TagsService> Engine<ExternalServicesService, MediaService, TagsService>
 where
-    ExternalServicesRepository: repository::external_services::ExternalServicesRepository + Clone,
-    MediaRepository: repository::media::MediaRepository + Clone,
-    ReplicasRepository: repository::replicas::ReplicasRepository + Clone,
-    SourcesRepository: repository::sources::SourcesRepository + Clone,
-    TagsRepository: repository::tags::TagsRepository + Clone,
-    TagTypesRepository: repository::tag_types::TagTypesRepository + Clone,
+    ExternalServicesService: ExternalServicesServiceInterface + Clone,
+    MediaService: MediaServiceInterface + Clone,
+    TagsService: TagsServiceInterface + Clone,
 {
     pub async fn start(self) -> anyhow::Result<()> {
         let health = Router::new()
@@ -82,14 +75,14 @@ where
             .finish();
 
         let graphql = Router::new()
-            .route("/", post(graphql::handle::<ExternalServicesRepository, MediaRepository, ReplicasRepository, SourcesRepository, TagsRepository, TagTypesRepository>))
+            .route("/", post(graphql::handle::<ExternalServicesService, MediaService, TagsService>))
             .layer(Extension(schema));
 
         let graphql_playground = Router::new()
             .route("/", get(graphql::playground));
 
         let thumbnails = Router::new()
-            .route("/:id", get(thumbnails::handle::<MediaRepository, ReplicasRepository, SourcesRepository>))
+            .route("/:id", get(thumbnails::handle::<MediaService>))
             .layer(Extension(Arc::new(self.thumbnails_handler)));
 
         let handle = Handle::new();

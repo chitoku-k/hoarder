@@ -15,9 +15,9 @@ use crate::{
     domain::{
         repository,
         service::{
-            external_services::ExternalServicesService,
-            media::MediaService,
-            tags::TagsService,
+            external_services::ExternalServicesServiceInterface,
+            media::MediaServiceInterface,
+            tags::TagsServiceInterface,
         },
     },
 };
@@ -36,22 +36,18 @@ impl From<repository::DeleteResult> for DeleteResult {
 }
 
 #[derive(Constructor)]
-pub struct Mutation<ExternalServicesRepository, MediaRepository, ReplicasRepository, SourcesRepository, TagsRepository, TagTypesRepository> {
-    external_services_service: ExternalServicesService<ExternalServicesRepository>,
-    media_service: MediaService<MediaRepository, ReplicasRepository, SourcesRepository>,
-    tags_service: TagsService<TagsRepository, TagTypesRepository>,
+pub struct Mutation<ExternalServicesService, MediaService, TagsService> {
+    external_services_service: ExternalServicesService,
+    media_service: MediaService,
+    tags_service: TagsService,
 }
 
 #[Object]
-impl<ExternalServicesRepository, MediaRepository, ReplicasRepository, SourcesRepository, TagsRepository, TagTypesRepository>
-    Mutation<ExternalServicesRepository, MediaRepository, ReplicasRepository, SourcesRepository, TagsRepository, TagTypesRepository>
+impl<ExternalServicesService, MediaService, TagsService> Mutation<ExternalServicesService, MediaService, TagsService>
 where
-    ExternalServicesRepository: repository::external_services::ExternalServicesRepository,
-    MediaRepository: repository::media::MediaRepository,
-    ReplicasRepository: repository::replicas::ReplicasRepository,
-    SourcesRepository: repository::sources::SourcesRepository,
-    TagsRepository: repository::tags::TagsRepository,
-    TagTypesRepository: repository::tag_types::TagTypesRepository,
+    ExternalServicesService: ExternalServicesServiceInterface,
+    MediaService: MediaServiceInterface,
+    TagsService: TagsServiceInterface,
 {
     async fn create_external_service(&self, slug: String, name: String) -> anyhow::Result<ExternalService> {
         let service = self.external_services_service.create_external_service(&slug, &name).await?;

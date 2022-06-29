@@ -1,3 +1,4 @@
+use async_trait::async_trait;
 use chrono::NaiveDateTime;
 use derive_more::Constructor;
 
@@ -13,6 +14,118 @@ use crate::domain::{
     repository::{media, replicas, sources, DeleteResult, OrderDirection},
 };
 
+#[async_trait]
+pub trait MediaServiceInterface: Send + Sync + 'static {
+    /// Creates a medium.
+    async fn create_medium(
+        &self,
+        source_ids: Vec<SourceId>,
+        created_at: Option<NaiveDateTime>,
+        tag_tag_type_ids: Vec<(TagId, TagTypeId)>,
+        tag_depth: Option<TagDepth>,
+        sources: bool,
+    ) -> anyhow::Result<Medium>;
+
+    /// Creates a replica.
+    async fn create_replica(&self, medium_id: MediumId, thumbnail: Option<Vec<u8>>, original_url: &str, mime_type: &str) -> anyhow::Result<Replica>;
+
+    /// Creates a source.
+    async fn create_source(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> anyhow::Result<Source>;
+
+    /// Gets media.
+    async fn get_media(
+        &self,
+        tag_depth: Option<TagDepth>,
+        replicas: bool,
+        sources: bool,
+        since: Option<(NaiveDateTime, MediumId)>,
+        until: Option<(NaiveDateTime, MediumId)>,
+        order: OrderDirection,
+        limit: u64,
+    ) -> anyhow::Result<Vec<Medium>>;
+
+    /// Gets the media by their IDs.
+    async fn get_media_by_ids<T>(&self, ids: T, tag_depth: Option<TagDepth>, replicas: bool, sources: bool) -> anyhow::Result<Vec<Medium>>
+    where
+        T: IntoIterator<Item = MediumId> + Send + Sync + 'static;
+
+    /// Gets the media by their source IDs.
+    async fn get_media_by_source_ids<T>(
+        &self,
+        source_ids: T,
+        tag_depth: Option<TagDepth>,
+        replicas: bool,
+        sources: bool,
+        since: Option<(NaiveDateTime, MediumId)>,
+        until: Option<(NaiveDateTime, MediumId)>,
+        order: OrderDirection,
+        limit: u64,
+    ) -> anyhow::Result<Vec<Medium>>
+    where
+        T: IntoIterator<Item = SourceId> + Send + Sync + 'static;
+
+    /// Gets the media by their tag IDs.
+    async fn get_media_by_tag_ids<T>(
+        &self,
+        tag_tag_type_ids: T,
+        tag_depth: Option<TagDepth>,
+        replicas: bool,
+        sources: bool,
+        since: Option<(NaiveDateTime, MediumId)>,
+        until: Option<(NaiveDateTime, MediumId)>,
+        order: OrderDirection,
+        limit: u64,
+    ) -> anyhow::Result<Vec<Medium>>
+    where
+        T: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'static;
+
+    /// Gets the replicas by their IDs.
+    async fn get_replicas_by_ids<T>(&self, ids: T) -> anyhow::Result<Vec<Replica>>
+    where
+        T: IntoIterator<Item = ReplicaId> + Send + Sync + 'static;
+
+    /// Gets the replica by original URL.
+    async fn get_replica_by_original_url(&self, original_url: &str) -> anyhow::Result<Replica>;
+
+    /// Gets the sources by their external metadata.
+    async fn get_sources_by_external_metadata(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> anyhow::Result<Vec<Source>>;
+
+    /// Gets the thumbnail by ID.
+    async fn get_thumbnail_by_id(&self, id: ReplicaId) -> anyhow::Result<ReplicaThumbnail>;
+
+    /// Updates the medium by ID.
+    async fn update_medium_by_id<T>(
+        &self,
+        id: MediumId,
+        add_source_ids: Vec<SourceId>,
+        remove_source_ids: Vec<SourceId>,
+        add_tag_tag_type_ids: Vec<(TagId, TagTypeId)>,
+        remove_tag_tag_type_ids: Vec<(TagId, TagTypeId)>,
+        replica_orders: T,
+        created_at: Option<NaiveDateTime>,
+        tag_depth: Option<TagDepth>,
+        replicas: bool,
+        sources: bool,
+    ) -> anyhow::Result<Medium>
+    where
+        T: IntoIterator<Item = ReplicaId> + Send + Sync + 'static;
+
+    /// Updates the replica by ID.
+    async fn update_replica_by_id(&self, id: ReplicaId, thumbnail: Option<Vec<u8>>, original_url: Option<&str>, mime_type: Option<&str>) -> anyhow::Result<Replica>;
+
+    /// Updates the source by ID.
+    async fn update_source_by_id(&self, id: SourceId, external_service_id: Option<ExternalServiceId>, external_metadata: Option<ExternalMetadata>) -> anyhow::Result<Source>;
+
+    /// Deletes the medium by ID.
+    async fn delete_medium_by_id(&self, id: MediumId) -> anyhow::Result<DeleteResult>;
+
+    /// Deletes the replica by ID.
+    async fn delete_replica_by_id(&self, id: ReplicaId) -> anyhow::Result<DeleteResult>;
+
+    /// Deletes the source by ID.
+    async fn delete_source_by_id(&self, id: SourceId) -> anyhow::Result<DeleteResult>;
+}
+
 #[derive(Clone, Constructor)]
 pub struct MediaService<MediaRepository, ReplicasRepository, SourcesRepository> {
     media_repository: MediaRepository,
@@ -20,13 +133,14 @@ pub struct MediaService<MediaRepository, ReplicasRepository, SourcesRepository> 
     sources_repository: SourcesRepository,
 }
 
-impl<MediaRepository, ReplicasRepository, SourcesRepository> MediaService<MediaRepository, ReplicasRepository, SourcesRepository>
+#[async_trait]
+impl<MediaRepository, ReplicasRepository, SourcesRepository> MediaServiceInterface for MediaService<MediaRepository, ReplicasRepository, SourcesRepository>
 where
     MediaRepository: media::MediaRepository,
     ReplicasRepository: replicas::ReplicasRepository,
     SourcesRepository: sources::SourcesRepository,
 {
-    pub async fn create_medium(
+    async fn create_medium(
         &self,
         source_ids: Vec<SourceId>,
         created_at: Option<NaiveDateTime>,
@@ -43,7 +157,7 @@ where
         }
     }
 
-    pub async fn create_replica(&self, medium_id: MediumId, thumbnail: Option<Vec<u8>>, original_url: &str, mime_type: &str) -> anyhow::Result<Replica> {
+    async fn create_replica(&self, medium_id: MediumId, thumbnail: Option<Vec<u8>>, original_url: &str, mime_type: &str) -> anyhow::Result<Replica> {
         match self.replicas_repository.create(medium_id, thumbnail, original_url, mime_type).await {
             Ok(replica) => Ok(replica),
             Err(e) => {
@@ -53,7 +167,7 @@ where
         }
     }
 
-    pub async fn create_source(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> anyhow::Result<Source> {
+    async fn create_source(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> anyhow::Result<Source> {
         match self.sources_repository.create(external_service_id, external_metadata).await {
             Ok(source) => Ok(source),
             Err(e) => {
@@ -63,7 +177,7 @@ where
         }
     }
 
-    pub async fn get_media(
+    async fn get_media(
         &self,
         tag_depth: Option<TagDepth>,
         replicas: bool,
@@ -82,7 +196,7 @@ where
         }
     }
 
-    pub async fn get_media_by_ids<T>(&self, ids: T, tag_depth: Option<TagDepth>, replicas: bool, sources: bool) -> anyhow::Result<Vec<Medium>>
+    async fn get_media_by_ids<T>(&self, ids: T, tag_depth: Option<TagDepth>, replicas: bool, sources: bool) -> anyhow::Result<Vec<Medium>>
     where
         T: IntoIterator<Item = MediumId> + Send + Sync + 'static,
     {
@@ -95,7 +209,7 @@ where
         }
     }
 
-    pub async fn get_media_by_source_ids<T>(
+    async fn get_media_by_source_ids<T>(
         &self,
         source_ids: T,
         tag_depth: Option<TagDepth>,
@@ -118,7 +232,7 @@ where
         }
     }
 
-    pub async fn get_media_by_tag_ids<T>(
+    async fn get_media_by_tag_ids<T>(
         &self,
         tag_tag_type_ids: T,
         tag_depth: Option<TagDepth>,
@@ -141,7 +255,7 @@ where
         }
     }
 
-    pub async fn get_replicas_by_ids<T>(&self, ids: T) -> anyhow::Result<Vec<Replica>>
+    async fn get_replicas_by_ids<T>(&self, ids: T) -> anyhow::Result<Vec<Replica>>
     where
         T: IntoIterator<Item = ReplicaId> + Send + Sync + 'static,
     {
@@ -154,7 +268,7 @@ where
         }
     }
 
-    pub async fn get_replica_by_original_url(&self, original_url: &str) -> anyhow::Result<Replica> {
+    async fn get_replica_by_original_url(&self, original_url: &str) -> anyhow::Result<Replica> {
         match self.replicas_repository.fetch_by_original_url(original_url).await {
             Ok(replica) => Ok(replica),
             Err(e) => {
@@ -164,7 +278,7 @@ where
         }
     }
 
-    pub async fn get_sources_by_external_metadata(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> anyhow::Result<Vec<Source>> {
+    async fn get_sources_by_external_metadata(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> anyhow::Result<Vec<Source>> {
         match self.sources_repository.fetch_by_external_metadata(external_service_id, external_metadata).await {
             Ok(sources) => Ok(sources),
             Err(e) => {
@@ -174,7 +288,7 @@ where
         }
     }
 
-    pub async fn get_thumbnail_by_id(&self, id: ReplicaId) -> anyhow::Result<ReplicaThumbnail> {
+    async fn get_thumbnail_by_id(&self, id: ReplicaId) -> anyhow::Result<ReplicaThumbnail> {
         match self.replicas_repository.fetch_thumbnail_by_id(id).await {
             Ok(replica) => Ok(replica),
             Err(e) => {
@@ -184,7 +298,7 @@ where
         }
     }
 
-    pub async fn update_medium_by_id<T>(
+    async fn update_medium_by_id<T>(
         &self,
         id: MediumId,
         add_source_ids: Vec<SourceId>,
@@ -209,7 +323,7 @@ where
         }
     }
 
-    pub async fn update_replica_by_id(&self, id: ReplicaId, thumbnail: Option<Vec<u8>>, original_url: Option<&str>, mime_type: Option<&str>) -> anyhow::Result<Replica> {
+    async fn update_replica_by_id(&self, id: ReplicaId, thumbnail: Option<Vec<u8>>, original_url: Option<&str>, mime_type: Option<&str>) -> anyhow::Result<Replica> {
         match self.replicas_repository.update_by_id(id, thumbnail, original_url, mime_type).await {
             Ok(replica) => Ok(replica),
             Err(e) => {
@@ -219,7 +333,7 @@ where
         }
     }
 
-    pub async fn update_source_by_id(&self, id: SourceId, external_service_id: Option<ExternalServiceId>, external_metadata: Option<ExternalMetadata>) -> anyhow::Result<Source> {
+    async fn update_source_by_id(&self, id: SourceId, external_service_id: Option<ExternalServiceId>, external_metadata: Option<ExternalMetadata>) -> anyhow::Result<Source> {
         match self.sources_repository.update_by_id(id, external_service_id, external_metadata).await {
             Ok(source) => Ok(source),
             Err(e) => {
@@ -229,7 +343,7 @@ where
         }
     }
 
-    pub async fn delete_medium_by_id(&self, id: MediumId) -> anyhow::Result<DeleteResult> {
+    async fn delete_medium_by_id(&self, id: MediumId) -> anyhow::Result<DeleteResult> {
         match self.media_repository.delete_by_id(id).await {
             Ok(result) => Ok(result),
             Err(e) => {
@@ -239,7 +353,7 @@ where
         }
     }
 
-    pub async fn delete_replica_by_id(&self, id: ReplicaId) -> anyhow::Result<DeleteResult> {
+    async fn delete_replica_by_id(&self, id: ReplicaId) -> anyhow::Result<DeleteResult> {
         match self.replicas_repository.delete_by_id(id).await {
             Ok(result) => Ok(result),
             Err(e) => {
@@ -249,7 +363,7 @@ where
         }
     }
 
-    pub async fn delete_source_by_id(&self, id: SourceId) -> anyhow::Result<DeleteResult> {
+    async fn delete_source_by_id(&self, id: SourceId) -> anyhow::Result<DeleteResult> {
         match self.sources_repository.delete_by_id(id).await {
             Ok(result) => Ok(result),
             Err(e) => {

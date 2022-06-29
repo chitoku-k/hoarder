@@ -11,7 +11,14 @@ use futures::io::AsyncReadExt;
 
 use crate::{
     application::graphql::{mutation::Mutation, query::Query},
-    domain::repository,
+    domain::{
+        repository,
+        service::{
+            external_services::ExternalServicesServiceInterface,
+            media::MediaServiceInterface,
+            tags::TagsServiceInterface,
+        },
+    },
 };
 
 pub mod mutation;
@@ -23,25 +30,22 @@ mod replicas;
 mod sources;
 mod tags;
 
-pub type APISchema<ExternalServicesRepository, MediaRepository, ReplicasRepository, SourcesRepository, TagsRepository, TagTypesRepository> = Schema<
-    Query<ExternalServicesRepository, MediaRepository, ReplicasRepository, SourcesRepository, TagsRepository, TagTypesRepository>,
-    Mutation<ExternalServicesRepository, MediaRepository, ReplicasRepository, SourcesRepository, TagsRepository, TagTypesRepository>,
+pub type APISchema<ExternalServicesService, MediaService, TagsService> = Schema<
+    Query<ExternalServicesService, MediaService, TagsService>,
+    Mutation<ExternalServicesService, MediaService, TagsService>,
     EmptySubscription,
 >;
 
 pub struct GraphQLHandler;
 
-pub async fn handle<ExternalServicesRepository, MediaRepository, ReplicasRepository, SourcesRepository, TagsRepository, TagTypesRepository>(
-    schema: Extension<APISchema<ExternalServicesRepository, MediaRepository, ReplicasRepository, SourcesRepository, TagsRepository, TagTypesRepository>>,
+pub async fn handle<ExternalServicesService, MediaService, TagsService>(
+    schema: Extension<APISchema<ExternalServicesService, MediaService, TagsService>>,
     req: GraphQLRequest,
 ) -> GraphQLResponse
 where
-    ExternalServicesRepository: repository::external_services::ExternalServicesRepository,
-    MediaRepository: repository::media::MediaRepository,
-    ReplicasRepository: repository::replicas::ReplicasRepository,
-    SourcesRepository: repository::sources::SourcesRepository,
-    TagsRepository: repository::tags::TagsRepository,
-    TagTypesRepository: repository::tag_types::TagTypesRepository,
+    ExternalServicesService: ExternalServicesServiceInterface,
+    MediaService: MediaServiceInterface,
+    TagsService: TagsServiceInterface,
 {
     schema.execute(req.into_inner()).await.into()
 }
