@@ -12,8 +12,7 @@ use derive_more::Constructor;
 
 use crate::domain::{
     entity::replicas::ReplicaId,
-    repository,
-    service::media::MediaService,
+    service::media::MediaServiceInterface,
 };
 
 #[derive(Clone, Constructor)]
@@ -28,15 +27,13 @@ impl ThumbnailURLFactory {
 }
 
 #[derive(Clone, Constructor)]
-pub struct ThumbnailsHandler<MediaRepository, ReplicasRepository, SourcesRepository> {
-    media_service: MediaService<MediaRepository, ReplicasRepository, SourcesRepository>,
+pub struct ThumbnailsHandler<MediaService> {
+    media_service: MediaService,
 }
 
-impl<MediaRepository, ReplicasRepository, SourcesRepository> ThumbnailsHandler<MediaRepository, ReplicasRepository, SourcesRepository>
+impl<MediaService> ThumbnailsHandler<MediaService>
 where
-    MediaRepository: repository::media::MediaRepository,
-    ReplicasRepository: repository::replicas::ReplicasRepository,
-    SourcesRepository: repository::sources::SourcesRepository,
+    MediaService: MediaServiceInterface,
 {
     async fn handle(&self, id: ReplicaId) -> anyhow::Result<Vec<u8>> {
         let replica = self.media_service.get_thumbnail_by_id(id).await?;
@@ -45,14 +42,12 @@ where
     }
 }
 
-pub async fn handle<MediaRepository, ReplicasRepository, SourcesRepository>(
-    Extension(handler): Extension<Arc<ThumbnailsHandler<MediaRepository, ReplicasRepository, SourcesRepository>>>,
+pub async fn handle<MediaService>(
+    Extension(handler): Extension<Arc<ThumbnailsHandler<MediaService>>>,
     Path(id): Path<ReplicaId>,
 ) -> impl IntoResponse
 where
-    MediaRepository: repository::media::MediaRepository,
-    ReplicasRepository: repository::replicas::ReplicasRepository,
-    SourcesRepository: repository::sources::SourcesRepository,
+    MediaService: MediaServiceInterface,
 {
     match handler.handle(id).await {
         Ok(thumbnail) => {

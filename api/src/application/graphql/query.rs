@@ -18,18 +18,18 @@ use crate::{
     domain::{
         repository,
         service::{
-            external_services::ExternalServicesService,
-            media::MediaService,
-            tags::TagsService,
+            external_services::ExternalServicesServiceInterface,
+            media::MediaServiceInterface,
+            tags::TagsServiceInterface,
         },
     },
 };
 
 #[derive(Constructor)]
-pub struct Query<ExternalServicesRepository, MediaRepository, ReplicasRepository, SourcesRepository, TagsRepository, TagTypesRepository> {
-    external_services_service: ExternalServicesService<ExternalServicesRepository>,
-    media_service: MediaService<MediaRepository, ReplicasRepository, SourcesRepository>,
-    tags_service: TagsService<TagsRepository, TagTypesRepository>,
+pub struct Query<ExternalServicesService, MediaService, TagsService> {
+    external_services_service: ExternalServicesService,
+    media_service: MediaService,
+    tags_service: TagsService,
 }
 
 #[derive(Debug, Error)]
@@ -43,15 +43,11 @@ pub enum QueryError {
 }
 
 #[Object]
-impl<ExternalServicesRepository, MediaRepository, ReplicasRepository, SourcesRepository, TagsRepository, TagTypesRepository>
-    Query<ExternalServicesRepository, MediaRepository, ReplicasRepository, SourcesRepository, TagsRepository, TagTypesRepository>
+impl<ExternalServicesService, MediaService, TagsService> Query<ExternalServicesService, MediaService, TagsService>
 where
-    ExternalServicesRepository: repository::external_services::ExternalServicesRepository,
-    MediaRepository: repository::media::MediaRepository,
-    ReplicasRepository: repository::replicas::ReplicasRepository,
-    SourcesRepository: repository::sources::SourcesRepository,
-    TagsRepository: repository::tags::TagsRepository,
-    TagTypesRepository: repository::tag_types::TagTypesRepository,
+    ExternalServicesService: ExternalServicesServiceInterface,
+    MediaService: MediaServiceInterface,
+    TagsService: TagsServiceInterface,
 {
     async fn all_external_services(&self) -> anyhow::Result<Vec<ExternalService>> {
         let external_services = self.external_services_service.get_external_services().await?;

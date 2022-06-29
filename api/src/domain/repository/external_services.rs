@@ -11,7 +11,7 @@ pub trait ExternalServicesRepository: Send + Sync + 'static {
     /// Creates an external service.
     async fn create(&self, slug: &'_ str, name: &'_ str) -> anyhow::Result<ExternalService>;
 
-    /// Fetches external services by their IDs.
+    /// Fetches the external services by their IDs.
     async fn fetch_by_ids<T>(&self, ids: T) -> anyhow::Result<Vec<ExternalService>>
     where
         T: IntoIterator<Item = ExternalServiceId> + Send + Sync + 'static;
