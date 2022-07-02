@@ -9,7 +9,7 @@ use crate::domain::{
 #[async_trait]
 pub trait ExternalServicesRepository: Send + Sync + 'static {
     /// Creates an external service.
-    async fn create(&self, slug: &'_ str, name: &'_ str) -> anyhow::Result<ExternalService>;
+    async fn create(&self, slug: &str, name: &str) -> anyhow::Result<ExternalService>;
 
     /// Fetches the external services by their IDs.
     async fn fetch_by_ids<T>(&self, ids: T) -> anyhow::Result<Vec<ExternalService>>

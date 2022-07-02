@@ -12,7 +12,7 @@ use crate::domain::{
 #[async_trait]
 pub trait ReplicasRepository: Send + Sync + 'static {
     /// Creates a replica.
-    async fn create(&self, medium_id: MediumId, thumbnail: Option<Vec<u8>>, original_url: &'_ str, mime_type: &'_ str) -> anyhow::Result<Replica>;
+    async fn create(&self, medium_id: MediumId, thumbnail: Option<Vec<u8>>, original_url: &str, mime_type: &str) -> anyhow::Result<Replica>;
 
     /// Fetches the replicas by IDs.
     async fn fetch_by_ids<T>(&self, ids: T) -> anyhow::Result<Vec<Replica>>
@@ -20,7 +20,7 @@ pub trait ReplicasRepository: Send + Sync + 'static {
         T: IntoIterator<Item = ReplicaId> + Send + Sync + 'static;
 
     /// Fetches the replica by its original URL.
-    async fn fetch_by_original_url(&self, original_url: &'_ str) -> anyhow::Result<Replica>;
+    async fn fetch_by_original_url(&self, original_url: &str) -> anyhow::Result<Replica>;
 
     /// Fetches the replica with thumbnail by ID.
     async fn fetch_thumbnail_by_id(&self, id: ReplicaId) -> anyhow::Result<ReplicaThumbnail>;

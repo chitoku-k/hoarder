@@ -9,13 +9,15 @@ use crate::domain::{
 #[async_trait]
 pub trait TagsRepository: Send + Sync + 'static {
     /// Creates a tag.
-    async fn create(&self, name: &'_ str, kana: &'_ str, aliases: &'_ [String], parent_id: Option<TagId>, depth: TagDepth) -> anyhow::Result<Tag>;
+    async fn create(&self, name: &str, kana: &str, aliases: &[String], parent_id: Option<TagId>, depth: TagDepth) -> anyhow::Result<Tag>;
 
     /// Fetches tags by their IDs.
-    async fn fetch_by_ids(&self, ids: Vec<TagId>, depth: TagDepth) -> anyhow::Result<Vec<Tag>>;
+    async fn fetch_by_ids<T>(&self, ids: T, depth: TagDepth) -> anyhow::Result<Vec<Tag>>
+    where
+        T: IntoIterator<Item = TagId> + Send + Sync + 'static;
 
     /// Fetches tags by their names like the given parameter.
-    async fn fetch_by_name_or_alias_like(&self, name_or_alias_like: &'_ str, depth: TagDepth) -> anyhow::Result<Vec<Tag>>;
+    async fn fetch_by_name_or_alias_like(&self, name_or_alias_like: &str, depth: TagDepth) -> anyhow::Result<Vec<Tag>>;
 
     /// Fetches all tags.
     async fn fetch_all(&self, depth: TagDepth, root: bool, after: Option<(String, TagId)>, before: Option<(String, TagId)>, order: OrderDirection, limit: u64) -> anyhow::Result<Vec<Tag>>;

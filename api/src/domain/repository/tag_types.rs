@@ -9,7 +9,7 @@ use crate::domain::{
 #[async_trait]
 pub trait TagTypesRepository: Send + Sync + 'static {
     /// Creates a tag type.
-    async fn create(&self, slug: &'_ str, name: &'_ str) -> anyhow::Result<TagType>;
+    async fn create(&self, slug: &str, name: &str) -> anyhow::Result<TagType>;
 
     /// Fetches all tag types.
     async fn fetch_all(&self) -> anyhow::Result<Vec<TagType>>;
