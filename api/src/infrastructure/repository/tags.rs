@@ -468,7 +468,7 @@ async fn detach_parent(tx: &mut Transaction<'_, Postgres>, id: TagId) -> anyhow:
 
 #[async_trait]
 impl TagsRepository for PostgresTagsRepository {
-    async fn create(&self, name: &'_ str, kana: &'_ str, aliases: &'_ [String], parent_id: Option<TagId>, depth: TagDepth) -> anyhow::Result<Tag> {
+    async fn create(&self, name: &str, kana: &str, aliases: &[String], parent_id: Option<TagId>, depth: TagDepth) -> anyhow::Result<Tag> {
         let mut tx = self.pool.begin().await?;
 
         let (sql, values) = Query::insert()
@@ -527,14 +527,17 @@ impl TagsRepository for PostgresTagsRepository {
         Ok(tag)
     }
 
-    async fn fetch_by_ids(&self, ids: Vec<TagId>, depth: TagDepth) -> anyhow::Result<Vec<Tag>> {
+    async fn fetch_by_ids<T>(&self, ids: T, depth: TagDepth) -> anyhow::Result<Vec<Tag>>
+    where
+        T: IntoIterator<Item = TagId> + Send + Sync + 'static,
+    {
         let mut conn = self.pool.acquire().await?;
 
         let tags = fetch_tag_relatives(&mut conn, ids, depth, false).await?;
         Ok(tags)
     }
 
-    async fn fetch_by_name_or_alias_like(&self, name_or_alias_like: &'_ str, depth: TagDepth) -> anyhow::Result<Vec<Tag>> {
+    async fn fetch_by_name_or_alias_like(&self, name_or_alias_like: &str, depth: TagDepth) -> anyhow::Result<Vec<Tag>> {
         let mut conn = self.pool.acquire().await?;
 
         let tags_aliases = Alias::new("tags_aliases");
@@ -930,7 +933,7 @@ mod tests {
     async fn fetch_by_ids_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresTagsRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_ids(
-            vec![
+            [
                 TagId::from(uuid!("12c4101e-722f-4172-9fe2-7862ebbc8fc5")),
                 TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
                 TagId::from(uuid!("d1a302b5-7b49-44be-9019-ac337077786a")),

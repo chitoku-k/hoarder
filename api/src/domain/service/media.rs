@@ -17,14 +17,10 @@ use crate::domain::{
 #[async_trait]
 pub trait MediaServiceInterface: Send + Sync + 'static {
     /// Creates a medium.
-    async fn create_medium(
-        &self,
-        source_ids: Vec<SourceId>,
-        created_at: Option<NaiveDateTime>,
-        tag_tag_type_ids: Vec<(TagId, TagTypeId)>,
-        tag_depth: Option<TagDepth>,
-        sources: bool,
-    ) -> anyhow::Result<Medium>;
+    async fn create_medium<T, U>(&self, source_ids: T, created_at: Option<NaiveDateTime>, tag_tag_type_ids: U, tag_depth: Option<TagDepth>, sources: bool) -> anyhow::Result<Medium>
+    where
+        T: IntoIterator<Item = SourceId> + Send + Sync + 'static,
+        U: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'static;
 
     /// Creates a replica.
     async fn create_replica(&self, medium_id: MediumId, thumbnail: Option<Vec<u8>>, original_url: &str, mime_type: &str) -> anyhow::Result<Replica>;
@@ -94,21 +90,25 @@ pub trait MediaServiceInterface: Send + Sync + 'static {
     async fn get_thumbnail_by_id(&self, id: ReplicaId) -> anyhow::Result<ReplicaThumbnail>;
 
     /// Updates the medium by ID.
-    async fn update_medium_by_id<T>(
+    async fn update_medium_by_id<T, U, V, W, X>(
         &self,
         id: MediumId,
-        add_source_ids: Vec<SourceId>,
-        remove_source_ids: Vec<SourceId>,
-        add_tag_tag_type_ids: Vec<(TagId, TagTypeId)>,
-        remove_tag_tag_type_ids: Vec<(TagId, TagTypeId)>,
-        replica_orders: T,
+        add_source_ids: T,
+        remove_source_ids: U,
+        add_tag_tag_type_ids: V,
+        remove_tag_tag_type_ids: W,
+        replica_orders: X,
         created_at: Option<NaiveDateTime>,
         tag_depth: Option<TagDepth>,
         replicas: bool,
         sources: bool,
     ) -> anyhow::Result<Medium>
     where
-        T: IntoIterator<Item = ReplicaId> + Send + Sync + 'static;
+        T: IntoIterator<Item = SourceId> + Send + Sync + 'static,
+        U: IntoIterator<Item = SourceId> + Send + Sync + 'static,
+        V: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'static,
+        W: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'static,
+        X: IntoIterator<Item = ReplicaId> + Send + Sync + 'static;
 
     /// Updates the replica by ID.
     async fn update_replica_by_id(&self, id: ReplicaId, thumbnail: Option<Vec<u8>>, original_url: Option<&str>, mime_type: Option<&str>) -> anyhow::Result<Replica>;
@@ -140,14 +140,11 @@ where
     ReplicasRepository: replicas::ReplicasRepository,
     SourcesRepository: sources::SourcesRepository,
 {
-    async fn create_medium(
-        &self,
-        source_ids: Vec<SourceId>,
-        created_at: Option<NaiveDateTime>,
-        tag_tag_type_ids: Vec<(TagId, TagTypeId)>,
-        tag_depth: Option<TagDepth>,
-        sources: bool,
-    ) -> anyhow::Result<Medium> {
+    async fn create_medium<T, U>(&self, source_ids: T, created_at: Option<NaiveDateTime>, tag_tag_type_ids: U, tag_depth: Option<TagDepth>, sources: bool) -> anyhow::Result<Medium>
+    where
+        T: IntoIterator<Item = SourceId> + Send + Sync + 'static,
+        U: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'static,
+    {
         match self.media_repository.create(source_ids, created_at, tag_tag_type_ids, tag_depth, sources).await {
             Ok(medium) => Ok(medium),
             Err(e) => {
@@ -298,21 +295,25 @@ where
         }
     }
 
-    async fn update_medium_by_id<T>(
+    async fn update_medium_by_id<T, U, V, W, X>(
         &self,
         id: MediumId,
-        add_source_ids: Vec<SourceId>,
-        remove_source_ids: Vec<SourceId>,
-        add_tag_tag_type_ids: Vec<(TagId, TagTypeId)>,
-        remove_tag_tag_type_ids: Vec<(TagId, TagTypeId)>,
-        replica_orders: T,
+        add_source_ids: T,
+        remove_source_ids: U,
+        add_tag_tag_type_ids: V,
+        remove_tag_tag_type_ids: W,
+        replica_orders: X,
         created_at: Option<NaiveDateTime>,
         tag_depth: Option<TagDepth>,
         replicas: bool,
         sources: bool,
     ) -> anyhow::Result<Medium>
     where
-        T: IntoIterator<Item = ReplicaId> + Send + Sync + 'static,
+        T: IntoIterator<Item = SourceId> + Send + Sync + 'static,
+        U: IntoIterator<Item = SourceId> + Send + Sync + 'static,
+        V: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'static,
+        W: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'static,
+        X: IntoIterator<Item = ReplicaId> + Send + Sync + 'static,
     {
         match self.media_repository.update_by_id(id, add_source_ids, remove_source_ids, add_tag_tag_type_ids, remove_tag_tag_type_ids, replica_orders, created_at, tag_depth, replicas, sources).await {
             Ok(medium) => Ok(medium),
@@ -1623,7 +1624,7 @@ mod tests {
                 remove_source_ids,
                 add_tag_tag_type_ids,
                 remove_tag_tag_type_ids,
-                replica_orders: &Vec<_>,
+                replica_orders,
                 created_at,
                 tag_depth,
                 replicas,
@@ -1642,25 +1643,25 @@ mod tests {
                     sources,
                 ) == (
                     &MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
-                    &vec![
+                    &[
                         SourceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                     ],
-                    &vec![
+                    &[
                         SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
                     ],
-                    &vec![
+                    &[
                         (
                             TagId::from(uuid!("22222222-2222-2222-2222-222222222222")),
                             TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
                         ),
                     ],
-                    &vec![
+                    &[
                         (
                             TagId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                             TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
                         ),
                     ],
-                    &vec![
+                    &[
                         ReplicaId::from(uuid!("77777777-7777-7777-7777-777777777777")),
                         ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
                     ],
@@ -1687,25 +1688,25 @@ mod tests {
         let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository);
         let actual = service.update_medium_by_id(
             MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
-            vec![
+            [
                 SourceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
             ],
-            vec![
+            [
                 SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
             ],
-            vec![
+            [
                 (
                     TagId::from(uuid!("22222222-2222-2222-2222-222222222222")),
                     TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
                 ),
             ],
-            vec![
+            [
                 (
                     TagId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                     TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
                 ),
             ],
-            vec![
+            [
                 ReplicaId::from(uuid!("77777777-7777-7777-7777-777777777777")),
                 ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
             ],
@@ -1737,7 +1738,7 @@ mod tests {
                 remove_source_ids,
                 add_tag_tag_type_ids,
                 remove_tag_tag_type_ids,
-                replica_orders: &Vec<_>,
+                replica_orders,
                 created_at,
                 tag_depth,
                 replicas,
@@ -1756,25 +1757,25 @@ mod tests {
                     sources,
                 ) == (
                     &MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
-                    &vec![
+                    &[
                         SourceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                     ],
-                    &vec![
+                    &[
                         SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
                     ],
-                    &vec![
+                    &[
                         (
                             TagId::from(uuid!("22222222-2222-2222-2222-222222222222")),
                             TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
                         ),
                     ],
-                    &vec![
+                    &[
                         (
                             TagId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                             TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
                         ),
                     ],
-                    &vec![
+                    &[
                         ReplicaId::from(uuid!("77777777-7777-7777-7777-777777777777")),
                         ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
                     ],
@@ -1792,25 +1793,25 @@ mod tests {
         let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository);
         let actual = service.update_medium_by_id(
             MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
-            vec![
+            [
                 SourceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
             ],
-            vec![
+            [
                 SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
             ],
-            vec![
+            [
                 (
                     TagId::from(uuid!("22222222-2222-2222-2222-222222222222")),
                     TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
                 ),
             ],
-            vec![
+            [
                 (
                     TagId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                     TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
                 ),
             ],
-            vec![
+            [
                 ReplicaId::from(uuid!("77777777-7777-7777-7777-777777777777")),
                 ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
             ],

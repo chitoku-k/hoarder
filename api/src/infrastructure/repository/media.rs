@@ -363,14 +363,11 @@ async fn eager_load(conn: &mut PgConnection, media: &mut [Medium], tag_depth: Op
 
 #[async_trait]
 impl MediaRepository for PostgresMediaRepository {
-    async fn create(
-        &self,
-        source_ids: Vec<SourceId>,
-        created_at: Option<NaiveDateTime>,
-        tag_tag_type_ids: Vec<(TagId, TagTypeId)>,
-        tag_depth: Option<TagDepth>,
-        sources: bool,
-    ) -> anyhow::Result<Medium> {
+    async fn create<T, U>(&self, source_ids: T, created_at: Option<NaiveDateTime>, tag_tag_type_ids: U, tag_depth: Option<TagDepth>, sources: bool) -> anyhow::Result<Medium>
+    where
+        T: IntoIterator<Item = SourceId> + Send + Sync + 'static,
+        U: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'static,
+    {
         let mut tx = self.pool.begin().await?;
 
         let mut query = Query::insert();
@@ -396,44 +393,62 @@ impl MediaRepository for PostgresMediaRepository {
             .await
             .map(Into::into)?;
 
-        if !source_ids.is_empty() {
-            let mut query = Query::insert();
-            query
-                .into_table(PostgresMediumSource::Table)
-                .columns([
-                    PostgresMediumSource::MediumId,
-                    PostgresMediumSource::SourceId,
-                ]);
+        let query = {
+            let mut source_ids = source_ids.into_iter().peekable();
+            match source_ids.peek() {
+                Some(_) => {
+                    let mut query = Query::insert();
+                    query
+                        .into_table(PostgresMediumSource::Table)
+                        .columns([
+                            PostgresMediumSource::MediumId,
+                            PostgresMediumSource::SourceId,
+                        ]);
 
-            for source_id in source_ids {
-                query.values([
-                    medium.id.into(),
-                    source_id.into(),
-                ])?;
+                    for source_id in source_ids {
+                        query.values([
+                            medium.id.into(),
+                            source_id.into(),
+                        ])?;
+                    }
+
+                    Some(query)
+                },
+                None => None,
             }
-
+        };
+        if let Some(query) = query {
             let (sql, values) = query.build(PostgresQueryBuilder);
             bind_query(sqlx::query(&sql), &values).execute(&mut tx).await?;
         }
 
-        if !tag_tag_type_ids.is_empty() {
-            let mut query = Query::insert();
-            query
-                .into_table(PostgresMediumTag::Table)
-                .columns([
-                    PostgresMediumTag::MediumId,
-                    PostgresMediumTag::TagId,
-                    PostgresMediumTag::TagTypeId,
-                ]);
+        let query = {
+            let mut tag_tag_type_ids = tag_tag_type_ids.into_iter().peekable();
+            match tag_tag_type_ids.peek() {
+                Some(_) => {
+                    let mut query = Query::insert();
+                    query
+                        .into_table(PostgresMediumTag::Table)
+                        .columns([
+                            PostgresMediumTag::MediumId,
+                            PostgresMediumTag::TagId,
+                            PostgresMediumTag::TagTypeId,
+                        ]);
 
-            for (tag_id, tag_type_id) in tag_tag_type_ids {
-                query.values([
-                    medium.id.into(),
-                    tag_id.into(),
-                    tag_type_id.into(),
-                ])?;
+                    for (tag_id, tag_type_id) in tag_tag_type_ids {
+                        query.values([
+                            medium.id.into(),
+                            tag_id.into(),
+                            tag_type_id.into(),
+                        ])?;
+                    }
+
+                    Some(query)
+                },
+                None => None,
             }
-
+        };
+        if let Some(query) = query {
             let (sql, values) = query.build(PostgresQueryBuilder);
             bind_query(sqlx::query(&sql), &values).execute(&mut tx).await?;
         }
@@ -673,21 +688,25 @@ impl MediaRepository for PostgresMediaRepository {
         Ok(media)
     }
 
-    async fn update_by_id<T>(
+    async fn update_by_id<T, U, V, W, X>(
         &self,
         id: MediumId,
-        add_source_ids: Vec<SourceId>,
-        remove_source_ids: Vec<SourceId>,
-        add_tag_tag_type_ids: Vec<(TagId, TagTypeId)>,
-        remove_tag_tag_type_ids: Vec<(TagId, TagTypeId)>,
-        replica_orders: T,
+        add_source_ids: T,
+        remove_source_ids: U,
+        add_tag_tag_type_ids: V,
+        remove_tag_tag_type_ids: W,
+        replica_orders: X,
         created_at: Option<NaiveDateTime>,
         tag_depth: Option<TagDepth>,
         replicas: bool,
         sources: bool,
     ) -> anyhow::Result<Medium>
     where
-        T: IntoIterator<Item = ReplicaId> + Send + Sync + 'static,
+        T: IntoIterator<Item = SourceId> + Send + Sync + 'static,
+        U: IntoIterator<Item = SourceId> + Send + Sync + 'static,
+        V: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'static,
+        W: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'static,
+        X: IntoIterator<Item = ReplicaId> + Send + Sync + 'static,
     {
         let mut tx = self.pool.begin().await?;
 
@@ -747,72 +766,111 @@ impl MediaRepository for PostgresMediaRepository {
             }
         }
 
-        if !add_source_ids.is_empty() {
-            let mut query = Query::insert();
-            query
-                .into_table(PostgresMediumSource::Table)
-                .columns([PostgresMediumSource::MediumId, PostgresMediumSource::SourceId])
-                .on_conflict(OnConflict::new().do_nothing().to_owned());
+        let query = {
+            let mut add_source_ids = add_source_ids.into_iter().peekable();
+            match add_source_ids.peek() {
+                Some(_) => {
+                    let mut query = Query::insert();
+                    query
+                        .into_table(PostgresMediumSource::Table)
+                        .columns([PostgresMediumSource::MediumId, PostgresMediumSource::SourceId])
+                        .on_conflict(OnConflict::new().do_nothing().to_owned());
 
-            for source_id in add_source_ids {
-                query.values([id.into(), source_id.into()])?;
+                    for source_id in add_source_ids {
+                        query.values([id.into(), source_id.into()])?;
+                    }
+
+                    Some(query)
+                },
+                None => None,
             }
-
+        };
+        if let Some(query) = query {
             let (sql, values) = query.build(PostgresQueryBuilder);
             bind_query(sqlx::query(&sql), &values).execute(&mut tx).await?;
         }
 
-        if !remove_source_ids.is_empty() {
-            let (sql, values) = Query::delete()
-                .from_table(PostgresMediumSource::Table)
-                .and_where(Expr::col(PostgresMediumSource::SourceId).is_in(remove_source_ids))
-                .build(PostgresQueryBuilder);
+        let query = {
+            let mut remove_source_ids = remove_source_ids.into_iter().peekable();
+            match remove_source_ids.peek() {
+                Some(_) => {
+                    let mut query = Query::delete();
+                    query
+                        .from_table(PostgresMediumSource::Table)
+                        .and_where(Expr::col(PostgresMediumSource::SourceId).is_in(remove_source_ids));
 
-            bind_query(sqlx::query(&sql), &values).execute(&mut tx).await?;
-        }
-
-        if !add_tag_tag_type_ids.is_empty() {
-            let mut query = Query::insert();
-            query
-                .into_table(PostgresMediumTag::Table)
-                .columns([
-                    PostgresMediumTag::MediumId,
-                    PostgresMediumTag::TagId,
-                    PostgresMediumTag::TagTypeId,
-                ])
-                .on_conflict(OnConflict::new().do_nothing().to_owned());
-
-            for (tag_id, tag_type_id) in add_tag_tag_type_ids {
-                query.values([
-                    id.into(),
-                    tag_id.into(),
-                    tag_type_id.into(),
-                ])?;
+                    Some(query)
+                },
+                None => None,
             }
-
+        };
+        if let Some(query) = query {
             let (sql, values) = query.build(PostgresQueryBuilder);
             bind_query(sqlx::query(&sql), &values).execute(&mut tx).await?;
         }
 
-        if !remove_tag_tag_type_ids.is_empty() {
-            let remove_tag_tag_type_ids: Vec<_> = remove_tag_tag_type_ids
-                .into_iter()
-                .map(|(tag_id, tag_type_id)| SimpleExpr::Values(vec![tag_id.into(), tag_type_id.into()]))
-                .collect();
+        let query = {
+            let mut add_tag_tag_type_ids = add_tag_tag_type_ids.into_iter().peekable();
+            match add_tag_tag_type_ids.peek() {
+                Some(_) => {
+                    let mut query = Query::insert();
+                    query
+                        .into_table(PostgresMediumTag::Table)
+                        .columns([
+                            PostgresMediumTag::MediumId,
+                            PostgresMediumTag::TagId,
+                            PostgresMediumTag::TagTypeId,
+                        ])
+                        .on_conflict(OnConflict::new().do_nothing().to_owned());
 
-            let (sql, values) = Query::delete()
-                .from_table(PostgresMediumTag::Table)
-                .and_where(Expr::col(PostgresMediumTag::MediumId).eq(id))
-                .and_where(
-                    Expr::tuple([
-                        Expr::col(PostgresMediumTag::TagId).into(),
-                        Expr::col(PostgresMediumTag::TagTypeId).into(),
-                    ]).binary(
-                        BinOper::In,
-                        SimpleExpr::Tuple(remove_tag_tag_type_ids),
-                    ),
-                )
-                .build(PostgresQueryBuilder);
+                    for (tag_id, tag_type_id) in add_tag_tag_type_ids {
+                        query.values([
+                            id.into(),
+                            tag_id.into(),
+                            tag_type_id.into(),
+                        ])?;
+                    }
+
+                    Some(query)
+                },
+                None => None,
+            }
+        };
+        if let Some(query) = query {
+            let (sql, values) = query.build(PostgresQueryBuilder);
+            bind_query(sqlx::query(&sql), &values).execute(&mut tx).await?;
+        }
+
+        let query = {
+            let mut remove_tag_tag_type_ids = remove_tag_tag_type_ids.into_iter().peekable();
+            match remove_tag_tag_type_ids.peek() {
+                Some(_) => {
+                    let remove_tag_tag_type_ids = remove_tag_tag_type_ids
+                        .into_iter()
+                        .map(|(tag_id, tag_type_id)| SimpleExpr::Values(vec![tag_id.into(), tag_type_id.into()]))
+                        .collect();
+
+                    let mut query = Query::delete();
+                    query
+                        .from_table(PostgresMediumTag::Table)
+                        .and_where(Expr::col(PostgresMediumTag::MediumId).eq(id))
+                        .and_where(
+                            Expr::tuple([
+                                Expr::col(PostgresMediumTag::TagId).into(),
+                                Expr::col(PostgresMediumTag::TagTypeId).into(),
+                            ]).binary(
+                                BinOper::In,
+                                SimpleExpr::Tuple(remove_tag_tag_type_ids),
+                            ),
+                        );
+
+                    Some(query)
+                },
+                None => None,
+            }
+        };
+        if let Some(query) = query {
+            let (sql, values) = query.build(PostgresQueryBuilder);
             bind_query(sqlx::query(&sql), &values).execute(&mut tx).await?;
         }
 
@@ -890,9 +948,9 @@ mod tests {
     async fn create_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.create(
-            Vec::new(),
+            [],
             None,
-            Vec::new(),
+            [],
             None,
             false,
         ).await.unwrap();
@@ -917,9 +975,9 @@ mod tests {
     async fn create_with_created_at_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.create(
-            Vec::new(),
+            [],
             Some(NaiveDate::from_ymd(2022, 1, 1).and_hms(5, 6, 7)),
-            Vec::new(),
+            [],
             None,
             false,
         ).await.unwrap();
@@ -945,12 +1003,12 @@ mod tests {
     async fn create_with_sources_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.create(
-            vec![
+            [
                 SourceId::from(uuid!("3e1150b0-144a-4fcf-a202-b93a5f3274db")),
                 SourceId::from(uuid!("082bdad0-46a9-4637-af44-3c91a605a5f1")),
             ],
             None,
-            Vec::new(),
+            [],
             None,
             true,
         ).await.unwrap();
@@ -1010,9 +1068,9 @@ mod tests {
     async fn create_with_tags_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.create(
-            Vec::new(),
+            [],
             None,
-            vec![
+            [
                 (
                     TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
                     TagTypeId::from(uuid!("1e5021f0-d8ef-4859-815a-747bf3175724")),
@@ -1217,12 +1275,12 @@ mod tests {
     async fn create_with_sources_tags_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.create(
-            vec![
+            [
                 SourceId::from(uuid!("3e1150b0-144a-4fcf-a202-b93a5f3274db")),
                 SourceId::from(uuid!("082bdad0-46a9-4637-af44-3c91a605a5f1")),
             ],
             None,
-            vec![
+            [
                 (
                     TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
                     TagTypeId::from(uuid!("1e5021f0-d8ef-4859-815a-747bf3175724")),
@@ -1462,7 +1520,7 @@ mod tests {
     async fn fetch_by_ids_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_ids(
-            vec![
+            [
                 MediumId::from(uuid!("2872ed9d-4db9-4b25-b86f-791ad009cc0a")),
                 MediumId::from(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1")),
             ],
@@ -1497,7 +1555,7 @@ mod tests {
     async fn fetch_by_ids_with_tags_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_ids(
-            vec![
+            [
                 MediumId::from(uuid!("2872ed9d-4db9-4b25-b86f-791ad009cc0a")),
                 MediumId::from(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1")),
             ],
@@ -1772,7 +1830,7 @@ mod tests {
     async fn fetch_by_ids_with_replicas_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_ids(
-            vec![
+            [
                 MediumId::from(uuid!("2872ed9d-4db9-4b25-b86f-791ad009cc0a")),
                 MediumId::from(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1")),
             ],
@@ -1854,7 +1912,7 @@ mod tests {
     async fn fetch_by_ids_with_sources_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_ids(
-            vec![
+            [
                 MediumId::from(uuid!("2872ed9d-4db9-4b25-b86f-791ad009cc0a")),
                 MediumId::from(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1")),
             ],
@@ -1924,7 +1982,7 @@ mod tests {
     async fn fetch_by_ids_with_tags_replicas_sources_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_ids(
-            vec![
+            [
                 MediumId::from(uuid!("2872ed9d-4db9-4b25-b86f-791ad009cc0a")),
                 MediumId::from(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1")),
             ],
@@ -2281,7 +2339,7 @@ mod tests {
     async fn fetch_by_source_ids_asc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_source_ids(
-            vec![
+            [
                 SourceId::from(uuid!("8939ee67-5fb8-4204-a496-bb570a952f8b")),
                 SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
                 SourceId::from(uuid!("76a94241-1736-4823-bb59-bef097c687e1")),
@@ -2329,7 +2387,7 @@ mod tests {
     async fn fetch_by_source_ids_with_tags_asc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_source_ids(
-            vec![
+            [
                 SourceId::from(uuid!("8939ee67-5fb8-4204-a496-bb570a952f8b")),
                 SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
                 SourceId::from(uuid!("76a94241-1736-4823-bb59-bef097c687e1")),
@@ -2738,7 +2796,7 @@ mod tests {
     async fn fetch_by_source_ids_with_replicas_asc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_source_ids(
-            vec![
+            [
                 SourceId::from(uuid!("8939ee67-5fb8-4204-a496-bb570a952f8b")),
                 SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
                 SourceId::from(uuid!("76a94241-1736-4823-bb59-bef097c687e1")),
@@ -2833,7 +2891,7 @@ mod tests {
     async fn fetch_by_source_ids_with_sources_asc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_source_ids(
-            vec![
+            [
                 SourceId::from(uuid!("8939ee67-5fb8-4204-a496-bb570a952f8b")),
                 SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
                 SourceId::from(uuid!("76a94241-1736-4823-bb59-bef097c687e1")),
@@ -2939,7 +2997,7 @@ mod tests {
     async fn fetch_by_source_ids_desc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_source_ids(
-            vec![
+            [
                 SourceId::from(uuid!("8939ee67-5fb8-4204-a496-bb570a952f8b")),
                 SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
                 SourceId::from(uuid!("76a94241-1736-4823-bb59-bef097c687e1")),
@@ -2987,7 +3045,7 @@ mod tests {
     async fn fetch_by_source_ids_with_tags_desc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_source_ids(
-            vec![
+            [
                 SourceId::from(uuid!("8939ee67-5fb8-4204-a496-bb570a952f8b")),
                 SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
                 SourceId::from(uuid!("76a94241-1736-4823-bb59-bef097c687e1")),
@@ -3366,7 +3424,7 @@ mod tests {
     async fn fetch_by_source_ids_with_replicas_desc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_source_ids(
-            vec![
+            [
                 SourceId::from(uuid!("8939ee67-5fb8-4204-a496-bb570a952f8b")),
                 SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
                 SourceId::from(uuid!("76a94241-1736-4823-bb59-bef097c687e1")),
@@ -3471,7 +3529,7 @@ mod tests {
     async fn fetch_by_source_ids_with_sources_desc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_source_ids(
-            vec![
+            [
                 SourceId::from(uuid!("8939ee67-5fb8-4204-a496-bb570a952f8b")),
                 SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
                 SourceId::from(uuid!("76a94241-1736-4823-bb59-bef097c687e1")),
@@ -3566,7 +3624,7 @@ mod tests {
     async fn fetch_by_source_ids_since_asc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_source_ids(
-            vec![
+            [
                 SourceId::from(uuid!("8939ee67-5fb8-4204-a496-bb570a952f8b")),
                 SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
                 SourceId::from(uuid!("76a94241-1736-4823-bb59-bef097c687e1")),
@@ -3606,7 +3664,7 @@ mod tests {
     async fn fetch_by_source_ids_with_tags_and_since_asc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_source_ids(
-            vec![
+            [
                 SourceId::from(uuid!("8939ee67-5fb8-4204-a496-bb570a952f8b")),
                 SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
                 SourceId::from(uuid!("76a94241-1736-4823-bb59-bef097c687e1")),
@@ -3828,7 +3886,7 @@ mod tests {
     async fn fetch_by_source_ids_with_replicas_and_since_asc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_source_ids(
-            vec![
+            [
                 SourceId::from(uuid!("8939ee67-5fb8-4204-a496-bb570a952f8b")),
                 SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
                 SourceId::from(uuid!("76a94241-1736-4823-bb59-bef097c687e1")),
@@ -3906,7 +3964,7 @@ mod tests {
     async fn fetch_by_source_ids_with_sources_and_since_asc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_source_ids(
-            vec![
+            [
                 SourceId::from(uuid!("8939ee67-5fb8-4204-a496-bb570a952f8b")),
                 SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
                 SourceId::from(uuid!("76a94241-1736-4823-bb59-bef097c687e1")),
@@ -3981,7 +4039,7 @@ mod tests {
     async fn fetch_by_source_ids_since_desc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_source_ids(
-            vec![
+            [
                 SourceId::from(uuid!("8939ee67-5fb8-4204-a496-bb570a952f8b")),
                 SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
                 SourceId::from(uuid!("76a94241-1736-4823-bb59-bef097c687e1")),
@@ -4021,7 +4079,7 @@ mod tests {
     async fn fetch_by_source_ids_with_tags_and_since_desc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_source_ids(
-            vec![
+            [
                 SourceId::from(uuid!("8939ee67-5fb8-4204-a496-bb570a952f8b")),
                 SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
                 SourceId::from(uuid!("76a94241-1736-4823-bb59-bef097c687e1")),
@@ -4243,7 +4301,7 @@ mod tests {
     async fn fetch_by_source_ids_with_replicas_and_since_desc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_source_ids(
-            vec![
+            [
                 SourceId::from(uuid!("8939ee67-5fb8-4204-a496-bb570a952f8b")),
                 SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
                 SourceId::from(uuid!("76a94241-1736-4823-bb59-bef097c687e1")),
@@ -4321,7 +4379,7 @@ mod tests {
     async fn fetch_by_source_ids_with_sources_and_since_desc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_source_ids(
-            vec![
+            [
                 SourceId::from(uuid!("8939ee67-5fb8-4204-a496-bb570a952f8b")),
                 SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
                 SourceId::from(uuid!("76a94241-1736-4823-bb59-bef097c687e1")),
@@ -4396,7 +4454,7 @@ mod tests {
     async fn fetch_by_source_ids_until_asc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_source_ids(
-            vec![
+            [
                 SourceId::from(uuid!("8939ee67-5fb8-4204-a496-bb570a952f8b")),
                 SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
                 SourceId::from(uuid!("76a94241-1736-4823-bb59-bef097c687e1")),
@@ -4436,7 +4494,7 @@ mod tests {
     async fn fetch_by_source_ids_with_tags_and_until_asc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_source_ids(
-            vec![
+            [
                 SourceId::from(uuid!("8939ee67-5fb8-4204-a496-bb570a952f8b")),
                 SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
                 SourceId::from(uuid!("76a94241-1736-4823-bb59-bef097c687e1")),
@@ -4746,7 +4804,7 @@ mod tests {
     async fn fetch_by_source_ids_with_replicas_and_until_asc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_source_ids(
-            vec![
+            [
                 SourceId::from(uuid!("8939ee67-5fb8-4204-a496-bb570a952f8b")),
                 SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
                 SourceId::from(uuid!("76a94241-1736-4823-bb59-bef097c687e1")),
@@ -4805,7 +4863,7 @@ mod tests {
     async fn fetch_by_source_ids_with_sources_and_until_asc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_source_ids(
-            vec![
+            [
                 SourceId::from(uuid!("8939ee67-5fb8-4204-a496-bb570a952f8b")),
                 SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
                 SourceId::from(uuid!("76a94241-1736-4823-bb59-bef097c687e1")),
@@ -4880,7 +4938,7 @@ mod tests {
     async fn fetch_by_source_ids_until_desc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_source_ids(
-            vec![
+            [
                 SourceId::from(uuid!("8939ee67-5fb8-4204-a496-bb570a952f8b")),
                 SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
                 SourceId::from(uuid!("76a94241-1736-4823-bb59-bef097c687e1")),
@@ -4920,7 +4978,7 @@ mod tests {
     async fn fetch_by_source_ids_with_tags_and_until_desc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_source_ids(
-            vec![
+            [
                 SourceId::from(uuid!("8939ee67-5fb8-4204-a496-bb570a952f8b")),
                 SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
                 SourceId::from(uuid!("76a94241-1736-4823-bb59-bef097c687e1")),
@@ -5230,7 +5288,7 @@ mod tests {
     async fn fetch_by_source_ids_with_replicas_and_until_desc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_source_ids(
-            vec![
+            [
                 SourceId::from(uuid!("8939ee67-5fb8-4204-a496-bb570a952f8b")),
                 SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
                 SourceId::from(uuid!("76a94241-1736-4823-bb59-bef097c687e1")),
@@ -5289,7 +5347,7 @@ mod tests {
     async fn fetch_by_source_ids_with_sources_and_until_desc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_source_ids(
-            vec![
+            [
                 SourceId::from(uuid!("8939ee67-5fb8-4204-a496-bb570a952f8b")),
                 SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
                 SourceId::from(uuid!("76a94241-1736-4823-bb59-bef097c687e1")),
@@ -5364,7 +5422,7 @@ mod tests {
     async fn fetch_by_tag_ids_asc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_tag_ids(
-            vec![
+            [
                 (
                     TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
@@ -5413,7 +5471,7 @@ mod tests {
     async fn fetch_by_tag_ids_with_tags_asc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_tag_ids(
-            vec![
+            [
                 (
                     TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
@@ -5881,7 +5939,7 @@ mod tests {
     async fn fetch_by_tag_ids_with_replicas_asc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_tag_ids(
-            vec![
+            [
                 (
                     TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
@@ -5968,7 +6026,7 @@ mod tests {
     async fn fetch_by_tag_ids_with_sources_asc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_tag_ids(
-            vec![
+            [
                 (
                     TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
@@ -6075,7 +6133,7 @@ mod tests {
     async fn fetch_by_tag_ids_desc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_tag_ids(
-            vec![
+            [
                 (
                     TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
@@ -6124,7 +6182,7 @@ mod tests {
     async fn fetch_by_tag_ids_with_tags_desc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_tag_ids(
-            vec![
+            [
                 (
                     TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
@@ -6592,7 +6650,7 @@ mod tests {
     async fn fetch_by_tag_ids_with_replicas_desc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_tag_ids(
-            vec![
+            [
                 (
                     TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
@@ -6689,7 +6747,7 @@ mod tests {
     async fn fetch_by_tag_ids_with_sources_desc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_tag_ids(
-            vec![
+            [
                 (
                     TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
@@ -6796,7 +6854,7 @@ mod tests {
     async fn fetch_by_tag_ids_since_asc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_tag_ids(
-            vec![
+            [
                 (
                     TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
@@ -6845,7 +6903,7 @@ mod tests {
     async fn fetch_by_tag_ids_with_tags_and_since_asc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_tag_ids(
-            vec![
+            [
                 (
                     TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
@@ -7313,7 +7371,7 @@ mod tests {
     async fn fetch_by_tag_ids_with_replicas_and_since_asc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_tag_ids(
-            vec![
+            [
                 (
                     TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
@@ -7410,7 +7468,7 @@ mod tests {
     async fn fetch_by_tag_ids_with_sources_and_since_asc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_tag_ids(
-            vec![
+            [
                 (
                     TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
@@ -7517,7 +7575,7 @@ mod tests {
     async fn fetch_by_tag_ids_since_desc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_tag_ids(
-            vec![
+            [
                 (
                     TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
@@ -7558,7 +7616,7 @@ mod tests {
     async fn fetch_by_tag_ids_with_tags_and_since_desc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_tag_ids(
-            vec![
+            [
                 (
                     TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
@@ -7869,7 +7927,7 @@ mod tests {
     async fn fetch_by_tag_ids_with_replicas_and_since_desc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_tag_ids(
-            vec![
+            [
                 (
                     TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
@@ -7939,7 +7997,7 @@ mod tests {
     async fn fetch_by_tag_ids_with_sources_and_since_desc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_tag_ids(
-            vec![
+            [
                 (
                     TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
@@ -8015,7 +8073,7 @@ mod tests {
     async fn fetch_by_tag_ids_until_asc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_tag_ids(
-            vec![
+            [
                 (
                     TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
@@ -8056,7 +8114,7 @@ mod tests {
     async fn fetch_by_tag_ids_with_tags_and_until_asc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_tag_ids(
-            vec![
+            [
                 (
                     TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
@@ -8367,7 +8425,7 @@ mod tests {
     async fn fetch_by_tag_ids_with_replicas_and_until_asc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_tag_ids(
-            vec![
+            [
                 (
                     TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
@@ -8427,7 +8485,7 @@ mod tests {
     async fn fetch_by_tag_ids_with_sources_and_until_asc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_tag_ids(
-            vec![
+            [
                 (
                     TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
@@ -8514,7 +8572,7 @@ mod tests {
     async fn fetch_by_tag_ids_until_desc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_tag_ids(
-            vec![
+            [
                 (
                     TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
@@ -8555,7 +8613,7 @@ mod tests {
     async fn fetch_by_tag_ids_with_tags_and_until_desc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_tag_ids(
-            vec![
+            [
                 (
                     TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
@@ -8866,7 +8924,7 @@ mod tests {
     async fn fetch_by_tag_ids_with_replicas_and_until_desc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_tag_ids(
-            vec![
+            [
                 (
                     TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
@@ -8926,7 +8984,7 @@ mod tests {
     async fn fetch_by_tag_ids_with_sources_and_until_desc_succeeds(ctx: &DatabaseContext) {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.fetch_by_tag_ids(
-            vec![
+            [
                 (
                     TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
@@ -11954,14 +12012,14 @@ mod tests {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.update_by_id(
             MediumId::from(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1")),
-            vec![
+            [
                 SourceId::from(uuid!("6807b3f6-6325-4212-bba5-bdb48150bb69")),
                 SourceId::from(uuid!("5c872f82-2ad0-47c4-8c6f-64efc9443128")),
             ],
-            vec![
+            [
                 SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
             ],
-            vec![
+            [
                 (
                     TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
                     TagTypeId::from(uuid!("1e5021f0-d8ef-4859-815a-747bf3175724")),
@@ -11971,7 +12029,7 @@ mod tests {
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
                 ),
             ],
-            vec![
+            [
                 (
                     TagId::from(uuid!("7648d9b5-e0f0-48c2-870c-1fcd60a099de")),
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
@@ -12043,14 +12101,14 @@ mod tests {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.update_by_id(
             MediumId::from(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1")),
-            vec![
+            [
                 SourceId::from(uuid!("6807b3f6-6325-4212-bba5-bdb48150bb69")),
                 SourceId::from(uuid!("5c872f82-2ad0-47c4-8c6f-64efc9443128")),
             ],
-            vec![
+            [
                 SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
             ],
-            vec![
+            [
                 (
                     TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
                     TagTypeId::from(uuid!("1e5021f0-d8ef-4859-815a-747bf3175724")),
@@ -12060,7 +12118,7 @@ mod tests {
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
                 ),
             ],
-            vec![
+            [
                 (
                     TagId::from(uuid!("7648d9b5-e0f0-48c2-870c-1fcd60a099de")),
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
@@ -12223,14 +12281,14 @@ mod tests {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.update_by_id(
             MediumId::from(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1")),
-            vec![
+            [
                 SourceId::from(uuid!("6807b3f6-6325-4212-bba5-bdb48150bb69")),
                 SourceId::from(uuid!("5c872f82-2ad0-47c4-8c6f-64efc9443128")),
             ],
-            vec![
+            [
                 SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
             ],
-            vec![
+            [
                 (
                     TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
                     TagTypeId::from(uuid!("1e5021f0-d8ef-4859-815a-747bf3175724")),
@@ -12240,7 +12298,7 @@ mod tests {
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
                 ),
             ],
-            vec![
+            [
                 (
                     TagId::from(uuid!("7648d9b5-e0f0-48c2-870c-1fcd60a099de")),
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
@@ -12340,14 +12398,14 @@ mod tests {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.update_by_id(
             MediumId::from(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1")),
-            vec![
+            [
                 SourceId::from(uuid!("6807b3f6-6325-4212-bba5-bdb48150bb69")),
                 SourceId::from(uuid!("5c872f82-2ad0-47c4-8c6f-64efc9443128")),
             ],
-            vec![
+            [
                 SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
             ],
-            vec![
+            [
                 (
                     TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
                     TagTypeId::from(uuid!("1e5021f0-d8ef-4859-815a-747bf3175724")),
@@ -12357,7 +12415,7 @@ mod tests {
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
                 ),
             ],
-            vec![
+            [
                 (
                     TagId::from(uuid!("7648d9b5-e0f0-48c2-870c-1fcd60a099de")),
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
@@ -12452,14 +12510,14 @@ mod tests {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.update_by_id(
             MediumId::from(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1")),
-            vec![
+            [
                 SourceId::from(uuid!("6807b3f6-6325-4212-bba5-bdb48150bb69")),
                 SourceId::from(uuid!("5c872f82-2ad0-47c4-8c6f-64efc9443128")),
             ],
-            vec![
+            [
                 SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
             ],
-            vec![
+            [
                 (
                     TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
                     TagTypeId::from(uuid!("1e5021f0-d8ef-4859-815a-747bf3175724")),
@@ -12469,13 +12527,13 @@ mod tests {
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
                 ),
             ],
-            vec![
+            [
                 (
                     TagId::from(uuid!("7648d9b5-e0f0-48c2-870c-1fcd60a099de")),
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
                 ),
             ],
-            vec![
+            [
                 ReplicaId::from(uuid!("6fae1497-e987-492e-987a-f9870b7d3c5b")),
                 ReplicaId::from(uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5")),
                 ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be")),
@@ -12553,14 +12611,14 @@ mod tests {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.update_by_id(
             MediumId::from(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1")),
-            vec![
+            [
                 SourceId::from(uuid!("6807b3f6-6325-4212-bba5-bdb48150bb69")),
                 SourceId::from(uuid!("5c872f82-2ad0-47c4-8c6f-64efc9443128")),
             ],
-            vec![
+            [
                 SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
             ],
-            vec![
+            [
                 (
                     TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
                     TagTypeId::from(uuid!("1e5021f0-d8ef-4859-815a-747bf3175724")),
@@ -12570,13 +12628,13 @@ mod tests {
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
                 ),
             ],
-            vec![
+            [
                 (
                     TagId::from(uuid!("7648d9b5-e0f0-48c2-870c-1fcd60a099de")),
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
                 ),
             ],
-            vec![
+            [
                 ReplicaId::from(uuid!("6fae1497-e987-492e-987a-f9870b7d3c5b")),
                 ReplicaId::from(uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5")),
                 ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be")),
@@ -12745,14 +12803,14 @@ mod tests {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.update_by_id(
             MediumId::from(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1")),
-            vec![
+            [
                 SourceId::from(uuid!("6807b3f6-6325-4212-bba5-bdb48150bb69")),
                 SourceId::from(uuid!("5c872f82-2ad0-47c4-8c6f-64efc9443128")),
             ],
-            vec![
+            [
                 SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
             ],
-            vec![
+            [
                 (
                     TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
                     TagTypeId::from(uuid!("1e5021f0-d8ef-4859-815a-747bf3175724")),
@@ -12762,13 +12820,13 @@ mod tests {
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
                 ),
             ],
-            vec![
+            [
                 (
                     TagId::from(uuid!("7648d9b5-e0f0-48c2-870c-1fcd60a099de")),
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
                 ),
             ],
-            vec![
+            [
                 ReplicaId::from(uuid!("6fae1497-e987-492e-987a-f9870b7d3c5b")),
                 ReplicaId::from(uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5")),
                 ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be")),
@@ -12874,14 +12932,14 @@ mod tests {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.update_by_id(
             MediumId::from(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1")),
-            vec![
+            [
                 SourceId::from(uuid!("6807b3f6-6325-4212-bba5-bdb48150bb69")),
                 SourceId::from(uuid!("5c872f82-2ad0-47c4-8c6f-64efc9443128")),
             ],
-            vec![
+            [
                 SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
             ],
-            vec![
+            [
                 (
                     TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
                     TagTypeId::from(uuid!("1e5021f0-d8ef-4859-815a-747bf3175724")),
@@ -12891,13 +12949,13 @@ mod tests {
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
                 ),
             ],
-            vec![
+            [
                 (
                     TagId::from(uuid!("7648d9b5-e0f0-48c2-870c-1fcd60a099de")),
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
                 ),
             ],
-            vec![
+            [
                 ReplicaId::from(uuid!("6fae1497-e987-492e-987a-f9870b7d3c5b")),
                 ReplicaId::from(uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5")),
                 ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be")),
@@ -12998,14 +13056,14 @@ mod tests {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.update_by_id(
             MediumId::from(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1")),
-            vec![
+            [
                 SourceId::from(uuid!("6807b3f6-6325-4212-bba5-bdb48150bb69")),
                 SourceId::from(uuid!("5c872f82-2ad0-47c4-8c6f-64efc9443128")),
             ],
-            vec![
+            [
                 SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
             ],
-            vec![
+            [
                 (
                     TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
                     TagTypeId::from(uuid!("1e5021f0-d8ef-4859-815a-747bf3175724")),
@@ -13015,13 +13073,13 @@ mod tests {
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
                 ),
             ],
-            vec![
+            [
                 (
                     TagId::from(uuid!("7648d9b5-e0f0-48c2-870c-1fcd60a099de")),
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
                 ),
             ],
-            vec![
+            [
                 ReplicaId::from(uuid!("6fae1497-e987-492e-987a-f9870b7d3c5b")),
                 ReplicaId::from(uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5")),
             ],
@@ -13041,14 +13099,14 @@ mod tests {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.update_by_id(
             MediumId::from(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1")),
-            vec![
+            [
                 SourceId::from(uuid!("6807b3f6-6325-4212-bba5-bdb48150bb69")),
                 SourceId::from(uuid!("5c872f82-2ad0-47c4-8c6f-64efc9443128")),
             ],
-            vec![
+            [
                 SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
             ],
-            vec![
+            [
                 (
                     TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
                     TagTypeId::from(uuid!("1e5021f0-d8ef-4859-815a-747bf3175724")),
@@ -13058,13 +13116,13 @@ mod tests {
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
                 ),
             ],
-            vec![
+            [
                 (
                     TagId::from(uuid!("7648d9b5-e0f0-48c2-870c-1fcd60a099de")),
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
                 ),
             ],
-            vec![
+            [
                 ReplicaId::from(uuid!("6fae1497-e987-492e-987a-f9870b7d3c5b")),
                 ReplicaId::from(uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5")),
                 ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be")),
@@ -13086,14 +13144,14 @@ mod tests {
         let repository = PostgresMediaRepository::new(ctx.pool.clone());
         let actual = repository.update_by_id(
             MediumId::from(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1")),
-            vec![
+            [
                 SourceId::from(uuid!("6807b3f6-6325-4212-bba5-bdb48150bb69")),
                 SourceId::from(uuid!("5c872f82-2ad0-47c4-8c6f-64efc9443128")),
             ],
-            vec![
+            [
                 SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
             ],
-            vec![
+            [
                 (
                     TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
                     TagTypeId::from(uuid!("1e5021f0-d8ef-4859-815a-747bf3175724")),
@@ -13103,13 +13161,13 @@ mod tests {
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
                 ),
             ],
-            vec![
+            [
                 (
                     TagId::from(uuid!("7648d9b5-e0f0-48c2-870c-1fcd60a099de")),
                     TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
                 ),
             ],
-            vec![
+            [
                 ReplicaId::from(uuid!("6fae1497-e987-492e-987a-f9870b7d3c5b")),
                 ReplicaId::from(uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5")),
                 ReplicaId::from(uuid!("790dc278-2c53-4988-883c-43a037664b24")),
@@ -13121,5 +13179,37 @@ mod tests {
         ).await;
 
         assert!(actual.is_err());
+    }
+
+    #[test_context(DatabaseContext)]
+    #[tokio::test]
+    #[cfg_attr(not(feature = "test-postgres"), ignore)]
+    async fn delete_by_id_succeeds(ctx: &DatabaseContext) {
+        let actual: i64 = sqlx::query(r#"SELECT COUNT(*) FROM "media" WHERE "id" = $1"#)
+            .bind(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1"))
+            .fetch_one(&ctx.pool)
+            .await
+            .unwrap()
+            .get(0);
+
+        assert_eq!(actual, 1);
+
+        let repository = PostgresMediaRepository::new(ctx.pool.clone());
+        let actual = repository.delete_by_id(MediumId::from(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1"))).await.unwrap();
+
+        assert_eq!(actual, DeleteResult::Deleted(1));
+
+        let actual: i64 = sqlx::query(r#"SELECT COUNT(*) FROM "media" WHERE "id" = $1"#)
+            .bind(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1"))
+            .fetch_one(&ctx.pool)
+            .await
+            .unwrap()
+            .get(0);
+
+        assert_eq!(actual, 0);
+
+        let actual = repository.delete_by_id(MediumId::from(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1"))).await.unwrap();
+
+        assert_eq!(actual, DeleteResult::NotFound);
     }
 }

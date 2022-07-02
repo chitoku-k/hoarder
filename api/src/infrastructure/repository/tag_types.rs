@@ -56,7 +56,7 @@ impl From<PostgresTagTypeRow> for TagType {
 
 #[async_trait]
 impl TagTypesRepository for PostgresTagTypesRepository {
-    async fn create(&self, slug: &'_ str, name: &'_ str) -> anyhow::Result<TagType> {
+    async fn create(&self, slug: &str, name: &str) -> anyhow::Result<TagType> {
         let (sql, values) = Query::insert()
             .into_table(PostgresTagType::Table)
             .columns([PostgresTagType::Slug, PostgresTagType::Name])

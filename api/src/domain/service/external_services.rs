@@ -6,6 +6,7 @@ use crate::domain::{
     repository::{external_services, DeleteResult},
 };
 
+#[cfg_attr(test, mockall::automock)]
 #[async_trait]
 pub trait ExternalServicesServiceInterface: Send + Sync + 'static {
     /// Creates an external service.
@@ -20,7 +21,7 @@ pub trait ExternalServicesServiceInterface: Send + Sync + 'static {
         T: IntoIterator<Item = ExternalServiceId> + Send + Sync + 'static;
 
     /// Updates the external service by ID.
-    async fn update_external_service_by_id(&self, id: ExternalServiceId, name: Option<&str>) -> anyhow::Result<ExternalService>;
+    async fn update_external_service_by_id<'a>(&self, id: ExternalServiceId, name: Option<&'a str>) -> anyhow::Result<ExternalService>;
 
     /// Deletes the external service by ID.
     async fn delete_external_service_by_id(&self, id: ExternalServiceId) -> anyhow::Result<DeleteResult>;
@@ -69,7 +70,7 @@ where
         }
     }
 
-    async fn update_external_service_by_id(&self, id: ExternalServiceId, name: Option<&str>) -> anyhow::Result<ExternalService> {
+    async fn update_external_service_by_id<'a>(&self, id: ExternalServiceId, name: Option<&'a str>) -> anyhow::Result<ExternalService> {
         match self.external_services_repository.update_by_id(id, name).await {
             Ok(service) => Ok(service),
             Err(e) => {

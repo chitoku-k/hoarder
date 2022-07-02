@@ -36,8 +36,6 @@ pub type APISchema<ExternalServicesService, MediaService, TagsService> = Schema<
     EmptySubscription,
 >;
 
-pub struct GraphQLHandler;
-
 pub async fn handle<ExternalServicesService, MediaService, TagsService>(
     schema: Extension<APISchema<ExternalServicesService, MediaService, TagsService>>,
     req: GraphQLRequest,

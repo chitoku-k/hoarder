@@ -58,7 +58,7 @@ impl From<PostgresExternalServiceRow> for ExternalService {
 
 #[async_trait]
 impl ExternalServicesRepository for PostgresExternalServicesRepository {
-    async fn create(&self, slug: &'_ str, name: &'_ str) -> anyhow::Result<ExternalService> {
+    async fn create(&self, slug: &str, name: &str) -> anyhow::Result<ExternalService> {
         let (sql, values) = Query::insert()
             .into_table(PostgresExternalService::Table)
             .columns([

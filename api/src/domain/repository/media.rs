@@ -16,14 +16,10 @@ use crate::domain::{
 #[async_trait]
 pub trait MediaRepository: Send + Sync + 'static {
     /// Creates a medium.
-    async fn create(
-        &self,
-        source_ids: Vec<SourceId>,
-        created_at: Option<NaiveDateTime>,
-        tag_tag_type_ids: Vec<(TagId, TagTypeId)>,
-        tag_depth: Option<TagDepth>,
-        sources: bool,
-    ) -> anyhow::Result<Medium>;
+    async fn create<T, U>(&self, source_ids: T, created_at: Option<NaiveDateTime>, tag_tag_type_ids: U, tag_depth: Option<TagDepth>, sources: bool) -> anyhow::Result<Medium>
+    where
+        T: IntoIterator<Item = SourceId> + Send + Sync + 'static,
+        U: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'static;
 
     /// Fetches media by IDs.
     async fn fetch_by_ids<T>(&self, ids: T, tag_depth: Option<TagDepth>, replicas: bool, sources: bool) -> anyhow::Result<Vec<Medium>>
@@ -73,21 +69,25 @@ pub trait MediaRepository: Send + Sync + 'static {
     ) -> anyhow::Result<Vec<Medium>>;
 
     /// Updates the medium by ID.
-    async fn update_by_id<T>(
+    async fn update_by_id<T, U, V, W, X>(
         &self,
         id: MediumId,
-        add_source_ids: Vec<SourceId>,
-        remove_source_ids: Vec<SourceId>,
-        add_tag_tag_type_ids: Vec<(TagId, TagTypeId)>,
-        remove_tag_tag_type_ids: Vec<(TagId, TagTypeId)>,
-        replica_orders: T,
+        add_source_ids: T,
+        remove_source_ids: U,
+        add_tag_tag_type_ids: V,
+        remove_tag_tag_type_ids: W,
+        replica_orders: X,
         created_at: Option<NaiveDateTime>,
         tag_depth: Option<TagDepth>,
         replicas: bool,
         sources: bool,
     ) -> anyhow::Result<Medium>
     where
-        T: IntoIterator<Item = ReplicaId> + Send + Sync + 'static;
+        T: IntoIterator<Item = SourceId> + Send + Sync + 'static,
+        U: IntoIterator<Item = SourceId> + Send + Sync + 'static,
+        V: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'static,
+        W: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'static,
+        X: IntoIterator<Item = ReplicaId> + Send + Sync + 'static;
 
     /// Deletes the medium by ID.
     async fn delete_by_id(&self, id: MediumId) -> anyhow::Result<DeleteResult>;

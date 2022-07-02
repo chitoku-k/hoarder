@@ -78,13 +78,11 @@ where
         let source_ids = source_ids
             .unwrap_or_default()
             .into_iter()
-            .map(Into::into)
-            .collect();
+            .map(Into::into);
         let tag_tag_type_ids = tag_ids
             .unwrap_or_default()
             .into_iter()
-            .map(Into::into)
-            .collect();
+            .map(Into::into);
 
         let medium = self.media_service.create_medium(source_ids, created_at, tag_tag_type_ids, tag_depth, sources).await?;
         medium.try_into()
@@ -130,24 +128,20 @@ where
         let add_source_ids = add_source_ids
             .unwrap_or_default()
             .into_iter()
-            .map(Into::into)
-            .collect();
+            .map(Into::into);
         let remove_source_ids = remove_source_ids
             .unwrap_or_default()
             .into_iter()
-            .map(Into::into)
-            .collect();
+            .map(Into::into);
 
         let add_tag_tag_type_ids = add_tag_ids
             .unwrap_or_default()
             .into_iter()
-            .map(Into::into)
-            .collect();
+            .map(Into::into);
         let remove_tag_tag_type_ids = remove_tag_ids
             .unwrap_or_default()
             .into_iter()
-            .map(Into::into)
-            .collect();
+            .map(Into::into);
 
         let replica_orders = replica_orders
             .unwrap_or_default()
