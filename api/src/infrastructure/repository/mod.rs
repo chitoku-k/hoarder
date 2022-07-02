@@ -92,7 +92,7 @@ mod tests {
     }
 
     async fn drop_database(conn: &mut PgConnection, name: &str) -> anyhow::Result<()> {
-        conn.execute(&*format!(r#"DROP DATABASE "{}""#, name)).await?;
+        conn.execute(&*format!(r#"DROP DATABASE "{}" WITH (FORCE)"#, name)).await?;
 
         Ok(())
     }

@@ -3,7 +3,7 @@ use async_trait::async_trait;
 use chrono::NaiveDateTime;
 use derive_more::Constructor;
 use futures::TryStreamExt;
-use sea_query::{Alias, BinOper, Expr, Iden, JoinType, Keyword, LockType, Order, PostgresQueryBuilder, Query, SimpleExpr};
+use sea_query::{Alias, BinOper, Expr, Func, Iden, JoinType, Keyword, LockType, Order, PostgresQueryBuilder, Query, SimpleExpr};
 use sqlx::{FromRow, PgPool, Row};
 use uuid::Uuid;
 
@@ -170,8 +170,8 @@ impl ReplicasRepository for PostgresReplicasRepository {
 
         let replica = bind_query_as::<PostgresReplicaRow>(sqlx::query_as(&sql), &values)
             .fetch_one(&mut tx)
-            .await
-            .map(Into::into)?;
+            .await?
+            .into();
 
         tx.commit().await?;
         Ok(replica)
@@ -293,7 +293,7 @@ impl ReplicasRepository for PostgresReplicasRepository {
         let mut query = Query::update();
         query
             .table(PostgresReplica::Table)
-            .col_expr(PostgresReplica::UpdatedAt, Expr::cust("CURRENT_TIMESTAMP"))
+            .col_expr(PostgresReplica::UpdatedAt, Func::current_timestamp())
             .and_where(Expr::col(PostgresReplica::Id).eq(id))
             .returning(
                 Query::returning()
@@ -326,8 +326,8 @@ impl ReplicasRepository for PostgresReplicasRepository {
         let (sql, values) = query.build(PostgresQueryBuilder);
         let replica = bind_query_as::<PostgresReplicaRow>(sqlx::query_as(&sql), &values)
             .fetch_one(&mut tx)
-            .await
-            .map(Into::into)?;
+            .await?
+            .into();
 
         tx.commit().await?;
         Ok(replica)
@@ -398,7 +398,7 @@ impl ReplicasRepository for PostgresReplicasRepository {
             let (sql, values) = Query::update()
                 .table(PostgresReplica::Table)
                 .col_expr(PostgresReplica::DisplayOrder, Expr::val(order as i32 + 1).into())
-                .col_expr(PostgresReplica::UpdatedAt, Expr::cust("CURRENT_TIMESTAMP"))
+                .col_expr(PostgresReplica::UpdatedAt, Func::current_timestamp())
                 .and_where(Expr::col(PostgresReplica::Id).eq(sibling.id))
                 .build(PostgresQueryBuilder);
 
@@ -413,10 +413,10 @@ impl ReplicasRepository for PostgresReplicasRepository {
 #[cfg(test)]
 mod tests {
     use chrono::NaiveDate;
-    use compiled_uuid::uuid;
     use futures::TryStreamExt;
     use pretty_assertions::{assert_eq, assert_ne};
     use test_context::test_context;
+    use uuid::uuid;
 
     use crate::infrastructure::repository::tests::DatabaseContext;
 

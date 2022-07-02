@@ -3,7 +3,7 @@ use async_trait::async_trait;
 use chrono::NaiveDateTime;
 use derive_more::Constructor;
 use futures::TryStreamExt;
-use sea_query::{Expr, Iden, JoinType, LockType, PostgresQueryBuilder, Query};
+use sea_query::{Expr, Func, Iden, JoinType, LockType, PostgresQueryBuilder, Query};
 use serde::{Deserialize, Serialize};
 use sqlx::{types::Json, FromRow, PgPool};
 use uuid::Uuid;
@@ -176,8 +176,8 @@ impl SourcesRepository for PostgresSourcesRepository {
 
         let external_service: ExternalService = bind_query_as::<PostgresExternalServiceRow>(sqlx::query_as(&sql), &values)
             .fetch_one(&mut tx)
-            .await
-            .map(Into::into)?;
+            .await?
+            .into();
 
         let external_metadata = PostgresExternalServiceMetadata::try_from(external_metadata)?;
         let external_metadata = match serde_json::to_value(&external_metadata) {
@@ -292,7 +292,7 @@ impl SourcesRepository for PostgresSourcesRepository {
             .table(PostgresSource::Table)
             .col_expr(PostgresSource::ExternalServiceId, Expr::val(external_service_id).into())
             .col_expr(PostgresSource::ExternalMetadata, Expr::val(external_metadata).into())
-            .col_expr(PostgresSource::UpdatedAt, Expr::cust("CURRENT_TIMESTAMP"))
+            .col_expr(PostgresSource::UpdatedAt, Func::current_timestamp())
             .and_where(Expr::col(PostgresSource::Id).eq(id))
             .returning(
                 Query::returning()
@@ -322,8 +322,8 @@ impl SourcesRepository for PostgresSourcesRepository {
 
         let external_service: ExternalService = bind_query_as::<PostgresExternalServiceRow>(sqlx::query_as(&sql), &values)
             .fetch_one(&mut tx)
-            .await
-            .map(Into::into)?;
+            .await?
+            .into();
 
         let source = match Source::try_from((row, external_service)) {
             Ok(source) => {
@@ -358,11 +358,11 @@ impl SourcesRepository for PostgresSourcesRepository {
 #[cfg(test)]
 mod tests {
     use chrono::NaiveDate;
-    use compiled_uuid::uuid;
     use pretty_assertions::{assert_eq, assert_ne};
     use serde_json::json;
     use sqlx::Row;
     use test_context::test_context;
+    use uuid::uuid;
 
     use crate::infrastructure::repository::tests::DatabaseContext;
 

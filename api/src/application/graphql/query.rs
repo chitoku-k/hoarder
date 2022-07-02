@@ -101,7 +101,7 @@ where
                 let since = since.map(MediumCursor::into_inner);
                 let until = until.map(MediumCursor::into_inner);
                 let order = match rev {
-                    true => order.reverse().into(),
+                    true => order.rev().into(),
                     false => order.into(),
                 };
 

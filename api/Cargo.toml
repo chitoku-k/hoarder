@@ -21,7 +21,7 @@ version = "1.0.58"
 
 [dependencies.async-graphql]
 version = "4.0.4"
-features = ["chrono", "unblock", "uuid08"]
+features = ["chrono", "unblock", "uuid"]
 
 [dependencies.async-graphql-axum]
 version = "4.0.4"
@@ -41,9 +41,6 @@ version = "0.13.0"
 
 [dependencies.chrono]
 version = "0.4.19"
-
-[dependencies.compiled-uuid]
-version = "0.1.2"
 
 [dependencies.derive_more]
 version = "0.99.17"
@@ -73,8 +70,8 @@ version = "4.0.17"
 version = "0.16.0"
 
 [dependencies.sea-query]
-version = "0.25.1"
-features = ["postgres-array", "postgres-chrono", "postgres-json", "postgres-uuid", "sqlx-postgres", "thread-safe"]
+version = "0.26.0"
+features = ["postgres-array", "sqlx-postgres", "thread-safe", "with-chrono", "with-json", "with-uuid"]
 
 [dependencies.serde]
 version = "1.0.137"
@@ -87,7 +84,7 @@ version = "1.0.82"
 version = "1.14.0"
 
 [dependencies.sqlx]
-version = "0.5.13"
+version = "0.6.0"
 features = ["chrono", "json", "postgres", "runtime-tokio-rustls", "tls", "uuid"]
 
 [dependencies.thiserror]
@@ -101,7 +98,7 @@ features = ["macros", "net", "process", "rt-multi-thread", "signal"]
 version = "0.1.9"
 
 [dependencies.uuid]
-version = "0.8.2"
+version = "1.1.2"
 
 [dev-dependencies.include_dir]
 version = "0.7.2"

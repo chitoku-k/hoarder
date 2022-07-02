@@ -94,8 +94,8 @@ where
 #[cfg(test)]
 mod tests {
     use anyhow::anyhow;
-    use compiled_uuid::uuid;
     use pretty_assertions::assert_eq;
+    use uuid::uuid;
 
     use crate::domain::repository::external_services::MockExternalServicesRepository;
 

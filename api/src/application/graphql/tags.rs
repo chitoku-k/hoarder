@@ -219,8 +219,8 @@ pub fn get_tag_depth(root: &Lookahead<'_>) -> TagDepth {
 
 #[cfg(test)]
 mod tests {
-    use compiled_uuid::uuid;
     use pretty_assertions::assert_eq;
+    use uuid::uuid;
 
     use super::*;
 

@@ -88,7 +88,7 @@ impl From<OrderDirection> for repository::OrderDirection {
 }
 
 impl OrderDirection {
-    pub fn reverse(&self) -> Self {
+    pub fn rev(&self) -> Self {
         match self {
             Self::Asc => Self::Desc,
             Self::Desc => Self::Asc,

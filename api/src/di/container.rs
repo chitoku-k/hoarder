@@ -94,7 +94,7 @@ impl Application {
 
         let pg_pool = PgPoolOptions::new()
             .max_connections(5)
-            .connect_timeout(Duration::from_secs(5))
+            .acquire_timeout(Duration::from_secs(5))
             .connect_with(pg_options)
             .await
             .context("error connecting to database")?;
