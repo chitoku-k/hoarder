@@ -8,25 +8,29 @@ opt-level = "z"
 lto = true
 codegen-units = 1
 
+[lib]
+doctest = false
+
 [features]
 default = ["tls"]
 tls = ["axum-server/tls-rustls"]
+test-postgres = []
 
 [dependencies.anyhow]
-version = "1.0.57"
+version = "1.0.58"
 
 [dependencies.async-graphql]
-version = "4.0.1"
+version = "4.0.4"
 features = ["chrono", "unblock", "uuid08"]
 
 [dependencies.async-graphql-axum]
-version = "4.0.1"
+version = "4.0.4"
 
 [dependencies.async-trait]
-version = "0.1.53"
+version = "0.1.56"
 
 [dependencies.axum]
-version = "0.5.4"
+version = "0.5.10"
 features = ["default", "http2"]
 
 [dependencies.axum-server]
@@ -38,8 +42,11 @@ version = "0.13.0"
 [dependencies.chrono]
 version = "0.4.19"
 
+[dependencies.compiled-uuid]
+version = "0.1.2"
+
 [dependencies.derive_more]
-version = "0.99.0"
+version = "0.99.17"
 
 [dependencies.env_logger]
 version = "0.9.0"
@@ -53,20 +60,20 @@ features = ["alloc", "io-compat"]
 default-features = false
 
 [dependencies.indexmap]
-version = "1.8.1"
+version = "1.9.1"
 features = ["serde"]
 
 [dependencies.log]
-version = "0.4.16"
+version = "0.4.17"
 
 [dependencies.notify]
 version = "4.0.17"
 
 [dependencies.prometheus-client]
-version = "0.15.1"
+version = "0.16.0"
 
 [dependencies.sea-query]
-version = "0.25.0"
+version = "0.25.1"
 features = ["postgres-array", "postgres-chrono", "postgres-json", "postgres-uuid", "sqlx-postgres", "thread-safe"]
 
 [dependencies.serde]
@@ -74,7 +81,7 @@ version = "1.0.137"
 features = ["derive"]
 
 [dependencies.serde_json]
-version = "1.0.81"
+version = "1.0.82"
 
 [dependencies.serde_with]
 version = "1.14.0"
@@ -87,20 +94,24 @@ features = ["chrono", "json", "postgres", "runtime-tokio-rustls", "tls", "uuid"]
 version = "1.0.31"
 
 [dependencies.tokio]
-version = "1.18.0"
+version = "1.19.2"
 features = ["macros", "net", "process", "rt-multi-thread", "signal"]
 
 [dependencies.tokio-stream]
-version = "0.1.8"
+version = "0.1.9"
 
 [dependencies.uuid]
 version = "0.8.2"
 
-[dev-dependencies.indoc]
-version = "1.0.4"
+[dev-dependencies.include_dir]
+version = "0.7.2"
+features = ["glob"]
 
 [dev-dependencies.mockall]
-version = "0.11.0"
+version = "0.11.1"
 
 [dev-dependencies.pretty_assertions]
 version = "1.2.1"
+
+[dev-dependencies.test-context]
+version = "0.1.3"
