@@ -109,8 +109,8 @@ impl TryFrom<media::Medium> for Edge<MediumCursor, Medium, EmptyFields, DefaultE
 #[cfg(test)]
 mod tests {
     use chrono::NaiveDate;
-    use compiled_uuid::uuid;
     use pretty_assertions::assert_eq;
+    use uuid::uuid;
 
     use super::*;
 

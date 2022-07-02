@@ -81,8 +81,8 @@ impl ExternalServicesRepository for PostgresExternalServicesRepository {
 
         let external_service = bind_query_as::<PostgresExternalServiceRow>(sqlx::query_as(&sql), &values)
             .fetch_one(&self.pool)
-            .await
-            .map(Into::into)?;
+            .await?
+            .into();
 
         Ok(external_service)
     }
@@ -169,8 +169,8 @@ impl ExternalServicesRepository for PostgresExternalServicesRepository {
 
         let external_service = bind_query_as::<PostgresExternalServiceRow>(sqlx::query_as(&sql), &values)
             .fetch_one(&mut tx)
-            .await
-            .map(Into::into)?;
+            .await?
+            .into();
 
         tx.commit().await?;
         Ok(external_service)
@@ -196,10 +196,10 @@ impl ExternalServicesRepository for PostgresExternalServicesRepository {
 
 #[cfg(test)]
 mod tests {
-    use compiled_uuid::uuid;
     use pretty_assertions::assert_eq;
     use sqlx::Row;
     use test_context::test_context;
+    use uuid::uuid;
 
     use crate::infrastructure::repository::tests::DatabaseContext;
 

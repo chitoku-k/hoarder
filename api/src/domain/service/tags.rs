@@ -210,8 +210,8 @@ mod tests {
 
     use anyhow::anyhow;
     use chrono::NaiveDate;
-    use compiled_uuid::uuid;
     use pretty_assertions::assert_eq;
+    use uuid::uuid;
 
     use crate::domain::{
         entity::tags::{AliasSet, Tag, TagId},

@@ -39,7 +39,7 @@ impl PartialEq for TagType {
 mod tests {
     use std::collections::HashSet;
 
-    use compiled_uuid::uuid;
+    use uuid::uuid;
 
     use super::*;
 

@@ -5,7 +5,7 @@ use chrono::NaiveDateTime;
 use derive_more::Constructor;
 use futures::TryStreamExt;
 use indexmap::IndexSet;
-use sea_query::{BinOper, Expr, Iden, JoinType, Keyword, LockType, OnConflict, Order, PostgresQueryBuilder, Query, SimpleExpr};
+use sea_query::{Expr, Func, Iden, JoinType, Keyword, LockType, OnConflict, Order, PostgresQueryBuilder, Query, SimpleExpr};
 use sqlx::{types::Json, FromRow, PgConnection, PgPool};
 use thiserror::Error;
 use uuid::Uuid;
@@ -390,8 +390,8 @@ impl MediaRepository for PostgresMediaRepository {
 
         let medium: Medium = bind_query_as::<PostgresMediumRow>(sqlx::query_as(&sql), &values)
             .fetch_one(&mut tx)
-            .await
-            .map(Into::into)?;
+            .await?
+            .into();
 
         let query = {
             let mut source_ids = source_ids.into_iter().peekable();
@@ -562,7 +562,7 @@ impl MediaRepository for PostgresMediaRepository {
     {
         let tag_tag_type_ids: Vec<_> = tag_tag_type_ids
             .into_iter()
-            .map(|(tag_id, tag_type_id)| SimpleExpr::Values(vec![tag_id.into(), tag_type_id.into()]))
+            .map(|(tag_id, tag_type_id)| [*tag_id, *tag_type_id])
             .collect();
 
         let tag_tag_type_ids_len = tag_tag_type_ids.len() as i32;
@@ -603,10 +603,7 @@ impl MediaRepository for PostgresMediaRepository {
                 Expr::tuple([
                     Expr::col(PostgresTagPath::AncestorId).into(),
                     Expr::col(PostgresMediumTag::TagTypeId).into(),
-                ]).binary(
-                    BinOper::In,
-                    SimpleExpr::Tuple(tag_tag_type_ids),
-                ),
+                ]).in_tuples(tag_tag_type_ids)
             )
             .group_by_col(PostgresMedium::Id)
             .and_having(
@@ -845,9 +842,9 @@ impl MediaRepository for PostgresMediaRepository {
             let mut remove_tag_tag_type_ids = remove_tag_tag_type_ids.into_iter().peekable();
             match remove_tag_tag_type_ids.peek() {
                 Some(_) => {
-                    let remove_tag_tag_type_ids = remove_tag_tag_type_ids
+                    let remove_tag_tag_type_ids: Vec<_> = remove_tag_tag_type_ids
                         .into_iter()
-                        .map(|(tag_id, tag_type_id)| SimpleExpr::Values(vec![tag_id.into(), tag_type_id.into()]))
+                        .map(|(tag_id, tag_type_id)| [*tag_id, *tag_type_id])
                         .collect();
 
                     let mut query = Query::delete();
@@ -858,10 +855,7 @@ impl MediaRepository for PostgresMediaRepository {
                             Expr::tuple([
                                 Expr::col(PostgresMediumTag::TagId).into(),
                                 Expr::col(PostgresMediumTag::TagTypeId).into(),
-                            ]).binary(
-                                BinOper::In,
-                                SimpleExpr::Tuple(remove_tag_tag_type_ids),
-                            ),
+                            ]).in_tuples(remove_tag_tag_type_ids),
                         );
 
                     Some(query)
@@ -877,7 +871,7 @@ impl MediaRepository for PostgresMediaRepository {
         let mut query = Query::update();
         query
             .table(PostgresMedium::Table)
-            .col_expr(PostgresMedium::UpdatedAt, Expr::cust("CURRENT_TIMESTAMP"))
+            .col_expr(PostgresMedium::UpdatedAt, Func::current_timestamp())
             .and_where(Expr::col(PostgresMedium::Id).eq(id))
             .returning(
                 Query::returning()
@@ -895,8 +889,8 @@ impl MediaRepository for PostgresMediaRepository {
         let (sql, values) = query.build(PostgresQueryBuilder);
         let medium = bind_query_as::<PostgresMediumRow>(sqlx::query_as(&sql), &values)
             .fetch_one(&mut tx)
-            .await
-            .map(Into::into)?;
+            .await?
+            .into();
 
         let mut media = [medium];
         eager_load(&mut tx, &mut media, tag_depth, replicas, sources).await?;
@@ -930,10 +924,10 @@ mod tests {
     use std::collections::{BTreeMap, BTreeSet};
 
     use chrono::NaiveDate;
-    use compiled_uuid::uuid;
     use pretty_assertions::assert_eq;
     use sqlx::Row;
     use test_context::test_context;
+    use uuid::uuid;
 
     use crate::{
         domain::entity::{external_services::ExternalServiceId, tags::AliasSet},

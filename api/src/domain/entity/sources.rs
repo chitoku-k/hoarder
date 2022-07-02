@@ -45,8 +45,8 @@ mod tests {
     use crate::domain::entity::external_services::ExternalServiceId;
 
     use chrono::NaiveDate;
-    use compiled_uuid::uuid;
     use pretty_assertions::assert_eq;
+    use uuid::uuid;
 
     use super::*;
 

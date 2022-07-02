@@ -10,7 +10,7 @@ use chrono::NaiveDateTime;
 use derive_more::Constructor;
 use futures::TryStreamExt;
 use indexmap::{IndexMap, IndexSet};
-use sea_query::{Alias, Cond, Condition, Expr, Iden, JoinType, LockType, Order, PostgresQueryBuilder, Query, SelectStatement};
+use sea_query::{Alias, Cond, Condition, Expr, Func, Iden, JoinType, LikeExpr, LockType, Order, PostgresQueryBuilder, Query, SelectStatement};
 use sqlx::{Acquire, FromRow, PgPool, Postgres, Transaction, PgConnection};
 use thiserror::Error;
 use uuid::Uuid;
@@ -498,8 +498,8 @@ impl TagsRepository for PostgresTagsRepository {
 
         let tag: Tag = bind_query_as::<PostgresTagRow>(sqlx::query_as(&sql), &values)
             .fetch_one(&mut tx)
-            .await
-            .map(Into::into)?;
+            .await?
+            .into();
 
         let (sql, values) = Query::insert()
             .into_table(PostgresTagPath::Table)
@@ -573,8 +573,8 @@ impl TagsRepository for PostgresTagsRepository {
             )
             .cond_where(
                 Cond::any()
-                    .add(Expr::col(PostgresTag::Name).like(&name_or_alias_like))
-                    .add(Expr::col(alias).like(&name_or_alias_like)),
+                    .add(Expr::col(PostgresTag::Name).like(LikeExpr::str(&name_or_alias_like)))
+                    .add(Expr::col(alias).like(LikeExpr::str(&name_or_alias_like))),
             )
             .build(PostgresQueryBuilder);
 
@@ -706,7 +706,7 @@ impl TagsRepository for PostgresTagsRepository {
             .value(PostgresTag::Name, name.into())
             .value(PostgresTag::Kana, kana.into())
             .col_expr(PostgresTag::Aliases, ArrayExpr::val(aliases)?)
-            .col_expr(PostgresTag::UpdatedAt, Expr::cust("CURRENT_TIMESTAMP"))
+            .col_expr(PostgresTag::UpdatedAt, Func::current_timestamp())
             .and_where(Expr::col(PostgresTag::Id).eq(id))
             .build(PostgresQueryBuilder);
 
@@ -802,11 +802,11 @@ mod tests {
     use std::collections::BTreeSet;
 
     use chrono::NaiveDate;
-    use compiled_uuid::uuid;
     use futures::TryStreamExt;
     use pretty_assertions::{assert_eq, assert_ne};
     use sqlx::Row;
     use test_context::test_context;
+    use uuid::uuid;
 
     use crate::{
         domain::entity::tags::AliasSet,
