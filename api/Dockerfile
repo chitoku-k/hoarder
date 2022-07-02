@@ -1,5 +1,5 @@
 # syntax = docker/dockerfile:experimental
-FROM rust:1.60.0-bullseye AS build
+FROM rust:1.62.0-bullseye AS build
 ARG RUSTFLAGS
 WORKDIR /usr/src
 RUN cargo init /usr/src

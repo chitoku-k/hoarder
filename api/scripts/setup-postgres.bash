@@ -23,7 +23,7 @@ POSTGRES_CONTAINER_ID=$(docker create \
     --publish=:$PGPORT \
     --shm-size=512m \
     --mount=type=bind,source="$PWD/database",target=/docker-entrypoint-initdb.d \
-    postgres:14.2 \
+    postgres:14.4 \
     "${POSTGRES_OPTIONS[@]}")
 
 popd &> /dev/null
