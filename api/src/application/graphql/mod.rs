@@ -3,10 +3,7 @@ use async_graphql::{
     Context, EmptySubscription, Enum, Schema, Upload,
 };
 use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
-use axum::{
-    response::{self, IntoResponse},
-    Extension,
-};
+use axum::{response::{self, IntoResponse}, Extension};
 use futures::io::AsyncReadExt;
 
 use crate::{
