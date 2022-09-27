@@ -1,7 +1,6 @@
 use std::{
     net::Ipv6Addr,
     sync::{mpsc::channel, Arc},
-    time::Duration,
 };
 
 use anyhow::Context;
@@ -12,7 +11,7 @@ use axum::{
 };
 use axum_server::{tls_rustls::RustlsConfig, Handle};
 use derive_more::Constructor;
-use notify::{DebouncedEvent, Watcher};
+use notify::Watcher;
 use thiserror::Error;
 use tokio::{
     signal::unix::{self, SignalKind},
@@ -121,11 +120,11 @@ fn enable_auto_reload(config: RustlsConfig, tls_cert: String, tls_key: String) -
     let (tx, rx) = channel();
 
     tokio::spawn(async move {
-        let mut watcher = notify::watcher(tx, Duration::from_secs(1))?;
-        watcher.watch(&tls_cert, notify::RecursiveMode::NonRecursive)?;
+        let mut watcher = notify::recommended_watcher(tx)?;
+        watcher.watch(tls_cert.as_ref(), notify::RecursiveMode::NonRecursive)?;
 
         for event in rx {
-            if let DebouncedEvent::Write(_) = event {
+            if event?.kind.is_modify() {
                 config.reload_from_pem_file(&tls_cert, &tls_key).await?;
             }
         }

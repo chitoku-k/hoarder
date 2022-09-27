@@ -139,8 +139,8 @@ impl Default for TagRelation {
             aliases: Default::default(),
             parent: Default::default(),
             children: Default::default(),
-            created_at: chrono::naive::MIN_DATETIME,
-            updated_at: chrono::naive::MIN_DATETIME,
+            created_at: NaiveDateTime::MIN,
+            updated_at: NaiveDateTime::MIN,
         }
     }
 }

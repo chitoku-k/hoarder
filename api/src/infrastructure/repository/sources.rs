@@ -634,7 +634,7 @@ mod tests {
     #[test_context(DatabaseContext)]
     #[tokio::test]
     #[cfg_attr(not(feature = "test-postgres"), ignore)]
-    async fn delete_by_id_succeeds() {
+    async fn delete_by_id_succeeds(ctx: &DatabaseContext) {
         let actual: i64 = sqlx::query(r#"SELECT COUNT(*) FROM "sources" WHERE "id" = $1"#)
             .bind(uuid!("94055dd8-7a22-4137-b8eb-3a374df5e5d1"))
             .fetch_one(&ctx.pool)

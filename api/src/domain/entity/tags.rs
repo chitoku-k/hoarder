@@ -42,8 +42,8 @@ impl Default for Tag {
             aliases: Default::default(),
             parent: Default::default(),
             children: Default::default(),
-            created_at: chrono::naive::MIN_DATETIME,
-            updated_at: chrono::naive::MIN_DATETIME,
+            created_at: NaiveDateTime::MIN,
+            updated_at: NaiveDateTime::MIN,
         }
     }
 }
@@ -126,8 +126,8 @@ mod tests {
             aliases: AliasSet::new(BTreeSet::new()),
             parent: None,
             children: Vec::new(),
-            created_at: chrono::naive::MIN_DATETIME,
-            updated_at: chrono::naive::MIN_DATETIME,
+            created_at: NaiveDateTime::MIN,
+            updated_at: NaiveDateTime::MIN,
         });
     }
 
