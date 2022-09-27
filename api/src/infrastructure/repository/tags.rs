@@ -232,14 +232,14 @@ fn extract(rc: Rc<RefCell<TagRelation>>, depth: TagDepth) -> Tag {
 
     let parent = depth
         .has_parent()
-        .then(|| relation.parent)
+        .then_some(relation.parent)
         .and_then(|parent| parent.upgrade())
         .map(|relation| extract(relation, TagDepth::new(depth.parent() - 1, 0)))
         .map(Box::new);
 
     let children = depth
         .has_children()
-        .then(|| relation.children)
+        .then_some(relation.children)
         .unwrap_or_default()
         .into_iter()
         .map(|relation| extract(relation, TagDepth::new(0, depth.children() - 1)))

@@ -1,7 +1,7 @@
 use serde::Deserialize;
 use thiserror::Error;
 
-#[derive(Debug, Deserialize, PartialEq)]
+#[derive(Debug, Deserialize, Eq, PartialEq)]
 pub struct Config {
     pub port: u16,
     pub tls_cert: Option<String>,
