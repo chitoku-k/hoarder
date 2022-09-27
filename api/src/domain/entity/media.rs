@@ -38,8 +38,8 @@ impl Default for Medium {
             sources: Default::default(),
             tags: Default::default(),
             replicas: Default::default(),
-            created_at: chrono::naive::MIN_DATETIME,
-            updated_at: chrono::naive::MIN_DATETIME,
+            created_at: NaiveDateTime::MIN,
+            updated_at: NaiveDateTime::MIN,
         }
     }
 }
@@ -59,8 +59,8 @@ mod tests {
             sources: Vec::new(),
             tags: BTreeMap::new(),
             replicas: Vec::new(),
-            created_at: chrono::naive::MIN_DATETIME,
-            updated_at: chrono::naive::MIN_DATETIME,
+            created_at: NaiveDateTime::MIN,
+            updated_at: NaiveDateTime::MIN,
         });
     }
 }
