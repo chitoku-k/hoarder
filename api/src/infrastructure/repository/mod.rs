@@ -60,7 +60,7 @@ mod tests {
     }
 
     async fn connect_database(name: &str) -> anyhow::Result<PgPool> {
-        let connect_options = PgConnectOptions::new().database(&name);
+        let connect_options = PgConnectOptions::new().database(name);
         let pool = PgPoolOptions::new()
             .connect_with(connect_options)
             .await?;
