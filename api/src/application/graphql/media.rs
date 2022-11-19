@@ -117,7 +117,7 @@ mod tests {
     #[test]
     fn medium_cursor_into_inner() {
         let cursor = MediumCursor::new(
-            NaiveDate::from_ymd(2022, 1, 1).and_hms(3, 4, 15),
+            NaiveDate::from_ymd_opt(2022, 1, 1).and_then(|d| d.and_hms_opt(3, 4, 15)).unwrap(),
             uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1"),
         );
         let actual = cursor.into_inner();
@@ -125,7 +125,7 @@ mod tests {
         assert_eq!(
             actual,
             (
-                NaiveDate::from_ymd(2022, 1, 1).and_hms(3, 4, 15),
+                NaiveDate::from_ymd_opt(2022, 1, 1).and_then(|d| d.and_hms_opt(3, 4, 15)).unwrap(),
                 MediumId::from(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1")),
             ),
         );
@@ -134,7 +134,7 @@ mod tests {
     #[test]
     fn media_cursor_encode_cursor_succeeds() {
         let cursor = MediumCursor::new(
-            NaiveDate::from_ymd(2022, 1, 1).and_hms(3, 4, 15),
+            NaiveDate::from_ymd_opt(2022, 1, 1).and_then(|d| d.and_hms_opt(3, 4, 15)).unwrap(),
             uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1"),
         );
         let actual = cursor.encode_cursor();
@@ -149,7 +149,7 @@ mod tests {
         assert_eq!(
             actual,
             MediumCursor::new(
-                NaiveDate::from_ymd(2022, 1, 1).and_hms(3, 4, 15),
+                NaiveDate::from_ymd_opt(2022, 1, 1).and_then(|d| d.and_hms_opt(3, 4, 15)).unwrap(),
                 uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1"),
             ),
         );

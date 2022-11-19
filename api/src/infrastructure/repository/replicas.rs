@@ -560,8 +560,8 @@ mod tests {
                 has_thumbnail: true,
                 original_url: "file:///var/lib/hoarder/1706c7bb-4152-44b2-9bbb-1179d09a19be.png".to_string(),
                 mime_type: "image/png".to_string(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 10),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 7),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 10)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap(),
             },
             Replica {
                 id: ReplicaId::from(uuid!("6fae1497-e987-492e-987a-f9870b7d3c5b")),
@@ -569,8 +569,8 @@ mod tests {
                 has_thumbnail: true,
                 original_url: "file:///var/lib/hoarder/6fae1497-e987-492e-987a-f9870b7d3c5b.png".to_string(),
                 mime_type: "image/png".to_string(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 11),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 10),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 11)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 10)).unwrap(),
             },
             Replica {
                 id: ReplicaId::from(uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5")),
@@ -578,8 +578,8 @@ mod tests {
                 has_thumbnail: false,
                 original_url: "file:///var/lib/hoarder/12ca56e2-6e77-43b9-9da9-9d968c80a1a5.png".to_string(),
                 mime_type: "image/png".to_string(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 11),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 7),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 11)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap(),
             },
         ]);
     }
@@ -597,8 +597,8 @@ mod tests {
             has_thumbnail: true,
             original_url: "file:///var/lib/hoarder/1706c7bb-4152-44b2-9bbb-1179d09a19be.png".to_string(),
             mime_type: "image/png".to_string(),
-            created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 10),
-            updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 7),
+            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 10)).unwrap(),
+            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap(),
         });
     }
 
@@ -631,8 +631,8 @@ mod tests {
             ]),
             original_url: "file:///var/lib/hoarder/1706c7bb-4152-44b2-9bbb-1179d09a19be.png".to_string(),
             mime_type: "image/png".to_string(),
-            created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 10),
-            updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 7),
+            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 10)).unwrap(),
+            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap(),
         });
     }
 
@@ -665,8 +665,8 @@ mod tests {
         assert_eq!(actual.has_thumbnail, true);
         assert_eq!(actual.original_url, "file:///var/lib/hoarder/replica_new.jpg".to_string());
         assert_eq!(actual.mime_type, "image/jpeg".to_string());
-        assert_eq!(actual.created_at, NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 10));
-        assert_ne!(actual.updated_at, NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 7));
+        assert_eq!(actual.created_at, NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 10)).unwrap());
+        assert_ne!(actual.updated_at, NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap());
 
         let actual = sqlx::query(r#"SELECT "id", "medium_id", "display_order", "thumbnail", "original_url", "mime_type" FROM "replicas" WHERE "id" = $1"#)
             .bind(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be"))
@@ -766,13 +766,13 @@ mod tests {
 
         assert_eq!(actual[0].get::<Uuid, &str>("id"), uuid!("6fae1497-e987-492e-987a-f9870b7d3c5b"));
         assert_eq!(actual[0].get::<i32, &str>("display_order"), 1);
-        assert_eq!(actual[0].get::<NaiveDateTime, &str>("created_at"), NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 11));
-        assert_ne!(actual[0].get::<NaiveDateTime, &str>("updated_at"), NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 10));
+        assert_eq!(actual[0].get::<NaiveDateTime, &str>("created_at"), NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 11)).unwrap());
+        assert_ne!(actual[0].get::<NaiveDateTime, &str>("updated_at"), NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 10)).unwrap());
 
         assert_eq!(actual[1].get::<Uuid, &str>("id"), uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5"));
         assert_eq!(actual[1].get::<i32, &str>("display_order"), 2);
-        assert_eq!(actual[1].get::<NaiveDateTime, &str>("created_at"), NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 11));
-        assert_ne!(actual[1].get::<NaiveDateTime, &str>("updated_at"), NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 7));
+        assert_eq!(actual[1].get::<NaiveDateTime, &str>("created_at"), NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 11)).unwrap());
+        assert_ne!(actual[1].get::<NaiveDateTime, &str>("updated_at"), NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap());
 
         let actual = repository.delete_by_id(ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be"))).await.unwrap();
 
@@ -817,13 +817,13 @@ mod tests {
 
         assert_eq!(actual[0].get::<Uuid, &str>("id"), uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be"));
         assert_eq!(actual[0].get::<i32, &str>("display_order"), 1);
-        assert_eq!(actual[0].get::<NaiveDateTime, &str>("created_at"), NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 10));
-        assert_ne!(actual[0].get::<NaiveDateTime, &str>("updated_at"), NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 7));
+        assert_eq!(actual[0].get::<NaiveDateTime, &str>("created_at"), NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 10)).unwrap());
+        assert_ne!(actual[0].get::<NaiveDateTime, &str>("updated_at"), NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap());
 
         assert_eq!(actual[1].get::<Uuid, &str>("id"), uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5"));
         assert_eq!(actual[1].get::<i32, &str>("display_order"), 2);
-        assert_eq!(actual[1].get::<NaiveDateTime, &str>("created_at"), NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 11));
-        assert_ne!(actual[1].get::<NaiveDateTime, &str>("updated_at"), NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 7));
+        assert_eq!(actual[1].get::<NaiveDateTime, &str>("created_at"), NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 11)).unwrap());
+        assert_ne!(actual[1].get::<NaiveDateTime, &str>("updated_at"), NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap());
 
         let actual = repository.delete_by_id(ReplicaId::from(uuid!("6fae1497-e987-492e-987a-f9870b7d3c5b"))).await.unwrap();
 
@@ -868,13 +868,13 @@ mod tests {
 
         assert_eq!(actual[0].get::<Uuid, &str>("id"), uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be"));
         assert_eq!(actual[0].get::<i32, &str>("display_order"), 1);
-        assert_eq!(actual[0].get::<NaiveDateTime, &str>("created_at"), NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 10));
-        assert_ne!(actual[0].get::<NaiveDateTime, &str>("updated_at"), NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 7));
+        assert_eq!(actual[0].get::<NaiveDateTime, &str>("created_at"), NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 10)).unwrap());
+        assert_ne!(actual[0].get::<NaiveDateTime, &str>("updated_at"), NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap());
 
         assert_eq!(actual[1].get::<Uuid, &str>("id"), uuid!("6fae1497-e987-492e-987a-f9870b7d3c5b"));
         assert_eq!(actual[1].get::<i32, &str>("display_order"), 2);
-        assert_eq!(actual[1].get::<NaiveDateTime, &str>("created_at"), NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 11));
-        assert_ne!(actual[1].get::<NaiveDateTime, &str>("updated_at"), NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 10));
+        assert_eq!(actual[1].get::<NaiveDateTime, &str>("created_at"), NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 11)).unwrap());
+        assert_ne!(actual[1].get::<NaiveDateTime, &str>("updated_at"), NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 10)).unwrap());
 
         let actual = repository.delete_by_id(ReplicaId::from(uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5"))).await.unwrap();
 

@@ -841,8 +841,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 5),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 8),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 5)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
             })),
         );
         assert_eq!(actual.children, Vec::new());
@@ -959,16 +959,16 @@ mod tests {
                         aliases: AliasSet::default(),
                         parent: None,
                         children: Vec::new(),
-                        created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 5),
-                        updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 8),
+                        created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 5)).unwrap(),
+                        updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
                     })),
                     children: Vec::new(),
-                    created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 6),
-                    updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                    created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 6)).unwrap(),
+                    updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
                 })),
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 9),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("d1a302b5-7b49-44be-9019-ac337077786a")),
@@ -982,12 +982,12 @@ mod tests {
                     aliases: AliasSet::default(),
                     parent: None,
                     children: Vec::new(),
-                    created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 5),
-                    updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 8),
+                    created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 5)).unwrap(),
+                    updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
                 })),
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 7),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 7),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
@@ -1010,8 +1010,8 @@ mod tests {
                                 aliases: AliasSet::default(),
                                 parent: None,
                                 children: Vec::new(),
-                                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 9),
-                                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
+                                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
                             },
                             Tag {
                                 id: TagId::from(uuid!("69c4860d-24d0-41f6-a3ab-ac07dea5abd6")),
@@ -1020,8 +1020,8 @@ mod tests {
                                 aliases: AliasSet::default(),
                                 parent: None,
                                 children: Vec::new(),
-                                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 7),
-                                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap(),
+                                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
                             },
                             Tag {
                                 id: TagId::from(uuid!("a2a6c29d-18d0-47b1-a324-88e93c267707")),
@@ -1030,8 +1030,8 @@ mod tests {
                                 aliases: AliasSet::default(),
                                 parent: None,
                                 children: Vec::new(),
-                                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 7),
-                                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 7),
+                                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap(),
+                                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap(),
                             },
                             Tag {
                                 id: TagId::from(uuid!("991a287c-e77d-456f-94b4-293334674d0e")),
@@ -1040,12 +1040,12 @@ mod tests {
                                 aliases: AliasSet::default(),
                                 parent: None,
                                 children: Vec::new(),
-                                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 8),
-                                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 6),
+                                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
+                                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 6)).unwrap(),
                             },
                         ],
-                        created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 6),
-                        updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                        created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 6)).unwrap(),
+                        updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
                     },
                     Tag {
                         id: TagId::from(uuid!("d1a302b5-7b49-44be-9019-ac337077786a")),
@@ -1054,12 +1054,12 @@ mod tests {
                         aliases: AliasSet::new(BTreeSet::from(["ミラクるん".to_string()])),
                         parent: None,
                         children: Vec::new(),
-                        created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 7),
-                        updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 7),
+                        created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap(),
+                        updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap(),
                     },
                 ],
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 5),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 8),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 5)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
             },
         ]);
     }
@@ -1089,16 +1089,16 @@ mod tests {
                         aliases: AliasSet::default(),
                         parent: None,
                         children: Vec::new(),
-                        created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 5),
-                        updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 8),
+                        created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 5)).unwrap(),
+                        updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
                     })),
                     children: Vec::new(),
-                    created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 6),
-                    updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                    created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 6)).unwrap(),
+                    updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
                 })),
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 9),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
@@ -1121,8 +1121,8 @@ mod tests {
                                 aliases: AliasSet::default(),
                                 parent: None,
                                 children: Vec::new(),
-                                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 9),
-                                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
+                                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
                             },
                             Tag {
                                 id: TagId::from(uuid!("69c4860d-24d0-41f6-a3ab-ac07dea5abd6")),
@@ -1131,8 +1131,8 @@ mod tests {
                                 aliases: AliasSet::default(),
                                 parent: None,
                                 children: Vec::new(),
-                                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 7),
-                                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap(),
+                                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
                             },
                             Tag {
                                 id: TagId::from(uuid!("a2a6c29d-18d0-47b1-a324-88e93c267707")),
@@ -1141,8 +1141,8 @@ mod tests {
                                 aliases: AliasSet::default(),
                                 parent: None,
                                 children: Vec::new(),
-                                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 7),
-                                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 7),
+                                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap(),
+                                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap(),
                             },
                             Tag {
                                 id: TagId::from(uuid!("991a287c-e77d-456f-94b4-293334674d0e")),
@@ -1151,12 +1151,12 @@ mod tests {
                                 aliases: AliasSet::default(),
                                 parent: None,
                                 children: Vec::new(),
-                                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 8),
-                                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 6),
+                                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
+                                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 6)).unwrap(),
                             },
                         ],
-                        created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 6),
-                        updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                        created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 6)).unwrap(),
+                        updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
                     },
                     Tag {
                         id: TagId::from(uuid!("d1a302b5-7b49-44be-9019-ac337077786a")),
@@ -1165,12 +1165,12 @@ mod tests {
                         aliases: AliasSet::new(BTreeSet::from(["ミラクるん".to_string()])),
                         parent: None,
                         children: Vec::new(),
-                        created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 7),
-                        updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 7),
+                        created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap(),
+                        updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap(),
                     },
                 ],
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 5),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 8),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 5)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
             },
         ]);
     }
@@ -1195,12 +1195,12 @@ mod tests {
                     aliases: AliasSet::new(BTreeSet::from(["東方".to_string()])),
                     parent: None,
                     children: Vec::new(),
-                    created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 8),
-                    updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 10),
+                    created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
+                    updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 10)).unwrap(),
                 })),
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 9),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 8),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
             },
         ]);
     }
@@ -1225,12 +1225,12 @@ mod tests {
                     aliases: AliasSet::new(BTreeSet::from(["東方".to_string()])),
                     parent: None,
                     children: Vec::new(),
-                    created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 8),
-                    updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 10),
+                    created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
+                    updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 10)).unwrap(),
                 })),
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 9),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 8),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("d1a302b5-7b49-44be-9019-ac337077786a")),
@@ -1244,12 +1244,12 @@ mod tests {
                     aliases: AliasSet::default(),
                     parent: None,
                     children: Vec::new(),
-                    created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 5),
-                    updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 8),
+                    created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 5)).unwrap(),
+                    updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
                 })),
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 7),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 7),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap(),
             },
         ]);
     }
@@ -1276,8 +1276,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 13),
-                updated_at: NaiveDate::from_ymd(2022, 3, 4).and_hms(5, 6, 10),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 13)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 10)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("74303485-40fb-466d-a93f-0cba46f6f43c")),
@@ -1286,8 +1286,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 12),
-                updated_at: NaiveDate::from_ymd(2022, 3, 4).and_hms(5, 6, 13),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 12)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 13)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
@@ -1303,8 +1303,8 @@ mod tests {
                         aliases: AliasSet::default(),
                         parent: None,
                         children: Vec::new(),
-                        created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 8),
-                        updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 7),
+                        created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
+                        updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap(),
                     },
                     Tag {
                         id: TagId::from(uuid!("3255874e-1035-427e-80e3-19bb7b28a3fb")),
@@ -1313,8 +1313,8 @@ mod tests {
                         aliases: AliasSet::default(),
                         parent: None,
                         children: Vec::new(),
-                        created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 10),
-                        updated_at: NaiveDate::from_ymd(2022, 3, 4).and_hms(5, 6, 11),
+                        created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 10)).unwrap(),
+                        updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 11)).unwrap(),
                     },
                     Tag {
                         id: TagId::from(uuid!("d65c551d-5a49-4ec7-8e8b-0054e116a18d")),
@@ -1323,8 +1323,8 @@ mod tests {
                         aliases: AliasSet::new(BTreeSet::from(["フラン".to_string()])),
                         parent: None,
                         children: Vec::new(),
-                        created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 9),
-                        updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 10),
+                        created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
+                        updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 10)).unwrap(),
                     },
                     Tag {
                         id: TagId::from(uuid!("1157d6d9-54c5-48df-9f6c-3eba9fe38dfc")),
@@ -1333,12 +1333,12 @@ mod tests {
                         aliases: AliasSet::new(BTreeSet::from(["うどんげ".to_string()])),
                         parent: None,
                         children: Vec::new(),
-                        created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 9),
-                        updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 8),
+                        created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
+                        updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
                     },
                 ],
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 8),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 10),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 10)).unwrap(),
             },
         ]);
     }
@@ -1379,8 +1379,8 @@ mod tests {
                                 aliases: AliasSet::default(),
                                 parent: None,
                                 children: Vec::new(),
-                                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 9),
-                                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
+                                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
                             },
                             Tag {
                                 id: TagId::from(uuid!("69c4860d-24d0-41f6-a3ab-ac07dea5abd6")),
@@ -1389,8 +1389,8 @@ mod tests {
                                 aliases: AliasSet::default(),
                                 parent: None,
                                 children: Vec::new(),
-                                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 7),
-                                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap(),
+                                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
                             },
                             Tag {
                                 id: TagId::from(uuid!("a2a6c29d-18d0-47b1-a324-88e93c267707")),
@@ -1399,8 +1399,8 @@ mod tests {
                                 aliases: AliasSet::default(),
                                 parent: None,
                                 children: Vec::new(),
-                                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 7),
-                                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 7),
+                                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap(),
+                                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap(),
                             },
                             Tag {
                                 id: TagId::from(uuid!("991a287c-e77d-456f-94b4-293334674d0e")),
@@ -1409,12 +1409,12 @@ mod tests {
                                 aliases: AliasSet::default(),
                                 parent: None,
                                 children: Vec::new(),
-                                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 8),
-                                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 6),
+                                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
+                                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 6)).unwrap(),
                             },
                         ],
-                        created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 6),
-                        updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                        created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 6)).unwrap(),
+                        updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
                     },
                     Tag {
                         id: TagId::from(uuid!("d1a302b5-7b49-44be-9019-ac337077786a")),
@@ -1423,12 +1423,12 @@ mod tests {
                         aliases: AliasSet::new(BTreeSet::from(["ミラクるん".to_string()])),
                         parent: None,
                         children: Vec::new(),
-                        created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 7),
-                        updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 7),
+                        created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap(),
+                        updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap(),
                     },
                 ],
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 5),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 8),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 5)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("867fe021-a034-4b01-badb-7d56f77406b5")),
@@ -1437,8 +1437,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 11),
-                updated_at: NaiveDate::from_ymd(2022, 3, 4).and_hms(5, 6, 9),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 11)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 9)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
@@ -1454,8 +1454,8 @@ mod tests {
                         aliases: AliasSet::default(),
                         parent: None,
                         children: Vec::new(),
-                        created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 8),
-                        updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 7),
+                        created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
+                        updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap(),
                     },
                     Tag {
                         id: TagId::from(uuid!("3255874e-1035-427e-80e3-19bb7b28a3fb")),
@@ -1464,8 +1464,8 @@ mod tests {
                         aliases: AliasSet::default(),
                         parent: None,
                         children: Vec::new(),
-                        created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 10),
-                        updated_at: NaiveDate::from_ymd(2022, 3, 4).and_hms(5, 6, 11),
+                        created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 10)).unwrap(),
+                        updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 11)).unwrap(),
                     },
                     Tag {
                         id: TagId::from(uuid!("d65c551d-5a49-4ec7-8e8b-0054e116a18d")),
@@ -1474,8 +1474,8 @@ mod tests {
                         aliases: AliasSet::new(BTreeSet::from(["フラン".to_string()])),
                         parent: None,
                         children: Vec::new(),
-                        created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 9),
-                        updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 10),
+                        created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
+                        updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 10)).unwrap(),
                     },
                     Tag {
                         id: TagId::from(uuid!("1157d6d9-54c5-48df-9f6c-3eba9fe38dfc")),
@@ -1484,12 +1484,12 @@ mod tests {
                         aliases: AliasSet::new(BTreeSet::from(["うどんげ".to_string()])),
                         parent: None,
                         children: Vec::new(),
-                        created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 9),
-                        updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 8),
+                        created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
+                        updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
                     },
                 ],
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 8),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 10),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 10)).unwrap(),
             },
         ]);
     }
@@ -1516,8 +1516,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 11),
-                updated_at: NaiveDate::from_ymd(2022, 3, 4).and_hms(5, 6, 9),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 11)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 9)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
@@ -1540,8 +1540,8 @@ mod tests {
                                 aliases: AliasSet::default(),
                                 parent: None,
                                 children: Vec::new(),
-                                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 9),
-                                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
+                                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
                             },
                             Tag {
                                 id: TagId::from(uuid!("69c4860d-24d0-41f6-a3ab-ac07dea5abd6")),
@@ -1550,8 +1550,8 @@ mod tests {
                                 aliases: AliasSet::default(),
                                 parent: None,
                                 children: Vec::new(),
-                                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 7),
-                                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap(),
+                                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
                             },
                             Tag {
                                 id: TagId::from(uuid!("a2a6c29d-18d0-47b1-a324-88e93c267707")),
@@ -1560,8 +1560,8 @@ mod tests {
                                 aliases: AliasSet::default(),
                                 parent: None,
                                 children: Vec::new(),
-                                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 7),
-                                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 7),
+                                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap(),
+                                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap(),
                             },
                             Tag {
                                 id: TagId::from(uuid!("991a287c-e77d-456f-94b4-293334674d0e")),
@@ -1570,12 +1570,12 @@ mod tests {
                                 aliases: AliasSet::default(),
                                 parent: None,
                                 children: Vec::new(),
-                                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 8),
-                                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 6),
+                                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
+                                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 6)).unwrap(),
                             },
                         ],
-                        created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 6),
-                        updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                        created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 6)).unwrap(),
+                        updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
                     },
                     Tag {
                         id: TagId::from(uuid!("d1a302b5-7b49-44be-9019-ac337077786a")),
@@ -1584,12 +1584,12 @@ mod tests {
                         aliases: AliasSet::new(BTreeSet::from(["ミラクるん".to_string()])),
                         parent: None,
                         children: Vec::new(),
-                        created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 7),
-                        updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 7),
+                        created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap(),
+                        updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap(),
                     },
                 ],
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 5),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 8),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 5)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
             },
         ]);
     }
@@ -1630,8 +1630,8 @@ mod tests {
                                 aliases: AliasSet::default(),
                                 parent: None,
                                 children: Vec::new(),
-                                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 9),
-                                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
+                                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
                             },
                             Tag {
                                 id: TagId::from(uuid!("69c4860d-24d0-41f6-a3ab-ac07dea5abd6")),
@@ -1640,8 +1640,8 @@ mod tests {
                                 aliases: AliasSet::default(),
                                 parent: None,
                                 children: Vec::new(),
-                                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 7),
-                                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap(),
+                                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
                             },
                             Tag {
                                 id: TagId::from(uuid!("a2a6c29d-18d0-47b1-a324-88e93c267707")),
@@ -1650,8 +1650,8 @@ mod tests {
                                 aliases: AliasSet::default(),
                                 parent: None,
                                 children: Vec::new(),
-                                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 7),
-                                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 7),
+                                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap(),
+                                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap(),
                             },
                             Tag {
                                 id: TagId::from(uuid!("991a287c-e77d-456f-94b4-293334674d0e")),
@@ -1660,12 +1660,12 @@ mod tests {
                                 aliases: AliasSet::default(),
                                 parent: None,
                                 children: Vec::new(),
-                                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 8),
-                                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 6),
+                                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
+                                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 6)).unwrap(),
                             },
                         ],
-                        created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 6),
-                        updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                        created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 6)).unwrap(),
+                        updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
                     },
                     Tag {
                         id: TagId::from(uuid!("d1a302b5-7b49-44be-9019-ac337077786a")),
@@ -1674,12 +1674,12 @@ mod tests {
                         aliases: AliasSet::new(BTreeSet::from(["ミラクるん".to_string()])),
                         parent: None,
                         children: Vec::new(),
-                        created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 7),
-                        updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 7),
+                        created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap(),
+                        updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap(),
                     },
                 ],
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 5),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 8),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 5)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("867fe021-a034-4b01-badb-7d56f77406b5")),
@@ -1688,8 +1688,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 11),
-                updated_at: NaiveDate::from_ymd(2022, 3, 4).and_hms(5, 6, 9),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 11)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 9)).unwrap(),
             },
         ]);
     }
@@ -1716,8 +1716,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 13),
-                updated_at: NaiveDate::from_ymd(2022, 3, 4).and_hms(5, 6, 10),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 13)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 10)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("74303485-40fb-466d-a93f-0cba46f6f43c")),
@@ -1726,8 +1726,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 12),
-                updated_at: NaiveDate::from_ymd(2022, 3, 4).and_hms(5, 6, 13),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 12)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 13)).unwrap(),
             },
         ]);
     }
@@ -1754,8 +1754,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 12),
-                updated_at: NaiveDate::from_ymd(2022, 3, 4).and_hms(5, 6, 13),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 12)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 13)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("9b47af74-f034-4973-b284-704ab3e18b68")),
@@ -1764,8 +1764,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 13),
-                updated_at: NaiveDate::from_ymd(2022, 3, 4).and_hms(5, 6, 10),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 13)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 10)).unwrap(),
             },
         ]);
     }
@@ -1792,8 +1792,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 13),
-                updated_at: NaiveDate::from_ymd(2022, 3, 4).and_hms(5, 6, 10),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 13)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 10)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("12c4101e-722f-4172-9fe2-7862ebbc8fc5")),
@@ -1812,16 +1812,16 @@ mod tests {
                         aliases: AliasSet::default(),
                         parent: None,
                         children: Vec::new(),
-                        created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 5),
-                        updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 8),
+                        created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 5)).unwrap(),
+                        updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
                     })),
                     children: Vec::new(),
-                    created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 6),
-                    updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                    created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 6)).unwrap(),
+                    updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
                 })),
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 9),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("74303485-40fb-466d-a93f-0cba46f6f43c")),
@@ -1830,8 +1830,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 12),
-                updated_at: NaiveDate::from_ymd(2022, 3, 4).and_hms(5, 6, 13),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 12)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 13)).unwrap(),
             },
         ]);
     }
@@ -1863,12 +1863,12 @@ mod tests {
                     aliases: AliasSet::new(BTreeSet::from(["東方".to_string()])),
                     parent: None,
                     children: Vec::new(),
-                    created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 8),
-                    updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 10),
+                    created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
+                    updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 10)).unwrap(),
                 })),
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 9),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 8),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("991a287c-e77d-456f-94b4-293334674d0e")),
@@ -1887,16 +1887,16 @@ mod tests {
                         aliases: AliasSet::default(),
                         parent: None,
                         children: Vec::new(),
-                        created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 5),
-                        updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 8),
+                        created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 5)).unwrap(),
+                        updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
                     })),
                     children: Vec::new(),
-                    created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 6),
-                    updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                    created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 6)).unwrap(),
+                    updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
                 })),
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 8),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 6),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 6)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
@@ -1919,8 +1919,8 @@ mod tests {
                                 aliases: AliasSet::default(),
                                 parent: None,
                                 children: Vec::new(),
-                                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 9),
-                                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
+                                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
                             },
                             Tag {
                                 id: TagId::from(uuid!("69c4860d-24d0-41f6-a3ab-ac07dea5abd6")),
@@ -1929,8 +1929,8 @@ mod tests {
                                 aliases: AliasSet::default(),
                                 parent: None,
                                 children: Vec::new(),
-                                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 7),
-                                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap(),
+                                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
                             },
                             Tag {
                                 id: TagId::from(uuid!("a2a6c29d-18d0-47b1-a324-88e93c267707")),
@@ -1939,8 +1939,8 @@ mod tests {
                                 aliases: AliasSet::default(),
                                 parent: None,
                                 children: Vec::new(),
-                                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 7),
-                                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 7),
+                                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap(),
+                                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap(),
                             },
                             Tag {
                                 id: TagId::from(uuid!("991a287c-e77d-456f-94b4-293334674d0e")),
@@ -1949,12 +1949,12 @@ mod tests {
                                 aliases: AliasSet::default(),
                                 parent: None,
                                 children: Vec::new(),
-                                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 8),
-                                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 6),
+                                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
+                                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 6)).unwrap(),
                             },
                         ],
-                        created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 6),
-                        updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                        created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 6)).unwrap(),
+                        updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
                     },
                     Tag {
                         id: TagId::from(uuid!("d1a302b5-7b49-44be-9019-ac337077786a")),
@@ -1963,12 +1963,12 @@ mod tests {
                         aliases: AliasSet::new(BTreeSet::from(["ミラクるん".to_string()])),
                         parent: None,
                         children: Vec::new(),
-                        created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 7),
-                        updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 7),
+                        created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap(),
+                        updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap(),
                     },
                 ],
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 5),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 8),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 5)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
             },
         ]);
     }
@@ -2005,16 +2005,16 @@ mod tests {
                         aliases: AliasSet::default(),
                         parent: None,
                         children: Vec::new(),
-                        created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 5),
-                        updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 8),
+                        created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 5)).unwrap(),
+                        updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
                     })),
                     children: Vec::new(),
-                    created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 6),
-                    updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                    created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 6)).unwrap(),
+                    updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
                 })),
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 7),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("e8d32062-0185-43e8-a27d-6ca707d7dd60")),
@@ -2028,8 +2028,8 @@ mod tests {
                     aliases: AliasSet::default(),
                     parent: None,
                     children: Vec::new(),
-                    created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 5),
-                    updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 8),
+                    created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 5)).unwrap(),
+                    updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
                 })),
                 children: vec![
                     Tag {
@@ -2039,8 +2039,8 @@ mod tests {
                         aliases: AliasSet::default(),
                         parent: None,
                         children: Vec::new(),
-                        created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 9),
-                        updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                        created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
+                        updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
                     },
                     Tag {
                         id: TagId::from(uuid!("69c4860d-24d0-41f6-a3ab-ac07dea5abd6")),
@@ -2049,8 +2049,8 @@ mod tests {
                         aliases: AliasSet::default(),
                         parent: None,
                         children: Vec::new(),
-                        created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 7),
-                        updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                        created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap(),
+                        updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
                     },
                     Tag {
                         id: TagId::from(uuid!("a2a6c29d-18d0-47b1-a324-88e93c267707")),
@@ -2059,8 +2059,8 @@ mod tests {
                         aliases: AliasSet::default(),
                         parent: None,
                         children: Vec::new(),
-                        created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 7),
-                        updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 7),
+                        created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap(),
+                        updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap(),
                     },
                     Tag {
                         id: TagId::from(uuid!("991a287c-e77d-456f-94b4-293334674d0e")),
@@ -2069,12 +2069,12 @@ mod tests {
                         aliases: AliasSet::default(),
                         parent: None,
                         children: Vec::new(),
-                        created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 8),
-                        updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 6),
+                        created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
+                        updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 6)).unwrap(),
                     },
                 ],
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 6),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 6)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("3255874e-1035-427e-80e3-19bb7b28a3fb")),
@@ -2088,12 +2088,12 @@ mod tests {
                     aliases: AliasSet::new(BTreeSet::from(["東方".to_string()])),
                     parent: None,
                     children: Vec::new(),
-                    created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 8),
-                    updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 10),
+                    created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
+                    updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 10)).unwrap(),
                 })),
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 10),
-                updated_at: NaiveDate::from_ymd(2022, 3, 4).and_hms(5, 6, 11),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 10)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 11)).unwrap(),
             },
         ]);
     }
@@ -2125,12 +2125,12 @@ mod tests {
                     aliases: AliasSet::new(BTreeSet::from(["東方".to_string()])),
                     parent: None,
                     children: Vec::new(),
-                    created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 8),
-                    updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 10),
+                    created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
+                    updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 10)).unwrap(),
                 })),
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 9),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 8),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("991a287c-e77d-456f-94b4-293334674d0e")),
@@ -2149,16 +2149,16 @@ mod tests {
                         aliases: AliasSet::default(),
                         parent: None,
                         children: Vec::new(),
-                        created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 5),
-                        updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 8),
+                        created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 5)).unwrap(),
+                        updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
                     })),
                     children: Vec::new(),
-                    created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 6),
-                    updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                    created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 6)).unwrap(),
+                    updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
                 })),
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 8),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 6),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 6)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
@@ -2181,8 +2181,8 @@ mod tests {
                                 aliases: AliasSet::default(),
                                 parent: None,
                                 children: Vec::new(),
-                                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 9),
-                                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
+                                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
                             },
                             Tag {
                                 id: TagId::from(uuid!("69c4860d-24d0-41f6-a3ab-ac07dea5abd6")),
@@ -2191,8 +2191,8 @@ mod tests {
                                 aliases: AliasSet::default(),
                                 parent: None,
                                 children: Vec::new(),
-                                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 7),
-                                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap(),
+                                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
                             },
                             Tag {
                                 id: TagId::from(uuid!("a2a6c29d-18d0-47b1-a324-88e93c267707")),
@@ -2201,8 +2201,8 @@ mod tests {
                                 aliases: AliasSet::default(),
                                 parent: None,
                                 children: Vec::new(),
-                                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 7),
-                                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 7),
+                                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap(),
+                                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap(),
                             },
                             Tag {
                                 id: TagId::from(uuid!("991a287c-e77d-456f-94b4-293334674d0e")),
@@ -2211,12 +2211,12 @@ mod tests {
                                 aliases: AliasSet::default(),
                                 parent: None,
                                 children: Vec::new(),
-                                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 8),
-                                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 6),
+                                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
+                                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 6)).unwrap(),
                             },
                         ],
-                        created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 6),
-                        updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                        created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 6)).unwrap(),
+                        updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
                     },
                     Tag {
                         id: TagId::from(uuid!("d1a302b5-7b49-44be-9019-ac337077786a")),
@@ -2225,12 +2225,12 @@ mod tests {
                         aliases: AliasSet::new(BTreeSet::from(["ミラクるん".to_string()])),
                         parent: None,
                         children: Vec::new(),
-                        created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 7),
-                        updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 7),
+                        created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap(),
+                        updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap(),
                     },
                 ],
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 5),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 8),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 5)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
             },
         ]);
     }
@@ -2257,8 +2257,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 13),
-                updated_at: NaiveDate::from_ymd(2022, 3, 4).and_hms(5, 6, 10),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 13)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 10)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("12c4101e-722f-4172-9fe2-7862ebbc8fc5")),
@@ -2277,16 +2277,16 @@ mod tests {
                         aliases: AliasSet::default(),
                         parent: None,
                         children: Vec::new(),
-                        created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 5),
-                        updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 8),
+                        created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 5)).unwrap(),
+                        updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
                     })),
                     children: Vec::new(),
-                    created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 6),
-                    updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                    created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 6)).unwrap(),
+                    updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
                 })),
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 9),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("74303485-40fb-466d-a93f-0cba46f6f43c")),
@@ -2295,8 +2295,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 12),
-                updated_at: NaiveDate::from_ymd(2022, 3, 4).and_hms(5, 6, 13),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 12)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 13)).unwrap(),
             },
         ]);
     }
@@ -2328,12 +2328,12 @@ mod tests {
                     aliases: AliasSet::new(BTreeSet::from(["東方".to_string()])),
                     parent: None,
                     children: Vec::new(),
-                    created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 8),
-                    updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 10),
+                    created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
+                    updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 10)).unwrap(),
                 })),
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 8),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 7),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("74303485-40fb-466d-a93f-0cba46f6f43c")),
@@ -2342,8 +2342,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 12),
-                updated_at: NaiveDate::from_ymd(2022, 3, 4).and_hms(5, 6, 13),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 12)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 13)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("12c4101e-722f-4172-9fe2-7862ebbc8fc5")),
@@ -2362,16 +2362,16 @@ mod tests {
                         aliases: AliasSet::default(),
                         parent: None,
                         children: Vec::new(),
-                        created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 5),
-                        updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 8),
+                        created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 5)).unwrap(),
+                        updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
                     })),
                     children: Vec::new(),
-                    created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 6),
-                    updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                    created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 6)).unwrap(),
+                    updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
                 })),
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 9),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
             },
         ]);
     }
@@ -2398,8 +2398,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 13),
-                updated_at: NaiveDate::from_ymd(2022, 3, 4).and_hms(5, 6, 10),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 13)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 10)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("74303485-40fb-466d-a93f-0cba46f6f43c")),
@@ -2408,8 +2408,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 12),
-                updated_at: NaiveDate::from_ymd(2022, 3, 4).and_hms(5, 6, 13),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 12)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 13)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
@@ -2418,8 +2418,8 @@ mod tests {
                 aliases: AliasSet::new(BTreeSet::from(["東方".to_string()])),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 8),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 10),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 10)).unwrap(),
             },
         ]);
     }
@@ -2446,8 +2446,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 5),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 8),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 5)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("867fe021-a034-4b01-badb-7d56f77406b5")),
@@ -2456,8 +2456,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 11),
-                updated_at: NaiveDate::from_ymd(2022, 3, 4).and_hms(5, 6, 9),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 11)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 9)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
@@ -2466,8 +2466,8 @@ mod tests {
                 aliases: AliasSet::new(BTreeSet::from(["東方".to_string()])),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 8),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 10),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 10)).unwrap(),
             },
         ]);
     }
@@ -2494,8 +2494,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 11),
-                updated_at: NaiveDate::from_ymd(2022, 3, 4).and_hms(5, 6, 9),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 11)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 9)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
@@ -2504,8 +2504,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 5),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 8),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 5)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
             },
         ]);
     }
@@ -2532,8 +2532,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 5),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 8),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 5)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("867fe021-a034-4b01-badb-7d56f77406b5")),
@@ -2542,8 +2542,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 11),
-                updated_at: NaiveDate::from_ymd(2022, 3, 4).and_hms(5, 6, 9),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 11)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 9)).unwrap(),
             },
         ]);
     }
@@ -2570,8 +2570,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 13),
-                updated_at: NaiveDate::from_ymd(2022, 3, 4).and_hms(5, 6, 10),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 13)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 10)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("74303485-40fb-466d-a93f-0cba46f6f43c")),
@@ -2580,8 +2580,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 12),
-                updated_at: NaiveDate::from_ymd(2022, 3, 4).and_hms(5, 6, 13),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 12)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 13)).unwrap(),
             },
         ]);
     }
@@ -2608,8 +2608,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 12),
-                updated_at: NaiveDate::from_ymd(2022, 3, 4).and_hms(5, 6, 13),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 12)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 13)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("9b47af74-f034-4973-b284-704ab3e18b68")),
@@ -2618,8 +2618,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 13),
-                updated_at: NaiveDate::from_ymd(2022, 3, 4).and_hms(5, 6, 10),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 13)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 10)).unwrap(),
             },
         ]);
     }
@@ -2646,8 +2646,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 13),
-                updated_at: NaiveDate::from_ymd(2022, 3, 4).and_hms(5, 6, 10),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 13)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 10)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("12c4101e-722f-4172-9fe2-7862ebbc8fc5")),
@@ -2656,8 +2656,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 9),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("74303485-40fb-466d-a93f-0cba46f6f43c")),
@@ -2666,8 +2666,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 12),
-                updated_at: NaiveDate::from_ymd(2022, 3, 4).and_hms(5, 6, 13),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 12)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 13)).unwrap(),
             },
         ]);
     }
@@ -2694,8 +2694,8 @@ mod tests {
                 aliases: AliasSet::new(BTreeSet::from(["うどんげ".to_string()])),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 9),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 8),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("991a287c-e77d-456f-94b4-293334674d0e")),
@@ -2704,8 +2704,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 8),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 6),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 6)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
@@ -2714,8 +2714,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 5),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 8),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 5)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
             },
         ]);
     }
@@ -2742,8 +2742,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 7),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("e8d32062-0185-43e8-a27d-6ca707d7dd60")),
@@ -2752,8 +2752,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 6),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 6)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("3255874e-1035-427e-80e3-19bb7b28a3fb")),
@@ -2762,8 +2762,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 10),
-                updated_at: NaiveDate::from_ymd(2022, 3, 4).and_hms(5, 6, 11),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 10)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 11)).unwrap(),
             },
         ]);
     }
@@ -2790,8 +2790,8 @@ mod tests {
                 aliases: AliasSet::new(BTreeSet::from(["うどんげ".to_string()])),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 9),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 8),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("991a287c-e77d-456f-94b4-293334674d0e")),
@@ -2800,8 +2800,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 8),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 6),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 6)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
@@ -2810,8 +2810,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 5),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 8),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 5)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
             },
         ]);
     }
@@ -2838,8 +2838,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 13),
-                updated_at: NaiveDate::from_ymd(2022, 3, 4).and_hms(5, 6, 10),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 13)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 10)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("12c4101e-722f-4172-9fe2-7862ebbc8fc5")),
@@ -2848,8 +2848,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 9),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("74303485-40fb-466d-a93f-0cba46f6f43c")),
@@ -2858,8 +2858,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 12),
-                updated_at: NaiveDate::from_ymd(2022, 3, 4).and_hms(5, 6, 13),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 12)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 13)).unwrap(),
             },
         ]);
     }
@@ -2886,8 +2886,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 8),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 7),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("74303485-40fb-466d-a93f-0cba46f6f43c")),
@@ -2896,8 +2896,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 12),
-                updated_at: NaiveDate::from_ymd(2022, 3, 4).and_hms(5, 6, 13),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 12)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 13)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("12c4101e-722f-4172-9fe2-7862ebbc8fc5")),
@@ -2906,8 +2906,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 9),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
             },
         ]);
     }
@@ -2953,8 +2953,8 @@ mod tests {
             aliases: AliasSet::default(),
             parent: None,
             children: Vec::new(),
-            created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 5),
-            updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 8),
+            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 5)).unwrap(),
+            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
         })));
         assert_eq!(actual.children, vec![
             Tag {
@@ -2964,8 +2964,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 9),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("69c4860d-24d0-41f6-a3ab-ac07dea5abd6")),
@@ -2974,8 +2974,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 7),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("a2a6c29d-18d0-47b1-a324-88e93c267707")),
@@ -2984,8 +2984,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 7),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 7),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("991a287c-e77d-456f-94b4-293334674d0e")),
@@ -2994,12 +2994,12 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 8),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 6),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 6)).unwrap(),
             },
         ]);
-        assert_eq!(actual.created_at, NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 6));
-        assert_ne!(actual.updated_at, NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9));
+        assert_eq!(actual.created_at, NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 6)).unwrap());
+        assert_ne!(actual.updated_at, NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap());
 
         let actual = sqlx::query(r#"SELECT "id", "name", "kana", "aliases" FROM "tags" WHERE "id" = $1"#)
             .bind(uuid!("e8d32062-0185-43e8-a27d-6ca707d7dd60"))
@@ -3031,8 +3031,8 @@ mod tests {
         assert_eq!(actual.aliases, AliasSet::new(BTreeSet::from(["七森中☆ごらく部".to_string()])));
         assert_eq!(actual.parent, None);
         assert_eq!(actual.children, Vec::new());
-        assert_eq!(actual.created_at, NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 6));
-        assert_ne!(actual.updated_at, NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9));
+        assert_eq!(actual.created_at, NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 6)).unwrap());
+        assert_ne!(actual.updated_at, NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap());
 
         let actual = sqlx::query(r#"SELECT "id", "name", "kana", "aliases" FROM "tags" WHERE "id" = $1"#)
             .bind(uuid!("e8d32062-0185-43e8-a27d-6ca707d7dd60"))
@@ -3100,8 +3100,8 @@ mod tests {
             aliases: AliasSet::new(BTreeSet::from(["東方".to_string()])),
             parent: None,
             children: Vec::new(),
-            created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 8),
-            updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 10),
+            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
+            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 10)).unwrap(),
         })));
         assert_eq!(actual.children, vec![
             Tag {
@@ -3111,8 +3111,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 9),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("69c4860d-24d0-41f6-a3ab-ac07dea5abd6")),
@@ -3121,8 +3121,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 7),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("a2a6c29d-18d0-47b1-a324-88e93c267707")),
@@ -3131,8 +3131,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 7),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 7),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("991a287c-e77d-456f-94b4-293334674d0e")),
@@ -3141,12 +3141,12 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 8),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 6),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 6)).unwrap(),
             },
         ]);
-        assert_eq!(actual.created_at, NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 6));
-        assert_eq!(actual.updated_at, NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9));
+        assert_eq!(actual.created_at, NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 6)).unwrap());
+        assert_eq!(actual.updated_at, NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap());
 
         let actual: Vec<_> = sqlx::query(r#"SELECT "ancestor_id", "descendant_id", "distance" FROM "tag_paths" WHERE "descendant_id" IN ($1, $2, $3, $4, $5, $6, $7) ORDER BY "descendant_id", "distance" DESC"#)
             .bind(uuid!("12c4101e-722f-4172-9fe2-7862ebbc8fc5"))
@@ -3272,8 +3272,8 @@ mod tests {
         assert_eq!(actual.aliases, AliasSet::default());
         assert_eq!(actual.parent, None);
         assert_eq!(actual.children, Vec::new());
-        assert_eq!(actual.created_at, NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 6));
-        assert_eq!(actual.updated_at, NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9));
+        assert_eq!(actual.created_at, NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 6)).unwrap());
+        assert_eq!(actual.updated_at, NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap());
 
         let actual: Vec<_> = sqlx::query(r#"SELECT "ancestor_id", "descendant_id", "distance" FROM "tag_paths" WHERE "descendant_id" IN ($1, $2, $3, $4, $5, $6, $7) ORDER BY "descendant_id", "distance" DESC"#)
             .bind(uuid!("12c4101e-722f-4172-9fe2-7862ebbc8fc5"))
@@ -3433,8 +3433,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 9),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("69c4860d-24d0-41f6-a3ab-ac07dea5abd6")),
@@ -3443,8 +3443,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 7),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("a2a6c29d-18d0-47b1-a324-88e93c267707")),
@@ -3453,8 +3453,8 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 7),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 7),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap(),
             },
             Tag {
                 id: TagId::from(uuid!("991a287c-e77d-456f-94b4-293334674d0e")),
@@ -3463,12 +3463,12 @@ mod tests {
                 aliases: AliasSet::default(),
                 parent: None,
                 children: Vec::new(),
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 8),
-                updated_at: NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 6),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 6)).unwrap(),
             },
         ]);
-        assert_eq!(actual.created_at, NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 6));
-        assert_eq!(actual.updated_at, NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9));
+        assert_eq!(actual.created_at, NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 6)).unwrap());
+        assert_eq!(actual.updated_at, NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap());
 
         let actual: Vec<_> = sqlx::query(r#"SELECT "ancestor_id", "descendant_id", "distance" FROM "tag_paths" WHERE "descendant_id" IN ($1, $2, $3, $4, $5, $6) ORDER BY "descendant_id", "distance" DESC"#)
             .bind(uuid!("12c4101e-722f-4172-9fe2-7862ebbc8fc5"))
@@ -3564,8 +3564,8 @@ mod tests {
         assert_eq!(actual.aliases, AliasSet::default());
         assert_eq!(actual.parent, None);
         assert_eq!(actual.children, Vec::new());
-        assert_eq!(actual.created_at, NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 6));
-        assert_eq!(actual.updated_at, NaiveDate::from_ymd(2022, 2, 3).and_hms(4, 5, 9));
+        assert_eq!(actual.created_at, NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 6)).unwrap());
+        assert_eq!(actual.updated_at, NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap());
 
         let actual: Vec<_> = sqlx::query(r#"SELECT "ancestor_id", "descendant_id", "distance" FROM "tag_paths" WHERE "descendant_id" IN ($1, $2, $3, $4, $5, $6) ORDER BY "descendant_id", "distance" DESC"#)
             .bind(uuid!("12c4101e-722f-4172-9fe2-7862ebbc8fc5"))
