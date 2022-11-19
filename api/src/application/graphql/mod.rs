@@ -58,8 +58,9 @@ pub async fn playground() -> impl IntoResponse {
     response::Html(playground_source(GraphQLPlaygroundConfig::new("/")))
 }
 
-#[derive(Enum, Clone, Copy, Eq, PartialEq)]
+#[derive(Enum, Clone, Copy, Default, Eq, PartialEq)]
 pub enum OrderDirection {
+    #[default]
     Asc,
     Desc,
 }

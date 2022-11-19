@@ -14,6 +14,7 @@ use crate::domain::{
     repository::{media, replicas, sources, DeleteResult, OrderDirection},
 };
 
+#[cfg_attr(test, mockall::automock)]
 #[async_trait]
 pub trait MediaServiceInterface: Send + Sync + 'static {
     /// Creates a medium.
@@ -111,7 +112,7 @@ pub trait MediaServiceInterface: Send + Sync + 'static {
         X: IntoIterator<Item = ReplicaId> + Send + Sync + 'static;
 
     /// Updates the replica by ID.
-    async fn update_replica_by_id(&self, id: ReplicaId, thumbnail: Option<Vec<u8>>, original_url: Option<&str>, mime_type: Option<&str>) -> anyhow::Result<Replica>;
+    async fn update_replica_by_id<'a, 'b>(&self, id: ReplicaId, thumbnail: Option<Vec<u8>>, original_url: Option<&'a str>, mime_type: Option<&'b str>) -> anyhow::Result<Replica>;
 
     /// Updates the source by ID.
     async fn update_source_by_id(&self, id: SourceId, external_service_id: Option<ExternalServiceId>, external_metadata: Option<ExternalMetadata>) -> anyhow::Result<Source>;
@@ -324,7 +325,7 @@ where
         }
     }
 
-    async fn update_replica_by_id(&self, id: ReplicaId, thumbnail: Option<Vec<u8>>, original_url: Option<&str>, mime_type: Option<&str>) -> anyhow::Result<Replica> {
+    async fn update_replica_by_id<'a, 'b>(&self, id: ReplicaId, thumbnail: Option<Vec<u8>>, original_url: Option<&'a str>, mime_type: Option<&'b str>) -> anyhow::Result<Replica> {
         match self.replicas_repository.update_by_id(id, thumbnail, original_url, mime_type).await {
             Ok(replica) => Ok(replica),
             Err(e) => {
