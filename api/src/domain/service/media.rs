@@ -670,8 +670,8 @@ mod tests {
                 (medium_id, thumbnail, original_url, mime_type) == (
                     &MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
                     &Some(vec![0x01, 0x02, 0x03, 0x04]),
-                    &"file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png".to_string(),
-                    &"image/png".to_string(),
+                    "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png",
+                    "image/png",
                 )
             })
             .returning(|_, _, _, _| {
@@ -718,8 +718,8 @@ mod tests {
                 (medium_id, thumbnail, original_url, mime_type) == (
                     &MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
                     &Some(vec![0x01, 0x02, 0x03, 0x04]),
-                    &"file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png".to_string(),
-                    &"image/png".to_string(),
+                    "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png",
+                    "image/png",
                 )
             })
             .returning(|_, _, _, _| Err(anyhow!("error creating a replica")));
@@ -1414,7 +1414,7 @@ mod tests {
         mock_replicas_repository
             .expect_fetch_by_original_url()
             .times(1)
-            .withf(|original_url| original_url == &"file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png".to_string())
+            .withf(|original_url| original_url == "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png")
             .returning(|_| {
                 Ok(Replica {
                     id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
@@ -1450,7 +1450,7 @@ mod tests {
         mock_replicas_repository
             .expect_fetch_by_original_url()
             .times(1)
-            .withf(|original_url| original_url == &"file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png".to_string())
+            .withf(|original_url| original_url == "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png")
             .returning(|_| Err(anyhow!("error fetching the replica")));
 
         let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository);
