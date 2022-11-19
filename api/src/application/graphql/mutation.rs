@@ -42,6 +42,8 @@ pub struct Mutation<ExternalServicesService, MediaService, TagsService> {
     tags_service: TagsService,
 }
 
+type Map<T, U, V> = std::iter::Map<T, fn(U) -> V>;
+
 #[Object]
 impl<ExternalServicesService, MediaService, TagsService> Mutation<ExternalServicesService, MediaService, TagsService>
 where
@@ -75,14 +77,8 @@ where
         let tag_depth = tags.exists().then(|| get_tag_depth(&tags));
         let sources = ctx.look_ahead().field("sources").exists();
 
-        let source_ids = source_ids
-            .unwrap_or_default()
-            .into_iter()
-            .map(Into::into);
-        let tag_tag_type_ids = tag_ids
-            .unwrap_or_default()
-            .into_iter()
-            .map(Into::into);
+        let source_ids: Map<_, _, _> = source_ids.unwrap_or_default().into_iter().map(Into::into);
+        let tag_tag_type_ids: Map<_, _, _> = tag_ids.unwrap_or_default().into_iter().map(Into::into);
 
         let medium = self.media_service.create_medium(source_ids, created_at, tag_tag_type_ids, tag_depth, sources).await?;
         medium.try_into()
@@ -125,28 +121,13 @@ where
         let replicas = ctx.look_ahead().field("replicas").exists();
         let sources = ctx.look_ahead().field("sources").exists();
 
-        let add_source_ids = add_source_ids
-            .unwrap_or_default()
-            .into_iter()
-            .map(Into::into);
-        let remove_source_ids = remove_source_ids
-            .unwrap_or_default()
-            .into_iter()
-            .map(Into::into);
+        let add_source_ids: Map<_, _, _> = add_source_ids.unwrap_or_default().into_iter().map(Into::into);
+        let remove_source_ids: Map<_, _, _> = remove_source_ids.unwrap_or_default().into_iter().map(Into::into);
 
-        let add_tag_tag_type_ids = add_tag_ids
-            .unwrap_or_default()
-            .into_iter()
-            .map(Into::into);
-        let remove_tag_tag_type_ids = remove_tag_ids
-            .unwrap_or_default()
-            .into_iter()
-            .map(Into::into);
+        let add_tag_tag_type_ids: Map<_, _, _> = add_tag_ids.unwrap_or_default().into_iter().map(Into::into);
+        let remove_tag_tag_type_ids: Map<_, _, _> = remove_tag_ids.unwrap_or_default().into_iter().map(Into::into);
 
-        let replica_orders = replica_orders
-            .unwrap_or_default()
-            .into_iter()
-            .map(Into::into);
+        let replica_orders: Map<_, _, _> = replica_orders.unwrap_or_default().into_iter().map(Into::into);
 
         let medium = self.media_service.update_medium_by_id(
             id.into(),

@@ -68,7 +68,7 @@ pub struct TagTagType {
     tag_type: TagType,
 }
 
-#[derive(InputObject)]
+#[derive(Clone, Copy, InputObject)]
 pub struct TagTagTypeInput {
     tag_id: Uuid,
     tag_type_id: Uuid,

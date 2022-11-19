@@ -39,6 +39,7 @@ impl From<OrderDirection> for Order {
 #[cfg(test)]
 mod tests {
     use anyhow::Context;
+    use async_trait::async_trait;
     use include_dir::{include_dir, Dir};
     use sqlx::{
         postgres::{PgConnectOptions, PgPoolOptions},
@@ -97,7 +98,7 @@ mod tests {
         Ok(())
     }
 
-    #[async_trait::async_trait]
+    #[async_trait]
     impl AsyncTestContext for DatabaseContext {
         async fn setup() -> Self {
             let name = format!("hoarder_{}", Uuid::new_v4());

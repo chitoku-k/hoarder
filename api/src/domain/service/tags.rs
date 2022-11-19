@@ -9,6 +9,7 @@ use crate::domain::{
     repository::{tag_types, tags, DeleteResult, OrderDirection},
 };
 
+#[cfg_attr(test, mockall::automock)]
 #[async_trait]
 pub trait TagsServiceInterface: Send + Sync + 'static {
     /// Creates a tag.
@@ -29,7 +30,9 @@ pub trait TagsServiceInterface: Send + Sync + 'static {
     ) -> anyhow::Result<Vec<Tag>>;
 
     /// Gets the tags by their IDs.
-    async fn get_tags_by_ids(&self, ids: Vec<TagId>, depth: TagDepth) -> anyhow::Result<Vec<Tag>>;
+    async fn get_tags_by_ids<T>(&self, ids: T, depth: TagDepth) -> anyhow::Result<Vec<Tag>>
+    where
+        T: IntoIterator<Item = TagId> + Send + Sync + 'static;
 
     /// Gets the tags by their name or alias.
     async fn get_tags_by_name_or_alias_like(&self, name_or_alias_like: &str, depth: TagDepth) -> anyhow::Result<Vec<Tag>>;
@@ -38,13 +41,13 @@ pub trait TagsServiceInterface: Send + Sync + 'static {
     async fn get_tag_types(&self) -> anyhow::Result<Vec<TagType>>;
 
     /// Updates the tag by ID.
-    async fn update_tag_by_id<'a, T, U>(&self, id: TagId, name: Option<String>, kana: Option<String>, add_aliases: T, remove_aliases: U, depth: TagDepth) -> anyhow::Result<Tag>
+    async fn update_tag_by_id<T, U>(&self, id: TagId, name: Option<String>, kana: Option<String>, add_aliases: T, remove_aliases: U, depth: TagDepth) -> anyhow::Result<Tag>
     where
         T: IntoIterator<Item = String> + Send + Sync + 'static,
         U: IntoIterator<Item = String> + Send + Sync + 'static;
 
     /// Updates the tag type by ID.
-    async fn update_tag_type_by_id(&self, id: TagTypeId, slug: Option<&str>, name: Option<&str>) -> anyhow::Result<TagType>;
+    async fn update_tag_type_by_id<'a, 'b>(&self, id: TagTypeId, slug: Option<&'a str>, name: Option<&'b str>) -> anyhow::Result<TagType>;
 
     /// Attaches the tag by ID.
     async fn attach_tag_by_id(&self, id: TagId, parent_id: TagId, depth: TagDepth) -> anyhow::Result<Tag>;
@@ -109,7 +112,10 @@ where
         }
     }
 
-    async fn get_tags_by_ids(&self, ids: Vec<TagId>, depth: TagDepth) -> anyhow::Result<Vec<Tag>> {
+    async fn get_tags_by_ids<T>(&self, ids: T, depth: TagDepth) -> anyhow::Result<Vec<Tag>>
+    where
+        T: IntoIterator<Item = TagId> + Send + Sync + 'static,
+    {
         match self.tags_repository.fetch_by_ids(ids, depth).await {
             Ok(tags) => Ok(tags),
             Err(e) => {
@@ -139,7 +145,7 @@ where
         }
     }
 
-    async fn update_tag_by_id<'a, T, U>(&self, id: TagId, name: Option<String>, kana: Option<String>, add_aliases: T, remove_aliases: U, depth: TagDepth) -> anyhow::Result<Tag>
+    async fn update_tag_by_id<T, U>(&self, id: TagId, name: Option<String>, kana: Option<String>, add_aliases: T, remove_aliases: U, depth: TagDepth) -> anyhow::Result<Tag>
     where
         T: IntoIterator<Item = String> + Send + Sync + 'static,
         U: IntoIterator<Item = String> + Send + Sync + 'static,
@@ -153,7 +159,7 @@ where
         }
     }
 
-    async fn update_tag_type_by_id(&self, id: TagTypeId, slug: Option<&str>, name: Option<&str>) -> anyhow::Result<TagType> {
+    async fn update_tag_type_by_id<'a, 'b>(&self, id: TagTypeId, slug: Option<&'a str>, name: Option<&'b str>) -> anyhow::Result<TagType> {
         match self.tag_types_repository.update_by_id(id, slug, name).await {
             Ok(tag_type) => Ok(tag_type),
             Err(e) => {
@@ -528,7 +534,7 @@ mod tests {
             .times(1)
             .withf(|ids, depth| {
                 (ids, depth) == (
-                    &vec![
+                    &[
                         TagId::from(uuid!("22222222-2222-2222-2222-222222222222")),
                         TagId::from(uuid!("55555555-5555-5555-5555-555555555555")),
                     ],
@@ -585,7 +591,7 @@ mod tests {
 
         let service = TagsService::new(mock_tags_repository, mock_tag_types_repository);
         let actual = service.get_tags_by_ids(
-            vec![
+            [
                 TagId::from(uuid!("22222222-2222-2222-2222-222222222222")),
                 TagId::from(uuid!("55555555-5555-5555-5555-555555555555")),
             ],
@@ -645,7 +651,7 @@ mod tests {
             .times(1)
             .withf(|ids, depth| {
                 (ids, depth) == (
-                    &vec![
+                    &[
                         TagId::from(uuid!("22222222-2222-2222-2222-222222222222")),
                         TagId::from(uuid!("55555555-5555-5555-5555-555555555555")),
                     ],
@@ -658,7 +664,7 @@ mod tests {
 
         let service = TagsService::new(mock_tags_repository, mock_tag_types_repository);
         let actual = service.get_tags_by_ids(
-            vec![
+            [
                 TagId::from(uuid!("22222222-2222-2222-2222-222222222222")),
                 TagId::from(uuid!("55555555-5555-5555-5555-555555555555")),
             ],
