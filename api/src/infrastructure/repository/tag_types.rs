@@ -3,6 +3,7 @@ use async_trait::async_trait;
 use derive_more::Constructor;
 use futures::TryStreamExt;
 use sea_query::{Expr, Iden, LockType, Order, PostgresQueryBuilder, Query};
+use sea_query_binder::SqlxBinder;
 use sqlx::{FromRow, PgPool};
 use uuid::Uuid;
 
@@ -11,7 +12,7 @@ use crate::{
         entity::tag_types::{TagType, TagTypeError, TagTypeId},
         repository::{tag_types::TagTypesRepository, DeleteResult},
     },
-    infrastructure::repository::{sea_query_driver_postgres::{bind_query, bind_query_as}, sea_query_uuid_value},
+    infrastructure::repository::sea_query_uuid_value,
 };
 
 #[derive(Clone, Constructor)]
@@ -60,7 +61,7 @@ impl TagTypesRepository for PostgresTagTypesRepository {
         let (sql, values) = Query::insert()
             .into_table(PostgresTagType::Table)
             .columns([PostgresTagType::Slug, PostgresTagType::Name])
-            .exprs([Expr::val(slug).into(), Expr::val(name).into()])?
+            .values([Expr::val(slug).into(), Expr::val(name).into()])?
             .returning(
                 Query::returning()
                     .columns([
@@ -69,9 +70,9 @@ impl TagTypesRepository for PostgresTagTypesRepository {
                         PostgresTagType::Name,
                     ])
             )
-            .build(PostgresQueryBuilder);
+            .build_sqlx(PostgresQueryBuilder);
 
-        let tag_type = bind_query_as::<PostgresTagTypeRow>(sqlx::query_as(&sql), &values)
+        let tag_type = sqlx::query_as_with::<_, PostgresTagTypeRow, _>(&sql, values)
             .fetch_one(&self.pool)
             .await?
             .into();
@@ -88,9 +89,9 @@ impl TagTypesRepository for PostgresTagTypesRepository {
             ])
             .from(PostgresTagType::Table)
             .order_by(PostgresTagType::Name, Order::Asc)
-            .build(PostgresQueryBuilder);
+            .build_sqlx(PostgresQueryBuilder);
 
-        let tag_types = bind_query_as::<PostgresTagTypeRow>(sqlx::query_as(&sql), &values)
+        let tag_types = sqlx::query_as_with::<_, PostgresTagTypeRow, _>(&sql, values)
             .fetch(&self.pool)
             .map_ok(Into::into)
             .try_collect()
@@ -111,9 +112,9 @@ impl TagTypesRepository for PostgresTagTypesRepository {
             .from(PostgresTagType::Table)
             .and_where(Expr::col(PostgresTagType::Id).eq(id))
             .lock(LockType::Update)
-            .build(PostgresQueryBuilder);
+            .build_sqlx(PostgresQueryBuilder);
 
-        let tag_type: TagType = bind_query_as::<PostgresTagTypeRow>(sqlx::query_as(&sql), &values)
+        let tag_type: TagType = sqlx::query_as_with::<_, PostgresTagTypeRow, _>(&sql, values)
             .fetch_optional(&mut tx)
             .await?
             .map(Into::into)
@@ -124,8 +125,8 @@ impl TagTypesRepository for PostgresTagTypesRepository {
 
         let (sql, values) = Query::update()
             .table(PostgresTagType::Table)
-            .value(PostgresTagType::Slug, slug.into())
-            .value(PostgresTagType::Name, name.into())
+            .value(PostgresTagType::Slug, slug)
+            .value(PostgresTagType::Name, name)
             .and_where(Expr::col(PostgresTagType::Id).eq(id))
             .returning(
                 Query::returning()
@@ -135,9 +136,9 @@ impl TagTypesRepository for PostgresTagTypesRepository {
                         PostgresTagType::Name,
                     ])
             )
-            .build(PostgresQueryBuilder);
+            .build_sqlx(PostgresQueryBuilder);
 
-        let tag_type = bind_query_as::<PostgresTagTypeRow>(sqlx::query_as(&sql), &values)
+        let tag_type = sqlx::query_as_with::<_, PostgresTagTypeRow, _>(&sql, values)
             .fetch_one(&mut tx)
             .await?
             .into();
@@ -150,9 +151,9 @@ impl TagTypesRepository for PostgresTagTypesRepository {
         let (sql, values) = Query::delete()
             .from_table(PostgresTagType::Table)
             .and_where(Expr::col(PostgresTagType::Id).eq(id))
-            .build(PostgresQueryBuilder);
+            .build_sqlx(PostgresQueryBuilder);
 
-        let affected = bind_query(sqlx::query(&sql), &values)
+        let affected = sqlx::query_with(&sql, values)
             .execute(&self.pool)
             .await?
             .rows_affected();
