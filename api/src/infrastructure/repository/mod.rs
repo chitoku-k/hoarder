@@ -1,6 +1,6 @@
 #![allow(clippy::manual_map)]
 
-use sea_query::{sea_query_driver_postgres, Order};
+use sea_query::Order;
 
 use crate::domain::repository::OrderDirection;
 
@@ -12,8 +12,6 @@ pub mod replicas;
 pub mod sources;
 pub mod tag_types;
 pub mod tags;
-
-sea_query_driver_postgres!();
 
 macro_rules! sea_query_uuid_value {
     ($newtype:ty) => {

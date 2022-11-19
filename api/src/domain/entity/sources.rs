@@ -60,8 +60,8 @@ mod tests {
                 name: "Fantia".to_string(),
             },
             external_metadata: ExternalMetadata::Fantia { id: 1305295 },
-            created_at: NaiveDate::from_ymd(2022, 6, 4).and_hms(19, 34, 0),
-            updated_at: NaiveDate::from_ymd(2022, 6, 4).and_hms(19, 34, 0),
+            created_at: NaiveDate::from_ymd_opt(2022, 6, 4).and_then(|d| d.and_hms_opt(19, 34, 0)).unwrap(),
+            updated_at: NaiveDate::from_ymd_opt(2022, 6, 4).and_then(|d| d.and_hms_opt(19, 34, 0)).unwrap(),
         };
 
         let actual = source.validate();
@@ -78,8 +78,8 @@ mod tests {
                 name: "ニジエ".to_string(),
             },
             external_metadata: ExternalMetadata::Nijie { id: 323512 },
-            created_at: NaiveDate::from_ymd(2019, 7, 19).and_hms(18, 9, 54),
-            updated_at: NaiveDate::from_ymd(2019, 7, 19).and_hms(18, 9, 54),
+            created_at: NaiveDate::from_ymd_opt(2019, 7, 19).and_then(|d| d.and_hms_opt(18, 9, 54)).unwrap(),
+            updated_at: NaiveDate::from_ymd_opt(2019, 7, 19).and_then(|d| d.and_hms_opt(18, 9, 54)).unwrap(),
         };
 
         let actual = source.validate();
@@ -96,8 +96,8 @@ mod tests {
                 name: "pixiv".to_string(),
             },
             external_metadata: ExternalMetadata::Pixiv { id: 56736941 },
-            created_at: NaiveDate::from_ymd(2016, 5, 4).and_hms(7, 5, 0),
-            updated_at: NaiveDate::from_ymd(2016, 5, 4).and_hms(7, 5, 1),
+            created_at: NaiveDate::from_ymd_opt(2016, 5, 4).and_then(|d| d.and_hms_opt(7, 5, 0)).unwrap(),
+            updated_at: NaiveDate::from_ymd_opt(2016, 5, 4).and_then(|d| d.and_hms_opt(7, 5, 1)).unwrap(),
         };
 
         let actual = source.validate();
@@ -114,8 +114,8 @@ mod tests {
                 name: "pixivFANBOX".to_string(),
             },
             external_metadata: ExternalMetadata::PixivFanbox { id: 178080, creator_id: "fairyeye".to_string() },
-            created_at: NaiveDate::from_ymd(2018, 10, 18).and_hms(12, 22, 0),
-            updated_at: NaiveDate::from_ymd(2018, 10, 18).and_hms(12, 22, 1),
+            created_at: NaiveDate::from_ymd_opt(2018, 10, 18).and_then(|d| d.and_hms_opt(12, 22, 0)).unwrap(),
+            updated_at: NaiveDate::from_ymd_opt(2018, 10, 18).and_then(|d| d.and_hms_opt(12, 22, 1)).unwrap(),
         };
 
         let actual = source.validate();
@@ -132,8 +132,8 @@ mod tests {
                 name: "ニコニコ静画".to_string(),
             },
             external_metadata: ExternalMetadata::Seiga { id: 6452903 },
-            created_at: NaiveDate::from_ymd(2017, 2, 1).and_hms(23, 34, 0),
-            updated_at: NaiveDate::from_ymd(2017, 2, 1).and_hms(23, 34, 1),
+            created_at: NaiveDate::from_ymd_opt(2017, 2, 1).and_then(|d| d.and_hms_opt(23, 34, 0)).unwrap(),
+            updated_at: NaiveDate::from_ymd_opt(2017, 2, 1).and_then(|d| d.and_hms_opt(23, 34, 1)).unwrap(),
         };
 
         let actual = source.validate();
@@ -150,8 +150,8 @@ mod tests {
                 name: "Skeb".to_string(),
             },
             external_metadata: ExternalMetadata::Skeb { id: 18, creator_id: "pieleaf_x2".to_string() },
-            created_at: NaiveDate::from_ymd(2021, 7, 22).and_hms(20, 40, 0),
-            updated_at: NaiveDate::from_ymd(2021, 7, 22).and_hms(20, 40, 1),
+            created_at: NaiveDate::from_ymd_opt(2021, 7, 22).and_then(|d| d.and_hms_opt(20, 40, 0)).unwrap(),
+            updated_at: NaiveDate::from_ymd_opt(2021, 7, 22).and_then(|d| d.and_hms_opt(20, 40, 1)).unwrap(),
         };
 
         let actual = source.validate();
@@ -168,8 +168,8 @@ mod tests {
                 name: "Twitter".to_string(),
             },
             external_metadata: ExternalMetadata::Twitter { id: 727620202049900544 },
-            created_at: NaiveDate::from_ymd(2016, 5, 4).and_hms(7, 5, 0),
-            updated_at: NaiveDate::from_ymd(2016, 5, 4).and_hms(7, 5, 1),
+            created_at: NaiveDate::from_ymd_opt(2016, 5, 4).and_then(|d| d.and_hms_opt(7, 5, 0)).unwrap(),
+            updated_at: NaiveDate::from_ymd_opt(2016, 5, 4).and_then(|d| d.and_hms_opt(7, 5, 1)).unwrap(),
         };
 
         let actual = source.validate();
@@ -186,8 +186,8 @@ mod tests {
                 name: "Website".to_string(),
             },
             external_metadata: ExternalMetadata::Website { url: "https://www.melonbooks.co.jp/corner/detail.php?corner_id=885".to_string() },
-            created_at: NaiveDate::from_ymd(2022, 4, 1).and_hms(0, 0, 0),
-            updated_at: NaiveDate::from_ymd(2022, 4, 1).and_hms(0, 0, 1),
+            created_at: NaiveDate::from_ymd_opt(2022, 4, 1).and_then(|d| d.and_hms_opt(0, 0, 0)).unwrap(),
+            updated_at: NaiveDate::from_ymd_opt(2022, 4, 1).and_then(|d| d.and_hms_opt(0, 0, 1)).unwrap(),
         };
 
         let actual = source.validate();
@@ -204,8 +204,8 @@ mod tests {
                 name: "Custom".to_string(),
             },
             external_metadata: ExternalMetadata::Custom(r#"{"id":42}"#.to_string()),
-            created_at: NaiveDate::from_ymd(2022, 6, 1).and_hms(0, 0, 0),
-            updated_at: NaiveDate::from_ymd(2022, 6, 1).and_hms(0, 0, 1),
+            created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 0, 0)).unwrap(),
+            updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 0, 1)).unwrap(),
         };
 
         let actual = source.validate();
@@ -222,8 +222,8 @@ mod tests {
                 name: "Website".to_string(),
             },
             external_metadata: ExternalMetadata::Fantia { id: 1305295 },
-            created_at: NaiveDate::from_ymd(2016, 5, 4).and_hms(7, 5, 0),
-            updated_at: NaiveDate::from_ymd(2016, 5, 4).and_hms(7, 5, 0),
+            created_at: NaiveDate::from_ymd_opt(2016, 5, 4).and_then(|d| d.and_hms_opt(7, 5, 0)).unwrap(),
+            updated_at: NaiveDate::from_ymd_opt(2016, 5, 4).and_then(|d| d.and_hms_opt(7, 5, 0)).unwrap(),
         };
 
         let error = source.validate().unwrap_err();

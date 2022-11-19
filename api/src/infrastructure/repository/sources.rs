@@ -527,8 +527,8 @@ mod tests {
                     name: "pixiv".to_string(),
                 },
                 external_metadata: ExternalMetadata::Pixiv { id: 8888888 },
-                created_at: NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 8),
-                updated_at: NaiveDate::from_ymd(2022, 3, 4).and_hms(5, 6, 14),
+                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
+                updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 14)).unwrap(),
             },
         ]);
     }
@@ -554,8 +554,8 @@ mod tests {
             },
         );
         assert_eq!(actual.external_metadata, ExternalMetadata::Pixiv { id: 123456789 });
-        assert_eq!(actual.created_at, NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 8));
-        assert_ne!(actual.updated_at, NaiveDate::from_ymd(2022, 3, 4).and_hms(5, 6, 14));
+        assert_eq!(actual.created_at, NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap());
+        assert_ne!(actual.updated_at, NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 14)).unwrap());
 
         let actual = sqlx::query(r#"SELECT "id", "external_service_id", "external_metadata" FROM "sources" WHERE "id" = $1"#)
             .bind(uuid!("94055dd8-7a22-4137-b8eb-3a374df5e5d1"))
@@ -600,8 +600,8 @@ mod tests {
                 creator_id: "creator_03".to_string(),
             },
         );
-        assert_eq!(actual.created_at, NaiveDate::from_ymd(2022, 1, 2).and_hms(3, 4, 8));
-        assert_ne!(actual.updated_at, NaiveDate::from_ymd(2022, 3, 4).and_hms(5, 6, 14));
+        assert_eq!(actual.created_at, NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap());
+        assert_ne!(actual.updated_at, NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 14)).unwrap());
 
         let actual = sqlx::query(r#"SELECT "id", "external_service_id", "external_metadata" FROM "sources" WHERE "id" = $1"#)
             .bind(uuid!("94055dd8-7a22-4137-b8eb-3a374df5e5d1"))
