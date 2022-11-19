@@ -1,5 +1,3 @@
-#![allow(clippy::manual_map)]
-
 use sea_query::Order;
 
 use crate::domain::repository::OrderDirection;

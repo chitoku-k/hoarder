@@ -3,6 +3,7 @@ use async_trait::async_trait;
 use derive_more::Constructor;
 use futures::TryStreamExt;
 use sea_query::{Expr, Iden, LockType, Order, PostgresQueryBuilder, Query};
+use sea_query_binder::SqlxBinder;
 use sqlx::{FromRow, PgPool};
 use thiserror::Error;
 use uuid::Uuid;
@@ -12,7 +13,7 @@ use crate::{
         entity::external_services::{ExternalService, ExternalServiceError, ExternalServiceId},
         repository::{external_services::ExternalServicesRepository, DeleteResult},
     },
-    infrastructure::repository::{sea_query_driver_postgres::{bind_query, bind_query_as}, sea_query_uuid_value},
+    infrastructure::repository::sea_query_uuid_value,
 };
 
 #[derive(Clone, Constructor)]
@@ -77,9 +78,9 @@ impl ExternalServicesRepository for PostgresExternalServicesRepository {
                         PostgresExternalService::Name,
                     ])
             )
-            .build(PostgresQueryBuilder);
+            .build_sqlx(PostgresQueryBuilder);
 
-        let external_service = bind_query_as::<PostgresExternalServiceRow>(sqlx::query_as(&sql), &values)
+        let external_service = sqlx::query_as_with::<_, PostgresExternalServiceRow, _>(&sql, values)
             .fetch_one(&self.pool)
             .await?
             .into();
@@ -100,9 +101,9 @@ impl ExternalServicesRepository for PostgresExternalServicesRepository {
             .from(PostgresExternalService::Table)
             .and_where(Expr::col(PostgresExternalService::Id).is_in(ids))
             .order_by(PostgresExternalService::Slug, Order::Asc)
-            .build(PostgresQueryBuilder);
+            .build_sqlx(PostgresQueryBuilder);
 
-        let external_services = bind_query_as::<PostgresExternalServiceRow>(sqlx::query_as(&sql), &values)
+        let external_services = sqlx::query_as_with::<_, PostgresExternalServiceRow, _>(&sql, values)
             .fetch(&self.pool)
             .map_ok(Into::into)
             .try_collect()
@@ -120,9 +121,9 @@ impl ExternalServicesRepository for PostgresExternalServicesRepository {
             ])
             .from(PostgresExternalService::Table)
             .order_by(PostgresExternalService::Slug, Order::Asc)
-            .build(PostgresQueryBuilder);
+            .build_sqlx(PostgresQueryBuilder);
 
-        let external_services = bind_query_as::<PostgresExternalServiceRow>(sqlx::query_as(&sql), &values)
+        let external_services = sqlx::query_as_with::<_, PostgresExternalServiceRow, _>(&sql, values)
             .fetch(&self.pool)
             .map_ok(Into::into)
             .try_collect()
@@ -143,9 +144,9 @@ impl ExternalServicesRepository for PostgresExternalServicesRepository {
             .from(PostgresExternalService::Table)
             .and_where(Expr::col(PostgresExternalService::Id).eq(id))
             .lock(LockType::Update)
-            .build(PostgresQueryBuilder);
+            .build_sqlx(PostgresQueryBuilder);
 
-        let external_service: ExternalService = bind_query_as::<PostgresExternalServiceRow>(sqlx::query_as(&sql), &values)
+        let external_service: ExternalService = sqlx::query_as_with::<_, PostgresExternalServiceRow, _>(&sql, values)
             .fetch_optional(&mut tx)
             .await?
             .map(Into::into)
@@ -155,7 +156,7 @@ impl ExternalServicesRepository for PostgresExternalServicesRepository {
 
         let (sql, values) = Query::update()
             .table(PostgresExternalService::Table)
-            .value(PostgresExternalService::Name, name.into())
+            .value(PostgresExternalService::Name, name)
             .and_where(Expr::col(PostgresExternalService::Id).eq(id))
             .returning(
                 Query::returning()
@@ -165,9 +166,9 @@ impl ExternalServicesRepository for PostgresExternalServicesRepository {
                         PostgresExternalService::Name,
                     ])
             )
-            .build(PostgresQueryBuilder);
+            .build_sqlx(PostgresQueryBuilder);
 
-        let external_service = bind_query_as::<PostgresExternalServiceRow>(sqlx::query_as(&sql), &values)
+        let external_service = sqlx::query_as_with::<_, PostgresExternalServiceRow, _>(&sql, values)
             .fetch_one(&mut tx)
             .await?
             .into();
@@ -180,9 +181,9 @@ impl ExternalServicesRepository for PostgresExternalServicesRepository {
         let (sql, values) = Query::delete()
             .from_table(PostgresExternalService::Table)
             .and_where(Expr::col(PostgresExternalService::Id).eq(id))
-            .build(PostgresQueryBuilder);
+            .build_sqlx(PostgresQueryBuilder);
 
-        let affected = bind_query(sqlx::query(&sql), &values)
+        let affected = sqlx::query_with(&sql, values)
             .execute(&self.pool)
             .await?
             .rows_affected();

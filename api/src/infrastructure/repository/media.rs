@@ -5,7 +5,8 @@ use chrono::NaiveDateTime;
 use derive_more::Constructor;
 use futures::TryStreamExt;
 use indexmap::IndexSet;
-use sea_query::{Expr, Func, Iden, JoinType, Keyword, LockType, OnConflict, Order, PostgresQueryBuilder, Query, SimpleExpr};
+use sea_query::{Expr, Iden, JoinType, Keyword, LockType, OnConflict, Order, PostgresQueryBuilder, Query, SimpleExpr};
+use sea_query_binder::SqlxBinder;
 use sqlx::{types::Json, FromRow, PgConnection, PgPool};
 use thiserror::Error;
 use uuid::Uuid;
@@ -26,7 +27,7 @@ use crate::{
         expr::distinct::Distinct,
         external_services::{PostgresExternalService, PostgresExternalServiceError},
         replicas::{PostgresMediumReplica, PostgresReplica, PostgresReplicaRow},
-        sea_query_driver_postgres::{bind_query, bind_query_as}, sea_query_uuid_value,
+        sea_query_uuid_value,
         sources::{PostgresExternalServiceMetadata, PostgresSource, PostgresSourceExternalService},
         tag_types::{PostgresTagTagType, PostgresTagType},
         tags::{self, PostgresTagPath},
@@ -210,9 +211,9 @@ where
         .order_by(PostgresMediumTag::MediumId, Order::Asc)
         .order_by(PostgresMediumTag::TagTypeId, Order::Asc)
         .order_by(PostgresMediumTag::TagId, Order::Asc)
-        .build(PostgresQueryBuilder);
+        .build_sqlx(PostgresQueryBuilder);
 
-    let rows: Vec<_> = bind_query_as::<PostgresMediumTagTypeRow>(sqlx::query_as(&sql), &values)
+    let rows: Vec<_> = sqlx::query_as_with::<_, PostgresMediumTagTypeRow, _>(&sql, values)
         .fetch(&mut *conn)
         .try_collect()
         .await?;
@@ -267,10 +268,10 @@ where
         .and_where(Expr::col(PostgresReplica::MediumId).is_in(ids))
         .order_by(PostgresReplica::MediumId, Order::Asc)
         .order_by(PostgresReplica::DisplayOrder, Order::Asc)
-        .build(PostgresQueryBuilder);
+        .build_sqlx(PostgresQueryBuilder);
 
     let mut replicas: HashMap<_, Vec<_>> = HashMap::new();
-    let mut stream = bind_query_as::<PostgresReplicaRow>(sqlx::query_as(&sql), &values).fetch(&mut *conn);
+    let mut stream = sqlx::query_as_with::<_, PostgresReplicaRow, _>(&sql, values).fetch(&mut *conn);
 
     while let Some((medium_id, replica)) = stream.try_next().await?.map(Into::into) {
         replicas
@@ -311,10 +312,10 @@ where
         .and_where(Expr::col((PostgresMediumSource::Table, PostgresMediumSource::MediumId)).is_in(ids))
         .order_by((PostgresMediumSource::Table, PostgresMediumSource::MediumId), Order::Asc)
         .order_by((PostgresMediumSource::Table, PostgresMediumSource::SourceId), Order::Asc)
-        .build(PostgresQueryBuilder);
+        .build_sqlx(PostgresQueryBuilder);
 
     let mut sources = HashMap::<_, Vec<_>>::new();
-    let mut stream = bind_query_as::<PostgresMediumSourceExternalServiceRow>(sqlx::query_as(&sql), &values).fetch(conn);
+    let mut stream = sqlx::query_as_with::<_, PostgresMediumSourceExternalServiceRow, _>(&sql, values).fetch(conn);
 
     while let Some(row) = stream.try_next().await? {
         let (medium_id, source) = match row.try_into() {
@@ -386,9 +387,9 @@ impl MediaRepository for PostgresMediaRepository {
                         PostgresMedium::UpdatedAt,
                     ])
             )
-            .build(PostgresQueryBuilder);
+            .build_sqlx(PostgresQueryBuilder);
 
-        let medium: Medium = bind_query_as::<PostgresMediumRow>(sqlx::query_as(&sql), &values)
+        let medium: Medium = sqlx::query_as_with::<_, PostgresMediumRow, _>(&sql, values)
             .fetch_one(&mut tx)
             .await?
             .into();
@@ -418,8 +419,8 @@ impl MediaRepository for PostgresMediaRepository {
             }
         };
         if let Some(query) = query {
-            let (sql, values) = query.build(PostgresQueryBuilder);
-            bind_query(sqlx::query(&sql), &values).execute(&mut tx).await?;
+            let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
+            sqlx::query_with(&sql, values).execute(&mut tx).await?;
         }
 
         let query = {
@@ -449,8 +450,8 @@ impl MediaRepository for PostgresMediaRepository {
             }
         };
         if let Some(query) = query {
-            let (sql, values) = query.build(PostgresQueryBuilder);
-            bind_query(sqlx::query(&sql), &values).execute(&mut tx).await?;
+            let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
+            sqlx::query_with(&sql, values).execute(&mut tx).await?;
         }
 
         let mut media = [medium];
@@ -477,9 +478,9 @@ impl MediaRepository for PostgresMediaRepository {
             .from(PostgresMedium::Table)
             .and_where(Expr::col(PostgresMedium::Id).is_in(ids))
             .order_by(PostgresMedium::CreatedAt, Order::Asc)
-            .build(PostgresQueryBuilder);
+            .build_sqlx(PostgresQueryBuilder);
 
-        let mut media: Vec<_> = bind_query_as::<PostgresMediumRow>(sqlx::query_as(&sql), &values)
+        let mut media: Vec<_> = sqlx::query_as_with::<_, PostgresMediumRow, _>(&sql, values)
             .fetch(&mut conn)
             .map_ok(Into::into)
             .try_collect()
@@ -534,9 +535,9 @@ impl MediaRepository for PostgresMediaRepository {
             .order_by((PostgresMedium::Table, PostgresMedium::CreatedAt), order.into())
             .order_by((PostgresMedium::Table, PostgresMedium::Id), order.into())
             .limit(limit)
-            .build(PostgresQueryBuilder);
+            .build_sqlx(PostgresQueryBuilder);
 
-        let mut media: Vec<_> = bind_query_as::<PostgresMediumRow>(sqlx::query_as(&sql), &values)
+        let mut media: Vec<_> = sqlx::query_as_with::<_, PostgresMediumRow, _>(&sql, values)
             .fetch(&mut conn)
             .map_ok(Into::into)
             .try_collect()
@@ -562,7 +563,7 @@ impl MediaRepository for PostgresMediaRepository {
     {
         let tag_tag_type_ids: Vec<_> = tag_tag_type_ids
             .into_iter()
-            .map(|(tag_id, tag_type_id)| [*tag_id, *tag_type_id])
+            .map(|(tag_id, tag_type_id)| (*tag_id, *tag_type_id))
             .collect();
 
         let tag_tag_type_ids_len = tag_tag_type_ids.len() as i32;
@@ -617,9 +618,9 @@ impl MediaRepository for PostgresMediaRepository {
             .order_by((PostgresMedium::Table, PostgresMedium::CreatedAt), order.into())
             .order_by((PostgresMedium::Table, PostgresMedium::Id), order.into())
             .limit(limit)
-            .build(PostgresQueryBuilder);
+            .build_sqlx(PostgresQueryBuilder);
 
-        let mut media: Vec<_> = bind_query_as::<PostgresMediumRow>(sqlx::query_as(&sql), &values)
+        let mut media: Vec<_> = sqlx::query_as_with::<_, PostgresMediumRow, _>(&sql, values)
             .fetch(&mut conn)
             .map_ok(Into::into)
             .try_collect()
@@ -673,9 +674,9 @@ impl MediaRepository for PostgresMediaRepository {
             .order_by(PostgresMedium::CreatedAt, order.into())
             .order_by(PostgresMedium::Id, order.into())
             .limit(limit)
-            .build(PostgresQueryBuilder);
+            .build_sqlx(PostgresQueryBuilder);
 
-        let mut media: Vec<_> = bind_query_as::<PostgresMediumRow>(sqlx::query_as(&sql), &values)
+        let mut media: Vec<_> = sqlx::query_as_with::<_, PostgresMediumRow, _>(&sql, values)
             .fetch(&mut conn)
             .map_ok(Into::into)
             .try_collect()
@@ -725,9 +726,9 @@ impl MediaRepository for PostgresMediaRepository {
             .order_by((PostgresMedium::Table, PostgresMedium::Id), Order::Asc)
             .order_by((PostgresReplica::Table, PostgresReplica::DisplayOrder), Order::Asc)
             .lock(LockType::Update)
-            .build(PostgresQueryBuilder);
+            .build_sqlx(PostgresQueryBuilder);
 
-        let replica_ids: IndexSet<_> = bind_query_as::<PostgresMediumReplicaRow>(sqlx::query_as(&sql), &values)
+        let replica_ids: IndexSet<_> = sqlx::query_as_with::<_, PostgresMediumReplicaRow, _>(&sql, values)
             .fetch(&mut tx)
             .map_ok(<(Medium, ReplicaId)>::from)
             .map_ok(|(_, replica_id)| replica_id)
@@ -746,20 +747,20 @@ impl MediaRepository for PostgresMediaRepository {
 
             let (sql, values) = Query::update()
                 .table(PostgresReplica::Table)
-                .col_expr(PostgresReplica::DisplayOrder, SimpleExpr::Keyword(Keyword::Null))
+                .value(PostgresReplica::DisplayOrder, SimpleExpr::Keyword(Keyword::Null))
                 .and_where(Expr::col(PostgresReplica::MediumId).eq(id))
-                .build(PostgresQueryBuilder);
+                .build_sqlx(PostgresQueryBuilder);
 
-            bind_query(sqlx::query(&sql), &values).execute(&mut tx).await?;
+            sqlx::query_with(&sql, values).execute(&mut tx).await?;
 
             for (order, replica_id) in replica_orders.into_iter().enumerate() {
                 let (sql, values) = Query::update()
                     .table(PostgresReplica::Table)
-                    .col_expr(PostgresReplica::DisplayOrder, Expr::val(order as i32 + 1).into())
+                    .value(PostgresReplica::DisplayOrder, Expr::val(order as i32 + 1))
                     .and_where(Expr::col(PostgresReplica::Id).eq(replica_id))
-                    .build(PostgresQueryBuilder);
+                    .build_sqlx(PostgresQueryBuilder);
 
-                bind_query(sqlx::query(&sql), &values).execute(&mut tx).await?;
+                sqlx::query_with(&sql, values).execute(&mut tx).await?;
             }
         }
 
@@ -783,8 +784,8 @@ impl MediaRepository for PostgresMediaRepository {
             }
         };
         if let Some(query) = query {
-            let (sql, values) = query.build(PostgresQueryBuilder);
-            bind_query(sqlx::query(&sql), &values).execute(&mut tx).await?;
+            let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
+            sqlx::query_with(&sql, values).execute(&mut tx).await?;
         }
 
         let query = {
@@ -802,8 +803,8 @@ impl MediaRepository for PostgresMediaRepository {
             }
         };
         if let Some(query) = query {
-            let (sql, values) = query.build(PostgresQueryBuilder);
-            bind_query(sqlx::query(&sql), &values).execute(&mut tx).await?;
+            let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
+            sqlx::query_with(&sql, values).execute(&mut tx).await?;
         }
 
         let query = {
@@ -834,8 +835,8 @@ impl MediaRepository for PostgresMediaRepository {
             }
         };
         if let Some(query) = query {
-            let (sql, values) = query.build(PostgresQueryBuilder);
-            bind_query(sqlx::query(&sql), &values).execute(&mut tx).await?;
+            let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
+            sqlx::query_with(&sql, values).execute(&mut tx).await?;
         }
 
         let query = {
@@ -844,7 +845,7 @@ impl MediaRepository for PostgresMediaRepository {
                 Some(_) => {
                     let remove_tag_tag_type_ids: Vec<_> = remove_tag_tag_type_ids
                         .into_iter()
-                        .map(|(tag_id, tag_type_id)| [*tag_id, *tag_type_id])
+                        .map(|(tag_id, tag_type_id)| (*tag_id, *tag_type_id))
                         .collect();
 
                     let mut query = Query::delete();
@@ -864,14 +865,14 @@ impl MediaRepository for PostgresMediaRepository {
             }
         };
         if let Some(query) = query {
-            let (sql, values) = query.build(PostgresQueryBuilder);
-            bind_query(sqlx::query(&sql), &values).execute(&mut tx).await?;
+            let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
+            sqlx::query_with(&sql, values).execute(&mut tx).await?;
         }
 
         let mut query = Query::update();
         query
             .table(PostgresMedium::Table)
-            .col_expr(PostgresMedium::UpdatedAt, Func::current_timestamp())
+            .value(PostgresMedium::UpdatedAt, Expr::current_timestamp())
             .and_where(Expr::col(PostgresMedium::Id).eq(id))
             .returning(
                 Query::returning()
@@ -883,11 +884,11 @@ impl MediaRepository for PostgresMediaRepository {
             );
 
         if let Some(created_at) = created_at {
-            query.value(PostgresMedium::CreatedAt, created_at.into());
+            query.value(PostgresMedium::CreatedAt, created_at);
         }
 
-        let (sql, values) = query.build(PostgresQueryBuilder);
-        let medium = bind_query_as::<PostgresMediumRow>(sqlx::query_as(&sql), &values)
+        let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
+        let medium = sqlx::query_as_with::<_, PostgresMediumRow, _>(&sql, values)
             .fetch_one(&mut tx)
             .await?
             .into();
@@ -905,9 +906,9 @@ impl MediaRepository for PostgresMediaRepository {
         let (sql, values) = Query::delete()
             .from_table(PostgresMedium::Table)
             .and_where(Expr::col(PostgresMedium::Id).eq(id))
-            .build(PostgresQueryBuilder);
+            .build_sqlx(PostgresQueryBuilder);
 
-        let affected = bind_query(sqlx::query(&sql), &values)
+        let affected = sqlx::query_with(&sql, values)
             .execute(&self.pool)
             .await?
             .rows_affected();

@@ -3,7 +3,8 @@ use async_trait::async_trait;
 use chrono::NaiveDateTime;
 use derive_more::Constructor;
 use futures::TryStreamExt;
-use sea_query::{Alias, BinOper, Expr, Func, Iden, JoinType, Keyword, LockType, Order, PostgresQueryBuilder, Query, SimpleExpr};
+use sea_query::{Alias, BinOper, Expr, Iden, JoinType, Keyword, LockType, Order, PostgresQueryBuilder, Query, SimpleExpr};
+use sea_query_binder::SqlxBinder;
 use sqlx::{FromRow, PgPool, Row};
 use uuid::Uuid;
 
@@ -15,7 +16,7 @@ use crate::{
         },
         repository::{replicas::ReplicasRepository, DeleteResult},
     },
-    infrastructure::repository::{sea_query_driver_postgres::{bind_query, bind_query_as}, sea_query_uuid_value},
+    infrastructure::repository::sea_query_uuid_value,
 };
 
 #[derive(Clone, Constructor)]
@@ -126,9 +127,9 @@ impl ReplicasRepository for PostgresReplicasRepository {
             )
             .from(PostgresReplica::Table)
             .and_where(Expr::col(PostgresReplica::MediumId).eq(medium_id))
-            .build(PostgresQueryBuilder);
+            .build_sqlx(PostgresQueryBuilder);
 
-        let order: i64 = bind_query(sqlx::query(&sql), &values)
+        let order: i64 = sqlx::query_with(&sql, values)
             .fetch_one(&mut tx)
             .await?
             .try_get(0)?;
@@ -166,9 +167,9 @@ impl ReplicasRepository for PostgresReplicasRepository {
                         Expr::col(PostgresReplica::UpdatedAt).into(),
                     ])
             )
-            .build(PostgresQueryBuilder);
+            .build_sqlx(PostgresQueryBuilder);
 
-        let replica = bind_query_as::<PostgresReplicaRow>(sqlx::query_as(&sql), &values)
+        let replica = sqlx::query_as_with::<_, PostgresReplicaRow, _>(&sql, values)
             .fetch_one(&mut tx)
             .await?
             .into();
@@ -200,9 +201,9 @@ impl ReplicasRepository for PostgresReplicasRepository {
             .order_by(PostgresReplica::MediumId, Order::Asc)
             .order_by(PostgresReplica::DisplayOrder, Order::Asc)
             .lock(LockType::Update)
-            .build(PostgresQueryBuilder);
+            .build_sqlx(PostgresQueryBuilder);
 
-        let replicas = bind_query_as::<PostgresReplicaRow>(sqlx::query_as(&sql), &values)
+        let replicas = sqlx::query_as_with::<_, PostgresReplicaRow, _>(&sql, values)
             .fetch(&self.pool)
             .map_ok(Into::into)
             .try_collect()
@@ -228,9 +229,9 @@ impl ReplicasRepository for PostgresReplicasRepository {
             ])
             .from(PostgresReplica::Table)
             .and_where(Expr::col(PostgresReplica::OriginalUrl).eq(original_url))
-            .build(PostgresQueryBuilder);
+            .build_sqlx(PostgresQueryBuilder);
 
-        let replica = bind_query_as::<PostgresReplicaRow>(sqlx::query_as(&sql), &values)
+        let replica = sqlx::query_as_with::<_, PostgresReplicaRow, _>(&sql, values)
             .fetch_optional(&self.pool)
             .await?
             .map(Into::into)
@@ -252,9 +253,9 @@ impl ReplicasRepository for PostgresReplicasRepository {
             ])
             .from(PostgresReplica::Table)
             .and_where(Expr::col(PostgresReplica::Id).eq(id))
-            .build(PostgresQueryBuilder);
+            .build_sqlx(PostgresQueryBuilder);
 
-        let thumbnail = bind_query_as::<PostgresReplicaThumbnailRow>(sqlx::query_as(&sql), &values)
+        let thumbnail = sqlx::query_as_with::<_, PostgresReplicaThumbnailRow, _>(&sql, values)
             .fetch_optional(&self.pool)
             .await?
             .map(Into::into)
@@ -283,9 +284,9 @@ impl ReplicasRepository for PostgresReplicasRepository {
             .from(PostgresReplica::Table)
             .and_where(Expr::col(PostgresReplica::Id).eq(id))
             .lock(LockType::Update)
-            .build(PostgresQueryBuilder);
+            .build_sqlx(PostgresQueryBuilder);
 
-        bind_query_as::<PostgresReplicaRow>(sqlx::query_as(&sql), &values)
+        sqlx::query_as_with::<_, PostgresReplicaRow, _>(&sql, values)
             .fetch_optional(&mut tx)
             .await?
             .context(ReplicaError::NotFoundById(id))?;
@@ -293,7 +294,7 @@ impl ReplicasRepository for PostgresReplicasRepository {
         let mut query = Query::update();
         query
             .table(PostgresReplica::Table)
-            .col_expr(PostgresReplica::UpdatedAt, Func::current_timestamp())
+            .value(PostgresReplica::UpdatedAt, Expr::current_timestamp())
             .and_where(Expr::col(PostgresReplica::Id).eq(id))
             .returning(
                 Query::returning()
@@ -314,17 +315,17 @@ impl ReplicasRepository for PostgresReplicasRepository {
             );
 
         if let Some(thumbnail) = thumbnail {
-            query.value(PostgresReplica::Thumbnail, thumbnail.into());
+            query.value(PostgresReplica::Thumbnail, thumbnail);
         }
         if let Some(original_url) = original_url {
-            query.value(PostgresReplica::OriginalUrl, original_url.into());
+            query.value(PostgresReplica::OriginalUrl, original_url);
         }
         if let Some(mime_type) = mime_type {
-            query.value(PostgresReplica::MimeType, mime_type.into());
+            query.value(PostgresReplica::MimeType, mime_type);
         }
 
-        let (sql, values) = query.build(PostgresQueryBuilder);
-        let replica = bind_query_as::<PostgresReplicaRow>(sqlx::query_as(&sql), &values)
+        let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
+        let replica = sqlx::query_as_with::<_, PostgresReplicaRow, _>(&sql, values)
             .fetch_one(&mut tx)
             .await?
             .into();
@@ -363,9 +364,9 @@ impl ReplicasRepository for PostgresReplicasRepository {
             .and_where(Expr::col((siblings.clone(), PostgresReplica::Id)).ne(id))
             .order_by((siblings, PostgresReplica::DisplayOrder), Order::Asc)
             .lock(LockType::Update)
-            .build(PostgresQueryBuilder);
+            .build_sqlx(PostgresQueryBuilder);
 
-        let siblings: Vec<Replica> = bind_query_as::<PostgresReplicaRow>(sqlx::query_as(&sql), &values)
+        let siblings: Vec<Replica> = sqlx::query_as_with::<_, PostgresReplicaRow, _>(&sql, values)
             .fetch(&mut tx)
             .map_ok(Into::into)
             .try_collect()
@@ -374,9 +375,9 @@ impl ReplicasRepository for PostgresReplicasRepository {
         let (sql, values) = Query::delete()
             .from_table(PostgresReplica::Table)
             .and_where(Expr::col(PostgresReplica::Id).eq(id))
-            .build(PostgresQueryBuilder);
+            .build_sqlx(PostgresQueryBuilder);
 
-        let affected = bind_query(sqlx::query(&sql), &values)
+        let affected = sqlx::query_with(&sql, values)
             .execute(&mut tx)
             .await?
             .rows_affected();
@@ -388,21 +389,21 @@ impl ReplicasRepository for PostgresReplicasRepository {
 
         let (sql, values) = Query::update()
             .table(PostgresReplica::Table)
-            .col_expr(PostgresReplica::DisplayOrder, SimpleExpr::Keyword(Keyword::Null))
+            .value(PostgresReplica::DisplayOrder, SimpleExpr::Keyword(Keyword::Null))
             .and_where(Expr::col(PostgresReplica::Id).is_in(siblings.iter().map(|s| *s.id)))
-            .build(PostgresQueryBuilder);
+            .build_sqlx(PostgresQueryBuilder);
 
-        bind_query(sqlx::query(&sql), &values).execute(&mut tx).await?;
+        sqlx::query_with(&sql, values).execute(&mut tx).await?;
 
         for (order, sibling) in siblings.into_iter().enumerate() {
             let (sql, values) = Query::update()
                 .table(PostgresReplica::Table)
-                .col_expr(PostgresReplica::DisplayOrder, Expr::val(order as i32 + 1).into())
-                .col_expr(PostgresReplica::UpdatedAt, Func::current_timestamp())
+                .value(PostgresReplica::DisplayOrder, Expr::val(order as i32 + 1))
+                .value(PostgresReplica::UpdatedAt, Expr::current_timestamp())
                 .and_where(Expr::col(PostgresReplica::Id).eq(sibling.id))
-                .build(PostgresQueryBuilder);
+                .build_sqlx(PostgresQueryBuilder);
 
-            bind_query(sqlx::query(&sql), &values).execute(&mut tx).await?;
+            sqlx::query_with(&sql, values).execute(&mut tx).await?;
         }
 
         tx.commit().await?;

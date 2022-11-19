@@ -3,7 +3,8 @@ use async_trait::async_trait;
 use chrono::NaiveDateTime;
 use derive_more::Constructor;
 use futures::TryStreamExt;
-use sea_query::{Expr, Func, Iden, JoinType, LockType, PostgresQueryBuilder, Query};
+use sea_query::{Expr, Iden, JoinType, LockType, PostgresQueryBuilder, Query};
+use sea_query_binder::SqlxBinder;
 use serde::{Deserialize, Serialize};
 use sqlx::{types::Json, FromRow, PgPool};
 use uuid::Uuid;
@@ -18,7 +19,7 @@ use crate::{
     },
     infrastructure::repository::{
         external_services::{PostgresExternalService, PostgresExternalServiceError, PostgresExternalServiceRow},
-        sea_query_driver_postgres::{bind_query, bind_query_as}, sea_query_uuid_value,
+        sea_query_uuid_value,
     },
 };
 
@@ -172,9 +173,9 @@ impl SourcesRepository for PostgresSourcesRepository {
             ])
             .from(PostgresExternalService::Table)
             .and_where(Expr::col(PostgresExternalService::Id).eq(external_service_id))
-            .build(PostgresQueryBuilder);
+            .build_sqlx(PostgresQueryBuilder);
 
-        let external_service: ExternalService = bind_query_as::<PostgresExternalServiceRow>(sqlx::query_as(&sql), &values)
+        let external_service: ExternalService = sqlx::query_as_with::<_, PostgresExternalServiceRow, _>(&sql, values)
             .fetch_one(&mut tx)
             .await?
             .into();
@@ -199,9 +200,9 @@ impl SourcesRepository for PostgresSourcesRepository {
                         PostgresSource::UpdatedAt
                     ])
             )
-            .build(PostgresQueryBuilder);
+            .build_sqlx(PostgresQueryBuilder);
 
-        let row = bind_query_as::<PostgresSourceRow>(sqlx::query_as(&sql), &values)
+        let row = sqlx::query_as_with::<_, PostgresSourceRow, _>(&sql, values)
             .fetch_one(&mut tx)
             .await?;
 
@@ -241,10 +242,10 @@ impl SourcesRepository for PostgresSourcesRepository {
             )
             .and_where(Expr::col(PostgresSource::ExternalServiceId).eq(external_service_id))
             .and_where(Expr::col(PostgresSource::ExternalMetadata).contains(Expr::val(external_metadata)))
-            .build(PostgresQueryBuilder);
+            .build_sqlx(PostgresQueryBuilder);
 
         let mut sources = Vec::new();
-        let mut stream = bind_query_as::<PostgresSourceExternalServiceRow>(sqlx::query_as(&sql), &values).fetch(&self.pool);
+        let mut stream = sqlx::query_as_with::<_, PostgresSourceExternalServiceRow, _>(&sql, values).fetch(&self.pool);
 
         while let Some(row) = stream.try_next().await? {
             let source = match row.try_into() {
@@ -271,9 +272,9 @@ impl SourcesRepository for PostgresSourcesRepository {
             .from(PostgresSource::Table)
             .and_where(Expr::col(PostgresSource::Id).eq(id))
             .lock(LockType::Update)
-            .build(PostgresQueryBuilder);
+            .build_sqlx(PostgresQueryBuilder);
 
-        let row = bind_query_as::<PostgresSourceRow>(sqlx::query_as(&sql), &values)
+        let row = sqlx::query_as_with::<_, PostgresSourceRow, _>(&sql, values)
             .fetch_optional(&mut tx)
             .await?
             .context(SourceError::NotFound(id))?;
@@ -290,9 +291,9 @@ impl SourcesRepository for PostgresSourcesRepository {
 
         let (sql, values) = Query::update()
             .table(PostgresSource::Table)
-            .col_expr(PostgresSource::ExternalServiceId, Expr::val(external_service_id).into())
-            .col_expr(PostgresSource::ExternalMetadata, Expr::val(external_metadata).into())
-            .col_expr(PostgresSource::UpdatedAt, Func::current_timestamp())
+            .value(PostgresSource::ExternalServiceId, Expr::val(external_service_id))
+            .value(PostgresSource::ExternalMetadata, Expr::val(external_metadata))
+            .value(PostgresSource::UpdatedAt, Expr::current_timestamp())
             .and_where(Expr::col(PostgresSource::Id).eq(id))
             .returning(
                 Query::returning()
@@ -304,9 +305,9 @@ impl SourcesRepository for PostgresSourcesRepository {
                         PostgresSource::UpdatedAt,
                     ])
             )
-            .build(PostgresQueryBuilder);
+            .build_sqlx(PostgresQueryBuilder);
 
-        let row = bind_query_as::<PostgresSourceRow>(sqlx::query_as(&sql), &values)
+        let row = sqlx::query_as_with::<_, PostgresSourceRow, _>(&sql, values)
             .fetch_one(&mut tx)
             .await?;
 
@@ -318,9 +319,9 @@ impl SourcesRepository for PostgresSourcesRepository {
             ])
             .from(PostgresExternalService::Table)
             .and_where(Expr::col(PostgresExternalService::Id).eq(row.external_service_id))
-            .build(PostgresQueryBuilder);
+            .build_sqlx(PostgresQueryBuilder);
 
-        let external_service: ExternalService = bind_query_as::<PostgresExternalServiceRow>(sqlx::query_as(&sql), &values)
+        let external_service: ExternalService = sqlx::query_as_with::<_, PostgresExternalServiceRow, _>(&sql, values)
             .fetch_one(&mut tx)
             .await?
             .into();
@@ -341,9 +342,9 @@ impl SourcesRepository for PostgresSourcesRepository {
         let (sql, values) = Query::delete()
             .from_table(PostgresSource::Table)
             .and_where(Expr::col(PostgresSource::Id).eq(id))
-            .build(PostgresQueryBuilder);
+            .build_sqlx(PostgresQueryBuilder);
 
-        let affected = bind_query(sqlx::query(&sql), &values)
+        let affected = sqlx::query_with(&sql, values)
             .execute(&self.pool)
             .await?
             .rows_affected();
