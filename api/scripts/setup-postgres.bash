@@ -8,6 +8,7 @@ export PGPASSWORD=hoarder_test
 echo -n 'starting postgres ... ' >&2
 pushd "$(git rev-parse --show-toplevel)" &> /dev/null
 
+POSTGRES_IMAGE="${POSTGRES_IMAGE:-postgres:14.4}"
 POSTGRES_OPTIONS=(
     -c fsync=off
     -c full_page_writes=off
@@ -20,10 +21,10 @@ POSTGRES_CONTAINER_ID=$(docker create \
     --env=POSTGRES_DB="$PGDATABASE" \
     --env=POSTGRES_USER="$PGUSER" \
     --env=POSTGRES_PASSWORD="$PGPASSWORD" \
-    --publish=:$PGPORT \
+    --publish=":$PGPORT" \
     --shm-size=512m \
     --mount=type=bind,source="$PWD/database",target=/docker-entrypoint-initdb.d \
-    postgres:14.4 \
+    "$POSTGRES_IMAGE" \
     "${POSTGRES_OPTIONS[@]}")
 
 popd &> /dev/null
