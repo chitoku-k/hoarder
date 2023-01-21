@@ -1,20 +1,12 @@
-use sea_query::{Expr, Func, Iden, SimpleExpr};
-
-struct Unnest;
-
-impl Iden for Unnest {
-    fn unquoted(&self, s: &mut dyn std::fmt::Write) {
-        write!(s, "unnest").unwrap();
-    }
-}
+use sea_query::{Expr, SimpleExpr};
 
 pub struct ArrayExpr;
 
 impl ArrayExpr {
-    pub fn unnest<T>(arg: T) -> Expr
+    pub fn unnest<T>(arg: T) -> SimpleExpr
     where
         T: Into<SimpleExpr>,
     {
-        Expr::expr(Func::cust(Unnest).arg(arg))
+        Expr::cust_with_expr("unnest($1)", arg)
     }
 }
