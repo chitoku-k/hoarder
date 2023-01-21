@@ -109,6 +109,12 @@ impl From<Vec<String>> for AliasSet {
     }
 }
 
+impl From<AliasSet> for Vec<String> {
+    fn from(v: AliasSet) -> Self {
+        v.0.into_iter().collect()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use pretty_assertions::assert_eq;
