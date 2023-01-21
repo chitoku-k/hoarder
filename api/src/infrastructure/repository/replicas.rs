@@ -123,7 +123,7 @@ impl ReplicasRepository for PostgresReplicasRepository {
             .expr(
                 Expr::asterisk()
                     .count()
-                    .add(Expr::val(1i32).into_simple_expr()),
+                    .add(Expr::val(1i32)),
             )
             .from(PostgresReplica::Table)
             .and_where(Expr::col(PostgresReplica::MediumId).eq(medium_id))
@@ -154,9 +154,9 @@ impl ReplicasRepository for PostgresReplicasRepository {
                 Query::returning()
                     .exprs([
                         SimpleExpr::Binary(
-                            Expr::col(PostgresReplica::Thumbnail).is_not_null().into(),
+                            Box::new(Expr::col(PostgresReplica::Thumbnail).is_not_null()),
                             BinOper::As,
-                            Expr::col(PostgresReplica::HasThumbnail).into_simple_expr().into(),
+                            Box::new(Expr::col(PostgresReplica::HasThumbnail).into()),
                         ),
                         Expr::col(PostgresReplica::Id).into(),
                         Expr::col(PostgresReplica::MediumId).into(),
@@ -300,9 +300,9 @@ impl ReplicasRepository for PostgresReplicasRepository {
                 Query::returning()
                     .exprs([
                         SimpleExpr::Binary(
-                            Expr::col(PostgresReplica::Thumbnail).is_not_null().into(),
+                            Box::new(Expr::col(PostgresReplica::Thumbnail).is_not_null()),
                             BinOper::As,
-                            Expr::col(PostgresReplica::HasThumbnail).into_simple_expr().into(),
+                            Box::new(Expr::col(PostgresReplica::HasThumbnail).into()),
                         ),
                         Expr::col(PostgresReplica::Id).into(),
                         Expr::col(PostgresReplica::MediumId).into(),
@@ -358,7 +358,7 @@ impl ReplicasRepository for PostgresReplicasRepository {
                 PostgresReplica::Table,
                 siblings.clone(),
                 Expr::col((siblings.clone(), PostgresReplica::MediumId))
-                    .equals(PostgresReplica::Table, PostgresReplica::MediumId),
+                    .equals((PostgresReplica::Table, PostgresReplica::MediumId)),
             )
             .and_where(Expr::col((PostgresReplica::Table, PostgresReplica::Id)).eq(id))
             .and_where(Expr::col((siblings.clone(), PostgresReplica::Id)).ne(id))

@@ -205,7 +205,7 @@ where
             JoinType::InnerJoin,
             PostgresTagType::Table,
             Expr::col((PostgresTagType::Table, PostgresTagType::Id))
-                .equals(PostgresMediumTag::Table, PostgresMediumTag::TagTypeId),
+                .equals((PostgresMediumTag::Table, PostgresMediumTag::TagTypeId)),
         )
         .and_where(Expr::col((PostgresMediumTag::Table, PostgresMediumTag::MediumId)).is_in(ids))
         .order_by(PostgresMediumTag::MediumId, Order::Asc)
@@ -301,13 +301,13 @@ where
             JoinType::InnerJoin,
             PostgresSource::Table,
             Expr::col((PostgresSource::Table, PostgresSource::Id))
-                .equals(PostgresMediumSource::Table, PostgresMediumSource::SourceId)
+                .equals((PostgresMediumSource::Table, PostgresMediumSource::SourceId))
         )
         .join(
             JoinType::InnerJoin,
             PostgresExternalService::Table,
             Expr::col((PostgresExternalService::Table, PostgresExternalService::Id))
-                .equals(PostgresSource::Table, PostgresSource::ExternalServiceId)
+                .equals((PostgresSource::Table, PostgresSource::ExternalServiceId))
         )
         .and_where(Expr::col((PostgresMediumSource::Table, PostgresMediumSource::MediumId)).is_in(ids))
         .order_by((PostgresMediumSource::Table, PostgresMediumSource::MediumId), Order::Asc)
@@ -516,18 +516,18 @@ impl MediaRepository for PostgresMediaRepository {
                 JoinType::InnerJoin,
                 PostgresMediumSource::Table,
                 Expr::col((PostgresMediumSource::Table, PostgresMediumSource::MediumId))
-                    .equals(PostgresMedium::Table, PostgresMedium::Id),
+                    .equals((PostgresMedium::Table, PostgresMedium::Id)),
             )
             .and_where_option(
                 since.map(|(created_at, medium_id)| {
                     Expr::tuple([Expr::col(PostgresMedium::CreatedAt).into(), Expr::col(PostgresMedium::Id).into()])
-                        .greater_than(Expr::tuple([Expr::value(created_at), Expr::value(medium_id)]))
+                        .gt(Expr::tuple([Expr::value(created_at), Expr::value(medium_id)]))
                 })
             )
             .and_where_option(
                 until.map(|(created_at, medium_id)| {
                     Expr::tuple([Expr::col(PostgresMedium::CreatedAt).into(), Expr::col(PostgresMedium::Id).into()])
-                        .less_than(Expr::tuple([Expr::value(created_at), Expr::value(medium_id)]))
+                        .lt(Expr::tuple([Expr::value(created_at), Expr::value(medium_id)]))
                 })
             )
             .and_where(Expr::col(PostgresMediumSource::SourceId).is_in(source_ids))
@@ -580,24 +580,24 @@ impl MediaRepository for PostgresMediaRepository {
                 JoinType::InnerJoin,
                 PostgresMediumTag::Table,
                 Expr::col((PostgresMediumTag::Table, PostgresMediumTag::MediumId))
-                    .equals(PostgresMedium::Table, PostgresMedium::Id),
+                    .equals((PostgresMedium::Table, PostgresMedium::Id)),
             )
             .join(
                 JoinType::InnerJoin,
                 PostgresTagPath::Table,
                 Expr::col((PostgresTagPath::Table, PostgresTagPath::DescendantId))
-                    .equals(PostgresMediumTag::Table, PostgresMediumTag::TagId),
+                    .equals((PostgresMediumTag::Table, PostgresMediumTag::TagId)),
             )
             .and_where_option(
                 since.map(|(created_at, medium_id)| {
                     Expr::tuple([Expr::col(PostgresMedium::CreatedAt).into(), Expr::col(PostgresMedium::Id).into()])
-                        .greater_than(Expr::tuple([Expr::value(created_at), Expr::value(medium_id)]))
+                        .gt(Expr::tuple([Expr::value(created_at), Expr::value(medium_id)]))
                 })
             )
             .and_where_option(
                 until.map(|(created_at, medium_id)| {
                     Expr::tuple([Expr::col(PostgresMedium::CreatedAt).into(), Expr::col(PostgresMedium::Id).into()])
-                        .less_than(Expr::tuple([Expr::value(created_at), Expr::value(medium_id)]))
+                        .lt(Expr::tuple([Expr::value(created_at), Expr::value(medium_id)]))
                 })
             )
             .and_where(
@@ -613,7 +613,7 @@ impl MediaRepository for PostgresMediaRepository {
                         Expr::col(PostgresTagPath::AncestorId).into(),
                         Expr::col(PostgresMediumTag::TagTypeId).into(),
                     ]),
-                ).count().equals(Expr::val(tag_tag_type_ids_len))
+                ).count().eq(Expr::val(tag_tag_type_ids_len))
             )
             .order_by((PostgresMedium::Table, PostgresMedium::CreatedAt), order.into())
             .order_by((PostgresMedium::Table, PostgresMedium::Id), order.into())
@@ -654,7 +654,7 @@ impl MediaRepository for PostgresMediaRepository {
                     Expr::tuple([
                         Expr::col(PostgresMedium::CreatedAt).into(),
                         Expr::col(PostgresMedium::Id).into(),
-                    ]).greater_than(Expr::tuple([
+                    ]).gt(Expr::tuple([
                         Expr::value(created_at),
                         Expr::value(medium_id),
                     ]))
@@ -665,7 +665,7 @@ impl MediaRepository for PostgresMediaRepository {
                     Expr::tuple([
                         Expr::col(PostgresMedium::CreatedAt).into(),
                         Expr::col(PostgresMedium::Id).into(),
-                    ]).less_than(Expr::tuple([
+                    ]).lt(Expr::tuple([
                         Expr::value(created_at),
                         Expr::value(medium_id),
                     ]))
@@ -720,7 +720,7 @@ impl MediaRepository for PostgresMediaRepository {
                 JoinType::InnerJoin,
                 PostgresReplica::Table,
                 Expr::col((PostgresReplica::Table, PostgresReplica::MediumId))
-                    .equals(PostgresMedium::Table, PostgresMedium::Id),
+                    .equals((PostgresMedium::Table, PostgresMedium::Id)),
             )
             .and_where(Expr::col((PostgresMedium::Table, PostgresMedium::Id)).eq(id))
             .order_by((PostgresMedium::Table, PostgresMedium::Id), Order::Asc)

@@ -3,7 +3,10 @@ use async_trait::async_trait;
 use chrono::NaiveDateTime;
 use derive_more::Constructor;
 use futures::TryStreamExt;
-use sea_query::{Expr, Iden, JoinType, LockType, PostgresQueryBuilder, Query};
+use sea_query::{
+    extension::postgres::PgExpr,
+    Expr, Iden, JoinType, LockType, PostgresQueryBuilder, Query,
+};
 use sea_query_binder::SqlxBinder;
 use serde::{Deserialize, Serialize};
 use sqlx::{types::Json, FromRow, PgPool};
@@ -238,7 +241,7 @@ impl SourcesRepository for PostgresSourcesRepository {
                 JoinType::InnerJoin,
                 PostgresExternalService::Table,
                 Expr::col((PostgresExternalService::Table, PostgresExternalService::Id))
-                    .equals(PostgresSource::Table, PostgresSource::ExternalServiceId)
+                    .equals((PostgresSource::Table, PostgresSource::ExternalServiceId)),
             )
             .and_where(Expr::col(PostgresSource::ExternalServiceId).eq(external_service_id))
             .and_where(Expr::col(PostgresSource::ExternalMetadata).contains(Expr::val(external_metadata)))
