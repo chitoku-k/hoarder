@@ -1,18 +1,12 @@
-use sea_query::{Expr, Func, Iden, SimpleExpr};
+use sea_query::{Expr, SimpleExpr};
 
 pub struct Distinct;
 
 impl Distinct {
-    pub fn arg<T>(arg: T) -> Expr
+    pub fn arg<T>(arg: T) -> SimpleExpr
     where
         T: Into<SimpleExpr>,
     {
-        Expr::expr(Func::cust(Self).arg(arg))
-    }
-}
-
-impl Iden for Distinct {
-    fn unquoted(&self, s: &mut dyn std::fmt::Write) {
-        write!(s, "DISTINCT").unwrap();
+        Expr::cust_with_expr("DISTINCT $1", arg)
     }
 }

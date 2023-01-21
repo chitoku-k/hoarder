@@ -608,11 +608,13 @@ impl MediaRepository for PostgresMediaRepository {
             )
             .group_by_col(PostgresMedium::Id)
             .and_having(
-                Distinct::arg(
-                    Expr::tuple([
-                        Expr::col(PostgresTagPath::AncestorId).into(),
-                        Expr::col(PostgresMediumTag::TagTypeId).into(),
-                    ]),
+                Expr::expr(
+                    Distinct::arg(
+                        Expr::tuple([
+                            Expr::col(PostgresTagPath::AncestorId).into(),
+                            Expr::col(PostgresMediumTag::TagTypeId).into(),
+                        ]),
+                    ),
                 ).count().eq(Expr::val(tag_tag_type_ids_len))
             )
             .order_by((PostgresMedium::Table, PostgresMedium::CreatedAt), order.into())
