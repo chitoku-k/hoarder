@@ -489,7 +489,7 @@ impl TagsRepository for PostgresTagsRepository {
             .values([
                 Expr::val(name).into(),
                 Expr::val(kana).into(),
-                ArrayExpr::val(aliases)?,
+                aliases.to_vec().into(),
             ])?
             .returning(
                 Query::returning()
@@ -713,7 +713,7 @@ impl TagsRepository for PostgresTagsRepository {
             .table(PostgresTag::Table)
             .value(PostgresTag::Name, name)
             .value(PostgresTag::Kana, kana)
-            .value(PostgresTag::Aliases, ArrayExpr::val(aliases)?)
+            .value(PostgresTag::Aliases, Vec::from(aliases))
             .value(PostgresTag::UpdatedAt, Expr::current_timestamp())
             .and_where(Expr::col(PostgresTag::Id).eq(id))
             .build_sqlx(PostgresQueryBuilder);
