@@ -17,27 +17,27 @@ tls = ["axum-server/tls-rustls"]
 test-postgres = []
 
 [dependencies.anyhow]
-version = "1.0.66"
+version = "1.0.68"
 
 [dependencies.async-graphql]
-version = "4.0.16"
+version = "5.0.5"
 features = ["chrono", "unblock", "uuid"]
 
 [dependencies.async-graphql-axum]
-version = "4.0.16"
+version = "5.0.5"
 
 [dependencies.async-trait]
-version = "0.1.58"
+version = "0.1.62"
 
 [dependencies.axum]
-version = "0.5.17"
+version = "0.6.3"
 features = ["default", "http2"]
 
 [dependencies.axum-server]
 version = "0.4.4"
 
 [dependencies.base64]
-version = "0.13.1"
+version = "0.21.0"
 
 [dependencies.chrono]
 version = "0.4.23"
@@ -46,7 +46,7 @@ version = "0.4.23"
 version = "0.99.17"
 
 [dependencies.env_logger]
-version = "0.9.3"
+version = "0.10.0"
 
 [dependencies.envy]
 version = "0.4.2"
@@ -67,35 +67,35 @@ version = "0.4.17"
 version = "5.0.0"
 
 [dependencies.prometheus-client]
-version = "0.18.1"
+version = "0.19.0"
 
 [dependencies.sea-query]
-version = "0.27.2"
+version = "0.28.3"
 features = ["thread-safe"]
 
 [dependencies.sea-query-binder]
-version = "0.2.2"
+version = "0.3.0"
 features = ["postgres-array", "sqlx-postgres", "with-chrono", "with-json", "with-uuid"]
 
 [dependencies.serde]
-version = "1.0.147"
+version = "1.0.152"
 features = ["derive"]
 
 [dependencies.serde_json]
-version = "1.0.88"
+version = "1.0.91"
 
 [dependencies.serde_with]
-version = "2.1.0"
+version = "2.2.0"
 
 [dependencies.sqlx]
 version = "0.6.2"
 features = ["chrono", "json", "postgres", "runtime-tokio-rustls", "tls", "uuid"]
 
 [dependencies.thiserror]
-version = "1.0.37"
+version = "1.0.38"
 
 [dependencies.tokio]
-version = "1.22.0"
+version = "1.24.2"
 features = ["macros", "net", "process", "rt-multi-thread", "signal"]
 
 [dependencies.tokio-stream]
@@ -109,7 +109,7 @@ version = "0.7.3"
 features = ["glob"]
 
 [dev-dependencies.indoc]
-version = "1.0.7"
+version = "1.0.8"
 
 [dev-dependencies.mockall]
 version = "0.11.3"

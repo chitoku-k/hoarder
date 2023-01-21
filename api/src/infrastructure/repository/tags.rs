@@ -266,6 +266,36 @@ where
     let tag_ancestors = Alias::new("tag_ancestors");
     let tag_descendants = Alias::new("tag_descendants");
 
+    let relatives = {
+        let conditions = Cond::any()
+            .add_option(depth.has_parent().then(|| {
+                Expr::col(PostgresTagPath::DescendantId).in_subquery(
+                    Query::select()
+                        .from(PostgresTagPath::Table)
+                        .column(PostgresTagPath::AncestorId)
+                        .and_where(Expr::col(PostgresTagPath::Distance).lte(depth.parent()))
+                        .and_where(Expr::col(PostgresTagPath::DescendantId).is_in(ids.iter().cloned()))
+                        .take()
+                    )
+            }))
+            .add_option(depth.has_children().then(|| {
+                Expr::col(PostgresTagPath::AncestorId).in_subquery(
+                    Query::select()
+                        .from(PostgresTagPath::Table)
+                        .column(PostgresTagPath::DescendantId)
+                        .and_where(Expr::col(PostgresTagPath::Distance).lte(depth.children()))
+                        .and_where(Expr::col(PostgresTagPath::AncestorId).is_in(ids.iter().cloned()))
+                        .take()
+                    )
+            }));
+
+        if conditions.is_empty() {
+            Cond::all()
+        } else {
+            conditions
+        }
+    };
+
     let (sql, values) = Query::select()
         .column(PostgresTagPath::Distance)
         .expr_as(Expr::col((tag_ancestors.clone(), PostgresTag::Id)), PostgresTagRelation::AncestorId)
@@ -286,42 +316,20 @@ where
             PostgresTag::Table,
             tag_ancestors.clone(),
             Expr::col((tag_ancestors.clone(), PostgresTag::Id))
-                .equals(PostgresTagPath::Table, PostgresTagPath::AncestorId),
+                .equals((PostgresTagPath::Table, PostgresTagPath::AncestorId)),
         )
         .join_as(
             JoinType::InnerJoin,
             PostgresTag::Table,
             tag_descendants.clone(),
             Expr::col((tag_descendants.clone(), PostgresTag::Id))
-                .equals(PostgresTagPath::Table, PostgresTagPath::DescendantId),
+                .equals((PostgresTagPath::Table, PostgresTagPath::DescendantId)),
         )
         .and_where(Expr::col(PostgresTagPath::Distance).lte(1i32))
         .order_by(PostgresTagPath::Distance, Order::Asc)
         .order_by((tag_ancestors, PostgresTag::Kana), Order::Asc)
         .order_by((tag_descendants, PostgresTag::Kana), Order::Asc)
-        .cond_where(
-            Cond::any()
-                .add_option(depth.has_parent().then(|| {
-                    Expr::col(PostgresTagPath::DescendantId).in_subquery(
-                        Query::select()
-                            .from(PostgresTagPath::Table)
-                            .column(PostgresTagPath::AncestorId)
-                            .and_where(Expr::col(PostgresTagPath::Distance).lte(depth.parent()))
-                            .and_where(Expr::col(PostgresTagPath::DescendantId).is_in(ids.iter().cloned()))
-                            .take()
-                        )
-                }))
-                .add_option(depth.has_children().then(|| {
-                    Expr::col(PostgresTagPath::AncestorId).in_subquery(
-                        Query::select()
-                            .from(PostgresTagPath::Table)
-                            .column(PostgresTagPath::DescendantId)
-                            .and_where(Expr::col(PostgresTagPath::Distance).lte(depth.children()))
-                            .and_where(Expr::col(PostgresTagPath::AncestorId).is_in(ids.iter().cloned()))
-                            .take()
-                        )
-                }))
-        )
+        .cond_where(relatives)
         .build_sqlx(PostgresQueryBuilder);
 
     let rows: Vec<_> = sqlx::query_as_with::<_, PostgresTagRelativeRow, _>(&sql, values)
@@ -358,8 +366,7 @@ fn ancestor_relations(id: TagId) -> SelectStatement {
         .cond_where(
             Condition::all()
                 .add(Expr::col(PostgresTagPath::DescendantId).eq(id))
-                .add(Expr::col(PostgresTagPath::AncestorId).into_simple_expr()
-                    .not_equals(Expr::col(PostgresTagPath::DescendantId)))
+                .add(Expr::col(PostgresTagPath::AncestorId).ne(Expr::col(PostgresTagPath::DescendantId)))
         )
         .take()
 }
@@ -371,7 +378,7 @@ fn descendant_relations(id: TagId) -> SelectStatement {
     Query::select()
         .expr(Expr::col((tag_path_ancestors.clone(), PostgresTagPath::AncestorId)))
         .expr(Expr::col((tag_path_descendants.clone(), PostgresTagPath::DescendantId)))
-        .expr(Expr::col((tag_path_ancestors.clone(), PostgresTagPath::Distance)).into_simple_expr()
+        .expr(Expr::col((tag_path_ancestors.clone(), PostgresTagPath::Distance))
             .add(Expr::col((tag_path_descendants.clone(), PostgresTagPath::Distance))))
         .from_as(PostgresTagPath::Table, tag_path_ancestors.clone())
         .join_as(
@@ -379,7 +386,7 @@ fn descendant_relations(id: TagId) -> SelectStatement {
             PostgresTagPath::Table,
             tag_path_descendants.clone(),
             Expr::col((tag_path_ancestors.clone(), PostgresTagPath::DescendantId))
-                .equals(tag_path_descendants.clone(), PostgresTagPath::AncestorId),
+                .equals((tag_path_descendants.clone(), PostgresTagPath::AncestorId)),
         )
         .cond_where(
             Condition::all()
@@ -570,7 +577,7 @@ impl TagsRepository for PostgresTagsRepository {
                     .from(PostgresTag::Table)
                     .take(),
                 tags_aliases.clone(),
-                Expr::col((tags_aliases, PostgresTag::Id)).equals(PostgresTag::Table, PostgresTag::Id),
+                Expr::col((tags_aliases, PostgresTag::Id)).equals((PostgresTag::Table, PostgresTag::Id)),
             )
             .cond_where(
                 Cond::any()
@@ -609,7 +616,7 @@ impl TagsRepository for PostgresTagsRepository {
                     Expr::tuple([
                         Expr::col((PostgresTag::Table, PostgresTag::Kana)).into(),
                         Expr::col((PostgresTag::Table, PostgresTag::Id)).into(),
-                    ]).greater_than(Expr::tuple([
+                    ]).gt(Expr::tuple([
                         Expr::value(kana),
                         Expr::value(tag_id),
                     ]))
@@ -620,7 +627,7 @@ impl TagsRepository for PostgresTagsRepository {
                     Expr::tuple([
                         Expr::col((PostgresTag::Table, PostgresTag::Kana)).into(),
                         Expr::col((PostgresTag::Table, PostgresTag::Id)).into(),
-                    ]).less_than(Expr::tuple([
+                    ]).lt(Expr::tuple([
                         Expr::value(kana),
                         Expr::value(tag_id),
                     ]))
@@ -636,7 +643,7 @@ impl TagsRepository for PostgresTagsRepository {
                     JoinType::InnerJoin,
                     PostgresTagPath::Table,
                     Expr::col((PostgresTagPath::Table, PostgresTagPath::DescendantId))
-                        .equals(PostgresTag::Table, PostgresTag::Id),
+                        .equals((PostgresTag::Table, PostgresTag::Id)),
                 )
                 .and_where(Expr::col((PostgresTagPath::Table, PostgresTagPath::AncestorId)).eq(TagId::root()))
                 .and_where(Expr::col((PostgresTagPath::Table, PostgresTagPath::Distance)).eq(1));

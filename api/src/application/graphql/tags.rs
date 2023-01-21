@@ -5,6 +5,7 @@ use async_graphql::{
     connection::{CursorType, DefaultEdgeName, Edge, EmptyFields},
     InputObject, Lookahead, SimpleObject,
 };
+use base64::{prelude::BASE64_STANDARD, Engine};
 use chrono::NaiveDateTime;
 use derive_more::Constructor;
 use uuid::Uuid;
@@ -147,7 +148,7 @@ impl CursorType for TagCursor {
     type Error = anyhow::Error;
 
     fn decode_cursor(s: &str) -> anyhow::Result<Self> {
-        let bin = base64::decode(s)?;
+        let bin = BASE64_STANDARD.decode(s)?;
         let str = String::from_utf8(bin)?;
 
         let (kana, uuid) = str.split_once(Self::DELIMITER).context(QueryError::InvalidCursor)?;
@@ -160,7 +161,7 @@ impl CursorType for TagCursor {
     fn encode_cursor(&self) -> String {
         let str = format!("{}{}{}", &self.0, Self::DELIMITER, &self.1);
 
-        base64::encode(&str)
+        BASE64_STANDARD.encode(&str)
     }
 }
 

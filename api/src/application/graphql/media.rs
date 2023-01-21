@@ -3,6 +3,7 @@ use async_graphql::{
     connection::{CursorType, DefaultEdgeName, Edge, EmptyFields},
     SimpleObject,
 };
+use base64::prelude::{BASE64_STANDARD, Engine};
 use chrono::NaiveDateTime;
 use derive_more::Constructor;
 use uuid::Uuid;
@@ -77,7 +78,7 @@ impl CursorType for MediumCursor {
     type Error = anyhow::Error;
 
     fn decode_cursor(s: &str) -> anyhow::Result<Self> {
-        let bin = base64::decode(s)?;
+        let bin = BASE64_STANDARD.decode(s)?;
         let str = String::from_utf8(bin)?;
 
         let (datetime, uuid) = str.split_once(Self::DELIMITER).context(QueryError::InvalidCursor)?;
@@ -92,7 +93,7 @@ impl CursorType for MediumCursor {
         let uuid = self.1;
         let str = format!("{}{}{}", datetime, Self::DELIMITER, uuid);
 
-        base64::encode(&str)
+        BASE64_STANDARD.encode(&str)
     }
 }
 
