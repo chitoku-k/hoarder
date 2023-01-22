@@ -23,6 +23,7 @@ POSTGRES_CONTAINER_ID=$(docker create \
     --env=POSTGRES_PASSWORD="$PGPASSWORD" \
     --publish=":$PGPORT" \
     --shm-size=512m \
+    --tmpfs=/var/lib/postgresql/data \
     --mount=type=bind,source="$PWD/database",target=/docker-entrypoint-initdb.d \
     "$POSTGRES_IMAGE" \
     "${POSTGRES_OPTIONS[@]}")
