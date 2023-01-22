@@ -75,10 +75,8 @@ where
 
         let graphql = Router::new()
             .route("/", post(graphql::handle::<ExternalServicesService, MediaService, TagsService>))
+            .route("/", get(graphql::playground))
             .layer(Extension(schema));
-
-        let graphql_playground = Router::new()
-            .route("/", get(graphql::playground));
 
         let thumbnails = Router::new()
             .route("/:id", get(thumbnails::handle::<MediaService>))
@@ -90,7 +88,6 @@ where
         let addr = (Ipv6Addr::UNSPECIFIED, self.port).into();
         let app = Router::new()
             .nest("/", graphql)
-            .nest("/", graphql_playground)
             .nest("/thumbnails", thumbnails)
             .nest("/healthz", health);
 
