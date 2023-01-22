@@ -5,7 +5,7 @@ use chrono::NaiveDateTime;
 use derive_more::Constructor;
 use futures::TryStreamExt;
 use indexmap::IndexSet;
-use sea_query::{Expr, Iden, JoinType, Keyword, LockType, OnConflict, Order, PostgresQueryBuilder, Query, SimpleExpr};
+use sea_query::{Expr, Iden, JoinType, Keyword, LockType, OnConflict, Order, PostgresQueryBuilder, Query};
 use sea_query_binder::SqlxBinder;
 use sqlx::{types::Json, FromRow, PgConnection, PgPool};
 use thiserror::Error;
@@ -396,26 +396,25 @@ impl MediaRepository for PostgresMediaRepository {
 
         let query = {
             let mut source_ids = source_ids.into_iter().peekable();
-            match source_ids.peek() {
-                Some(_) => {
-                    let mut query = Query::insert();
-                    query
-                        .into_table(PostgresMediumSource::Table)
-                        .columns([
-                            PostgresMediumSource::MediumId,
-                            PostgresMediumSource::SourceId,
-                        ]);
+            if source_ids.peek().is_some() {
+                let mut query = Query::insert();
+                query
+                    .into_table(PostgresMediumSource::Table)
+                    .columns([
+                        PostgresMediumSource::MediumId,
+                        PostgresMediumSource::SourceId,
+                    ]);
 
-                    for source_id in source_ids {
-                        query.values([
-                            medium.id.into(),
-                            source_id.into(),
-                        ])?;
-                    }
+                for source_id in source_ids {
+                    query.values([
+                        medium.id.into(),
+                        source_id.into(),
+                    ])?;
+                }
 
-                    Some(query)
-                },
-                None => None,
+                Some(query)
+            } else {
+                None
             }
         };
         if let Some(query) = query {
@@ -425,28 +424,27 @@ impl MediaRepository for PostgresMediaRepository {
 
         let query = {
             let mut tag_tag_type_ids = tag_tag_type_ids.into_iter().peekable();
-            match tag_tag_type_ids.peek() {
-                Some(_) => {
-                    let mut query = Query::insert();
-                    query
-                        .into_table(PostgresMediumTag::Table)
-                        .columns([
-                            PostgresMediumTag::MediumId,
-                            PostgresMediumTag::TagId,
-                            PostgresMediumTag::TagTypeId,
-                        ]);
+            if tag_tag_type_ids.peek().is_some() {
+                let mut query = Query::insert();
+                query
+                    .into_table(PostgresMediumTag::Table)
+                    .columns([
+                        PostgresMediumTag::MediumId,
+                        PostgresMediumTag::TagId,
+                        PostgresMediumTag::TagTypeId,
+                    ]);
 
-                    for (tag_id, tag_type_id) in tag_tag_type_ids {
-                        query.values([
-                            medium.id.into(),
-                            tag_id.into(),
-                            tag_type_id.into(),
-                        ])?;
-                    }
+                for (tag_id, tag_type_id) in tag_tag_type_ids {
+                    query.values([
+                        medium.id.into(),
+                        tag_id.into(),
+                        tag_type_id.into(),
+                    ])?;
+                }
 
-                    Some(query)
-                },
-                None => None,
+                Some(query)
+            } else {
+                None
             }
         };
         if let Some(query) = query {
@@ -749,7 +747,7 @@ impl MediaRepository for PostgresMediaRepository {
 
             let (sql, values) = Query::update()
                 .table(PostgresReplica::Table)
-                .value(PostgresReplica::DisplayOrder, SimpleExpr::Keyword(Keyword::Null))
+                .value(PostgresReplica::DisplayOrder, Keyword::Null)
                 .and_where(Expr::col(PostgresReplica::MediumId).eq(id))
                 .build_sqlx(PostgresQueryBuilder);
 
@@ -768,21 +766,20 @@ impl MediaRepository for PostgresMediaRepository {
 
         let query = {
             let mut add_source_ids = add_source_ids.into_iter().peekable();
-            match add_source_ids.peek() {
-                Some(_) => {
-                    let mut query = Query::insert();
-                    query
-                        .into_table(PostgresMediumSource::Table)
-                        .columns([PostgresMediumSource::MediumId, PostgresMediumSource::SourceId])
-                        .on_conflict(OnConflict::new().do_nothing().to_owned());
+            if add_source_ids.peek().is_some() {
+                let mut query = Query::insert();
+                query
+                    .into_table(PostgresMediumSource::Table)
+                    .columns([PostgresMediumSource::MediumId, PostgresMediumSource::SourceId])
+                    .on_conflict(OnConflict::new().do_nothing().to_owned());
 
-                    for source_id in add_source_ids {
-                        query.values([id.into(), source_id.into()])?;
-                    }
+                for source_id in add_source_ids {
+                    query.values([id.into(), source_id.into()])?;
+                }
 
-                    Some(query)
-                },
-                None => None,
+                Some(query)
+            } else {
+                None
             }
         };
         if let Some(query) = query {
@@ -792,16 +789,15 @@ impl MediaRepository for PostgresMediaRepository {
 
         let query = {
             let mut remove_source_ids = remove_source_ids.into_iter().peekable();
-            match remove_source_ids.peek() {
-                Some(_) => {
-                    let mut query = Query::delete();
-                    query
-                        .from_table(PostgresMediumSource::Table)
-                        .and_where(Expr::col(PostgresMediumSource::SourceId).is_in(remove_source_ids));
+            if remove_source_ids.peek().is_some() {
+                let mut query = Query::delete();
+                query
+                    .from_table(PostgresMediumSource::Table)
+                    .and_where(Expr::col(PostgresMediumSource::SourceId).is_in(remove_source_ids));
 
-                    Some(query)
-                },
-                None => None,
+                Some(query)
+            } else {
+                None
             }
         };
         if let Some(query) = query {
@@ -811,29 +807,28 @@ impl MediaRepository for PostgresMediaRepository {
 
         let query = {
             let mut add_tag_tag_type_ids = add_tag_tag_type_ids.into_iter().peekable();
-            match add_tag_tag_type_ids.peek() {
-                Some(_) => {
-                    let mut query = Query::insert();
-                    query
-                        .into_table(PostgresMediumTag::Table)
-                        .columns([
-                            PostgresMediumTag::MediumId,
-                            PostgresMediumTag::TagId,
-                            PostgresMediumTag::TagTypeId,
-                        ])
-                        .on_conflict(OnConflict::new().do_nothing().to_owned());
+            if add_tag_tag_type_ids.peek().is_some() {
+                let mut query = Query::insert();
+                query
+                    .into_table(PostgresMediumTag::Table)
+                    .columns([
+                        PostgresMediumTag::MediumId,
+                        PostgresMediumTag::TagId,
+                        PostgresMediumTag::TagTypeId,
+                    ])
+                    .on_conflict(OnConflict::new().do_nothing().to_owned());
 
-                    for (tag_id, tag_type_id) in add_tag_tag_type_ids {
-                        query.values([
-                            id.into(),
-                            tag_id.into(),
-                            tag_type_id.into(),
-                        ])?;
-                    }
+                for (tag_id, tag_type_id) in add_tag_tag_type_ids {
+                    query.values([
+                        id.into(),
+                        tag_id.into(),
+                        tag_type_id.into(),
+                    ])?;
+                }
 
-                    Some(query)
-                },
-                None => None,
+                Some(query)
+            } else {
+                None
             }
         };
         if let Some(query) = query {
@@ -843,27 +838,26 @@ impl MediaRepository for PostgresMediaRepository {
 
         let query = {
             let mut remove_tag_tag_type_ids = remove_tag_tag_type_ids.into_iter().peekable();
-            match remove_tag_tag_type_ids.peek() {
-                Some(_) => {
-                    let remove_tag_tag_type_ids: Vec<_> = remove_tag_tag_type_ids
-                        .into_iter()
-                        .map(|(tag_id, tag_type_id)| (*tag_id, *tag_type_id))
-                        .collect();
+            if remove_tag_tag_type_ids.peek().is_some() {
+                let remove_tag_tag_type_ids: Vec<_> = remove_tag_tag_type_ids
+                    .into_iter()
+                    .map(|(tag_id, tag_type_id)| (*tag_id, *tag_type_id))
+                    .collect();
 
-                    let mut query = Query::delete();
-                    query
-                        .from_table(PostgresMediumTag::Table)
-                        .and_where(Expr::col(PostgresMediumTag::MediumId).eq(id))
-                        .and_where(
-                            Expr::tuple([
-                                Expr::col(PostgresMediumTag::TagId).into(),
-                                Expr::col(PostgresMediumTag::TagTypeId).into(),
-                            ]).in_tuples(remove_tag_tag_type_ids),
-                        );
+                let mut query = Query::delete();
+                query
+                    .from_table(PostgresMediumTag::Table)
+                    .and_where(Expr::col(PostgresMediumTag::MediumId).eq(id))
+                    .and_where(
+                        Expr::tuple([
+                            Expr::col(PostgresMediumTag::TagId).into(),
+                            Expr::col(PostgresMediumTag::TagTypeId).into(),
+                        ]).in_tuples(remove_tag_tag_type_ids),
+                    );
 
-                    Some(query)
-                },
-                None => None,
+                Some(query)
+            } else {
+                None
             }
         };
         if let Some(query) = query {

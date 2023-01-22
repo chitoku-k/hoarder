@@ -10,7 +10,7 @@ use chrono::NaiveDateTime;
 use derive_more::Constructor;
 use futures::TryStreamExt;
 use indexmap::{IndexMap, IndexSet};
-use sea_query::{Alias, Cond, Condition, Expr, Iden, JoinType, LikeExpr, LockType, Order, PostgresQueryBuilder, Query, SelectStatement};
+use sea_query::{Alias, Cond, Expr, Iden, JoinType, LikeExpr, LockType, Order, PostgresQueryBuilder, Query, SelectStatement};
 use sea_query_binder::SqlxBinder;
 use sqlx::{Acquire, FromRow, PgPool, Postgres, Transaction, PgConnection};
 use thiserror::Error;
@@ -364,7 +364,7 @@ fn ancestor_relations(id: TagId) -> SelectStatement {
             PostgresTagPath::Distance,
         ])
         .cond_where(
-            Condition::all()
+            Cond::all()
                 .add(Expr::col(PostgresTagPath::DescendantId).eq(id))
                 .add(Expr::col(PostgresTagPath::AncestorId).ne(Expr::col(PostgresTagPath::DescendantId)))
         )
@@ -389,7 +389,7 @@ fn descendant_relations(id: TagId) -> SelectStatement {
                 .equals((tag_path_descendants.clone(), PostgresTagPath::AncestorId)),
         )
         .cond_where(
-            Condition::all()
+            Cond::all()
                 .add(Expr::col((tag_path_ancestors.clone(), PostgresTagPath::DescendantId)).eq(id))
                 .add(Expr::col((tag_path_descendants.clone(), PostgresTagPath::AncestorId)).eq(id))
                 .add(Expr::col((tag_path_ancestors, PostgresTagPath::AncestorId)).ne(id))
