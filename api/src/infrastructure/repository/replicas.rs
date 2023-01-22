@@ -3,7 +3,7 @@ use async_trait::async_trait;
 use chrono::NaiveDateTime;
 use derive_more::Constructor;
 use futures::TryStreamExt;
-use sea_query::{Alias, BinOper, Expr, Iden, JoinType, Keyword, LockType, Order, PostgresQueryBuilder, Query, SimpleExpr};
+use sea_query::{Alias, BinOper, Expr, Iden, JoinType, Keyword, LockType, Order, PostgresQueryBuilder, Query};
 use sea_query_binder::SqlxBinder;
 use sqlx::{FromRow, PgPool, Row};
 use uuid::Uuid;
@@ -153,11 +153,8 @@ impl ReplicasRepository for PostgresReplicasRepository {
             .returning(
                 Query::returning()
                     .exprs([
-                        SimpleExpr::Binary(
-                            Box::new(Expr::col(PostgresReplica::Thumbnail).is_not_null()),
-                            BinOper::As,
-                            Box::new(Expr::col(PostgresReplica::HasThumbnail).into()),
-                        ),
+                        Expr::expr(Expr::col(PostgresReplica::Thumbnail).is_not_null())
+                            .binary(BinOper::As, Expr::col(PostgresReplica::HasThumbnail)),
                         Expr::col(PostgresReplica::Id).into(),
                         Expr::col(PostgresReplica::MediumId).into(),
                         Expr::col(PostgresReplica::DisplayOrder).into(),
@@ -299,11 +296,8 @@ impl ReplicasRepository for PostgresReplicasRepository {
             .returning(
                 Query::returning()
                     .exprs([
-                        SimpleExpr::Binary(
-                            Box::new(Expr::col(PostgresReplica::Thumbnail).is_not_null()),
-                            BinOper::As,
-                            Box::new(Expr::col(PostgresReplica::HasThumbnail).into()),
-                        ),
+                        Expr::expr(Expr::col(PostgresReplica::Thumbnail).is_not_null())
+                            .binary(BinOper::As, Expr::col(PostgresReplica::HasThumbnail)),
                         Expr::col(PostgresReplica::Id).into(),
                         Expr::col(PostgresReplica::MediumId).into(),
                         Expr::col(PostgresReplica::DisplayOrder).into(),
@@ -389,7 +383,7 @@ impl ReplicasRepository for PostgresReplicasRepository {
 
         let (sql, values) = Query::update()
             .table(PostgresReplica::Table)
-            .value(PostgresReplica::DisplayOrder, SimpleExpr::Keyword(Keyword::Null))
+            .value(PostgresReplica::DisplayOrder, Keyword::Null)
             .and_where(Expr::col(PostgresReplica::Id).is_in(siblings.iter().map(|s| *s.id)))
             .build_sqlx(PostgresQueryBuilder);
 
