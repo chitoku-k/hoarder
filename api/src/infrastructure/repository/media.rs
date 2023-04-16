@@ -840,7 +840,6 @@ impl MediaRepository for PostgresMediaRepository {
             let mut remove_tag_tag_type_ids = remove_tag_tag_type_ids.into_iter().peekable();
             if remove_tag_tag_type_ids.peek().is_some() {
                 let remove_tag_tag_type_ids: Vec<_> = remove_tag_tag_type_ids
-                    .into_iter()
                     .map(|(tag_id, tag_type_id)| (*tag_id, *tag_type_id))
                     .collect();
 

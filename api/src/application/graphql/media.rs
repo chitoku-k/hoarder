@@ -93,7 +93,7 @@ impl CursorType for MediumCursor {
         let uuid = self.1;
         let str = format!("{}{}{}", datetime, Self::DELIMITER, uuid);
 
-        BASE64_STANDARD.encode(&str)
+        BASE64_STANDARD.encode(str)
     }
 }
 
