@@ -103,7 +103,7 @@ impl TryFrom<sources::Source> for Source {
         Ok(Self {
             id: *source.id,
             external_service: source.external_service.into(),
-            external_metadata: serde_json::to_value(&external_metadata)?,
+            external_metadata: serde_json::to_value(external_metadata)?,
             created_at: source.created_at,
             updated_at: source.updated_at,
         })

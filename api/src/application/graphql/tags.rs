@@ -161,7 +161,7 @@ impl CursorType for TagCursor {
     fn encode_cursor(&self) -> String {
         let str = format!("{}{}{}", &self.0, Self::DELIMITER, &self.1);
 
-        BASE64_STANDARD.encode(&str)
+        BASE64_STANDARD.encode(str)
     }
 }
 
