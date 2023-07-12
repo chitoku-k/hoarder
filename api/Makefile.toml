@@ -2,6 +2,7 @@
 skip_core_tasks = true
 
 [tasks.coverage]
+workspace = false
 description = "Test with coverage"
 script = '''
 #!/usr/bin/env bash
@@ -12,6 +13,7 @@ cargo tarpaulin --features test-postgres "$@"
 '''
 
 [tasks.test]
+workspace = false
 description = "Test"
 script = '''
 #!/usr/bin/env bash
