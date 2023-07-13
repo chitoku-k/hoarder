@@ -84,8 +84,8 @@ pub trait MediaServiceInterface: Send + Sync + 'static {
     /// Gets the replica by original URL.
     async fn get_replica_by_original_url(&self, original_url: &str) -> anyhow::Result<Replica>;
 
-    /// Gets the sources by their external metadata.
-    async fn get_sources_by_external_metadata(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> anyhow::Result<Vec<Source>>;
+    /// Gets the source by its external metadata.
+    async fn get_source_by_external_metadata(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> anyhow::Result<Source>;
 
     /// Gets the thumbnail by ID.
     async fn get_thumbnail_by_id(&self, id: ReplicaId) -> anyhow::Result<ReplicaThumbnail>;
@@ -276,11 +276,11 @@ where
         }
     }
 
-    async fn get_sources_by_external_metadata(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> anyhow::Result<Vec<Source>> {
+    async fn get_source_by_external_metadata(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> anyhow::Result<Source> {
         match self.sources_repository.fetch_by_external_metadata(external_service_id, external_metadata).await {
-            Ok(sources) => Ok(sources),
+            Ok(source) => Ok(source),
             Err(e) => {
-                log::error!("failed to get the sources\nError: {e:?}");
+                log::error!("failed to get the source\nError: {e:?}");
                 Err(e)
             },
         }
@@ -1460,7 +1460,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn get_sources_by_external_metadata_succeeds() {
+    async fn get_source_by_external_metadata_succeeds() {
         let mock_media_repository = MockMediaRepository::new();
         let mock_replicas_repository = MockReplicasRepository::new();
 
@@ -1475,62 +1475,36 @@ mod tests {
                  )
             })
             .returning(|_, _| {
-                Ok(vec![
-                    Source {
-                        id: SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
-                        external_service: ExternalService {
-                            id: ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
-                            slug: "twitter".to_string(),
-                            name: "Twitter".to_string(),
-                        },
-                        external_metadata: ExternalMetadata::Twitter { id: 727620202049900544 },
-                        created_at: NaiveDate::from_ymd_opt(2016, 5, 4).and_then(|d| d.and_hms_opt(7, 5, 0)).unwrap(),
-                        updated_at: NaiveDate::from_ymd_opt(2016, 5, 4).and_then(|d| d.and_hms_opt(7, 5, 1)).unwrap(),
+                Ok(Source {
+                    id: SourceId::from(uuid!("22222222-2222-2222-2222-222222222222")),
+                    external_service: ExternalService {
+                        id: ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
+                        slug: "pixiv".to_string(),
+                        name: "pixiv".to_string(),
                     },
-                    Source {
-                        id: SourceId::from(uuid!("22222222-2222-2222-2222-222222222222")),
-                        external_service: ExternalService {
-                            id: ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
-                            slug: "pixiv".to_string(),
-                            name: "pixiv".to_string(),
-                        },
-                        external_metadata: ExternalMetadata::Pixiv { id: 56736941 },
-                        created_at: NaiveDate::from_ymd_opt(2016, 5, 6).and_then(|d| d.and_hms_opt(5, 14, 0)).unwrap(),
-                        updated_at: NaiveDate::from_ymd_opt(2016, 5, 6).and_then(|d| d.and_hms_opt(5, 14, 1)).unwrap(),
-                    },
-                ])
+                    external_metadata: ExternalMetadata::Pixiv { id: 56736941 },
+                    created_at: NaiveDate::from_ymd_opt(2016, 5, 6).and_then(|d| d.and_hms_opt(5, 14, 0)).unwrap(),
+                    updated_at: NaiveDate::from_ymd_opt(2016, 5, 6).and_then(|d| d.and_hms_opt(5, 14, 1)).unwrap(),
+                })
             });
 
         let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository);
-        let actual = service.get_sources_by_external_metadata(
+        let actual = service.get_source_by_external_metadata(
              ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
              ExternalMetadata::Pixiv { id: 56736941 },
         ).await.unwrap();
 
-        assert_eq!(actual, vec![
-            Source {
-                id: SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
-                external_service: ExternalService {
-                    id: ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
-                    slug: "twitter".to_string(),
-                    name: "Twitter".to_string(),
-                },
-                external_metadata: ExternalMetadata::Twitter { id: 727620202049900544 },
-                created_at: NaiveDate::from_ymd_opt(2016, 5, 4).and_then(|d| d.and_hms_opt(7, 5, 0)).unwrap(),
-                updated_at: NaiveDate::from_ymd_opt(2016, 5, 4).and_then(|d| d.and_hms_opt(7, 5, 1)).unwrap(),
+        assert_eq!(actual, Source {
+            id: SourceId::from(uuid!("22222222-2222-2222-2222-222222222222")),
+            external_service: ExternalService {
+                id: ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
+                slug: "pixiv".to_string(),
+                name: "pixiv".to_string(),
             },
-            Source {
-                id: SourceId::from(uuid!("22222222-2222-2222-2222-222222222222")),
-                external_service: ExternalService {
-                    id: ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
-                    slug: "pixiv".to_string(),
-                    name: "pixiv".to_string(),
-                },
-                external_metadata: ExternalMetadata::Pixiv { id: 56736941 },
-                created_at: NaiveDate::from_ymd_opt(2016, 5, 6).and_then(|d| d.and_hms_opt(5, 14, 0)).unwrap(),
-                updated_at: NaiveDate::from_ymd_opt(2016, 5, 6).and_then(|d| d.and_hms_opt(5, 14, 1)).unwrap(),
-            },
-        ]);
+            external_metadata: ExternalMetadata::Pixiv { id: 56736941 },
+            created_at: NaiveDate::from_ymd_opt(2016, 5, 6).and_then(|d| d.and_hms_opt(5, 14, 0)).unwrap(),
+            updated_at: NaiveDate::from_ymd_opt(2016, 5, 6).and_then(|d| d.and_hms_opt(5, 14, 1)).unwrap(),
+        });
     }
 
     #[tokio::test]
@@ -1551,7 +1525,7 @@ mod tests {
             .returning(|_, _| Err(anyhow!("error fetching the sources")));
 
         let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository);
-        let actual = service.get_sources_by_external_metadata(
+        let actual = service.get_source_by_external_metadata(
              ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
              ExternalMetadata::Pixiv { id: 56736941 },
         ).await;

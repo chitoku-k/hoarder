@@ -9,7 +9,6 @@ use domain::{
     },
     repository::{sources::SourcesRepository, DeleteResult},
 };
-use futures::TryStreamExt;
 use sea_query::{
     extension::postgres::PgExpr,
     Expr, Iden, JoinType, LockType, PostgresQueryBuilder, Query,
@@ -228,7 +227,7 @@ impl SourcesRepository for PostgresSourcesRepository {
         Ok(source)
     }
 
-    async fn fetch_by_external_metadata(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> anyhow::Result<Vec<Source>> {
+    async fn fetch_by_external_metadata(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> anyhow::Result<Source> {
         let external_metadata = PostgresExternalServiceMetadata::try_from(external_metadata)?;
         let external_metadata = match serde_json::to_value(&external_metadata) {
             Ok(value) => value,
@@ -254,18 +253,13 @@ impl SourcesRepository for PostgresSourcesRepository {
             .and_where(Expr::col(PostgresSource::ExternalMetadata).contains(Expr::val(external_metadata)))
             .build_sqlx(PostgresQueryBuilder);
 
-        let mut sources = Vec::new();
-        let mut stream = sqlx::query_as_with::<_, PostgresSourceExternalServiceRow, _>(&sql, values).fetch(&self.pool);
+        let source = sqlx::query_as_with::<_, PostgresSourceExternalServiceRow, _>(&sql, values)
+            .fetch_optional(&self.pool)
+            .await?
+            .context(SourceError::UnknwonExternalSource)?
+            .try_into()?;
 
-        while let Some(row) = stream.try_next().await? {
-            let source = match row.try_into() {
-                Ok(source) => source,
-                Err(e) => return Err(PostgresExternalServiceError::Deserialize(e))?,
-            };
-            sources.push(source);
-        }
-
-        Ok(sources)
+        Ok(source)
     }
 
     async fn update_by_id(&self, id: SourceId, external_service_id: Option<ExternalServiceId>, external_metadata: Option<ExternalMetadata>) -> anyhow::Result<Source> {
@@ -528,19 +522,17 @@ mod tests {
             ExternalMetadata::Pixiv { id: 8888888 },
         ).await.unwrap();
 
-        assert_eq!(actual, vec![
-            Source {
-                id: SourceId::from(uuid!("94055dd8-7a22-4137-b8eb-3a374df5e5d1")),
-                external_service: ExternalService {
-                    id: ExternalServiceId::from(uuid!("4e0c68c7-e5ec-4d60-b9eb-733f47290cd3")),
-                    slug: "pixiv".to_string(),
-                    name: "pixiv".to_string(),
-                },
-                external_metadata: ExternalMetadata::Pixiv { id: 8888888 },
-                created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
-                updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 14)).unwrap(),
+        assert_eq!(actual, Source {
+            id: SourceId::from(uuid!("94055dd8-7a22-4137-b8eb-3a374df5e5d1")),
+            external_service: ExternalService {
+                id: ExternalServiceId::from(uuid!("4e0c68c7-e5ec-4d60-b9eb-733f47290cd3")),
+                slug: "pixiv".to_string(),
+                name: "pixiv".to_string(),
             },
-        ]);
+            external_metadata: ExternalMetadata::Pixiv { id: 8888888 },
+            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
+            updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 14)).unwrap(),
+        });
     }
 
     #[test_context(DatabaseContext)]

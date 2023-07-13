@@ -143,16 +143,16 @@ where
     }
 
     async fn replica(&self, original_url: String) -> anyhow::Result<Replica> {
-        let replicas = self.media_service.get_replica_by_original_url(&original_url).await?;
-        Ok(replicas.into())
+        let replica = self.media_service.get_replica_by_original_url(&original_url).await?;
+        Ok(replica.into())
     }
 
-    async fn sources(&self, external_service_id: Uuid, external_metadata: ExternalMetadata) -> anyhow::Result<Vec<Source>> {
+    async fn source(&self, external_service_id: Uuid, external_metadata: ExternalMetadata) -> anyhow::Result<Source> {
         let external_service_id = external_service_id.into();
         let external_metadata = external_metadata.try_into()?;
 
-        let sources = self.media_service.get_sources_by_external_metadata(external_service_id, external_metadata).await?;
-        sources.into_iter().map(TryInto::try_into).collect()
+        let source = self.media_service.get_source_by_external_metadata(external_service_id, external_metadata).await?;
+        source.try_into()
     }
 
     async fn all_tags(
@@ -305,7 +305,7 @@ mod tests {
             where
                 T: IntoIterator<Item = ReplicaId> + Send + Sync + 'static;
             async fn get_replica_by_original_url(&self, original_url: &str) -> anyhow::Result<replicas::Replica>;
-            async fn get_sources_by_external_metadata(&self, external_service_id: ExternalServiceId, external_metadata: external_services::ExternalMetadata) -> anyhow::Result<Vec<sources::Source>>;
+            async fn get_source_by_external_metadata(&self, external_service_id: ExternalServiceId, external_metadata: external_services::ExternalMetadata) -> anyhow::Result<sources::Source>;
             async fn get_thumbnail_by_id(&self, id: ReplicaId) -> anyhow::Result<replicas::ReplicaThumbnail>;
             async fn update_medium_by_id<T, U, V, W, X>(&self, id: MediumId, add_source_ids: T, remove_source_ids: U, add_tag_tag_type_ids: V, remove_tag_tag_type_ids: W, replica_orders: X, created_at: Option<NaiveDateTime>, tag_depth: Option<TagDepth>, replicas: bool, sources: bool) -> anyhow::Result<media::Medium>
             where
