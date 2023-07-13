@@ -43,11 +43,11 @@ version = "0.3.1"
 features = ["postgres-array", "sqlx-postgres", "with-chrono", "with-json", "with-uuid"]
 
 [dependencies.serde]
-version = "1.0.164"
+version = "1.0.169"
 features = ["derive"]
 
 [dependencies.serde_json]
-version = "1.0.99"
+version = "1.0.102"
 
 [dependencies.sqlx]
 version = "0.6.3"

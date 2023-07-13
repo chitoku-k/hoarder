@@ -46,11 +46,11 @@ default-features = false
 features = ["alloc", "io-compat"]
 
 [dependencies.serde]
-version = "1.0.164"
+version = "1.0.171"
 features = ["derive"]
 
 [dependencies.serde_json]
-version = "1.0.99"
+version = "1.0.102"
 
 [dependencies.serde_with]
 version = "3.0.0"
