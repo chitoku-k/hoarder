@@ -14,8 +14,8 @@ pub trait SourcesRepository: Send + Sync + 'static {
     /// Creates a source.
     async fn create(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> anyhow::Result<Source>;
 
-    /// Fetches the sources by their external metadata.
-    async fn fetch_by_external_metadata(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> anyhow::Result<Vec<Source>>;
+    /// Fetches the source by its external metadata.
+    async fn fetch_by_external_metadata(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> anyhow::Result<Source>;
 
     /// Updates the source by ID.
     async fn update_by_id(&self, id: SourceId, external_service_id: Option<ExternalServiceId>, external_metadata: Option<ExternalMetadata>) -> anyhow::Result<Source>;
