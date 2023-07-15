@@ -36,6 +36,8 @@ version = "0.21.2"
 
 [dependencies.chrono]
 version = "0.4.26"
+default-features = false
+features = ["clock", "std"]
 
 [dependencies.derive_more]
 version = "0.99.17"
@@ -54,6 +56,8 @@ version = "1.0.102"
 
 [dependencies.serde_with]
 version = "3.0.0"
+default-features = false
+features = ["macros"]
 
 [dependencies.thiserror]
 version = "1.0.40"
