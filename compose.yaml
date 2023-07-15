@@ -1,0 +1,44 @@
+services:
+  api:
+    build:
+      context: ./api
+      target: build
+    command: /usr/local/bin/hoarder
+    working_dir: /usr/src
+    ports:
+      - '8080:8080'
+    environment:
+      LOG_LEVEL: debug
+      PORT: 8080
+      TLS_CERT:
+      TLS_KEY:
+      PGHOST: database
+      PGDATABASE: hoarder
+      PGUSER: hoarder
+      PGPASSWORD: hoarder
+      PGSSLMODE: disable
+    volumes:
+      - type: bind
+        source: .
+        target: /usr/src
+
+  database:
+    image: postgres:15.3
+    environment:
+      POSTGRES_DB: hoarder
+      POSTGRES_USER: hoarder
+      POSTGRES_PASSWORD: hoarder
+    ports:
+      - '5432:5432'
+    volumes:
+      - type: bind
+        source: ./database
+        target: /docker-entrypoint-initdb.d
+        read_only: true
+      - type: volume
+        source: database
+        target: /var/lib/postgresql/data
+
+volumes:
+  database:
+    driver: local
