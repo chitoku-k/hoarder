@@ -2,7 +2,7 @@ services:
   api:
     build:
       context: ./api
-      target: build
+      target: development
     command: /usr/local/bin/hoarder
     working_dir: /usr/src
     ports:
