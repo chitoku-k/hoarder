@@ -7,7 +7,6 @@ use domain::service::{
     media::MediaService,
     tags::TagsService,
 };
-use config::env;
 use log::LevelFilter;
 use postgres::{
     external_services::PostgresExternalServicesRepository,
@@ -22,6 +21,8 @@ use sqlx::{
     ConnectOptions, PgPool,
 };
 use thumbnails::{ThumbnailURLFactory, ThumbnailsHandler};
+
+use crate::env;
 
 fn external_services_repository(pg_pool: PgPool) -> PostgresExternalServicesRepository {
     PostgresExternalServicesRepository::new(pg_pool)
@@ -79,7 +80,7 @@ impl Application {
             .parse_env("LOG_LEVEL")
             .init();
 
-        let config = env::get()?;
+        let config = env::get();
 
         let mut pg_options = PgConnectOptions::new();
         pg_options.log_statements(LevelFilter::Debug);

@@ -13,7 +13,6 @@ path = "crates/core/main.rs"
 members = [
     "crates/application",
     "crates/domain",
-    "crates/config",
     "crates/graphql",
     "crates/postgres",
     "crates/thumbnails",
@@ -29,9 +28,6 @@ path = "crates/application"
 
 [workspace.dependencies.domain]
 path = "crates/domain"
-
-[workspace.dependencies.config]
-path = "crates/config"
 
 [workspace.dependencies.graphql]
 path = "crates/graphql"
@@ -58,9 +54,6 @@ workspace = true
 [dependencies.domain]
 workspace = true
 
-[dependencies.config]
-workspace = true
-
 [dependencies.postgres]
 workspace = true
 
@@ -69,6 +62,11 @@ workspace = true
 
 [dependencies.anyhow]
 version = "1.0.71"
+
+[dependencies.clap]
+version = "4.3.11"
+features = ["cargo", "derive", "env", "help", "std", "string", "suggestions", "usage"]
+default-features = false
 
 [dependencies.env_logger]
 version = "0.10.0"
