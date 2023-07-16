@@ -3,6 +3,7 @@ use std::process::exit;
 use di::container::Application;
 
 mod di;
+mod env;
 
 #[tokio::main]
 async fn main() {
