@@ -5,7 +5,7 @@ use crate::{
     repository::DeleteResult,
 };
 
-#[cfg_attr(test, mockall::automock)]
+#[cfg_attr(feature = "test-mock", mockall::automock)]
 #[async_trait]
 pub trait ExternalServicesRepository: Send + Sync + 'static {
     /// Creates an external service.

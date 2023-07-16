@@ -5,7 +5,7 @@ use crate::{
     repository::DeleteResult,
 };
 
-#[cfg_attr(test, mockall::automock)]
+#[cfg_attr(feature = "test-mock", mockall::automock)]
 #[async_trait]
 pub trait TagTypesRepository: Send + Sync + 'static {
     /// Creates a tag type.

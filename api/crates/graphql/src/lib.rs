@@ -21,11 +21,11 @@ use crate::{mutation::Mutation, query::Query};
 pub mod mutation;
 pub mod query;
 
-mod external_services;
-mod media;
-mod replicas;
-mod sources;
-mod tags;
+pub mod external_services;
+pub mod media;
+pub mod replicas;
+pub mod sources;
+pub mod tags;
 
 pub type APISchema<ExternalServicesService, MediaService, TagsService> = Schema<
     Query<ExternalServicesService, MediaService, TagsService>,

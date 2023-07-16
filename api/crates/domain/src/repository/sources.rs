@@ -8,7 +8,7 @@ use crate::{
     repository::DeleteResult,
 };
 
-#[cfg_attr(test, mockall::automock)]
+#[cfg_attr(feature = "test-mock", mockall::automock)]
 #[async_trait]
 pub trait SourcesRepository: Send + Sync + 'static {
     /// Creates a source.

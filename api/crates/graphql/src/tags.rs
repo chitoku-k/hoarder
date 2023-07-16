@@ -17,7 +17,7 @@ use uuid::Uuid;
 use crate::query::QueryError;
 
 #[derive(SimpleObject)]
-pub(crate) struct Tag {
+pub struct Tag {
     id: Uuid,
     name: String,
     kana: String,
@@ -54,21 +54,21 @@ pub(crate) struct TagChild {
 pub(crate) struct TagCursor(String, Uuid);
 
 #[derive(SimpleObject)]
-pub(crate) struct TagType {
+pub struct TagType {
     id: Uuid,
     slug: String,
     name: String,
 }
 
 #[derive(Constructor, SimpleObject)]
-pub(crate) struct TagTagType {
+pub struct TagTagType {
     tag: Tag,
     #[graphql(name = "type")]
     tag_type: TagType,
 }
 
 #[derive(Clone, Copy, InputObject)]
-pub(crate) struct TagTagTypeInput {
+pub struct TagTagTypeInput {
     tag_id: Uuid,
     tag_type_id: Uuid,
 }

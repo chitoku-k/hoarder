@@ -12,7 +12,7 @@ use crate::{
     repository::{DeleteResult, OrderDirection},
 };
 
-#[cfg_attr(test, mockall::automock)]
+#[cfg_attr(feature = "test-mock", mockall::automock)]
 #[async_trait]
 pub trait MediaRepository: Send + Sync + 'static {
     /// Creates a medium.
