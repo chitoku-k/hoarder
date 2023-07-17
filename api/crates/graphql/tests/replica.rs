@@ -15,7 +15,7 @@ use thumbnails::ThumbnailURLFactory;
 use uuid::uuid;
 
 #[tokio::test]
-async fn replica_succeeds() {
+async fn succeeds() {
     let external_services_service = MockExternalServicesServiceInterface::new();
 
     let mut media_service = MockMediaServiceInterface::new();
