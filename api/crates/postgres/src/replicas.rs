@@ -10,7 +10,7 @@ use domain::{
     },
     repository::{replicas::ReplicasRepository, DeleteResult},
 };
-use sea_query::{Alias, BinOper, Expr, Iden, JoinType, Keyword, LockType, Order, PostgresQueryBuilder, Query};
+use sea_query::{Alias, Asterisk, BinOper, Expr, Iden, JoinType, Keyword, LockType, Order, PostgresQueryBuilder, Query};
 use sea_query_binder::SqlxBinder;
 use sqlx::{FromRow, PgPool, Row};
 
@@ -124,7 +124,7 @@ impl ReplicasRepository for PostgresReplicasRepository {
 
         let (sql, values) = Query::select()
             .expr(
-                Expr::asterisk()
+                Expr::col(Asterisk)
                     .count()
                     .add(Expr::val(1i32)),
             )
