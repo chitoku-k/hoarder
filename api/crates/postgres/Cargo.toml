@@ -15,7 +15,7 @@ test-postgres = []
 workspace = true
 
 [dependencies.anyhow]
-version = "1.0.71"
+version = "1.0.72"
 
 [dependencies.async-trait]
 version = "0.1.68"
@@ -49,7 +49,7 @@ version = "1.0.169"
 features = ["derive"]
 
 [dependencies.serde_json]
-version = "1.0.102"
+version = "1.0.103"
 
 [dependencies.sqlx]
 version = "0.6.3"
@@ -59,7 +59,7 @@ features = ["chrono", "json", "postgres", "runtime-tokio-rustls", "tls", "uuid"]
 version = "1.0.40"
 
 [dependencies.uuid]
-version = "1.4.0"
+version = "1.4.1"
 
 [dev-dependencies.include_dir]
 version = "0.7.3"

@@ -15,7 +15,7 @@ workspace = true
 workspace = true
 
 [dependencies.anyhow]
-version = "1.0.71"
+version = "1.0.72"
 
 [dependencies.async-graphql]
 version = "5.0.10"
@@ -25,7 +25,7 @@ features = ["chrono", "unblock", "uuid"]
 version = "5.0.10"
 
 [dependencies.axum]
-version = "0.6.18"
+version = "0.6.19"
 features = ["default", "http2"]
 
 [dependencies.axum-server]
@@ -52,10 +52,10 @@ version = "1.0.171"
 features = ["derive"]
 
 [dependencies.serde_json]
-version = "1.0.102"
+version = "1.0.103"
 
 [dependencies.serde_with]
-version = "3.0.0"
+version = "3.1.0"
 default-features = false
 features = ["macros"]
 
@@ -63,17 +63,17 @@ features = ["macros"]
 version = "1.0.40"
 
 [dependencies.uuid]
-version = "1.4.0"
-
-[dev-dependencies.async-trait]
-version = "0.1.68"
+version = "1.4.1"
 
 [dev-dependencies.domain]
 workspace = true
 features = ["test-mock"]
 
+[dev-dependencies.async-trait]
+version = "0.1.68"
+
 [dev-dependencies.indoc]
-version = "2.0.1"
+version = "2.0.3"
 
 [dev-dependencies.pretty_assertions]
 version = "1.3.0"
