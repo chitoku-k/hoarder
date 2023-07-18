@@ -12,7 +12,7 @@ doctest = false
 test-mock = ["mockall"]
 
 [dependencies.anyhow]
-version = "1.0.71"
+version = "1.0.72"
 
 [dependencies.async-trait]
 version = "0.1.68"
@@ -40,7 +40,7 @@ features = ["derive"]
 version = "1.0.40"
 
 [dependencies.uuid]
-version = "1.4.0"
+version = "1.4.1"
 features = ["serde", "v4"]
 
 [dev-dependencies.pretty_assertions]

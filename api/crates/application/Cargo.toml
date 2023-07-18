@@ -21,7 +21,7 @@ workspace = true
 workspace = true
 
 [dependencies.anyhow]
-version = "1.0.71"
+version = "1.0.72"
 
 [dependencies.async-graphql]
 version = "5.0.10"
@@ -31,7 +31,7 @@ features = ["chrono", "unblock", "uuid"]
 version = "5.0.10"
 
 [dependencies.axum]
-version = "0.6.18"
+version = "0.6.19"
 
 [dependencies.axum-server]
 version = "0.5.1"
