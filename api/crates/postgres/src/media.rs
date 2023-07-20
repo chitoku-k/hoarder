@@ -391,7 +391,7 @@ impl MediaRepository for PostgresMediaRepository {
             .build_sqlx(PostgresQueryBuilder);
 
         let medium: Medium = sqlx::query_as_with::<_, PostgresMediumRow, _>(&sql, values)
-            .fetch_one(&mut tx)
+            .fetch_one(&mut *tx)
             .await?
             .into();
 
@@ -420,7 +420,7 @@ impl MediaRepository for PostgresMediaRepository {
         };
         if let Some(query) = query {
             let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
-            sqlx::query_with(&sql, values).execute(&mut tx).await?;
+            sqlx::query_with(&sql, values).execute(&mut *tx).await?;
         }
 
         let query = {
@@ -450,7 +450,7 @@ impl MediaRepository for PostgresMediaRepository {
         };
         if let Some(query) = query {
             let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
-            sqlx::query_with(&sql, values).execute(&mut tx).await?;
+            sqlx::query_with(&sql, values).execute(&mut *tx).await?;
         }
 
         let mut media = [medium];
@@ -480,7 +480,7 @@ impl MediaRepository for PostgresMediaRepository {
             .build_sqlx(PostgresQueryBuilder);
 
         let mut media: Vec<_> = sqlx::query_as_with::<_, PostgresMediumRow, _>(&sql, values)
-            .fetch(&mut conn)
+            .fetch(&mut *conn)
             .map_ok(Into::into)
             .try_collect()
             .await?;
@@ -537,7 +537,7 @@ impl MediaRepository for PostgresMediaRepository {
             .build_sqlx(PostgresQueryBuilder);
 
         let mut media: Vec<_> = sqlx::query_as_with::<_, PostgresMediumRow, _>(&sql, values)
-            .fetch(&mut conn)
+            .fetch(&mut *conn)
             .map_ok(Into::into)
             .try_collect()
             .await?;
@@ -622,7 +622,7 @@ impl MediaRepository for PostgresMediaRepository {
             .build_sqlx(PostgresQueryBuilder);
 
         let mut media: Vec<_> = sqlx::query_as_with::<_, PostgresMediumRow, _>(&sql, values)
-            .fetch(&mut conn)
+            .fetch(&mut *conn)
             .map_ok(Into::into)
             .try_collect()
             .await?;
@@ -678,7 +678,7 @@ impl MediaRepository for PostgresMediaRepository {
             .build_sqlx(PostgresQueryBuilder);
 
         let mut media: Vec<_> = sqlx::query_as_with::<_, PostgresMediumRow, _>(&sql, values)
-            .fetch(&mut conn)
+            .fetch(&mut *conn)
             .map_ok(Into::into)
             .try_collect()
             .await?;
@@ -730,7 +730,7 @@ impl MediaRepository for PostgresMediaRepository {
             .build_sqlx(PostgresQueryBuilder);
 
         let replica_ids: IndexSet<_> = sqlx::query_as_with::<_, PostgresMediumReplicaRow, _>(&sql, values)
-            .fetch(&mut tx)
+            .fetch(&mut *tx)
             .map_ok(<(Medium, ReplicaId)>::from)
             .map_ok(|(_, replica_id)| replica_id)
             .try_collect()
@@ -752,7 +752,7 @@ impl MediaRepository for PostgresMediaRepository {
                 .and_where(Expr::col(PostgresReplica::MediumId).eq(PostgresMediumId::from(id)))
                 .build_sqlx(PostgresQueryBuilder);
 
-            sqlx::query_with(&sql, values).execute(&mut tx).await?;
+            sqlx::query_with(&sql, values).execute(&mut *tx).await?;
 
             for (order, replica_id) in replica_orders.into_iter().enumerate() {
                 let (sql, values) = Query::update()
@@ -761,7 +761,7 @@ impl MediaRepository for PostgresMediaRepository {
                     .and_where(Expr::col(PostgresReplica::Id).eq(PostgresReplicaId::from(replica_id)))
                     .build_sqlx(PostgresQueryBuilder);
 
-                sqlx::query_with(&sql, values).execute(&mut tx).await?;
+                sqlx::query_with(&sql, values).execute(&mut *tx).await?;
             }
         }
 
@@ -788,7 +788,7 @@ impl MediaRepository for PostgresMediaRepository {
         };
         if let Some(query) = query {
             let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
-            sqlx::query_with(&sql, values).execute(&mut tx).await?;
+            sqlx::query_with(&sql, values).execute(&mut *tx).await?;
         }
 
         let query = {
@@ -806,7 +806,7 @@ impl MediaRepository for PostgresMediaRepository {
         };
         if let Some(query) = query {
             let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
-            sqlx::query_with(&sql, values).execute(&mut tx).await?;
+            sqlx::query_with(&sql, values).execute(&mut *tx).await?;
         }
 
         let query = {
@@ -837,7 +837,7 @@ impl MediaRepository for PostgresMediaRepository {
         };
         if let Some(query) = query {
             let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
-            sqlx::query_with(&sql, values).execute(&mut tx).await?;
+            sqlx::query_with(&sql, values).execute(&mut *tx).await?;
         }
 
         let query = {
@@ -865,7 +865,7 @@ impl MediaRepository for PostgresMediaRepository {
         };
         if let Some(query) = query {
             let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
-            sqlx::query_with(&sql, values).execute(&mut tx).await?;
+            sqlx::query_with(&sql, values).execute(&mut *tx).await?;
         }
 
         let mut query = Query::update();
@@ -888,7 +888,7 @@ impl MediaRepository for PostgresMediaRepository {
 
         let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
         let medium = sqlx::query_as_with::<_, PostgresMediumRow, _>(&sql, values)
-            .fetch_one(&mut tx)
+            .fetch_one(&mut *tx)
             .await?
             .into();
 

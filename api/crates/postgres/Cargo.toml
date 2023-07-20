@@ -37,11 +37,11 @@ version = "2.0.0"
 features = ["serde"]
 
 [dependencies.sea-query]
-version = "0.29.1"
+version = "0.30.0"
 features = ["thread-safe"]
 
 [dependencies.sea-query-binder]
-version = "0.4.0"
+version = "0.5.0"
 features = ["postgres-array", "sqlx-postgres", "with-chrono", "with-json", "with-uuid"]
 
 [dependencies.serde]
@@ -52,8 +52,8 @@ features = ["derive"]
 version = "1.0.103"
 
 [dependencies.sqlx]
-version = "0.6.3"
-features = ["chrono", "json", "postgres", "runtime-tokio-rustls", "tls", "uuid"]
+version = "0.7.1"
+features = ["chrono", "json", "postgres", "runtime-tokio", "tls-rustls", "uuid"]
 
 [dependencies.thiserror]
 version = "1.0.40"

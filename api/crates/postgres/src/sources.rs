@@ -183,7 +183,7 @@ impl SourcesRepository for PostgresSourcesRepository {
             .build_sqlx(PostgresQueryBuilder);
 
         let external_service_row = sqlx::query_as_with::<_, PostgresExternalServiceRow, _>(&sql, values)
-            .fetch_one(&mut tx)
+            .fetch_one(&mut *tx)
             .await?;
 
         let external_metadata = PostgresExternalServiceMetadata::try_from(external_metadata)?;
@@ -212,7 +212,7 @@ impl SourcesRepository for PostgresSourcesRepository {
             .build_sqlx(PostgresQueryBuilder);
 
         let row = sqlx::query_as_with::<_, PostgresSourceRow, _>(&sql, values)
-            .fetch_one(&mut tx)
+            .fetch_one(&mut *tx)
             .await?;
 
         let source = match Source::try_from(PostgresSourceRowAndExternalServiceRow(row, external_service_row)) {
@@ -279,7 +279,7 @@ impl SourcesRepository for PostgresSourcesRepository {
             .build_sqlx(PostgresQueryBuilder);
 
         let row = sqlx::query_as_with::<_, PostgresSourceRow, _>(&sql, values)
-            .fetch_optional(&mut tx)
+            .fetch_optional(&mut *tx)
             .await?
             .context(SourceError::NotFound(id))?;
 
@@ -312,7 +312,7 @@ impl SourcesRepository for PostgresSourcesRepository {
             .build_sqlx(PostgresQueryBuilder);
 
         let row = sqlx::query_as_with::<_, PostgresSourceRow, _>(&sql, values)
-            .fetch_one(&mut tx)
+            .fetch_one(&mut *tx)
             .await?;
 
         let (sql, values) = Query::select()
@@ -326,7 +326,7 @@ impl SourcesRepository for PostgresSourcesRepository {
             .build_sqlx(PostgresQueryBuilder);
 
         let external_service_row = sqlx::query_as_with::<_, PostgresExternalServiceRow, _>(&sql, values)
-            .fetch_one(&mut tx)
+            .fetch_one(&mut *tx)
             .await?;
 
         let source = match Source::try_from(PostgresSourceRowAndExternalServiceRow(row, external_service_row)) {

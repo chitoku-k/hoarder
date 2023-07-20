@@ -48,7 +48,7 @@ default-features = false
 features = ["alloc", "io-compat"]
 
 [dependencies.serde]
-version = "1.0.171"
+version = "1.0.173"
 features = ["derive"]
 
 [dependencies.serde_json]
