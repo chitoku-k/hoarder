@@ -82,9 +82,9 @@ impl Application {
 
         let config = env::get();
 
-        let mut pg_options = PgConnectOptions::new();
-        pg_options.log_statements(LevelFilter::Debug);
-        pg_options.log_slow_statements(LevelFilter::Warn, Duration::from_millis(500));
+        let pg_options = PgConnectOptions::new()
+            .log_statements(LevelFilter::Debug)
+            .log_slow_statements(LevelFilter::Warn, Duration::from_millis(500));
 
         let pg_pool = PgPoolOptions::new()
             .max_connections(5)

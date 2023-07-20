@@ -115,7 +115,7 @@ impl TagTypesRepository for PostgresTagTypesRepository {
             .build_sqlx(PostgresQueryBuilder);
 
         let tag_type: TagType = sqlx::query_as_with::<_, PostgresTagTypeRow, _>(&sql, values)
-            .fetch_optional(&mut tx)
+            .fetch_optional(&mut *tx)
             .await?
             .map(Into::into)
             .context(TagTypeError::NotFound(id))?;
@@ -139,7 +139,7 @@ impl TagTypesRepository for PostgresTagTypesRepository {
             .build_sqlx(PostgresQueryBuilder);
 
         let tag_type = sqlx::query_as_with::<_, PostgresTagTypeRow, _>(&sql, values)
-            .fetch_one(&mut tx)
+            .fetch_one(&mut *tx)
             .await?
             .into();
 

@@ -33,7 +33,7 @@ version = "0.11.4"
 optional = true
 
 [dependencies.serde]
-version = "1.0.171"
+version = "1.0.173"
 features = ["derive"]
 
 [dependencies.thiserror]

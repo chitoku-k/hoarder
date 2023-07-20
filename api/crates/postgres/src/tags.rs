@@ -422,7 +422,7 @@ async fn attach_parent(tx: &mut Transaction<'_, Postgres>, id: TagId, parent_id:
         )?
         .build_sqlx(PostgresQueryBuilder);
 
-    sqlx::query_with(&sql, values).execute(&mut tx).await?;
+    sqlx::query_with(&sql, values).execute(&mut *tx).await?;
 
     let (sql, values) = Query::insert()
         .into_table(PostgresTagPath::Table)
@@ -434,7 +434,7 @@ async fn attach_parent(tx: &mut Transaction<'_, Postgres>, id: TagId, parent_id:
         .select_from(descendant_relations(id))?
         .build_sqlx(PostgresQueryBuilder);
 
-    sqlx::query_with(&sql, values).execute(&mut tx).await?;
+    sqlx::query_with(&sql, values).execute(&mut *tx).await?;
 
     tx.commit().await?;
     Ok(())
@@ -455,7 +455,7 @@ async fn detach_parent(tx: &mut Transaction<'_, Postgres>, id: TagId) -> anyhow:
         )
         .build_sqlx(PostgresQueryBuilder);
 
-    sqlx::query_with(&sql, values).execute(&mut tx).await?;
+    sqlx::query_with(&sql, values).execute(&mut *tx).await?;
 
     let (sql, values) = Query::delete()
         .from_table(PostgresTagPath::Table)
@@ -469,7 +469,7 @@ async fn detach_parent(tx: &mut Transaction<'_, Postgres>, id: TagId) -> anyhow:
         )
         .build_sqlx(PostgresQueryBuilder);
 
-    sqlx::query_with(&sql, values).execute(&mut tx).await?;
+    sqlx::query_with(&sql, values).execute(&mut *tx).await?;
 
     tx.commit().await?;
     Ok(())
@@ -506,7 +506,7 @@ impl TagsRepository for PostgresTagsRepository {
             .build_sqlx(PostgresQueryBuilder);
 
         let tag: Tag = sqlx::query_as_with::<_, PostgresTagRow, _>(&sql, values)
-            .fetch_one(&mut tx)
+            .fetch_one(&mut *tx)
             .await?
             .into();
 
@@ -524,7 +524,7 @@ impl TagsRepository for PostgresTagsRepository {
             ])?
             .build_sqlx(PostgresQueryBuilder);
 
-        sqlx::query_with(&sql, values).execute(&mut tx).await?;
+        sqlx::query_with(&sql, values).execute(&mut *tx).await?;
 
         let parent_id = parent_id.unwrap_or_default();
         attach_parent(&mut tx, tag.id, parent_id).await?;
@@ -588,7 +588,7 @@ impl TagsRepository for PostgresTagsRepository {
             .build_sqlx(PostgresQueryBuilder);
 
         let ids: Vec<_> = sqlx::query_as_with::<_, PostgresTagRow, _>(&sql, values)
-            .fetch(&mut conn)
+            .fetch(&mut *conn)
             .map_ok(|r| TagId::from(r.id))
             .try_collect()
             .await?;
@@ -697,7 +697,7 @@ impl TagsRepository for PostgresTagsRepository {
             .build_sqlx(PostgresQueryBuilder);
 
         let mut tag: Tag = sqlx::query_as_with::<_, PostgresTagRow, _>(&sql, values)
-            .fetch_optional(&mut tx)
+            .fetch_optional(&mut *tx)
             .await?
             .map(Into::into)
             .context(TagError::NotFound(id))?;
@@ -719,7 +719,7 @@ impl TagsRepository for PostgresTagsRepository {
             .and_where(Expr::col(PostgresTag::Id).eq(PostgresTagId::from(id)))
             .build_sqlx(PostgresQueryBuilder);
 
-        sqlx::query_with(&sql, values).execute(&mut tx).await?;
+        sqlx::query_with(&sql, values).execute(&mut *tx).await?;
 
         let mut relatives = fetch_tag_relatives(&mut tx, [tag.id], depth, false).await?;
         let tag = relatives.pop().context(TagError::NotFound(tag.id))?;
@@ -778,7 +778,7 @@ impl TagsRepository for PostgresTagsRepository {
             .build_sqlx(PostgresQueryBuilder);
 
         let ids: Vec<_> = sqlx::query_as_with::<_, PostgresTagDescendantRow, _>(&sql, values)
-            .fetch(&mut tx)
+            .fetch(&mut *tx)
             .map_ok(|r| r.descendant_id)
             .try_collect()
             .await?;
@@ -793,7 +793,7 @@ impl TagsRepository for PostgresTagsRepository {
             .build_sqlx(PostgresQueryBuilder);
 
         let affected = sqlx::query_with(&sql, values)
-            .execute(&mut tx)
+            .execute(&mut *tx)
             .await?
             .rows_affected();
 

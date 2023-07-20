@@ -147,7 +147,7 @@ impl ExternalServicesRepository for PostgresExternalServicesRepository {
             .build_sqlx(PostgresQueryBuilder);
 
         let external_service: ExternalService = sqlx::query_as_with::<_, PostgresExternalServiceRow, _>(&sql, values)
-            .fetch_optional(&mut tx)
+            .fetch_optional(&mut *tx)
             .await?
             .map(Into::into)
             .context(ExternalServiceError::NotFound(id))?;
@@ -169,7 +169,7 @@ impl ExternalServicesRepository for PostgresExternalServicesRepository {
             .build_sqlx(PostgresQueryBuilder);
 
         let external_service = sqlx::query_as_with::<_, PostgresExternalServiceRow, _>(&sql, values)
-            .fetch_one(&mut tx)
+            .fetch_one(&mut *tx)
             .await?
             .into();
 
