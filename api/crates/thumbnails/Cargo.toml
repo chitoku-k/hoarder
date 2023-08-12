@@ -15,7 +15,7 @@ workspace = true
 version = "1.0.72"
 
 [dependencies.axum]
-version = "0.6.19"
+version = "0.6.20"
 
 [dependencies.derive_more]
 version = "0.99.17"

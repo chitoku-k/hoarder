@@ -24,14 +24,14 @@ workspace = true
 version = "1.0.72"
 
 [dependencies.async-graphql]
-version = "5.0.10"
+version = "6.0.1"
 features = ["chrono", "unblock", "uuid"]
 
 [dependencies.async-graphql-axum]
-version = "5.0.10"
+version = "6.0.1"
 
 [dependencies.axum]
-version = "0.6.19"
+version = "0.6.20"
 
 [dependencies.axum-server]
 version = "0.5.1"
@@ -43,8 +43,8 @@ version = "0.99.17"
 version = "6.0.1"
 
 [dependencies.thiserror]
-version = "1.0.40"
+version = "1.0.44"
 
 [dependencies.tokio]
-version = "1.29.0"
+version = "1.30.0"
 features = ["macros", "net", "process", "rt-multi-thread", "signal"]

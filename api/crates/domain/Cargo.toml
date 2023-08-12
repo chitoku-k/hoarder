@@ -15,7 +15,7 @@ test-mock = ["mockall"]
 version = "1.0.72"
 
 [dependencies.async-trait]
-version = "0.1.68"
+version = "0.1.73"
 
 [dependencies.chrono]
 version = "0.4.26"
@@ -33,11 +33,11 @@ version = "0.11.4"
 optional = true
 
 [dependencies.serde]
-version = "1.0.173"
+version = "1.0.183"
 features = ["derive"]
 
 [dependencies.thiserror]
-version = "1.0.40"
+version = "1.0.44"
 
 [dependencies.uuid]
 version = "1.4.1"
@@ -51,5 +51,5 @@ path = "."
 features = ["test-mock"]
 
 [dev-dependencies.tokio]
-version = "1.29.0"
+version = "1.30.0"
 features = ["macros", "rt-multi-thread"]
