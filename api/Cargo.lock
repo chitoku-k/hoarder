@@ -1056,7 +1056,6 @@ dependencies = [
  "async-graphql-axum",
  "async-trait",
  "axum",
- "axum-server",
  "base64 0.21.2",
  "chrono",
  "derive_more",
