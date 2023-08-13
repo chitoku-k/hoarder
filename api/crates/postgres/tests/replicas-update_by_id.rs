@@ -1,4 +1,4 @@
-use chrono::NaiveDate;
+use chrono::{TimeZone, Utc};
 use domain::{
     entity::replicas::ReplicaId,
     repository::replicas::ReplicasRepository,
@@ -29,8 +29,8 @@ async fn succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual.has_thumbnail, true);
     assert_eq!(actual.original_url, "file:///var/lib/hoarder/replica_new.jpg".to_string());
     assert_eq!(actual.mime_type, "image/jpeg".to_string());
-    assert_eq!(actual.created_at, NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 10)).unwrap());
-    assert_ne!(actual.updated_at, NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap());
+    assert_eq!(actual.created_at, Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 10).unwrap());
+    assert_ne!(actual.updated_at, Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap());
 
     let actual = sqlx::query(r#"SELECT "id", "medium_id", "display_order", "thumbnail", "original_url", "mime_type" FROM "replicas" WHERE "id" = $1"#)
         .bind(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be"))

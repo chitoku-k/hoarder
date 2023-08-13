@@ -1,6 +1,6 @@
 use std::collections::{BTreeMap, BTreeSet};
 
-use chrono::{NaiveDate, NaiveDateTime};
+use chrono::{DateTime, TimeZone, Utc};
 use domain::{
     entity::{
         external_services::{ExternalMetadata, ExternalService, ExternalServiceId},
@@ -62,8 +62,8 @@ async fn succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual.sources, Vec::new());
     assert_eq!(actual.tags, BTreeMap::new());
     assert_eq!(actual.replicas, Vec::new());
-    assert_eq!(actual.created_at, NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap());
-    assert_ne!(actual.updated_at, NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap());
+    assert_eq!(actual.created_at, Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 7).unwrap());
+    assert_ne!(actual.updated_at, Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap());
 
     let actual: Vec<_> = sqlx::query(r#"SELECT "medium_id", "source_id" FROM "media_sources" WHERE "medium_id" = $1 ORDER BY "source_id""#)
         .bind(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1"))
@@ -172,8 +172,8 @@ async fn with_tags_succeeds(ctx: &DatabaseContext) {
                             aliases: AliasSet::default(),
                             parent: None,
                             children: Vec::new(),
-                            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
-                            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap(),
+                            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 8).unwrap(),
+                            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap(),
                         },
                         Tag {
                             id: TagId::from(uuid!("3255874e-1035-427e-80e3-19bb7b28a3fb")),
@@ -182,8 +182,8 @@ async fn with_tags_succeeds(ctx: &DatabaseContext) {
                             aliases: AliasSet::default(),
                             parent: None,
                             children: Vec::new(),
-                            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 10)).unwrap(),
-                            updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 11)).unwrap(),
+                            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 10).unwrap(),
+                            updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 11).unwrap(),
                         },
                         Tag {
                             id: TagId::from(uuid!("d65c551d-5a49-4ec7-8e8b-0054e116a18d")),
@@ -192,8 +192,8 @@ async fn with_tags_succeeds(ctx: &DatabaseContext) {
                             aliases: AliasSet::new(BTreeSet::from(["フラン".to_string()])),
                             parent: None,
                             children: Vec::new(),
-                            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
-                            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 10)).unwrap(),
+                            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 9).unwrap(),
+                            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap(),
                         },
                         Tag {
                             id: TagId::from(uuid!("1157d6d9-54c5-48df-9f6c-3eba9fe38dfc")),
@@ -202,12 +202,12 @@ async fn with_tags_succeeds(ctx: &DatabaseContext) {
                             aliases: AliasSet::new(BTreeSet::from(["うどんげ".to_string()])),
                             parent: None,
                             children: Vec::new(),
-                            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
-                            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
+                            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 9).unwrap(),
+                            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
                         },
                     ],
-                    created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
-                    updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 10)).unwrap(),
+                    created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 8).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap(),
                 },
             ],
         );
@@ -230,20 +230,20 @@ async fn with_tags_succeeds(ctx: &DatabaseContext) {
                         aliases: AliasSet::new(BTreeSet::from(["東方".to_string()])),
                         parent: None,
                         children: Vec::new(),
-                        created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
-                        updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 10)).unwrap(),
+                        created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 8).unwrap(),
+                        updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap(),
                     })),
                     children: Vec::new(),
-                    created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
-                    updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 10)).unwrap(),
+                    created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 9).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap(),
                 },
             ],
         );
         tags
     });
     assert_eq!(actual.replicas, Vec::new());
-    assert_eq!(actual.created_at, NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap());
-    assert_ne!(actual.updated_at, NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap());
+    assert_eq!(actual.created_at, Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 7).unwrap());
+    assert_ne!(actual.updated_at, Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap());
 
     let actual: Vec<_> = sqlx::query(r#"SELECT "medium_id", "source_id" FROM "media_sources" WHERE "medium_id" = $1 ORDER BY "source_id""#)
         .bind(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1"))
@@ -337,8 +337,8 @@ async fn with_replicas_succeeds(ctx: &DatabaseContext) {
             has_thumbnail: true,
             original_url: "file:///var/lib/hoarder/1706c7bb-4152-44b2-9bbb-1179d09a19be.png".to_string(),
             mime_type: "image/png".to_string(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 10)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 10).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap(),
         },
         Replica {
             id: ReplicaId::from(uuid!("6fae1497-e987-492e-987a-f9870b7d3c5b")),
@@ -346,8 +346,8 @@ async fn with_replicas_succeeds(ctx: &DatabaseContext) {
             has_thumbnail: true,
             original_url: "file:///var/lib/hoarder/6fae1497-e987-492e-987a-f9870b7d3c5b.png".to_string(),
             mime_type: "image/png".to_string(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 11)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 10)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 11).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap(),
         },
         Replica {
             id: ReplicaId::from(uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5")),
@@ -355,12 +355,12 @@ async fn with_replicas_succeeds(ctx: &DatabaseContext) {
             has_thumbnail: false,
             original_url: "file:///var/lib/hoarder/12ca56e2-6e77-43b9-9da9-9d968c80a1a5.png".to_string(),
             mime_type: "image/png".to_string(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 11)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 11).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap(),
         },
     ]);
-    assert_eq!(actual.created_at, NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap());
-    assert_ne!(actual.updated_at, NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap());
+    assert_eq!(actual.created_at, Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 7).unwrap());
+    assert_ne!(actual.updated_at, Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap());
 
     let actual: Vec<_> = sqlx::query(r#"SELECT "medium_id", "source_id" FROM "media_sources" WHERE "medium_id" = $1 ORDER BY "source_id""#)
         .bind(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1"))
@@ -454,8 +454,8 @@ async fn with_sources_succeeds(ctx: &DatabaseContext) {
                 name: "Twitter".to_string(),
             },
             external_metadata: ExternalMetadata::Twitter { id: 333333333333 },
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 16)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 6)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 16).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 6).unwrap(),
         },
         Source {
             id: SourceId::from(uuid!("6807b3f6-6325-4212-bba5-bdb48150bb69")),
@@ -465,14 +465,14 @@ async fn with_sources_succeeds(ctx: &DatabaseContext) {
                 name: "Skeb".to_string(),
             },
             external_metadata: ExternalMetadata::Skeb { id: 1111, creator_id: "creator_02".to_string() },
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 13)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 11)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 13).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 11).unwrap(),
         },
     ]);
     assert_eq!(actual.tags, BTreeMap::new());
     assert_eq!(actual.replicas, Vec::new());
-    assert_eq!(actual.created_at, NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap());
-    assert_ne!(actual.updated_at, NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap());
+    assert_eq!(actual.created_at, Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 7).unwrap());
+    assert_ne!(actual.updated_at, Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap());
 
     let actual: Vec<_> = sqlx::query(r#"SELECT "medium_id", "source_id" FROM "media_sources" WHERE "medium_id" = $1 ORDER BY "source_id""#)
         .bind(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1"))
@@ -555,7 +555,7 @@ async fn reorder_replicas_succeeds(ctx: &DatabaseContext) {
             ReplicaId::from(uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5")),
             ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be")),
         ],
-        Some(NaiveDate::from_ymd_opt(2022, 4, 5).and_then(|d| d.and_hms_opt(6, 7, 8)).unwrap()),
+        Some(Utc.with_ymd_and_hms(2022, 4, 5, 6, 7, 8).unwrap()),
         None,
         false,
         false,
@@ -564,8 +564,8 @@ async fn reorder_replicas_succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual.sources, Vec::new());
     assert_eq!(actual.tags, BTreeMap::new());
     assert_eq!(actual.replicas, Vec::new());
-    assert_eq!(actual.created_at, NaiveDate::from_ymd_opt(2022, 4, 5).and_then(|d| d.and_hms_opt(6, 7, 8)).unwrap());
-    assert_ne!(actual.updated_at, NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap());
+    assert_eq!(actual.created_at, Utc.with_ymd_and_hms(2022, 4, 5, 6, 7, 8).unwrap());
+    assert_ne!(actual.updated_at, Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap());
 
     let actual = sqlx::query(r#"SELECT "created_at" FROM "media" WHERE "id" = $1"#)
         .bind(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1"))
@@ -573,7 +573,7 @@ async fn reorder_replicas_succeeds(ctx: &DatabaseContext) {
         .await
         .unwrap();
 
-    assert_eq!(actual.get::<NaiveDateTime, &str>("created_at"), NaiveDate::from_ymd_opt(2022, 4, 5).and_then(|d| d.and_hms_opt(6, 7, 8)).unwrap());
+    assert_eq!(actual.get::<DateTime<Utc>, &str>("created_at"), Utc.with_ymd_and_hms(2022, 4, 5, 6, 7, 8).unwrap());
 
     let actual: Vec<_> = sqlx::query(r#"SELECT "medium_id", "source_id" FROM "media_sources" WHERE "medium_id" = $1 ORDER BY "source_id""#)
         .bind(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1"))
@@ -656,7 +656,7 @@ async fn reorder_replicas_with_tags_succeeds(ctx: &DatabaseContext) {
             ReplicaId::from(uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5")),
             ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be")),
         ],
-        Some(NaiveDate::from_ymd_opt(2022, 4, 5).and_then(|d| d.and_hms_opt(6, 7, 8)).unwrap()),
+        Some(Utc.with_ymd_and_hms(2022, 4, 5, 6, 7, 8).unwrap()),
         Some(TagDepth::new(2, 2)),
         false,
         false,
@@ -686,8 +686,8 @@ async fn reorder_replicas_with_tags_succeeds(ctx: &DatabaseContext) {
                             aliases: AliasSet::default(),
                             parent: None,
                             children: Vec::new(),
-                            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
-                            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap(),
+                            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 8).unwrap(),
+                            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap(),
                         },
                         Tag {
                             id: TagId::from(uuid!("3255874e-1035-427e-80e3-19bb7b28a3fb")),
@@ -696,8 +696,8 @@ async fn reorder_replicas_with_tags_succeeds(ctx: &DatabaseContext) {
                             aliases: AliasSet::default(),
                             parent: None,
                             children: Vec::new(),
-                            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 10)).unwrap(),
-                            updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 11)).unwrap(),
+                            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 10).unwrap(),
+                            updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 11).unwrap(),
                         },
                         Tag {
                             id: TagId::from(uuid!("d65c551d-5a49-4ec7-8e8b-0054e116a18d")),
@@ -706,8 +706,8 @@ async fn reorder_replicas_with_tags_succeeds(ctx: &DatabaseContext) {
                             aliases: AliasSet::new(BTreeSet::from(["フラン".to_string()])),
                             parent: None,
                             children: Vec::new(),
-                            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
-                            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 10)).unwrap(),
+                            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 9).unwrap(),
+                            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap(),
                         },
                         Tag {
                             id: TagId::from(uuid!("1157d6d9-54c5-48df-9f6c-3eba9fe38dfc")),
@@ -716,12 +716,12 @@ async fn reorder_replicas_with_tags_succeeds(ctx: &DatabaseContext) {
                             aliases: AliasSet::new(BTreeSet::from(["うどんげ".to_string()])),
                             parent: None,
                             children: Vec::new(),
-                            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
-                            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
+                            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 9).unwrap(),
+                            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
                         },
                     ],
-                    created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
-                    updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 10)).unwrap(),
+                    created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 8).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap(),
                 },
             ],
         );
@@ -744,20 +744,20 @@ async fn reorder_replicas_with_tags_succeeds(ctx: &DatabaseContext) {
                         aliases: AliasSet::new(BTreeSet::from(["東方".to_string()])),
                         parent: None,
                         children: Vec::new(),
-                        created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
-                        updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 10)).unwrap(),
+                        created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 8).unwrap(),
+                        updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap(),
                     })),
                     children: Vec::new(),
-                    created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
-                    updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 10)).unwrap(),
+                    created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 9).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap(),
                 },
             ],
         );
         tags
     });
     assert_eq!(actual.replicas, Vec::new());
-    assert_eq!(actual.created_at, NaiveDate::from_ymd_opt(2022, 4, 5).and_then(|d| d.and_hms_opt(6, 7, 8)).unwrap());
-    assert_ne!(actual.updated_at, NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap());
+    assert_eq!(actual.created_at, Utc.with_ymd_and_hms(2022, 4, 5, 6, 7, 8).unwrap());
+    assert_ne!(actual.updated_at, Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap());
 
     let actual = sqlx::query(r#"SELECT "created_at" FROM "media" WHERE "id" = $1"#)
         .bind(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1"))
@@ -765,7 +765,7 @@ async fn reorder_replicas_with_tags_succeeds(ctx: &DatabaseContext) {
         .await
         .unwrap();
 
-    assert_eq!(actual.get::<NaiveDateTime, &str>("created_at"), NaiveDate::from_ymd_opt(2022, 4, 5).and_then(|d| d.and_hms_opt(6, 7, 8)).unwrap());
+    assert_eq!(actual.get::<DateTime<Utc>, &str>("created_at"), Utc.with_ymd_and_hms(2022, 4, 5, 6, 7, 8).unwrap());
 
     let actual: Vec<_> = sqlx::query(r#"SELECT "medium_id", "source_id" FROM "media_sources" WHERE "medium_id" = $1 ORDER BY "source_id""#)
         .bind(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1"))
@@ -848,7 +848,7 @@ async fn reorder_replicas_with_replicas_succeeds(ctx: &DatabaseContext) {
             ReplicaId::from(uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5")),
             ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be")),
         ],
-        Some(NaiveDate::from_ymd_opt(2022, 4, 5).and_then(|d| d.and_hms_opt(6, 7, 8)).unwrap()),
+        Some(Utc.with_ymd_and_hms(2022, 4, 5, 6, 7, 8).unwrap()),
         None,
         true,
         false,
@@ -863,8 +863,8 @@ async fn reorder_replicas_with_replicas_succeeds(ctx: &DatabaseContext) {
             has_thumbnail: true,
             original_url: "file:///var/lib/hoarder/6fae1497-e987-492e-987a-f9870b7d3c5b.png".to_string(),
             mime_type: "image/png".to_string(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 11)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 10)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 11).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap(),
         },
         Replica {
             id: ReplicaId::from(uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5")),
@@ -872,8 +872,8 @@ async fn reorder_replicas_with_replicas_succeeds(ctx: &DatabaseContext) {
             has_thumbnail: false,
             original_url: "file:///var/lib/hoarder/12ca56e2-6e77-43b9-9da9-9d968c80a1a5.png".to_string(),
             mime_type: "image/png".to_string(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 11)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 11).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap(),
         },
         Replica {
             id: ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be")),
@@ -881,12 +881,12 @@ async fn reorder_replicas_with_replicas_succeeds(ctx: &DatabaseContext) {
             has_thumbnail: true,
             original_url: "file:///var/lib/hoarder/1706c7bb-4152-44b2-9bbb-1179d09a19be.png".to_string(),
             mime_type: "image/png".to_string(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 10)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 10).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap(),
         },
     ]);
-    assert_eq!(actual.created_at, NaiveDate::from_ymd_opt(2022, 4, 5).and_then(|d| d.and_hms_opt(6, 7, 8)).unwrap());
-    assert_ne!(actual.updated_at, NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap());
+    assert_eq!(actual.created_at, Utc.with_ymd_and_hms(2022, 4, 5, 6, 7, 8).unwrap());
+    assert_ne!(actual.updated_at, Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap());
 
     let actual = sqlx::query(r#"SELECT "created_at" FROM "media" WHERE "id" = $1"#)
         .bind(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1"))
@@ -894,7 +894,7 @@ async fn reorder_replicas_with_replicas_succeeds(ctx: &DatabaseContext) {
         .await
         .unwrap();
 
-    assert_eq!(actual.get::<NaiveDateTime, &str>("created_at"), NaiveDate::from_ymd_opt(2022, 4, 5).and_then(|d| d.and_hms_opt(6, 7, 8)).unwrap());
+    assert_eq!(actual.get::<DateTime<Utc>, &str>("created_at"), Utc.with_ymd_and_hms(2022, 4, 5, 6, 7, 8).unwrap());
 
     let actual: Vec<_> = sqlx::query(r#"SELECT "medium_id", "source_id" FROM "media_sources" WHERE "medium_id" = $1 ORDER BY "source_id""#)
         .bind(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1"))
@@ -977,7 +977,7 @@ async fn reorder_replicas_with_sources_succeeds(ctx: &DatabaseContext) {
             ReplicaId::from(uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5")),
             ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be")),
         ],
-        Some(NaiveDate::from_ymd_opt(2022, 4, 5).and_then(|d| d.and_hms_opt(6, 7, 8)).unwrap()),
+        Some(Utc.with_ymd_and_hms(2022, 4, 5, 6, 7, 8).unwrap()),
         None,
         false,
         true,
@@ -992,8 +992,8 @@ async fn reorder_replicas_with_sources_succeeds(ctx: &DatabaseContext) {
                 name: "Twitter".to_string(),
             },
             external_metadata: ExternalMetadata::Twitter { id: 333333333333 },
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 16)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 6)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 16).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 6).unwrap(),
         },
         Source {
             id: SourceId::from(uuid!("6807b3f6-6325-4212-bba5-bdb48150bb69")),
@@ -1003,14 +1003,14 @@ async fn reorder_replicas_with_sources_succeeds(ctx: &DatabaseContext) {
                 name: "Skeb".to_string(),
             },
             external_metadata: ExternalMetadata::Skeb { id: 1111, creator_id: "creator_02".to_string() },
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 13)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 11)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 13).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 11).unwrap(),
         },
     ]);
     assert_eq!(actual.tags, BTreeMap::new());
     assert_eq!(actual.replicas, Vec::new());
-    assert_eq!(actual.created_at, NaiveDate::from_ymd_opt(2022, 4, 5).and_then(|d| d.and_hms_opt(6, 7, 8)).unwrap());
-    assert_ne!(actual.updated_at, NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap());
+    assert_eq!(actual.created_at, Utc.with_ymd_and_hms(2022, 4, 5, 6, 7, 8).unwrap());
+    assert_ne!(actual.updated_at, Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap());
 
     let actual = sqlx::query(r#"SELECT "created_at" FROM "media" WHERE "id" = $1"#)
         .bind(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1"))
@@ -1018,7 +1018,7 @@ async fn reorder_replicas_with_sources_succeeds(ctx: &DatabaseContext) {
         .await
         .unwrap();
 
-    assert_eq!(actual.get::<NaiveDateTime, &str>("created_at"), NaiveDate::from_ymd_opt(2022, 4, 5).and_then(|d| d.and_hms_opt(6, 7, 8)).unwrap());
+    assert_eq!(actual.get::<DateTime<Utc>, &str>("created_at"), Utc.with_ymd_and_hms(2022, 4, 5, 6, 7, 8).unwrap());
 
     let actual: Vec<_> = sqlx::query(r#"SELECT "medium_id", "source_id" FROM "media_sources" WHERE "medium_id" = $1 ORDER BY "source_id""#)
         .bind(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1"))
@@ -1100,7 +1100,7 @@ async fn reorder_too_few_replicas_fails(ctx: &DatabaseContext) {
             ReplicaId::from(uuid!("6fae1497-e987-492e-987a-f9870b7d3c5b")),
             ReplicaId::from(uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5")),
         ],
-        Some(NaiveDate::from_ymd_opt(2022, 4, 5).and_then(|d| d.and_hms_opt(6, 7, 8)).unwrap()),
+        Some(Utc.with_ymd_and_hms(2022, 4, 5, 6, 7, 8).unwrap()),
         None,
         false,
         false,
@@ -1145,7 +1145,7 @@ async fn reorder_too_many_replicas_fails(ctx: &DatabaseContext) {
             ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be")),
             ReplicaId::from(uuid!("790dc278-2c53-4988-883c-43a037664b24")),
         ],
-        Some(NaiveDate::from_ymd_opt(2022, 4, 5).and_then(|d| d.and_hms_opt(6, 7, 8)).unwrap()),
+        Some(Utc.with_ymd_and_hms(2022, 4, 5, 6, 7, 8).unwrap()),
         None,
         false,
         false,
@@ -1189,7 +1189,7 @@ async fn reorder_replicas_mismatch_fails(ctx: &DatabaseContext) {
             ReplicaId::from(uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5")),
             ReplicaId::from(uuid!("790dc278-2c53-4988-883c-43a037664b24")),
         ],
-        Some(NaiveDate::from_ymd_opt(2022, 4, 5).and_then(|d| d.and_hms_opt(6, 7, 8)).unwrap()),
+        Some(Utc.with_ymd_and_hms(2022, 4, 5, 6, 7, 8).unwrap()),
         None,
         false,
         false,

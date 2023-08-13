@@ -1,6 +1,6 @@
 use std::collections::BTreeMap;
 
-use chrono::NaiveDate;
+use chrono::{TimeZone, Utc};
 use domain::{
     entity::{
         external_services::{ExternalMetadata, ExternalService, ExternalServiceId},
@@ -44,14 +44,14 @@ async fn succeeds(ctx: &DatabaseContext) {
                         name: "pixiv".to_string(),
                     },
                     external_metadata: ExternalMetadata::Pixiv { id: 1111111 },
-                    created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 6)).unwrap(),
-                    updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
+                    created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
                 },
             ],
             tags: BTreeMap::new(),
             replicas: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 6)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
         },
         Medium {
             id: MediumId::from(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1")),
@@ -64,8 +64,8 @@ async fn succeeds(ctx: &DatabaseContext) {
                         name: "pixiv".to_string(),
                     },
                     external_metadata: ExternalMetadata::Pixiv { id: 4444444 },
-                    created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap(),
-                    updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 12)).unwrap(),
+                    created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 7).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 12).unwrap(),
                 },
                 Source {
                     id: SourceId::from(uuid!("5c872f82-2ad0-47c4-8c6f-64efc9443128")),
@@ -75,14 +75,14 @@ async fn succeeds(ctx: &DatabaseContext) {
                         name: "Twitter".to_string(),
                     },
                     external_metadata: ExternalMetadata::Twitter { id: 333333333333 },
-                    created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 16)).unwrap(),
-                    updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 6)).unwrap(),
+                    created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 16).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 6).unwrap(),
                 },
             ],
             tags: BTreeMap::new(),
             replicas: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 7).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap(),
         },
     ]);
 }

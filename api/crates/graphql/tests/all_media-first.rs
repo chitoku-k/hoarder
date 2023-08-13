@@ -1,6 +1,7 @@
 use std::collections::BTreeMap;
 
 use async_graphql::{Schema, EmptyMutation, EmptySubscription, value};
+use chrono::{TimeZone, Utc};
 use domain::{
     entity::media::{Medium, MediumId},
     repository::OrderDirection,
@@ -10,7 +11,6 @@ use domain::{
         tags::MockTagsServiceInterface,
     },
 };
-use chrono::NaiveDate;
 use graphql::query::Query;
 use indoc::indoc;
 use pretty_assertions::assert_eq;
@@ -42,32 +42,32 @@ async fn asc_succeeds() {
                     sources: Vec::new(),
                     tags: BTreeMap::new(),
                     replicas: Vec::new(),
-                    created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 56)).unwrap(),
-                    updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 5, 0)).unwrap(),
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 56).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 0).unwrap(),
                 },
                 Medium {
                     id: MediumId::from(uuid!("88888888-8888-8888-8888-888888888888")),
                     sources: Vec::new(),
                     tags: BTreeMap::new(),
                     replicas: Vec::new(),
-                    created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 57)).unwrap(),
-                    updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 5, 1)).unwrap(),
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 57).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 1).unwrap(),
                 },
                 Medium {
                     id: MediumId::from(uuid!("99999999-9999-9999-9999-999999999999")),
                     sources: Vec::new(),
                     tags: BTreeMap::new(),
                     replicas: Vec::new(),
-                    created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 58)).unwrap(),
-                    updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 5, 2)).unwrap(),
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 58).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 2).unwrap(),
                 },
                 Medium {
                     id: MediumId::from(uuid!("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")),
                     sources: Vec::new(),
                     tags: BTreeMap::new(),
                     replicas: Vec::new(),
-                    created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 59)).unwrap(),
-                    updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 5, 3)).unwrap(),
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 59).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 3).unwrap(),
                 },
             ])
         });
@@ -105,22 +105,22 @@ async fn asc_succeeds() {
                 {
                     "node": {
                         "id": "77777777-7777-7777-7777-777777777777",
-                        "createdAt": "2022-06-01T12:34:56",
-                        "updatedAt": "2022-06-01T00:05:00",
+                        "createdAt": "2022-06-01T12:34:56+00:00",
+                        "updatedAt": "2022-06-01T00:05:00+00:00",
                     },
                 },
                 {
                     "node": {
                         "id": "88888888-8888-8888-8888-888888888888",
-                        "createdAt": "2022-06-01T12:34:57",
-                        "updatedAt": "2022-06-01T00:05:01",
+                        "createdAt": "2022-06-01T12:34:57+00:00",
+                        "updatedAt": "2022-06-01T00:05:01+00:00",
                     },
                 },
                 {
                     "node": {
                         "id": "99999999-9999-9999-9999-999999999999",
-                        "createdAt": "2022-06-01T12:34:58",
-                        "updatedAt": "2022-06-01T00:05:02",
+                        "createdAt": "2022-06-01T12:34:58+00:00",
+                        "updatedAt": "2022-06-01T00:05:02+00:00",
                     },
                 },
             ],
@@ -154,32 +154,32 @@ async fn desc_succeeds() {
                     sources: Vec::new(),
                     tags: BTreeMap::new(),
                     replicas: Vec::new(),
-                    created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 59)).unwrap(),
-                    updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 5, 3)).unwrap(),
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 59).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 3).unwrap(),
                 },
                 Medium {
                     id: MediumId::from(uuid!("99999999-9999-9999-9999-999999999999")),
                     sources: Vec::new(),
                     tags: BTreeMap::new(),
                     replicas: Vec::new(),
-                    created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 58)).unwrap(),
-                    updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 5, 2)).unwrap(),
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 58).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 2).unwrap(),
                 },
                 Medium {
                     id: MediumId::from(uuid!("88888888-8888-8888-8888-888888888888")),
                     sources: Vec::new(),
                     tags: BTreeMap::new(),
                     replicas: Vec::new(),
-                    created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 57)).unwrap(),
-                    updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 5, 1)).unwrap(),
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 57).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 1).unwrap(),
                 },
                 Medium {
                     id: MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
                     sources: Vec::new(),
                     tags: BTreeMap::new(),
                     replicas: Vec::new(),
-                    created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 56)).unwrap(),
-                    updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 5, 0)).unwrap(),
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 56).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 0).unwrap(),
                 },
             ])
         });
@@ -217,22 +217,22 @@ async fn desc_succeeds() {
                 {
                     "node": {
                         "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-                        "createdAt": "2022-06-01T12:34:59",
-                        "updatedAt": "2022-06-01T00:05:03",
+                        "createdAt": "2022-06-01T12:34:59+00:00",
+                        "updatedAt": "2022-06-01T00:05:03+00:00",
                     },
                 },
                 {
                     "node": {
                         "id": "99999999-9999-9999-9999-999999999999",
-                        "createdAt": "2022-06-01T12:34:58",
-                        "updatedAt": "2022-06-01T00:05:02",
+                        "createdAt": "2022-06-01T12:34:58+00:00",
+                        "updatedAt": "2022-06-01T00:05:02+00:00",
                     },
                 },
                 {
                     "node": {
                         "id": "88888888-8888-8888-8888-888888888888",
-                        "createdAt": "2022-06-01T12:34:57",
-                        "updatedAt": "2022-06-01T00:05:01",
+                        "createdAt": "2022-06-01T12:34:57+00:00",
+                        "updatedAt": "2022-06-01T00:05:01+00:00",
                     },
                 },
             ],
@@ -253,7 +253,7 @@ async fn after_asc_succeeds() {
                 &None,
                 &false,
                 &false,
-                &Some((NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 57)).unwrap(), MediumId::from(uuid!("88888888-8888-8888-8888-888888888888")))),
+                &Some((Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 57).unwrap(), MediumId::from(uuid!("88888888-8888-8888-8888-888888888888")))),
                 &None,
                 &OrderDirection::Ascending,
                 &4,
@@ -266,16 +266,16 @@ async fn after_asc_succeeds() {
                     sources: Vec::new(),
                     tags: BTreeMap::new(),
                     replicas: Vec::new(),
-                    created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 58)).unwrap(),
-                    updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 5, 2)).unwrap(),
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 58).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 2).unwrap(),
                 },
                 Medium {
                     id: MediumId::from(uuid!("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")),
                     sources: Vec::new(),
                     tags: BTreeMap::new(),
                     replicas: Vec::new(),
-                    created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 59)).unwrap(),
-                    updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 5, 3)).unwrap(),
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 59).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 3).unwrap(),
                 },
             ])
         });
@@ -286,7 +286,7 @@ async fn after_asc_succeeds() {
     let schema = Schema::build(query, EmptyMutation, EmptySubscription).finish();
     let req = indoc! {r#"
         query {
-            allMedia(first: 3, after: "MjAyMi0wNi0wMVQxMjozNDo1Ny4wMDAwMDAAODg4ODg4ODgtODg4OC04ODg4LTg4ODgtODg4ODg4ODg4ODg4") {
+            allMedia(first: 3, after: "MjAyMi0wNi0wMVQxMjozNDo1Ny4wMDAwMDArMDA6MDAAODg4ODg4ODgtODg4OC04ODg4LTg4ODgtODg4ODg4ODg4ODg4") {
                 pageInfo {
                     hasPreviousPage
                     hasNextPage
@@ -313,15 +313,15 @@ async fn after_asc_succeeds() {
                 {
                     "node": {
                         "id": "99999999-9999-9999-9999-999999999999",
-                        "createdAt": "2022-06-01T12:34:58",
-                        "updatedAt": "2022-06-01T00:05:02",
+                        "createdAt": "2022-06-01T12:34:58+00:00",
+                        "updatedAt": "2022-06-01T00:05:02+00:00",
                     },
                 },
                 {
                     "node": {
                         "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-                        "createdAt": "2022-06-01T12:34:59",
-                        "updatedAt": "2022-06-01T00:05:03",
+                        "createdAt": "2022-06-01T12:34:59+00:00",
+                        "updatedAt": "2022-06-01T00:05:03+00:00",
                     },
                 },
             ],
@@ -342,7 +342,7 @@ async fn after_desc_succeeds() {
                 &None,
                 &false,
                 &false,
-                &Some((NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 58)).unwrap(), MediumId::from(uuid!("99999999-9999-9999-9999-999999999999")))),
+                &Some((Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 58).unwrap(), MediumId::from(uuid!("99999999-9999-9999-9999-999999999999")))),
                 &None,
                 &OrderDirection::Descending,
                 &4,
@@ -355,16 +355,16 @@ async fn after_desc_succeeds() {
                     sources: Vec::new(),
                     tags: BTreeMap::new(),
                     replicas: Vec::new(),
-                    created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 57)).unwrap(),
-                    updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 5, 1)).unwrap(),
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 57).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 1).unwrap(),
                 },
                 Medium {
                     id: MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
                     sources: Vec::new(),
                     tags: BTreeMap::new(),
                     replicas: Vec::new(),
-                    created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 56)).unwrap(),
-                    updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 5, 0)).unwrap(),
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 56).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 0).unwrap(),
                 },
             ])
         });
@@ -375,7 +375,7 @@ async fn after_desc_succeeds() {
     let schema = Schema::build(query, EmptyMutation, EmptySubscription).finish();
     let req = indoc! {r#"
         query {
-            allMedia(first: 3, order: DESC, after: "MjAyMi0wNi0wMVQxMjozNDo1OC4wMDAwMDAAOTk5OTk5OTktOTk5OS05OTk5LTk5OTktOTk5OTk5OTk5OTk5") {
+            allMedia(first: 3, order: DESC, after: "MjAyMi0wNi0wMVQxMjozNDo1OC4wMDAwMDArMDA6MDAAOTk5OTk5OTktOTk5OS05OTk5LTk5OTktOTk5OTk5OTk5OTk5") {
                 pageInfo {
                     hasPreviousPage
                     hasNextPage
@@ -402,15 +402,15 @@ async fn after_desc_succeeds() {
                 {
                     "node": {
                         "id": "88888888-8888-8888-8888-888888888888",
-                        "createdAt": "2022-06-01T12:34:57",
-                        "updatedAt": "2022-06-01T00:05:01",
+                        "createdAt": "2022-06-01T12:34:57+00:00",
+                        "updatedAt": "2022-06-01T00:05:01+00:00",
                     },
                 },
                 {
                     "node": {
                         "id": "77777777-7777-7777-7777-777777777777",
-                        "createdAt": "2022-06-01T12:34:56",
-                        "updatedAt": "2022-06-01T00:05:00",
+                        "createdAt": "2022-06-01T12:34:56+00:00",
+                        "updatedAt": "2022-06-01T00:05:00+00:00",
                     },
                 },
             ],
@@ -432,7 +432,7 @@ async fn before_asc_succeeds() {
                 &false,
                 &false,
                 &None,
-                &Some((NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 58)).unwrap(), MediumId::from(uuid!("99999999-9999-9999-9999-999999999999")))),
+                &Some((Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 58).unwrap(), MediumId::from(uuid!("99999999-9999-9999-9999-999999999999")))),
                 &OrderDirection::Ascending,
                 &4,
             )
@@ -444,16 +444,16 @@ async fn before_asc_succeeds() {
                     sources: Vec::new(),
                     tags: BTreeMap::new(),
                     replicas: Vec::new(),
-                    created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 56)).unwrap(),
-                    updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 5, 0)).unwrap(),
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 56).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 0).unwrap(),
                 },
                 Medium {
                     id: MediumId::from(uuid!("88888888-8888-8888-8888-888888888888")),
                     sources: Vec::new(),
                     tags: BTreeMap::new(),
                     replicas: Vec::new(),
-                    created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 57)).unwrap(),
-                    updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 5, 1)).unwrap(),
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 57).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 1).unwrap(),
                 },
             ])
         });
@@ -464,7 +464,7 @@ async fn before_asc_succeeds() {
     let schema = Schema::build(query, EmptyMutation, EmptySubscription).finish();
     let req = indoc! {r#"
         query {
-            allMedia(first: 3, before: "MjAyMi0wNi0wMVQxMjozNDo1OC4wMDAwMDAAOTk5OTk5OTktOTk5OS05OTk5LTk5OTktOTk5OTk5OTk5OTk5") {
+            allMedia(first: 3, before: "MjAyMi0wNi0wMVQxMjozNDo1OC4wMDAwMDArMDA6MDAAOTk5OTk5OTktOTk5OS05OTk5LTk5OTktOTk5OTk5OTk5OTk5") {
                 pageInfo {
                     hasPreviousPage
                     hasNextPage
@@ -491,15 +491,15 @@ async fn before_asc_succeeds() {
                 {
                     "node": {
                         "id": "77777777-7777-7777-7777-777777777777",
-                        "createdAt": "2022-06-01T12:34:56",
-                        "updatedAt": "2022-06-01T00:05:00",
+                        "createdAt": "2022-06-01T12:34:56+00:00",
+                        "updatedAt": "2022-06-01T00:05:00+00:00",
                     },
                 },
                 {
                     "node": {
                         "id": "88888888-8888-8888-8888-888888888888",
-                        "createdAt": "2022-06-01T12:34:57",
-                        "updatedAt": "2022-06-01T00:05:01",
+                        "createdAt": "2022-06-01T12:34:57+00:00",
+                        "updatedAt": "2022-06-01T00:05:01+00:00",
                     },
                 },
             ],
@@ -521,7 +521,7 @@ async fn before_desc_succeeds() {
                 &false,
                 &false,
                 &None,
-                &Some((NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 57)).unwrap(), MediumId::from(uuid!("88888888-8888-8888-8888-888888888888")))),
+                &Some((Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 57).unwrap(), MediumId::from(uuid!("88888888-8888-8888-8888-888888888888")))),
                 &OrderDirection::Descending,
                 &4,
             )
@@ -533,16 +533,16 @@ async fn before_desc_succeeds() {
                     sources: Vec::new(),
                     tags: BTreeMap::new(),
                     replicas: Vec::new(),
-                    created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 59)).unwrap(),
-                    updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 5, 3)).unwrap(),
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 59).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 3).unwrap(),
                 },
                 Medium {
                     id: MediumId::from(uuid!("99999999-9999-9999-9999-999999999999")),
                     sources: Vec::new(),
                     tags: BTreeMap::new(),
                     replicas: Vec::new(),
-                    created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 58)).unwrap(),
-                    updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 5, 2)).unwrap(),
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 58).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 2).unwrap(),
                 },
             ])
         });
@@ -553,7 +553,7 @@ async fn before_desc_succeeds() {
     let schema = Schema::build(query, EmptyMutation, EmptySubscription).finish();
     let req = indoc! {r#"
         query {
-            allMedia(first: 3, order: DESC, before: "MjAyMi0wNi0wMVQxMjozNDo1Ny4wMDAwMDAAODg4ODg4ODgtODg4OC04ODg4LTg4ODgtODg4ODg4ODg4ODg4") {
+            allMedia(first: 3, order: DESC, before: "MjAyMi0wNi0wMVQxMjozNDo1Ny4wMDAwMDArMDA6MDAAODg4ODg4ODgtODg4OC04ODg4LTg4ODgtODg4ODg4ODg4ODg4") {
                 pageInfo {
                     hasPreviousPage
                     hasNextPage
@@ -580,15 +580,15 @@ async fn before_desc_succeeds() {
                 {
                     "node": {
                         "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-                        "createdAt": "2022-06-01T12:34:59",
-                        "updatedAt": "2022-06-01T00:05:03",
+                        "createdAt": "2022-06-01T12:34:59+00:00",
+                        "updatedAt": "2022-06-01T00:05:03+00:00",
                     },
                 },
                 {
                     "node": {
                         "id": "99999999-9999-9999-9999-999999999999",
-                        "createdAt": "2022-06-01T12:34:58",
-                        "updatedAt": "2022-06-01T00:05:02",
+                        "createdAt": "2022-06-01T12:34:58+00:00",
+                        "updatedAt": "2022-06-01T00:05:02+00:00",
                     },
                 },
             ],

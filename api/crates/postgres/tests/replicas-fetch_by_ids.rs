@@ -1,4 +1,4 @@
-use chrono::NaiveDate;
+use chrono::{TimeZone, Utc};
 use domain::{
     entity::replicas::{Replica, ReplicaId},
     repository::replicas::ReplicasRepository,
@@ -29,8 +29,8 @@ async fn succeeds(ctx: &DatabaseContext) {
             has_thumbnail: true,
             original_url: "file:///var/lib/hoarder/1706c7bb-4152-44b2-9bbb-1179d09a19be.png".to_string(),
             mime_type: "image/png".to_string(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 10)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 10).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap(),
         },
         Replica {
             id: ReplicaId::from(uuid!("6fae1497-e987-492e-987a-f9870b7d3c5b")),
@@ -38,8 +38,8 @@ async fn succeeds(ctx: &DatabaseContext) {
             has_thumbnail: true,
             original_url: "file:///var/lib/hoarder/6fae1497-e987-492e-987a-f9870b7d3c5b.png".to_string(),
             mime_type: "image/png".to_string(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 11)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 10)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 11).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap(),
         },
         Replica {
             id: ReplicaId::from(uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5")),
@@ -47,8 +47,8 @@ async fn succeeds(ctx: &DatabaseContext) {
             has_thumbnail: false,
             original_url: "file:///var/lib/hoarder/12ca56e2-6e77-43b9-9da9-9d968c80a1a5.png".to_string(),
             mime_type: "image/png".to_string(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 11)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 11).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap(),
         },
     ]);
 }

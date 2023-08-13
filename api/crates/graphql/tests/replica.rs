@@ -1,4 +1,5 @@
 use async_graphql::{Schema, EmptyMutation, EmptySubscription, value};
+use chrono::{TimeZone, Utc};
 use domain::{
     entity::replicas::{self, ReplicaId},
     service::{
@@ -7,7 +8,6 @@ use domain::{
         tags::MockTagsServiceInterface,
     },
 };
-use chrono::NaiveDate;
 use graphql::query::Query;
 use indoc::indoc;
 use pretty_assertions::assert_eq;
@@ -30,8 +30,8 @@ async fn succeeds() {
                 has_thumbnail: true,
                 original_url: "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png".to_string(),
                 mime_type: "image/png".to_string(),
-                created_at: NaiveDate::from_ymd_opt(2022, 6, 2).and_then(|d| d.and_hms_opt(0, 0, 0)).unwrap(),
-                updated_at: NaiveDate::from_ymd_opt(2022, 6, 2).and_then(|d| d.and_hms_opt(0, 1, 0)).unwrap(),
+                created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
+                updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 1, 0).unwrap(),
             })
         });
 
@@ -63,8 +63,8 @@ async fn succeeds() {
             "originalUrl": "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png",
             "thumbnailUrl": "https://img.example.com/66666666-6666-6666-6666-666666666666",
             "mimeType": "image/png",
-            "createdAt": "2022-06-02T00:00:00",
-            "updatedAt": "2022-06-02T00:01:00",
+            "createdAt": "2022-06-02T00:00:00+00:00",
+            "updatedAt": "2022-06-02T00:01:00+00:00",
         },
     }));
 }

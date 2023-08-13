@@ -1,4 +1,4 @@
-use chrono::NaiveDate;
+use chrono::{TimeZone, Utc};
 use domain::{
     entity::{
         external_services::{ExternalService, ExternalServiceId, ExternalMetadata},
@@ -32,7 +32,7 @@ async fn succeeds(ctx: &DatabaseContext) {
             name: "pixiv".to_string(),
         },
         external_metadata: ExternalMetadata::Pixiv { id: 8888888 },
-        created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
-        updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 14)).unwrap(),
+        created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 8).unwrap(),
+        updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 14).unwrap(),
     });
 }

@@ -1,6 +1,6 @@
 use std::collections::BTreeSet;
 
-use chrono::NaiveDateTime;
+use chrono::{DateTime, Utc};
 use derive_more::{Constructor, Deref, Display, From};
 use serde::Serialize;
 use thiserror::Error;
@@ -15,7 +15,7 @@ pub struct TagDepth {
     children: u32,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct Tag {
     pub id: TagId,
     pub name: String,
@@ -23,29 +23,14 @@ pub struct Tag {
     pub aliases: AliasSet,
     pub parent: Option<Box<Self>>,
     pub children: Vec<Self>,
-    pub created_at: NaiveDateTime,
-    pub updated_at: NaiveDateTime,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
 }
 
 #[derive(Debug, Error)]
 pub enum TagError {
     #[error("tag not found: {0}")]
     NotFound(TagId),
-}
-
-impl Default for Tag {
-    fn default() -> Self {
-        Self {
-            id: Default::default(),
-            name: Default::default(),
-            kana: Default::default(),
-            aliases: Default::default(),
-            parent: Default::default(),
-            children: Default::default(),
-            created_at: NaiveDateTime::MIN,
-            updated_at: NaiveDateTime::MIN,
-        }
-    }
 }
 
 impl TagId {
@@ -120,22 +105,6 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-
-    #[test]
-    fn tag_default() {
-        let actual = Tag::default();
-
-        assert_eq!(actual, Tag {
-            id: TagId::from(Uuid::nil()),
-            name: "".to_string(),
-            kana: "".to_string(),
-            aliases: AliasSet::new(BTreeSet::new()),
-            parent: None,
-            children: Vec::new(),
-            created_at: NaiveDateTime::MIN,
-            updated_at: NaiveDateTime::MIN,
-        });
-    }
 
     #[test]
     fn tag_id_root() {

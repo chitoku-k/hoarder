@@ -6,7 +6,7 @@ use async_graphql::{
     InputObject, Lookahead, SimpleObject,
 };
 use base64::{prelude::BASE64_STANDARD, Engine};
-use chrono::NaiveDateTime;
+use chrono::{DateTime, Utc};
 use derive_more::Constructor;
 use domain::entity::{
     tag_types::{self, TagTypeId},
@@ -24,8 +24,8 @@ pub struct Tag {
     aliases: BTreeSet<String>,
     parent: Option<Box<TagParent>>,
     children: Vec<TagChild>,
-    created_at: NaiveDateTime,
-    updated_at: NaiveDateTime,
+    created_at: DateTime<Utc>,
+    updated_at: DateTime<Utc>,
 }
 
 #[derive(SimpleObject)]
@@ -35,8 +35,8 @@ pub(crate) struct TagParent {
     kana: String,
     aliases: BTreeSet<String>,
     parent: Option<Box<Self>>,
-    created_at: NaiveDateTime,
-    updated_at: NaiveDateTime,
+    created_at: DateTime<Utc>,
+    updated_at: DateTime<Utc>,
 }
 
 #[derive(SimpleObject)]
@@ -46,8 +46,8 @@ pub(crate) struct TagChild {
     kana: String,
     aliases: BTreeSet<String>,
     children: Vec<Self>,
-    created_at: NaiveDateTime,
-    updated_at: NaiveDateTime,
+    created_at: DateTime<Utc>,
+    updated_at: DateTime<Utc>,
 }
 
 #[derive(Clone, Constructor, Debug, Eq, PartialEq)]

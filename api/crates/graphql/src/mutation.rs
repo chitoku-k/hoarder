@@ -1,5 +1,5 @@
 use async_graphql::{Context, Object, SimpleObject, Upload};
-use chrono::NaiveDateTime;
+use chrono::{DateTime, FixedOffset};
 use derive_more::Constructor;
 use domain::{
     repository,
@@ -68,7 +68,7 @@ where
         &self,
         ctx: &Context<'_>,
         source_ids: Option<Vec<Uuid>>,
-        created_at: Option<NaiveDateTime>,
+        created_at: Option<DateTime<FixedOffset>>,
         tag_ids: Option<Vec<TagTagTypeInput>>,
     ) -> anyhow::Result<Medium> {
         let tags = ctx.look_ahead().field("tags");
@@ -77,6 +77,8 @@ where
 
         let source_ids: Map<_, _, _> = source_ids.unwrap_or_default().into_iter().map(Into::into);
         let tag_tag_type_ids: Map<_, _, _> = tag_ids.unwrap_or_default().into_iter().map(Into::into);
+
+        let created_at = created_at.map(Into::into);
 
         let medium = self.media_service.create_medium(source_ids, created_at, tag_tag_type_ids, tag_depth, sources).await?;
         medium.try_into()
@@ -112,7 +114,7 @@ where
         add_tag_ids: Option<Vec<TagTagTypeInput>>,
         remove_tag_ids: Option<Vec<TagTagTypeInput>>,
         replica_orders: Option<Vec<Uuid>>,
-        created_at: Option<NaiveDateTime>,
+        created_at: Option<DateTime<FixedOffset>>,
     ) -> anyhow::Result<Medium> {
         let tags = ctx.look_ahead().field("tags");
         let tag_depth = tags.exists().then(|| get_tag_depth(&tags));
@@ -126,6 +128,8 @@ where
         let remove_tag_tag_type_ids: Map<_, _, _> = remove_tag_ids.unwrap_or_default().into_iter().map(Into::into);
 
         let replica_orders: Map<_, _, _> = replica_orders.unwrap_or_default().into_iter().map(Into::into);
+
+        let created_at = created_at.map(Into::into);
 
         let medium = self.media_service.update_medium_by_id(
             id.into(),

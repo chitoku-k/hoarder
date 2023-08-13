@@ -1,5 +1,5 @@
 use async_graphql::{InputObject, OneofObject, SimpleObject};
-use chrono::NaiveDateTime;
+use chrono::{DateTime, Utc};
 use domain::entity::{external_services, sources};
 use serde::Serialize;
 use serde_with::{serde_as, DisplayFromStr};
@@ -12,8 +12,8 @@ pub(crate) struct Source {
     id: Uuid,
     external_service: ExternalService,
     external_metadata: serde_json::Value,
-    created_at: NaiveDateTime,
-    updated_at: NaiveDateTime,
+    created_at: DateTime<Utc>,
+    updated_at: DateTime<Utc>,
 }
 
 #[derive(Debug, Eq, OneofObject, PartialEq, Serialize)]
