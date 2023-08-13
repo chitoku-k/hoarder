@@ -1,7 +1,7 @@
 #![allow(clippy::too_many_arguments)]
 
 use async_graphql::{
-    http::{playground_source, GraphQLPlaygroundConfig},
+    http::GraphiQLSource,
     Context, EmptySubscription, Enum, Schema, Upload,
 };
 use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
@@ -54,8 +54,8 @@ pub async fn process_upload(ctx: &Context<'_>, upload: Upload) -> anyhow::Result
     Ok(buf)
 }
 
-pub async fn playground() -> impl IntoResponse {
-    response::Html(playground_source(GraphQLPlaygroundConfig::new("/")))
+pub async fn graphiql() -> impl IntoResponse {
+    response::Html(GraphiQLSource::build().endpoint("/").finish())
 }
 
 #[derive(Enum, Clone, Copy, Default, Eq, PartialEq)]
