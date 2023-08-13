@@ -2,7 +2,7 @@ use domain::{
     entity::tags::{AliasSet, Tag, TagDepth, TagId},
     repository::tags::TagsRepository,
 };
-use chrono::NaiveDate;
+use chrono::{TimeZone, Utc};
 use futures::TryStreamExt;
 use postgres::tags::PostgresTagsRepository;
 use pretty_assertions::assert_eq;
@@ -35,8 +35,8 @@ async fn with_depth_succeeds(ctx: &DatabaseContext) {
             aliases: AliasSet::default(),
             parent: None,
             children: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 9).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
         },
         Tag {
             id: TagId::from(uuid!("69c4860d-24d0-41f6-a3ab-ac07dea5abd6")),
@@ -45,8 +45,8 @@ async fn with_depth_succeeds(ctx: &DatabaseContext) {
             aliases: AliasSet::default(),
             parent: None,
             children: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 7).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
         },
         Tag {
             id: TagId::from(uuid!("a2a6c29d-18d0-47b1-a324-88e93c267707")),
@@ -55,8 +55,8 @@ async fn with_depth_succeeds(ctx: &DatabaseContext) {
             aliases: AliasSet::default(),
             parent: None,
             children: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 7).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap(),
         },
         Tag {
             id: TagId::from(uuid!("991a287c-e77d-456f-94b4-293334674d0e")),
@@ -65,12 +65,12 @@ async fn with_depth_succeeds(ctx: &DatabaseContext) {
             aliases: AliasSet::default(),
             parent: None,
             children: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 6)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 8).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 6).unwrap(),
         },
     ]);
-    assert_eq!(actual.created_at, NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 6)).unwrap());
-    assert_eq!(actual.updated_at, NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap());
+    assert_eq!(actual.created_at, Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap());
+    assert_eq!(actual.updated_at, Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap());
 
     let actual: Vec<_> = sqlx::query(r#"SELECT "ancestor_id", "descendant_id", "distance" FROM "tag_paths" WHERE "descendant_id" IN ($1, $2, $3, $4, $5, $6) ORDER BY "descendant_id", "distance" DESC"#)
         .bind(uuid!("12c4101e-722f-4172-9fe2-7862ebbc8fc5"))
@@ -166,8 +166,8 @@ async fn without_depth_succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual.aliases, AliasSet::default());
     assert_eq!(actual.parent, None);
     assert_eq!(actual.children, Vec::new());
-    assert_eq!(actual.created_at, NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 6)).unwrap());
-    assert_eq!(actual.updated_at, NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap());
+    assert_eq!(actual.created_at, Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap());
+    assert_eq!(actual.updated_at, Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap());
 
     let actual: Vec<_> = sqlx::query(r#"SELECT "ancestor_id", "descendant_id", "distance" FROM "tag_paths" WHERE "descendant_id" IN ($1, $2, $3, $4, $5, $6) ORDER BY "descendant_id", "distance" DESC"#)
         .bind(uuid!("12c4101e-722f-4172-9fe2-7862ebbc8fc5"))

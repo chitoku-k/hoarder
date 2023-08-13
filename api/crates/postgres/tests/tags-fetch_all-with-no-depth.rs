@@ -4,7 +4,7 @@ use domain::{
     entity::tags::{AliasSet, Tag, TagDepth, TagId},
     repository::{tags::TagsRepository, OrderDirection},
 };
-use chrono::NaiveDate;
+use chrono::{TimeZone, Utc};
 use postgres::tags::PostgresTagsRepository;
 use pretty_assertions::assert_eq;
 use test_context::test_context;
@@ -35,8 +35,8 @@ async fn root_asc_succeeds(ctx: &DatabaseContext) {
             aliases: AliasSet::default(),
             parent: None,
             children: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 13)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 10)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 13).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 10).unwrap(),
         },
         Tag {
             id: TagId::from(uuid!("74303485-40fb-466d-a93f-0cba46f6f43c")),
@@ -45,8 +45,8 @@ async fn root_asc_succeeds(ctx: &DatabaseContext) {
             aliases: AliasSet::default(),
             parent: None,
             children: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 12)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 13)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 12).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 13).unwrap(),
         },
         Tag {
             id: TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
@@ -55,8 +55,8 @@ async fn root_asc_succeeds(ctx: &DatabaseContext) {
             aliases: AliasSet::new(BTreeSet::from(["東方".to_string()])),
             parent: None,
             children: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 10)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 8).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap(),
         },
     ]);
 }
@@ -83,8 +83,8 @@ async fn root_desc_succeeds(ctx: &DatabaseContext) {
             aliases: AliasSet::default(),
             parent: None,
             children: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 5)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 5).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
         },
         Tag {
             id: TagId::from(uuid!("867fe021-a034-4b01-badb-7d56f77406b5")),
@@ -93,8 +93,8 @@ async fn root_desc_succeeds(ctx: &DatabaseContext) {
             aliases: AliasSet::default(),
             parent: None,
             children: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 11)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 9)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 11).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 9).unwrap(),
         },
         Tag {
             id: TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
@@ -103,8 +103,8 @@ async fn root_desc_succeeds(ctx: &DatabaseContext) {
             aliases: AliasSet::new(BTreeSet::from(["東方".to_string()])),
             parent: None,
             children: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 10)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 8).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap(),
         },
     ]);
 }
@@ -131,8 +131,8 @@ async fn root_after_asc_succeeds(ctx: &DatabaseContext) {
             aliases: AliasSet::default(),
             parent: None,
             children: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 11)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 9)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 11).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 9).unwrap(),
         },
         Tag {
             id: TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
@@ -141,8 +141,8 @@ async fn root_after_asc_succeeds(ctx: &DatabaseContext) {
             aliases: AliasSet::default(),
             parent: None,
             children: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 5)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 5).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
         },
     ]);
 }
@@ -169,8 +169,8 @@ async fn root_after_desc_succeeds(ctx: &DatabaseContext) {
             aliases: AliasSet::default(),
             parent: None,
             children: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 5)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 5).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
         },
         Tag {
             id: TagId::from(uuid!("867fe021-a034-4b01-badb-7d56f77406b5")),
@@ -179,8 +179,8 @@ async fn root_after_desc_succeeds(ctx: &DatabaseContext) {
             aliases: AliasSet::default(),
             parent: None,
             children: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 11)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 9)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 11).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 9).unwrap(),
         },
     ]);
 }
@@ -207,8 +207,8 @@ async fn root_before_asc_succeeds(ctx: &DatabaseContext) {
             aliases: AliasSet::default(),
             parent: None,
             children: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 13)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 10)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 13).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 10).unwrap(),
         },
         Tag {
             id: TagId::from(uuid!("74303485-40fb-466d-a93f-0cba46f6f43c")),
@@ -217,8 +217,8 @@ async fn root_before_asc_succeeds(ctx: &DatabaseContext) {
             aliases: AliasSet::default(),
             parent: None,
             children: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 12)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 13)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 12).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 13).unwrap(),
         },
     ]);
 }
@@ -245,8 +245,8 @@ async fn root_before_desc_succeeds(ctx: &DatabaseContext) {
             aliases: AliasSet::default(),
             parent: None,
             children: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 12)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 13)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 12).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 13).unwrap(),
         },
         Tag {
             id: TagId::from(uuid!("9b47af74-f034-4973-b284-704ab3e18b68")),
@@ -255,8 +255,8 @@ async fn root_before_desc_succeeds(ctx: &DatabaseContext) {
             aliases: AliasSet::default(),
             parent: None,
             children: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 13)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 10)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 13).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 10).unwrap(),
         },
     ]);
 }
@@ -283,8 +283,8 @@ async fn no_root_asc_succeeds(ctx: &DatabaseContext) {
             aliases: AliasSet::default(),
             parent: None,
             children: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 13)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 10)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 13).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 10).unwrap(),
         },
         Tag {
             id: TagId::from(uuid!("12c4101e-722f-4172-9fe2-7862ebbc8fc5")),
@@ -293,8 +293,8 @@ async fn no_root_asc_succeeds(ctx: &DatabaseContext) {
             aliases: AliasSet::default(),
             parent: None,
             children: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 9).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
         },
         Tag {
             id: TagId::from(uuid!("74303485-40fb-466d-a93f-0cba46f6f43c")),
@@ -303,8 +303,8 @@ async fn no_root_asc_succeeds(ctx: &DatabaseContext) {
             aliases: AliasSet::default(),
             parent: None,
             children: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 12)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 13)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 12).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 13).unwrap(),
         },
     ]);
 }
@@ -331,8 +331,8 @@ async fn no_root_desc_succeeds(ctx: &DatabaseContext) {
             aliases: AliasSet::new(BTreeSet::from(["うどんげ".to_string()])),
             parent: None,
             children: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 9).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
         },
         Tag {
             id: TagId::from(uuid!("991a287c-e77d-456f-94b4-293334674d0e")),
@@ -341,8 +341,8 @@ async fn no_root_desc_succeeds(ctx: &DatabaseContext) {
             aliases: AliasSet::default(),
             parent: None,
             children: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 6)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 8).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 6).unwrap(),
         },
         Tag {
             id: TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
@@ -351,8 +351,8 @@ async fn no_root_desc_succeeds(ctx: &DatabaseContext) {
             aliases: AliasSet::default(),
             parent: None,
             children: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 5)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 5).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
         },
     ]);
 }
@@ -379,8 +379,8 @@ async fn no_root_after_asc_succeeds(ctx: &DatabaseContext) {
             aliases: AliasSet::default(),
             parent: None,
             children: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 7)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 7).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
         },
         Tag {
             id: TagId::from(uuid!("e8d32062-0185-43e8-a27d-6ca707d7dd60")),
@@ -389,8 +389,8 @@ async fn no_root_after_asc_succeeds(ctx: &DatabaseContext) {
             aliases: AliasSet::default(),
             parent: None,
             children: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 6)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
         },
         Tag {
             id: TagId::from(uuid!("3255874e-1035-427e-80e3-19bb7b28a3fb")),
@@ -399,8 +399,8 @@ async fn no_root_after_asc_succeeds(ctx: &DatabaseContext) {
             aliases: AliasSet::default(),
             parent: None,
             children: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 10)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 11)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 10).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 11).unwrap(),
         },
     ]);
 }
@@ -427,8 +427,8 @@ async fn no_root_after_desc_succeeds(ctx: &DatabaseContext) {
             aliases: AliasSet::new(BTreeSet::from(["うどんげ".to_string()])),
             parent: None,
             children: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 9).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
         },
         Tag {
             id: TagId::from(uuid!("991a287c-e77d-456f-94b4-293334674d0e")),
@@ -437,8 +437,8 @@ async fn no_root_after_desc_succeeds(ctx: &DatabaseContext) {
             aliases: AliasSet::default(),
             parent: None,
             children: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 6)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 8).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 6).unwrap(),
         },
         Tag {
             id: TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
@@ -447,8 +447,8 @@ async fn no_root_after_desc_succeeds(ctx: &DatabaseContext) {
             aliases: AliasSet::default(),
             parent: None,
             children: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 5)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 5).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
         },
     ]);
 }
@@ -475,8 +475,8 @@ async fn no_root_before_asc_succeeds(ctx: &DatabaseContext) {
             aliases: AliasSet::default(),
             parent: None,
             children: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 13)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 10)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 13).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 10).unwrap(),
         },
         Tag {
             id: TagId::from(uuid!("12c4101e-722f-4172-9fe2-7862ebbc8fc5")),
@@ -485,8 +485,8 @@ async fn no_root_before_asc_succeeds(ctx: &DatabaseContext) {
             aliases: AliasSet::default(),
             parent: None,
             children: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 9).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
         },
         Tag {
             id: TagId::from(uuid!("74303485-40fb-466d-a93f-0cba46f6f43c")),
@@ -495,8 +495,8 @@ async fn no_root_before_asc_succeeds(ctx: &DatabaseContext) {
             aliases: AliasSet::default(),
             parent: None,
             children: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 12)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 13)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 12).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 13).unwrap(),
         },
     ]);
 }
@@ -523,8 +523,8 @@ async fn no_root_before_desc_succeeds(ctx: &DatabaseContext) {
             aliases: AliasSet::default(),
             parent: None,
             children: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 8)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 8).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap(),
         },
         Tag {
             id: TagId::from(uuid!("74303485-40fb-466d-a93f-0cba46f6f43c")),
@@ -533,8 +533,8 @@ async fn no_root_before_desc_succeeds(ctx: &DatabaseContext) {
             aliases: AliasSet::default(),
             parent: None,
             children: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 12)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 3, 4).and_then(|d| d.and_hms_opt(5, 6, 13)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 12).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 13).unwrap(),
         },
         Tag {
             id: TagId::from(uuid!("12c4101e-722f-4172-9fe2-7862ebbc8fc5")),
@@ -543,8 +543,8 @@ async fn no_root_before_desc_succeeds(ctx: &DatabaseContext) {
             aliases: AliasSet::default(),
             parent: None,
             children: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 9)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 9)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 9).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
         },
     ]);
 }

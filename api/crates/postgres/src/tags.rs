@@ -6,7 +6,7 @@ use std::{
 
 use anyhow::Context;
 use async_trait::async_trait;
-use chrono::NaiveDateTime;
+use chrono::{DateTime, Utc};
 use cow_utils::CowUtils;
 use derive_more::{Constructor, From, Into};
 use domain::{
@@ -40,8 +40,8 @@ struct PostgresTagRow {
     name: String,
     kana: String,
     aliases: Vec<String>,
-    created_at: NaiveDateTime,
-    updated_at: NaiveDateTime,
+    created_at: DateTime<Utc>,
+    updated_at: DateTime<Utc>,
 }
 
 #[derive(Debug, FromRow)]
@@ -57,18 +57,18 @@ struct PostgresTagRelativeRow {
     ancestor_name: String,
     ancestor_kana: String,
     ancestor_aliases: Vec<String>,
-    ancestor_created_at: NaiveDateTime,
-    ancestor_updated_at: NaiveDateTime,
+    ancestor_created_at: DateTime<Utc>,
+    ancestor_updated_at: DateTime<Utc>,
 
     descendant_id: PostgresTagId,
     descendant_name: String,
     descendant_kana: String,
     descendant_aliases: Vec<String>,
-    descendant_created_at: NaiveDateTime,
-    descendant_updated_at: NaiveDateTime,
+    descendant_created_at: DateTime<Utc>,
+    descendant_updated_at: DateTime<Utc>,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 struct TagRelation {
     id: TagId,
     name: String,
@@ -76,8 +76,8 @@ struct TagRelation {
     aliases: Vec<String>,
     parent: Weak<RefCell<Self>>,
     children: Vec<Rc<RefCell<Self>>>,
-    created_at: NaiveDateTime,
-    updated_at: NaiveDateTime,
+    created_at: DateTime<Utc>,
+    updated_at: DateTime<Utc>,
 }
 
 #[derive(Iden)]
@@ -132,21 +132,6 @@ pub(crate) enum PostgresTagError {
 }
 
 sea_query_uuid_value!(PostgresTagId, TagId);
-
-impl Default for TagRelation {
-    fn default() -> Self {
-        Self {
-            id: Default::default(),
-            name: Default::default(),
-            kana: Default::default(),
-            aliases: Default::default(),
-            parent: Default::default(),
-            children: Default::default(),
-            created_at: NaiveDateTime::MIN,
-            updated_at: NaiveDateTime::MIN,
-        }
-    }
-}
 
 impl From<PostgresTagRow> for Tag {
     fn from(row: PostgresTagRow) -> Self {

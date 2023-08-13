@@ -1,7 +1,7 @@
 use std::collections::BTreeMap;
 
 use anyhow::anyhow;
-use chrono::NaiveDate;
+use chrono::{TimeZone, Utc};
 use domain::{
     entity::{
         external_services::{ExternalMetadata, ExternalService, ExternalServiceId},
@@ -34,7 +34,7 @@ async fn create_medium_succeeds() {
                     SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
                     SourceId::from(uuid!("22222222-2222-2222-2222-222222222222")),
                 ],
-                &Some(NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 56)).unwrap()),
+                &Some(Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 56).unwrap()),
                 &vec![
                     (
                         TagId::from(uuid!("33333333-3333-3333-3333-333333333333")),
@@ -61,8 +61,8 @@ async fn create_medium_succeeds() {
                             name: "Twitter".to_string(),
                         },
                         external_metadata: ExternalMetadata::Twitter { id: 727620202049900544 },
-                        created_at: NaiveDate::from_ymd_opt(2016, 5, 4).and_then(|d| d.and_hms_opt(7, 5, 0)).unwrap(),
-                        updated_at: NaiveDate::from_ymd_opt(2016, 5, 4).and_then(|d| d.and_hms_opt(7, 5, 1)).unwrap(),
+                        created_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 0).unwrap(),
+                        updated_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 1).unwrap(),
                     },
                     Source {
                         id: SourceId::from(uuid!("22222222-2222-2222-2222-222222222222")),
@@ -72,8 +72,8 @@ async fn create_medium_succeeds() {
                             name: "pixiv".to_string(),
                         },
                         external_metadata: ExternalMetadata::Pixiv { id: 56736941 },
-                        created_at: NaiveDate::from_ymd_opt(2016, 5, 6).and_then(|d| d.and_hms_opt(5, 14, 0)).unwrap(),
-                        updated_at: NaiveDate::from_ymd_opt(2016, 5, 6).and_then(|d| d.and_hms_opt(5, 14, 1)).unwrap(),
+                        created_at: Utc.with_ymd_and_hms(2016, 5, 6, 5, 14, 0).unwrap(),
+                        updated_at: Utc.with_ymd_and_hms(2016, 5, 6, 5, 14, 1).unwrap(),
                     },
                 ],
                 tags: {
@@ -92,8 +92,8 @@ async fn create_medium_succeeds() {
                                 aliases: Default::default(),
                                 parent: None,
                                 children: Vec::new(),
-                                created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 0, 0)).unwrap(),
-                                updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 1, 0)).unwrap(),
+                                created_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(),
+                                updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 1, 0).unwrap(),
                             },
                         ],
                     );
@@ -111,16 +111,16 @@ async fn create_medium_succeeds() {
                                 aliases: Default::default(),
                                 parent: None,
                                 children: Vec::new(),
-                                created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 2, 0)).unwrap(),
-                                updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 3, 0)).unwrap(),
+                                created_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 2, 0).unwrap(),
+                                updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 3, 0).unwrap(),
                             },
                         ],
                     );
                     tags
                 },
                 replicas: Vec::new(),
-                created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 56)).unwrap(),
-                updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 5, 0)).unwrap(),
+                created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 56).unwrap(),
+                updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 0).unwrap(),
             })
         });
 
@@ -133,7 +133,7 @@ async fn create_medium_succeeds() {
             SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
             SourceId::from(uuid!("22222222-2222-2222-2222-222222222222")),
         ],
-        Some(NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 56)).unwrap()),
+        Some(Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 56).unwrap()),
         vec![
             (
                 TagId::from(uuid!("33333333-3333-3333-3333-333333333333")),
@@ -159,8 +159,8 @@ async fn create_medium_succeeds() {
                     name: "Twitter".to_string(),
                 },
                 external_metadata: ExternalMetadata::Twitter { id: 727620202049900544 },
-                created_at: NaiveDate::from_ymd_opt(2016, 5, 4).and_then(|d| d.and_hms_opt(7, 5, 0)).unwrap(),
-                updated_at: NaiveDate::from_ymd_opt(2016, 5, 4).and_then(|d| d.and_hms_opt(7, 5, 1)).unwrap(),
+                created_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 0).unwrap(),
+                updated_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 1).unwrap(),
             },
             Source {
                 id: SourceId::from(uuid!("22222222-2222-2222-2222-222222222222")),
@@ -170,8 +170,8 @@ async fn create_medium_succeeds() {
                     name: "pixiv".to_string(),
                 },
                 external_metadata: ExternalMetadata::Pixiv { id: 56736941 },
-                created_at: NaiveDate::from_ymd_opt(2016, 5, 6).and_then(|d| d.and_hms_opt(5, 14, 0)).unwrap(),
-                updated_at: NaiveDate::from_ymd_opt(2016, 5, 6).and_then(|d| d.and_hms_opt(5, 14, 1)).unwrap(),
+                created_at: Utc.with_ymd_and_hms(2016, 5, 6, 5, 14, 0).unwrap(),
+                updated_at: Utc.with_ymd_and_hms(2016, 5, 6, 5, 14, 1).unwrap(),
             },
         ],
         tags: {
@@ -190,8 +190,8 @@ async fn create_medium_succeeds() {
                         aliases: Default::default(),
                         parent: None,
                         children: Vec::new(),
-                        created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 0, 0)).unwrap(),
-                        updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 1, 0)).unwrap(),
+                        created_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(),
+                        updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 1, 0).unwrap(),
                     },
                 ],
             );
@@ -209,16 +209,16 @@ async fn create_medium_succeeds() {
                         aliases: Default::default(),
                         parent: None,
                         children: Vec::new(),
-                        created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 2, 0)).unwrap(),
-                        updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 3, 0)).unwrap(),
+                        created_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 2, 0).unwrap(),
+                        updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 3, 0).unwrap(),
                     },
                 ],
             );
             tags
         },
         replicas: Vec::new(),
-        created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 56)).unwrap(),
-        updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 5, 0)).unwrap(),
+        created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 56).unwrap(),
+        updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 0).unwrap(),
     });
 }
 
@@ -234,7 +234,7 @@ async fn create_medium_fails() {
                     SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
                     SourceId::from(uuid!("22222222-2222-2222-2222-222222222222")),
                 ],
-                &Some(NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 56)).unwrap()),
+                &Some(Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 56).unwrap()),
                 &vec![
                     (
                         TagId::from(uuid!("33333333-3333-3333-3333-333333333333")),
@@ -260,7 +260,7 @@ async fn create_medium_fails() {
             SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
             SourceId::from(uuid!("22222222-2222-2222-2222-222222222222")),
         ],
-        Some(NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 56)).unwrap()),
+        Some(Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 56).unwrap()),
         vec![
             (
                 TagId::from(uuid!("33333333-3333-3333-3333-333333333333")),
@@ -302,8 +302,8 @@ async fn create_replica_succeeds() {
                 has_thumbnail: true,
                 original_url: "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png".to_string(),
                 mime_type: "image/png".to_string(),
-                created_at: NaiveDate::from_ymd_opt(2022, 6, 2).and_then(|d| d.and_hms_opt(0, 0, 0)).unwrap(),
-                updated_at: NaiveDate::from_ymd_opt(2022, 6, 2).and_then(|d| d.and_hms_opt(0, 1, 0)).unwrap(),
+                created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
+                updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 1, 0).unwrap(),
             })
         });
 
@@ -321,8 +321,8 @@ async fn create_replica_succeeds() {
         has_thumbnail: true,
         original_url: "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png".to_string(),
         mime_type: "image/png".to_string(),
-        created_at: NaiveDate::from_ymd_opt(2022, 6, 2).and_then(|d| d.and_hms_opt(0, 0, 0)).unwrap(),
-        updated_at: NaiveDate::from_ymd_opt(2022, 6, 2).and_then(|d| d.and_hms_opt(0, 1, 0)).unwrap(),
+        created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
+        updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 1, 0).unwrap(),
     });
 }
 
@@ -380,8 +380,8 @@ async fn create_source_succeeds() {
                     name: "Twitter".to_string(),
                 },
                 external_metadata: ExternalMetadata::Twitter { id: 727620202049900544 },
-                created_at: NaiveDate::from_ymd_opt(2016, 5, 4).and_then(|d| d.and_hms_opt(7, 5, 0)).unwrap(),
-                updated_at: NaiveDate::from_ymd_opt(2016, 5, 4).and_then(|d| d.and_hms_opt(7, 5, 1)).unwrap(),
+                created_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 0).unwrap(),
+                updated_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 1).unwrap(),
             })
         });
 
@@ -399,8 +399,8 @@ async fn create_source_succeeds() {
             name: "Twitter".to_string(),
         },
         external_metadata: ExternalMetadata::Twitter { id: 727620202049900544 },
-        created_at: NaiveDate::from_ymd_opt(2016, 5, 4).and_then(|d| d.and_hms_opt(7, 5, 0)).unwrap(),
-        updated_at: NaiveDate::from_ymd_opt(2016, 5, 4).and_then(|d| d.and_hms_opt(7, 5, 1)).unwrap(),
+        created_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 0).unwrap(),
+        updated_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 1).unwrap(),
     });
 }
 
@@ -441,7 +441,7 @@ async fn get_media_succeeds() {
                 &Some(TagDepth::new(1, 1)),
                 &true,
                 &true,
-                &Some((NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 0, 0)).unwrap(), MediumId::from(uuid!("11111111-1111-1111-1111-111111111111")))),
+                &Some((Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(), MediumId::from(uuid!("11111111-1111-1111-1111-111111111111")))),
                 &None,
                 &OrderDirection::Ascending,
                 &10,
@@ -454,24 +454,24 @@ async fn get_media_succeeds() {
                     sources: Vec::new(),
                     tags: BTreeMap::new(),
                     replicas: Vec::new(),
-                    created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 56)).unwrap(),
-                    updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 5, 0)).unwrap(),
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 56).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 0).unwrap(),
                 },
                 Medium {
                     id: MediumId::from(uuid!("88888888-8888-8888-8888-888888888888")),
                     sources: Vec::new(),
                     tags: BTreeMap::new(),
                     replicas: Vec::new(),
-                    created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 57)).unwrap(),
-                    updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 5, 1)).unwrap(),
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 57).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 1).unwrap(),
                 },
                 Medium {
                     id: MediumId::from(uuid!("99999999-9999-9999-9999-999999999999")),
                     sources: Vec::new(),
                     tags: BTreeMap::new(),
                     replicas: Vec::new(),
-                    created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 58)).unwrap(),
-                    updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 5, 2)).unwrap(),
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 58).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 2).unwrap(),
                 },
             ])
         });
@@ -484,7 +484,7 @@ async fn get_media_succeeds() {
         Some(TagDepth::new(1, 1)),
         true,
         true,
-        Some((NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 0, 0)).unwrap(), MediumId::from(uuid!("11111111-1111-1111-1111-111111111111")))),
+        Some((Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(), MediumId::from(uuid!("11111111-1111-1111-1111-111111111111")))),
         None,
         OrderDirection::Ascending,
         10
@@ -496,24 +496,24 @@ async fn get_media_succeeds() {
             sources: Vec::new(),
             tags: BTreeMap::new(),
             replicas: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 56)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 5, 0)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 56).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 0).unwrap(),
         },
         Medium {
             id: MediumId::from(uuid!("88888888-8888-8888-8888-888888888888")),
             sources: Vec::new(),
             tags: BTreeMap::new(),
             replicas: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 57)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 5, 1)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 57).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 1).unwrap(),
         },
         Medium {
             id: MediumId::from(uuid!("99999999-9999-9999-9999-999999999999")),
             sources: Vec::new(),
             tags: BTreeMap::new(),
             replicas: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 58)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 5, 2)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 58).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 2).unwrap(),
         },
     ]);
 }
@@ -529,7 +529,7 @@ async fn get_media_fails() {
                 &Some(TagDepth::new(1, 1)),
                 &true,
                 &true,
-                &Some((NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 0, 0)).unwrap(), MediumId::from(uuid!("11111111-1111-1111-1111-111111111111")))),
+                &Some((Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(), MediumId::from(uuid!("11111111-1111-1111-1111-111111111111")))),
                 &None,
                 &OrderDirection::Ascending,
                 &10,
@@ -545,7 +545,7 @@ async fn get_media_fails() {
         Some(TagDepth::new(1, 1)),
         true,
         true,
-        Some((NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 0, 0)).unwrap(), MediumId::from(uuid!("11111111-1111-1111-1111-111111111111")))),
+        Some((Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(), MediumId::from(uuid!("11111111-1111-1111-1111-111111111111")))),
         None,
         OrderDirection::Ascending,
         10
@@ -578,16 +578,16 @@ async fn get_media_by_ids_succeeds() {
                     sources: Vec::new(),
                     tags: BTreeMap::new(),
                     replicas: Vec::new(),
-                    created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 57)).unwrap(),
-                    updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 5, 1)).unwrap(),
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 57).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 1).unwrap(),
                 },
                 Medium {
                     id: MediumId::from(uuid!("99999999-9999-9999-9999-999999999999")),
                     sources: Vec::new(),
                     tags: BTreeMap::new(),
                     replicas: Vec::new(),
-                    created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 58)).unwrap(),
-                    updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 5, 2)).unwrap(),
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 58).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 2).unwrap(),
                 },
             ])
         });
@@ -612,16 +612,16 @@ async fn get_media_by_ids_succeeds() {
             sources: Vec::new(),
             tags: BTreeMap::new(),
             replicas: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 57)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 5, 1)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 57).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 1).unwrap(),
         },
         Medium {
             id: MediumId::from(uuid!("99999999-9999-9999-9999-999999999999")),
             sources: Vec::new(),
             tags: BTreeMap::new(),
             replicas: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 58)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 5, 2)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 58).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 2).unwrap(),
         },
     ]);
 }
@@ -677,7 +677,7 @@ async fn get_media_by_source_ids_succeeds() {
                 &Some(TagDepth::new(1, 1)),
                 &true,
                 &true,
-                &Some((NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 0, 0)).unwrap(), MediumId::from(uuid!("11111111-1111-1111-1111-111111111111")))),
+                &Some((Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(), MediumId::from(uuid!("11111111-1111-1111-1111-111111111111")))),
                 &None,
                 &OrderDirection::Ascending,
                 &10,
@@ -690,16 +690,16 @@ async fn get_media_by_source_ids_succeeds() {
                     sources: Vec::new(),
                     tags: BTreeMap::new(),
                     replicas: Vec::new(),
-                    created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 56)).unwrap(),
-                    updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 5, 0)).unwrap(),
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 56).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 0).unwrap(),
                 },
                 Medium {
                     id: MediumId::from(uuid!("88888888-8888-8888-8888-888888888888")),
                     sources: Vec::new(),
                     tags: BTreeMap::new(),
                     replicas: Vec::new(),
-                    created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 57)).unwrap(),
-                    updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 5, 1)).unwrap(),
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 57).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 1).unwrap(),
                 },
             ])
         });
@@ -716,7 +716,7 @@ async fn get_media_by_source_ids_succeeds() {
         Some(TagDepth::new(1, 1)),
         true,
         true,
-        Some((NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 0, 0)).unwrap(), MediumId::from(uuid!("11111111-1111-1111-1111-111111111111")))),
+        Some((Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(), MediumId::from(uuid!("11111111-1111-1111-1111-111111111111")))),
         None,
         OrderDirection::Ascending,
         10
@@ -728,16 +728,16 @@ async fn get_media_by_source_ids_succeeds() {
             sources: Vec::new(),
             tags: BTreeMap::new(),
             replicas: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 56)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 5, 0)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 56).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 0).unwrap(),
         },
         Medium {
             id: MediumId::from(uuid!("88888888-8888-8888-8888-888888888888")),
             sources: Vec::new(),
             tags: BTreeMap::new(),
             replicas: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 57)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 5, 1)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 57).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 1).unwrap(),
         },
     ]);
 }
@@ -757,7 +757,7 @@ async fn get_media_by_source_ids_fails() {
                 &Some(TagDepth::new(1, 1)),
                 &true,
                 &true,
-                &Some((NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 0, 0)).unwrap(), MediumId::from(uuid!("11111111-1111-1111-1111-111111111111")))),
+                &Some((Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(), MediumId::from(uuid!("11111111-1111-1111-1111-111111111111")))),
                 &None,
                 &OrderDirection::Ascending,
                 &10,
@@ -777,7 +777,7 @@ async fn get_media_by_source_ids_fails() {
         Some(TagDepth::new(1, 1)),
         true,
         true,
-        Some((NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 0, 0)).unwrap(), MediumId::from(uuid!("11111111-1111-1111-1111-111111111111")))),
+        Some((Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(), MediumId::from(uuid!("11111111-1111-1111-1111-111111111111")))),
         None,
         OrderDirection::Ascending,
         10
@@ -807,7 +807,7 @@ async fn get_media_by_tag_ids_succeeds() {
                 &Some(TagDepth::new(1, 1)),
                 &true,
                 &true,
-                &Some((NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 0, 0)).unwrap(), MediumId::from(uuid!("11111111-1111-1111-1111-111111111111")))),
+                &Some((Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(), MediumId::from(uuid!("11111111-1111-1111-1111-111111111111")))),
                 &None,
                 &OrderDirection::Ascending,
                 &10,
@@ -820,16 +820,16 @@ async fn get_media_by_tag_ids_succeeds() {
                     sources: Vec::new(),
                     tags: BTreeMap::new(),
                     replicas: Vec::new(),
-                    created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 56)).unwrap(),
-                    updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 5, 0)).unwrap(),
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 56).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 0).unwrap(),
                 },
                 Medium {
                     id: MediumId::from(uuid!("99999999-9999-9999-9999-999999999999")),
                     sources: Vec::new(),
                     tags: BTreeMap::new(),
                     replicas: Vec::new(),
-                    created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 58)).unwrap(),
-                    updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 5, 2)).unwrap(),
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 58).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 2).unwrap(),
                 },
             ])
         });
@@ -852,7 +852,7 @@ async fn get_media_by_tag_ids_succeeds() {
         Some(TagDepth::new(1, 1)),
         true,
         true,
-        Some((NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 0, 0)).unwrap(), MediumId::from(uuid!("11111111-1111-1111-1111-111111111111")))),
+        Some((Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(), MediumId::from(uuid!("11111111-1111-1111-1111-111111111111")))),
         None,
         OrderDirection::Ascending,
         10
@@ -864,16 +864,16 @@ async fn get_media_by_tag_ids_succeeds() {
             sources: Vec::new(),
             tags: BTreeMap::new(),
             replicas: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 56)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 5, 0)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 56).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 0).unwrap(),
         },
         Medium {
             id: MediumId::from(uuid!("99999999-9999-9999-9999-999999999999")),
             sources: Vec::new(),
             tags: BTreeMap::new(),
             replicas: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 58)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 5, 2)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 58).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 2).unwrap(),
         },
     ]);
 }
@@ -899,7 +899,7 @@ async fn get_media_by_tag_ids_fails() {
                 &Some(TagDepth::new(1, 1)),
                 &true,
                 &true,
-                &Some((NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 0, 0)).unwrap(), MediumId::from(uuid!("11111111-1111-1111-1111-111111111111")))),
+                &Some((Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(), MediumId::from(uuid!("11111111-1111-1111-1111-111111111111")))),
                 &None,
                 &OrderDirection::Ascending,
                 &10,
@@ -925,7 +925,7 @@ async fn get_media_by_tag_ids_fails() {
         Some(TagDepth::new(1, 1)),
         true,
         true,
-        Some((NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 0, 0)).unwrap(), MediumId::from(uuid!("11111111-1111-1111-1111-111111111111")))),
+        Some((Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(), MediumId::from(uuid!("11111111-1111-1111-1111-111111111111")))),
         None,
         OrderDirection::Ascending,
         10
@@ -957,8 +957,8 @@ async fn get_replicas_by_ids_succeeds() {
                     has_thumbnail: true,
                     original_url: "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png".to_string(),
                     mime_type: "image/png".to_string(),
-                    created_at: NaiveDate::from_ymd_opt(2022, 6, 2).and_then(|d| d.and_hms_opt(0, 0, 0)).unwrap(),
-                    updated_at: NaiveDate::from_ymd_opt(2022, 6, 2).and_then(|d| d.and_hms_opt(0, 1, 0)).unwrap(),
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 1, 0).unwrap(),
                 },
                 Replica {
                     id: ReplicaId::from(uuid!("77777777-7777-7777-7777-777777777777")),
@@ -966,8 +966,8 @@ async fn get_replicas_by_ids_succeeds() {
                     has_thumbnail: true,
                     original_url: "file:///var/lib/hoarder/99999999-9999-9999-9999-999999999999.png".to_string(),
                     mime_type: "image/png".to_string(),
-                    created_at: NaiveDate::from_ymd_opt(2022, 6, 3).and_then(|d| d.and_hms_opt(0, 2, 0)).unwrap(),
-                    updated_at: NaiveDate::from_ymd_opt(2022, 6, 3).and_then(|d| d.and_hms_opt(0, 3, 0)).unwrap(),
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 3, 0, 2, 0).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 3, 0, 3, 0).unwrap(),
                 },
             ])
         });
@@ -985,8 +985,8 @@ async fn get_replicas_by_ids_succeeds() {
             has_thumbnail: true,
             original_url: "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png".to_string(),
             mime_type: "image/png".to_string(),
-            created_at: NaiveDate::from_ymd_opt(2022, 6, 2).and_then(|d| d.and_hms_opt(0, 0, 0)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 6, 2).and_then(|d| d.and_hms_opt(0, 1, 0)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 1, 0).unwrap(),
         },
         Replica {
             id: ReplicaId::from(uuid!("77777777-7777-7777-7777-777777777777")),
@@ -994,8 +994,8 @@ async fn get_replicas_by_ids_succeeds() {
             has_thumbnail: true,
             original_url: "file:///var/lib/hoarder/99999999-9999-9999-9999-999999999999.png".to_string(),
             mime_type: "image/png".to_string(),
-            created_at: NaiveDate::from_ymd_opt(2022, 6, 3).and_then(|d| d.and_hms_opt(0, 2, 0)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 6, 3).and_then(|d| d.and_hms_opt(0, 3, 0)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 6, 3, 0, 2, 0).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 6, 3, 0, 3, 0).unwrap(),
         },
     ]);
 }
@@ -1043,8 +1043,8 @@ async fn get_replica_by_original_url_succeeds() {
                 has_thumbnail: true,
                 original_url: "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png".to_string(),
                 mime_type: "image/png".to_string(),
-                created_at: NaiveDate::from_ymd_opt(2022, 6, 2).and_then(|d| d.and_hms_opt(0, 0, 0)).unwrap(),
-                updated_at: NaiveDate::from_ymd_opt(2022, 6, 2).and_then(|d| d.and_hms_opt(0, 1, 0)).unwrap(),
+                created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
+                updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 1, 0).unwrap(),
             })
         });
 
@@ -1057,8 +1057,8 @@ async fn get_replica_by_original_url_succeeds() {
         has_thumbnail: true,
         original_url: "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png".to_string(),
         mime_type: "image/png".to_string(),
-        created_at: NaiveDate::from_ymd_opt(2022, 6, 2).and_then(|d| d.and_hms_opt(0, 0, 0)).unwrap(),
-        updated_at: NaiveDate::from_ymd_opt(2022, 6, 2).and_then(|d| d.and_hms_opt(0, 1, 0)).unwrap(),
+        created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
+        updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 1, 0).unwrap(),
     });
 }
 
@@ -1104,8 +1104,8 @@ async fn get_source_by_external_metadata_succeeds() {
                     name: "pixiv".to_string(),
                 },
                 external_metadata: ExternalMetadata::Pixiv { id: 56736941 },
-                created_at: NaiveDate::from_ymd_opt(2016, 5, 6).and_then(|d| d.and_hms_opt(5, 14, 0)).unwrap(),
-                updated_at: NaiveDate::from_ymd_opt(2016, 5, 6).and_then(|d| d.and_hms_opt(5, 14, 1)).unwrap(),
+                created_at: Utc.with_ymd_and_hms(2016, 5, 6, 5, 14, 0).unwrap(),
+                updated_at: Utc.with_ymd_and_hms(2016, 5, 6, 5, 14, 1).unwrap(),
             })
         });
 
@@ -1123,8 +1123,8 @@ async fn get_source_by_external_metadata_succeeds() {
             name: "pixiv".to_string(),
         },
         external_metadata: ExternalMetadata::Pixiv { id: 56736941 },
-        created_at: NaiveDate::from_ymd_opt(2016, 5, 6).and_then(|d| d.and_hms_opt(5, 14, 0)).unwrap(),
-        updated_at: NaiveDate::from_ymd_opt(2016, 5, 6).and_then(|d| d.and_hms_opt(5, 14, 1)).unwrap(),
+        created_at: Utc.with_ymd_and_hms(2016, 5, 6, 5, 14, 0).unwrap(),
+        updated_at: Utc.with_ymd_and_hms(2016, 5, 6, 5, 14, 1).unwrap(),
     });
 }
 
@@ -1171,8 +1171,8 @@ async fn get_thumbnail_by_id_succeeds() {
                 thumbnail: Some(vec![0x01, 0x02, 0x03, 0x04]),
                 original_url: "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png".to_string(),
                 mime_type: "image/png".to_string(),
-                created_at: NaiveDate::from_ymd_opt(2022, 6, 2).and_then(|d| d.and_hms_opt(0, 0, 0)).unwrap(),
-                updated_at: NaiveDate::from_ymd_opt(2022, 6, 2).and_then(|d| d.and_hms_opt(0, 1, 0)).unwrap(),
+                created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
+                updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 1, 0).unwrap(),
             })
         });
 
@@ -1185,8 +1185,8 @@ async fn get_thumbnail_by_id_succeeds() {
         thumbnail: Some(vec![0x01, 0x02, 0x03, 0x04]),
         original_url: "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png".to_string(),
         mime_type: "image/png".to_string(),
-        created_at: NaiveDate::from_ymd_opt(2022, 6, 2).and_then(|d| d.and_hms_opt(0, 0, 0)).unwrap(),
-        updated_at: NaiveDate::from_ymd_opt(2022, 6, 2).and_then(|d| d.and_hms_opt(0, 1, 0)).unwrap(),
+        created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
+        updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 1, 0).unwrap(),
     });
 }
 
@@ -1261,7 +1261,7 @@ async fn update_medium_by_id_succeeds() {
                     ReplicaId::from(uuid!("77777777-7777-7777-7777-777777777777")),
                     ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
                 ],
-                &Some(NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 56)).unwrap()),
+                &Some(Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 56).unwrap()),
                 &Some(TagDepth::new(1, 1)),
                 &true,
                 &true,
@@ -1273,8 +1273,8 @@ async fn update_medium_by_id_succeeds() {
                 sources: Vec::new(),
                 tags: BTreeMap::new(),
                 replicas: Vec::new(),
-                created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 56)).unwrap(),
-                updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 5, 0)).unwrap(),
+                created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 56).unwrap(),
+                updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 0).unwrap(),
             })
         });
 
@@ -1306,7 +1306,7 @@ async fn update_medium_by_id_succeeds() {
             ReplicaId::from(uuid!("77777777-7777-7777-7777-777777777777")),
             ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
         ],
-        Some(NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 56)).unwrap()),
+        Some(Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 56).unwrap()),
         Some(TagDepth::new(1, 1)),
         true,
         true,
@@ -1317,8 +1317,8 @@ async fn update_medium_by_id_succeeds() {
         sources: Vec::new(),
         tags: BTreeMap::new(),
         replicas: Vec::new(),
-        created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 56)).unwrap(),
-        updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 5, 0)).unwrap(),
+        created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 56).unwrap(),
+        updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 0).unwrap(),
     });
 }
 
@@ -1375,7 +1375,7 @@ async fn update_medium_by_id_fails() {
                     ReplicaId::from(uuid!("77777777-7777-7777-7777-777777777777")),
                     ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
                 ],
-                &Some(NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 56)).unwrap()),
+                &Some(Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 56).unwrap()),
                 &Some(TagDepth::new(1, 1)),
                 &true,
                 &true,
@@ -1411,7 +1411,7 @@ async fn update_medium_by_id_fails() {
             ReplicaId::from(uuid!("77777777-7777-7777-7777-777777777777")),
             ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
         ],
-        Some(NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 56)).unwrap()),
+        Some(Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 56).unwrap()),
         Some(TagDepth::new(1, 1)),
         true,
         true,
@@ -1443,8 +1443,8 @@ async fn update_replica_by_id_succeeds() {
                 has_thumbnail: true,
                 original_url: "file:///var/lib/hoarder/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string(),
                 mime_type: "image/jpeg".to_string(),
-                created_at: NaiveDate::from_ymd_opt(2022, 6, 2).and_then(|d| d.and_hms_opt(0, 0, 0)).unwrap(),
-                updated_at: NaiveDate::from_ymd_opt(2022, 6, 2).and_then(|d| d.and_hms_opt(0, 1, 0)).unwrap(),
+                created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
+                updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 1, 0).unwrap(),
             })
         });
 
@@ -1462,8 +1462,8 @@ async fn update_replica_by_id_succeeds() {
         has_thumbnail: true,
         original_url: "file:///var/lib/hoarder/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string(),
         mime_type: "image/jpeg".to_string(),
-        created_at: NaiveDate::from_ymd_opt(2022, 6, 2).and_then(|d| d.and_hms_opt(0, 0, 0)).unwrap(),
-        updated_at: NaiveDate::from_ymd_opt(2022, 6, 2).and_then(|d| d.and_hms_opt(0, 1, 0)).unwrap(),
+        created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
+        updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 1, 0).unwrap(),
     });
 }
 
@@ -1521,8 +1521,8 @@ async fn update_source_by_id_succeeds() {
                     name: "pixiv".to_string(),
                 },
                 external_metadata: ExternalMetadata::Pixiv { id: 56736941 },
-                created_at: NaiveDate::from_ymd_opt(2016, 5, 4).and_then(|d| d.and_hms_opt(7, 5, 0)).unwrap(),
-                updated_at: NaiveDate::from_ymd_opt(2016, 5, 4).and_then(|d| d.and_hms_opt(7, 5, 1)).unwrap(),
+                created_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 0).unwrap(),
+                updated_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 1).unwrap(),
             })
         });
 
@@ -1541,8 +1541,8 @@ async fn update_source_by_id_succeeds() {
             name: "pixiv".to_string(),
         },
         external_metadata: ExternalMetadata::Pixiv { id: 56736941 },
-        created_at: NaiveDate::from_ymd_opt(2016, 5, 4).and_then(|d| d.and_hms_opt(7, 5, 0)).unwrap(),
-        updated_at: NaiveDate::from_ymd_opt(2016, 5, 4).and_then(|d| d.and_hms_opt(7, 5, 1)).unwrap(),
+        created_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 0).unwrap(),
+        updated_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 1).unwrap(),
     });
 }
 

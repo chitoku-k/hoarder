@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use chrono::NaiveDateTime;
+use chrono::{DateTime, Utc};
 
 use crate::{
     entity::{
@@ -16,7 +16,7 @@ use crate::{
 #[async_trait]
 pub trait MediaRepository: Send + Sync + 'static {
     /// Creates a medium.
-    async fn create<T, U>(&self, source_ids: T, created_at: Option<NaiveDateTime>, tag_tag_type_ids: U, tag_depth: Option<TagDepth>, sources: bool) -> anyhow::Result<Medium>
+    async fn create<T, U>(&self, source_ids: T, created_at: Option<DateTime<Utc>>, tag_tag_type_ids: U, tag_depth: Option<TagDepth>, sources: bool) -> anyhow::Result<Medium>
     where
         T: IntoIterator<Item = SourceId> + Send + Sync + 'static,
         U: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'static;
@@ -33,8 +33,8 @@ pub trait MediaRepository: Send + Sync + 'static {
         tag_depth: Option<TagDepth>,
         replicas: bool,
         sources: bool,
-        since: Option<(NaiveDateTime, MediumId)>,
-        until: Option<(NaiveDateTime, MediumId)>,
+        since: Option<(DateTime<Utc>, MediumId)>,
+        until: Option<(DateTime<Utc>, MediumId)>,
         order: OrderDirection,
         limit: u64,
     ) -> anyhow::Result<Vec<Medium>>
@@ -48,8 +48,8 @@ pub trait MediaRepository: Send + Sync + 'static {
         tag_depth: Option<TagDepth>,
         replicas: bool,
         sources: bool,
-        since: Option<(NaiveDateTime, MediumId)>,
-        until: Option<(NaiveDateTime, MediumId)>,
+        since: Option<(DateTime<Utc>, MediumId)>,
+        until: Option<(DateTime<Utc>, MediumId)>,
         order: OrderDirection,
         limit: u64,
     ) -> anyhow::Result<Vec<Medium>>
@@ -62,8 +62,8 @@ pub trait MediaRepository: Send + Sync + 'static {
         tag_depth: Option<TagDepth>,
         replicas: bool,
         sources: bool,
-        since: Option<(NaiveDateTime, MediumId)>,
-        until: Option<(NaiveDateTime, MediumId)>,
+        since: Option<(DateTime<Utc>, MediumId)>,
+        until: Option<(DateTime<Utc>, MediumId)>,
         order: OrderDirection,
         limit: u64,
     ) -> anyhow::Result<Vec<Medium>>;
@@ -77,7 +77,7 @@ pub trait MediaRepository: Send + Sync + 'static {
         add_tag_tag_type_ids: V,
         remove_tag_tag_type_ids: W,
         replica_orders: X,
-        created_at: Option<NaiveDateTime>,
+        created_at: Option<DateTime<Utc>>,
         tag_depth: Option<TagDepth>,
         replicas: bool,
         sources: bool,

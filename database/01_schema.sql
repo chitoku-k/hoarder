@@ -9,15 +9,15 @@ CREATE TABLE "sources" (
     "id" uuid DEFAULT uuid_generate_v4(),
     "external_service_id" uuid NOT NULL REFERENCES "external_services" ("id") ON DELETE CASCADE,
     "external_metadata" jsonb NOT NULL,
-    "created_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY ("id"),
     UNIQUE ("external_service_id", "external_metadata")
 );
 CREATE TABLE "media" (
     "id" uuid DEFAULT uuid_generate_v4(),
-    "created_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY ("id")
 );
 CREATE TABLE "media_sources" (
@@ -32,8 +32,8 @@ CREATE TABLE "replicas" (
     "thumbnail" bytea,
     "original_url" text NOT NULL,
     "mime_type" text NOT NULL,
-    "created_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY ("id"),
     UNIQUE ("medium_id", "display_order"),
     UNIQUE ("original_url")
@@ -43,8 +43,8 @@ CREATE TABLE "tags" (
     "name" text NOT NULL,
     "kana" text NOT NULL,
     "aliases" text[] NOT NULL,
-    "created_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY ("id")
 );
 CREATE TABLE "tag_paths" (
@@ -78,15 +78,15 @@ CREATE TABLE "media_tags" (
 CREATE TABLE "jobs" (
     "id" uuid DEFAULT uuid_generate_v4(),
     "content" jsonb NOT NULL,
-    "created_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY ("id")
 );
 CREATE TABLE "job_runs" (
     "job_id" uuid NOT NULL REFERENCES "jobs" ("id") ON DELETE CASCADE,
     "phase" text NOT NULL,
     "message" text NOT NULL,
-    "created_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     UNIQUE ("job_id", "phase")
 );

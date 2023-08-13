@@ -1,4 +1,4 @@
-use chrono::NaiveDateTime;
+use chrono::{DateTime, Utc};
 use derive_more::{Deref, Display, From};
 use serde::Deserialize;
 use thiserror::Error;
@@ -14,8 +14,8 @@ pub struct Replica {
     pub has_thumbnail: bool,
     pub original_url: String,
     pub mime_type: String,
-    pub created_at: NaiveDateTime,
-    pub updated_at: NaiveDateTime,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -25,8 +25,8 @@ pub struct ReplicaThumbnail {
     pub thumbnail: Option<Vec<u8>>,
     pub original_url: String,
     pub mime_type: String,
-    pub created_at: NaiveDateTime,
-    pub updated_at: NaiveDateTime,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
 }
 
 #[derive(Debug, Error)]

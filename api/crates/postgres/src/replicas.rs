@@ -1,6 +1,6 @@
 use anyhow::Context;
 use async_trait::async_trait;
-use chrono::NaiveDateTime;
+use chrono::{DateTime, Utc};
 use derive_more::{Constructor, From, Into};
 use futures::TryStreamExt;
 use domain::{
@@ -35,8 +35,8 @@ pub(crate) struct PostgresReplicaRow {
     has_thumbnail: bool,
     original_url: String,
     mime_type: String,
-    created_at: NaiveDateTime,
-    updated_at: NaiveDateTime,
+    created_at: DateTime<Utc>,
+    updated_at: DateTime<Utc>,
 }
 
 #[derive(Debug, FromRow)]
@@ -46,8 +46,8 @@ struct PostgresReplicaThumbnailRow {
     thumbnail: Option<Vec<u8>>,
     original_url: String,
     mime_type: String,
-    created_at: NaiveDateTime,
-    updated_at: NaiveDateTime,
+    created_at: DateTime<Utc>,
+    updated_at: DateTime<Utc>,
 }
 
 #[derive(Iden)]

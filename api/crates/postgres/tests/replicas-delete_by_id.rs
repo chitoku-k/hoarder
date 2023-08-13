@@ -1,4 +1,4 @@
-use chrono::{NaiveDate, NaiveDateTime};
+use chrono::{DateTime, TimeZone, Utc};
 use domain::{
     entity::replicas::ReplicaId,
     repository::{replicas::ReplicasRepository, DeleteResult},
@@ -83,13 +83,13 @@ async fn with_first_replica_succeeds(ctx: &DatabaseContext) {
 
     assert_eq!(actual[0].get::<Uuid, &str>("id"), uuid!("6fae1497-e987-492e-987a-f9870b7d3c5b"));
     assert_eq!(actual[0].get::<i32, &str>("display_order"), 1);
-    assert_eq!(actual[0].get::<NaiveDateTime, &str>("created_at"), NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 11)).unwrap());
-    assert_ne!(actual[0].get::<NaiveDateTime, &str>("updated_at"), NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 10)).unwrap());
+    assert_eq!(actual[0].get::<DateTime<Utc>, &str>("created_at"), Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 11).unwrap());
+    assert_ne!(actual[0].get::<DateTime<Utc>, &str>("updated_at"), Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap());
 
     assert_eq!(actual[1].get::<Uuid, &str>("id"), uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5"));
     assert_eq!(actual[1].get::<i32, &str>("display_order"), 2);
-    assert_eq!(actual[1].get::<NaiveDateTime, &str>("created_at"), NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 11)).unwrap());
-    assert_ne!(actual[1].get::<NaiveDateTime, &str>("updated_at"), NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap());
+    assert_eq!(actual[1].get::<DateTime<Utc>, &str>("created_at"), Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 11).unwrap());
+    assert_ne!(actual[1].get::<DateTime<Utc>, &str>("updated_at"), Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap());
 
     let actual = repository.delete_by_id(ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be"))).await.unwrap();
 
@@ -134,13 +134,13 @@ async fn with_middle_replica_succeeds(ctx: &DatabaseContext) {
 
     assert_eq!(actual[0].get::<Uuid, &str>("id"), uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be"));
     assert_eq!(actual[0].get::<i32, &str>("display_order"), 1);
-    assert_eq!(actual[0].get::<NaiveDateTime, &str>("created_at"), NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 10)).unwrap());
-    assert_ne!(actual[0].get::<NaiveDateTime, &str>("updated_at"), NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap());
+    assert_eq!(actual[0].get::<DateTime<Utc>, &str>("created_at"), Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 10).unwrap());
+    assert_ne!(actual[0].get::<DateTime<Utc>, &str>("updated_at"), Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap());
 
     assert_eq!(actual[1].get::<Uuid, &str>("id"), uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5"));
     assert_eq!(actual[1].get::<i32, &str>("display_order"), 2);
-    assert_eq!(actual[1].get::<NaiveDateTime, &str>("created_at"), NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 11)).unwrap());
-    assert_ne!(actual[1].get::<NaiveDateTime, &str>("updated_at"), NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap());
+    assert_eq!(actual[1].get::<DateTime<Utc>, &str>("created_at"), Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 11).unwrap());
+    assert_ne!(actual[1].get::<DateTime<Utc>, &str>("updated_at"), Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap());
 
     let actual = repository.delete_by_id(ReplicaId::from(uuid!("6fae1497-e987-492e-987a-f9870b7d3c5b"))).await.unwrap();
 
@@ -185,13 +185,13 @@ async fn with_last_replica_succeeds(ctx: &DatabaseContext) {
 
     assert_eq!(actual[0].get::<Uuid, &str>("id"), uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be"));
     assert_eq!(actual[0].get::<i32, &str>("display_order"), 1);
-    assert_eq!(actual[0].get::<NaiveDateTime, &str>("created_at"), NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 10)).unwrap());
-    assert_ne!(actual[0].get::<NaiveDateTime, &str>("updated_at"), NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 7)).unwrap());
+    assert_eq!(actual[0].get::<DateTime<Utc>, &str>("created_at"), Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 10).unwrap());
+    assert_ne!(actual[0].get::<DateTime<Utc>, &str>("updated_at"), Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap());
 
     assert_eq!(actual[1].get::<Uuid, &str>("id"), uuid!("6fae1497-e987-492e-987a-f9870b7d3c5b"));
     assert_eq!(actual[1].get::<i32, &str>("display_order"), 2);
-    assert_eq!(actual[1].get::<NaiveDateTime, &str>("created_at"), NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 11)).unwrap());
-    assert_ne!(actual[1].get::<NaiveDateTime, &str>("updated_at"), NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 10)).unwrap());
+    assert_eq!(actual[1].get::<DateTime<Utc>, &str>("created_at"), Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 11).unwrap());
+    assert_ne!(actual[1].get::<DateTime<Utc>, &str>("updated_at"), Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap());
 
     let actual = repository.delete_by_id(ReplicaId::from(uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5"))).await.unwrap();
 

@@ -1,7 +1,7 @@
 use std::collections::{BTreeMap, HashMap};
 
 use async_trait::async_trait;
-use chrono::NaiveDateTime;
+use chrono::{DateTime, Utc};
 use derive_more::{Constructor, From, Into};
 use domain::{
     entity::{
@@ -43,15 +43,15 @@ pub(crate) struct PostgresMediumId(MediumId);
 #[derive(Debug, FromRow)]
 struct PostgresMediumRow {
     id: PostgresMediumId,
-    created_at: NaiveDateTime,
-    updated_at: NaiveDateTime,
+    created_at: DateTime<Utc>,
+    updated_at: DateTime<Utc>,
 }
 
 #[derive(Debug, FromRow)]
 struct PostgresMediumReplicaRow {
     id: PostgresMediumId,
-    created_at: NaiveDateTime,
-    updated_at: NaiveDateTime,
+    created_at: DateTime<Utc>,
+    updated_at: DateTime<Utc>,
     replica_id: PostgresReplicaId,
 }
 
@@ -60,8 +60,8 @@ struct PostgresMediumSourceExternalServiceRow {
     medium_id: PostgresMediumId,
     source_id: PostgresSourceId,
     source_external_metadata: Json<PostgresExternalServiceMetadata>,
-    source_created_at: NaiveDateTime,
-    source_updated_at: NaiveDateTime,
+    source_created_at: DateTime<Utc>,
+    source_updated_at: DateTime<Utc>,
     external_service_id: PostgresExternalServiceId,
     external_service_slug: String,
     external_service_name: String,
@@ -365,7 +365,7 @@ async fn eager_load(conn: &mut PgConnection, media: &mut [Medium], tag_depth: Op
 
 #[async_trait]
 impl MediaRepository for PostgresMediaRepository {
-    async fn create<T, U>(&self, source_ids: T, created_at: Option<NaiveDateTime>, tag_tag_type_ids: U, tag_depth: Option<TagDepth>, sources: bool) -> anyhow::Result<Medium>
+    async fn create<T, U>(&self, source_ids: T, created_at: Option<DateTime<Utc>>, tag_tag_type_ids: U, tag_depth: Option<TagDepth>, sources: bool) -> anyhow::Result<Medium>
     where
         T: IntoIterator<Item = SourceId> + Send + Sync + 'static,
         U: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'static,
@@ -495,8 +495,8 @@ impl MediaRepository for PostgresMediaRepository {
         tag_depth: Option<TagDepth>,
         replicas: bool,
         sources: bool,
-        since: Option<(NaiveDateTime, MediumId)>,
-        until: Option<(NaiveDateTime, MediumId)>,
+        since: Option<(DateTime<Utc>, MediumId)>,
+        until: Option<(DateTime<Utc>, MediumId)>,
         order: repository::OrderDirection,
         limit: u64,
     ) -> anyhow::Result<Vec<Medium>>
@@ -552,8 +552,8 @@ impl MediaRepository for PostgresMediaRepository {
         tag_depth: Option<TagDepth>,
         replicas: bool,
         sources: bool,
-        since: Option<(NaiveDateTime, MediumId)>,
-        until: Option<(NaiveDateTime, MediumId)>,
+        since: Option<(DateTime<Utc>, MediumId)>,
+        until: Option<(DateTime<Utc>, MediumId)>,
         order: repository::OrderDirection,
         limit: u64,
     ) -> anyhow::Result<Vec<Medium>>
@@ -636,8 +636,8 @@ impl MediaRepository for PostgresMediaRepository {
         tag_depth: Option<TagDepth>,
         replicas: bool,
         sources: bool,
-        since: Option<(NaiveDateTime, MediumId)>,
-        until: Option<(NaiveDateTime, MediumId)>,
+        since: Option<(DateTime<Utc>, MediumId)>,
+        until: Option<(DateTime<Utc>, MediumId)>,
         order: repository::OrderDirection,
         limit: u64,
     ) -> anyhow::Result<Vec<Medium>> {
@@ -695,7 +695,7 @@ impl MediaRepository for PostgresMediaRepository {
         add_tag_tag_type_ids: V,
         remove_tag_tag_type_ids: W,
         replica_orders: X,
-        created_at: Option<NaiveDateTime>,
+        created_at: Option<DateTime<Utc>>,
         tag_depth: Option<TagDepth>,
         replicas: bool,
         sources: bool,

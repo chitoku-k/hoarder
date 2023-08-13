@@ -1,4 +1,5 @@
 use async_graphql::{Schema, EmptyMutation, EmptySubscription, value};
+use chrono::{TimeZone, Utc};
 use domain::{
     entity::{
         external_services::{self, ExternalServiceId},
@@ -10,7 +11,6 @@ use domain::{
         tags::MockTagsServiceInterface,
     },
 };
-use chrono::NaiveDate;
 use graphql::query::Query;
 use indoc::indoc;
 use pretty_assertions::assert_eq;
@@ -40,8 +40,8 @@ async fn succeeds() {
                     name: "Twitter".to_string(),
                 },
                 external_metadata: external_services::ExternalMetadata::Twitter { id: 727620202049900544 },
-                created_at: NaiveDate::from_ymd_opt(2016, 5, 4).and_then(|d| d.and_hms_opt(7, 5, 0)).unwrap(),
-                updated_at: NaiveDate::from_ymd_opt(2016, 5, 4).and_then(|d| d.and_hms_opt(7, 5, 1)).unwrap(),
+                created_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 0).unwrap(),
+                updated_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 1).unwrap(),
             })
         });
 
@@ -88,8 +88,8 @@ async fn succeeds() {
                     "id": "727620202049900544",
                 },
             },
-            "createdAt": "2016-05-04T07:05:00",
-            "updatedAt": "2016-05-04T07:05:01",
+            "createdAt": "2016-05-04T07:05:00+00:00",
+            "updatedAt": "2016-05-04T07:05:01+00:00",
         },
     }));
 }

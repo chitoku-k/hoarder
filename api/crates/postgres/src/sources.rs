@@ -1,6 +1,6 @@
 use anyhow::Context;
 use async_trait::async_trait;
-use chrono::NaiveDateTime;
+use chrono::{DateTime, Utc};
 use derive_more::{Constructor, From, Into};
 use domain::{
     entity::{
@@ -35,16 +35,16 @@ struct PostgresSourceRow {
     id: PostgresSourceId,
     external_service_id: PostgresExternalServiceId,
     external_metadata: Json<PostgresExternalServiceMetadata>,
-    created_at: NaiveDateTime,
-    updated_at: NaiveDateTime,
+    created_at: DateTime<Utc>,
+    updated_at: DateTime<Utc>,
 }
 
 #[derive(Debug, FromRow)]
 struct PostgresSourceExternalServiceRow {
     source_id: PostgresSourceId,
     source_external_metadata: Json<PostgresExternalServiceMetadata>,
-    source_created_at: NaiveDateTime,
-    source_updated_at: NaiveDateTime,
+    source_created_at: DateTime<Utc>,
+    source_updated_at: DateTime<Utc>,
     external_service_id: PostgresExternalServiceId,
     external_service_slug: String,
     external_service_name: String,

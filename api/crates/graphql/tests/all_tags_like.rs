@@ -1,6 +1,7 @@
 use std::collections::BTreeSet;
 
 use async_graphql::{Schema, EmptyMutation, EmptySubscription, value};
+use chrono::{TimeZone, Utc};
 use domain::{
     entity::tags::{AliasSet, Tag, TagDepth, TagId},
     service::{
@@ -9,7 +10,6 @@ use domain::{
         tags::MockTagsServiceInterface,
     },
 };
-use chrono::NaiveDate;
 use graphql::query::Query;
 use indoc::indoc;
 use pretty_assertions::assert_eq;
@@ -41,12 +41,12 @@ async fn succeeds() {
                         aliases: Default::default(),
                         parent: None,
                         children: Vec::new(),
-                        created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 0, 0)).unwrap(),
-                        updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 1, 0)).unwrap(),
+                        created_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(),
+                        updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 1, 0).unwrap(),
                     })),
                     children: Vec::new(),
-                    created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 0, 0)).unwrap(),
-                    updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 1, 0)).unwrap(),
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 1, 0).unwrap(),
                 },
                 Tag {
                     id: TagId::from(uuid!("22222222-2222-2222-2222-222222222222")),
@@ -62,8 +62,8 @@ async fn succeeds() {
                             aliases: AliasSet::new(BTreeSet::from(["アッカリーン".to_string()])),
                             parent: None,
                             children: Vec::new(),
-                            created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 0, 0)).unwrap(),
-                            updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 1, 0)).unwrap(),
+                            created_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(),
+                            updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 1, 0).unwrap(),
                         },
                         Tag {
                             id: TagId::from(uuid!("55555555-5555-5555-5555-555555555555")),
@@ -72,12 +72,12 @@ async fn succeeds() {
                             aliases: Default::default(),
                             parent: None,
                             children: Vec::new(),
-                            created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 2, 0)).unwrap(),
-                            updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 3, 0)).unwrap(),
+                            created_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 2, 0).unwrap(),
+                            updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 3, 0).unwrap(),
                         },
                     ],
-                    created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 0, 0)).unwrap(),
-                    updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 1, 0)).unwrap(),
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 1, 0).unwrap(),
                 },
             ])
         });
@@ -143,12 +143,12 @@ async fn succeeds() {
                     "kana": "ゆるゆり",
                     "aliases": [],
                     "parent": null,
-                    "createdAt": "2022-06-01T00:00:00",
-                    "updatedAt": "2022-06-01T00:01:00",
+                    "createdAt": "2022-06-01T00:00:00+00:00",
+                    "updatedAt": "2022-06-01T00:01:00+00:00",
                 },
                 "children": [],
-                "createdAt": "2022-06-01T00:00:00",
-                "updatedAt": "2022-06-01T00:01:00",
+                "createdAt": "2022-06-01T00:00:00+00:00",
+                "updatedAt": "2022-06-01T00:01:00+00:00",
             },
             {
                 "id": "22222222-2222-2222-2222-222222222222",
@@ -163,8 +163,8 @@ async fn succeeds() {
                         "kana": "あかざあかり",
                         "aliases": ["アッカリーン"],
                         "children": [],
-                        "createdAt": "2022-06-01T00:00:00",
-                        "updatedAt": "2022-06-01T00:01:00",
+                        "createdAt": "2022-06-01T00:00:00+00:00",
+                        "updatedAt": "2022-06-01T00:01:00+00:00",
                     },
                     {
                         "id": "55555555-5555-5555-5555-555555555555",
@@ -172,12 +172,12 @@ async fn succeeds() {
                         "kana": "としのうきょうこ",
                         "aliases": [],
                         "children": [],
-                        "createdAt": "2022-06-01T00:02:00",
-                        "updatedAt": "2022-06-01T00:03:00",
+                        "createdAt": "2022-06-01T00:02:00+00:00",
+                        "updatedAt": "2022-06-01T00:03:00+00:00",
                     },
                 ],
-                "createdAt": "2022-06-01T00:00:00",
-                "updatedAt": "2022-06-01T00:01:00",
+                "createdAt": "2022-06-01T00:00:00+00:00",
+                "updatedAt": "2022-06-01T00:01:00+00:00",
             },
         ],
     }));

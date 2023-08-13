@@ -1,5 +1,5 @@
 use async_graphql::{ComplexObject, Context, SimpleObject};
-use chrono::NaiveDateTime;
+use chrono::{DateTime, Utc};
 use domain::entity::replicas;
 use thumbnails::ThumbnailURLFactory;
 use uuid::Uuid;
@@ -13,8 +13,8 @@ pub(crate) struct Replica {
     has_thumbnail: bool,
     original_url: String,
     mime_type: String,
-    created_at: NaiveDateTime,
-    updated_at: NaiveDateTime,
+    created_at: DateTime<Utc>,
+    updated_at: DateTime<Utc>,
 }
 
 impl From<replicas::Replica> for Replica {

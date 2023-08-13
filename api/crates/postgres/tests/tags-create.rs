@@ -4,7 +4,7 @@ use domain::{
     entity::tags::{AliasSet, Tag, TagDepth, TagId},
     repository::tags::TagsRepository,
 };
-use chrono::NaiveDate;
+use chrono::{TimeZone, Utc};
 use futures::TryStreamExt;
 use postgres::tags::PostgresTagsRepository;
 use pretty_assertions::assert_eq;
@@ -41,8 +41,8 @@ async fn with_parent_succeeds(ctx: &DatabaseContext) {
             aliases: AliasSet::default(),
             parent: None,
             children: Vec::new(),
-            created_at: NaiveDate::from_ymd_opt(2022, 1, 2).and_then(|d| d.and_hms_opt(3, 4, 5)).unwrap(),
-            updated_at: NaiveDate::from_ymd_opt(2022, 2, 3).and_then(|d| d.and_hms_opt(4, 5, 8)).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 5).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
         })),
     );
     assert_eq!(actual.children, Vec::new());

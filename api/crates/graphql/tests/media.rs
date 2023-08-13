@@ -1,6 +1,7 @@
 use std::collections::BTreeMap;
 
 use async_graphql::{Schema, EmptyMutation, EmptySubscription, value};
+use chrono::{TimeZone, Utc};
 use domain::{
     entity::media::{Medium, MediumId},
     service::{
@@ -9,7 +10,6 @@ use domain::{
         tags::MockTagsServiceInterface,
     },
 };
-use chrono::NaiveDate;
 use graphql::query::Query;
 use indoc::indoc;
 use pretty_assertions::assert_eq;
@@ -44,16 +44,16 @@ async fn succeeds() {
                     sources: Vec::new(),
                     tags: BTreeMap::new(),
                     replicas: Vec::new(),
-                    created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 56)).unwrap(),
-                    updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 5, 0)).unwrap(),
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 56).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 0).unwrap(),
                 },
                 Medium {
                     id: MediumId::from(uuid!("99999999-9999-9999-9999-999999999999")),
                     sources: Vec::new(),
                     tags: BTreeMap::new(),
                     replicas: Vec::new(),
-                    created_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(12, 34, 58)).unwrap(),
-                    updated_at: NaiveDate::from_ymd_opt(2022, 6, 1).and_then(|d| d.and_hms_opt(0, 5, 2)).unwrap(),
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 58).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 2).unwrap(),
                 },
             ])
         });
@@ -77,13 +77,13 @@ async fn succeeds() {
         "media": [
             {
                 "id": "77777777-7777-7777-7777-777777777777",
-                "createdAt": "2022-06-01T12:34:56",
-                "updatedAt": "2022-06-01T00:05:00",
+                "createdAt": "2022-06-01T12:34:56+00:00",
+                "updatedAt": "2022-06-01T00:05:00+00:00",
             },
             {
                 "id": "99999999-9999-9999-9999-999999999999",
-                "createdAt": "2022-06-01T12:34:58",
-                "updatedAt": "2022-06-01T00:05:02",
+                "createdAt": "2022-06-01T12:34:58+00:00",
+                "updatedAt": "2022-06-01T00:05:02+00:00",
             },
         ],
     }));
