@@ -39,6 +39,9 @@ version = "0.5.1"
 [dependencies.derive_more]
 version = "0.99.17"
 
+[dependencies.log]
+version = "0.4.19"
+
 [dependencies.notify]
 version = "6.0.1"
 
