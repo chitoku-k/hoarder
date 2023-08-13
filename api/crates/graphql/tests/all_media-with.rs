@@ -1,6 +1,7 @@
 use std::collections::{BTreeMap, BTreeSet};
 
 use async_graphql::{Schema, EmptyMutation, EmptySubscription, value};
+use chrono::NaiveDate;
 use domain::{
     entity::{
         external_services::{ExternalMetadata, ExternalService, ExternalServiceId},
@@ -8,7 +9,7 @@ use domain::{
         replicas::{Replica, ReplicaId},
         sources::{Source, SourceId},
         tag_types::{TagType, TagTypeId},
-        tags::{Tag, AliasSet, TagDepth, TagId},
+        tags::{AliasSet, Tag, TagDepth, TagId},
     },
     repository::OrderDirection,
     service::{
@@ -17,7 +18,6 @@ use domain::{
         tags::MockTagsServiceInterface,
     },
 };
-use chrono::NaiveDate;
 use graphql::query::Query;
 use indoc::indoc;
 use pretty_assertions::assert_eq;
