@@ -25,6 +25,9 @@ version = "0.4.26"
 default-features = false
 features = ["clock", "std"]
 
+[dependencies.cow-utils]
+version = "0.1.2"
+
 [dependencies.derive_more]
 version = "0.99.17"
 

@@ -7,6 +7,7 @@ use std::{
 use anyhow::Context;
 use async_trait::async_trait;
 use chrono::NaiveDateTime;
+use cow_utils::CowUtils;
 use derive_more::{Constructor, From, Into};
 use domain::{
     entity::tags::{Tag, TagDepth, TagError, TagId},
@@ -555,9 +556,9 @@ impl TagsRepository for PostgresTagsRepository {
         let name_or_alias_like = format!(
             "%{}%",
             name_or_alias_like
-                .replace('\\', "\\\\")
-                .replace('%', "\\%")
-                .replace('_', "\\_"),
+                .cow_replace('\\', "\\\\")
+                .cow_replace('%', "\\%")
+                .cow_replace('_', "\\_"),
         );
 
         let (sql, values) = Query::select()
