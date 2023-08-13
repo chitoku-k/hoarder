@@ -78,7 +78,7 @@ where
             .layer(Extension(Arc::new(self.thumbnails_handler)));
 
         let handle = Handle::new();
-        enable_graceful_shutdown(handle.clone());
+        enable_graceful_shutdown(handle.clone(), self.tls.is_some());
 
         let addr = (Ipv6Addr::UNSPECIFIED, self.port).into();
         let app = Router::new()
@@ -124,8 +124,13 @@ fn enable_auto_reload(config: RustlsConfig, tls_cert: String, tls_key: String) -
     })
 }
 
-fn enable_graceful_shutdown(handle: Handle) -> JoinHandle<anyhow::Result<()>> {
+fn enable_graceful_shutdown(handle: Handle, tls: bool) -> JoinHandle<anyhow::Result<()>> {
     tokio::spawn(async move {
+        let address = handle.listening().await.context("failed to bind")?;
+        let scheme = if tls { "https" } else { "http" };
+
+        log::info!("listening on {scheme}://{address}/");
+
         let mut stream = unix::signal(SignalKind::terminate())?;
         stream.recv().await;
 
