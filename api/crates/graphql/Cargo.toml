@@ -19,7 +19,8 @@ version = "1.0.72"
 
 [dependencies.async-graphql]
 version = "6.0.1"
-features = ["chrono", "unblock", "uuid"]
+features = ["chrono", "graphiql", "tempfile", "unblock", "uuid"]
+default-features = false
 
 [dependencies.async-graphql-axum]
 version = "6.0.1"

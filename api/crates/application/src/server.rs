@@ -70,7 +70,7 @@ where
 
         let graphql = Router::new()
             .route("/", post(graphql::handle::<ExternalServicesService, MediaService, TagsService>))
-            .route("/", get(graphql::playground))
+            .route("/", get(graphql::graphiql))
             .layer(Extension(schema));
 
         let thumbnails = Router::new()
