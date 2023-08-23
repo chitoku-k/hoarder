@@ -54,6 +54,9 @@ workspace = true
 [dependencies.domain]
 workspace = true
 
+[dependencies.graphql]
+workspace = true
+
 [dependencies.postgres]
 workspace = true
 
@@ -62,6 +65,10 @@ workspace = true
 
 [dependencies.anyhow]
 version = "1.0.75"
+
+[dependencies.async-graphql]
+version = "6.0.4"
+default-features = false
 
 [dependencies.clap]
 version = "4.3.23"

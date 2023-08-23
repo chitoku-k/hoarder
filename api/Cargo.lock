@@ -86,8 +86,6 @@ name = "application"
 version = "0.0.0"
 dependencies = [
  "anyhow",
- "async-graphql",
- "async-graphql-axum",
  "axum",
  "axum-server",
  "derive_more",
@@ -1192,9 +1190,11 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "application",
+ "async-graphql",
  "clap",
  "domain",
  "env_logger",
+ "graphql",
  "log",
  "postgres",
  "sqlx",

@@ -4,7 +4,6 @@ use std::{
 };
 
 use anyhow::Context;
-use async_graphql::{EmptySubscription, Schema};
 use axum::{
     routing::{get, post},
     Extension, Router,
@@ -16,24 +15,21 @@ use domain::service::{
     media::MediaServiceInterface,
     tags::TagsServiceInterface,
 };
-use graphql::{self, mutation::Mutation, query::Query};
+use graphql::{self, APISchema};
 use notify::Watcher;
 use thiserror::Error;
-use thumbnails::{self, ThumbnailURLFactory, ThumbnailsHandler};
+use thumbnails::{self, ThumbnailsHandler};
 use tokio::{
     signal::unix::{self, SignalKind},
     task::JoinHandle,
 };
 
-#[derive(Clone, Constructor)]
+#[derive(Constructor)]
 pub struct Engine<ExternalServicesService, MediaService, TagsService> {
     port: u16,
     tls: Option<(String, String)>,
-    thumbnail_url_factory: ThumbnailURLFactory,
+    schema: APISchema<ExternalServicesService, MediaService, TagsService>,
     thumbnails_handler: ThumbnailsHandler<MediaService>,
-    external_services_service: ExternalServicesService,
-    media_service: MediaService,
-    tags_service: TagsService,
 }
 
 #[derive(Debug, Error)]
@@ -46,32 +42,18 @@ pub(crate) enum EngineError {
 
 impl<ExternalServicesService, MediaService, TagsService> Engine<ExternalServicesService, MediaService, TagsService>
 where
-    ExternalServicesService: ExternalServicesServiceInterface + Clone,
-    MediaService: MediaServiceInterface + Clone,
-    TagsService: TagsServiceInterface + Clone,
+    ExternalServicesService: ExternalServicesServiceInterface,
+    MediaService: MediaServiceInterface,
+    TagsService: TagsServiceInterface,
 {
     pub async fn start(self) -> anyhow::Result<()> {
         let health = Router::new()
             .route("/", get(|| async { "OK" }));
 
-        let query = Query::new(
-            self.external_services_service.clone(),
-            self.media_service.clone(),
-            self.tags_service.clone(),
-        );
-        let mutation = Mutation::new(
-            self.external_services_service,
-            self.media_service,
-            self.tags_service,
-        );
-        let schema = Schema::build(query, mutation, EmptySubscription)
-            .data(self.thumbnail_url_factory)
-            .finish();
-
         let graphql = Router::new()
             .route("/", post(graphql::handle::<ExternalServicesService, MediaService, TagsService>))
             .route("/", get(graphql::graphiql))
-            .layer(Extension(schema));
+            .layer(Extension(self.schema));
 
         let thumbnails = Router::new()
             .route("/:id", get(thumbnails::handle::<MediaService>))
