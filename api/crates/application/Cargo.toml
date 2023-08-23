@@ -21,14 +21,14 @@ workspace = true
 workspace = true
 
 [dependencies.anyhow]
-version = "1.0.72"
+version = "1.0.75"
 
 [dependencies.async-graphql]
-version = "6.0.1"
+version = "6.0.4"
 default-features = false
 
 [dependencies.async-graphql-axum]
-version = "6.0.1"
+version = "6.0.4"
 
 [dependencies.axum]
 version = "0.6.20"
@@ -40,14 +40,14 @@ version = "0.5.1"
 version = "0.99.17"
 
 [dependencies.log]
-version = "0.4.19"
+version = "0.4.20"
 
 [dependencies.notify]
-version = "6.0.1"
+version = "6.1.1"
 
 [dependencies.thiserror]
-version = "1.0.44"
+version = "1.0.47"
 
 [dependencies.tokio]
-version = "1.30.0"
+version = "1.32.0"
 features = ["macros", "net", "process", "rt-multi-thread", "signal"]

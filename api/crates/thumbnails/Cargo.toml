@@ -12,7 +12,7 @@ doctest = false
 workspace = true
 
 [dependencies.anyhow]
-version = "1.0.72"
+version = "1.0.75"
 
 [dependencies.axum]
 version = "0.6.20"

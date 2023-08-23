@@ -61,10 +61,10 @@ workspace = true
 workspace = true
 
 [dependencies.anyhow]
-version = "1.0.72"
+version = "1.0.75"
 
 [dependencies.clap]
-version = "4.3.21"
+version = "4.3.23"
 features = ["cargo", "derive", "env", "help", "std", "string", "suggestions", "usage"]
 default-features = false
 
@@ -72,11 +72,11 @@ default-features = false
 version = "0.10.0"
 
 [dependencies.log]
-version = "0.4.19"
+version = "0.4.20"
 
 [dependencies.sqlx]
 version = "0.7.1"
 features = ["postgres", "runtime-tokio", "tls-rustls"]
 
 [dependencies.tokio]
-version = "1.30.0"
+version = "1.32.0"
