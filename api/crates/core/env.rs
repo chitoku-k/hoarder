@@ -3,6 +3,10 @@ use clap::{crate_version, Parser};
 #[derive(Debug, Eq, Parser, PartialEq)]
 #[command(version = version())]
 pub struct Config {
+    /// Print schema in SDL (Schema Definition Language)
+    #[arg(long)]
+    pub print_schema: bool,
+
     /// Port number
     #[arg(long, env)]
     pub port: u16,

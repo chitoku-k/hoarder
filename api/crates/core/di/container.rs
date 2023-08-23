@@ -1,12 +1,14 @@
-use std::time::Duration;
+use std::{io::stdout, time::Duration};
 
-use application::server::Engine;
+use application::{commands::PrintSchema, server::Engine};
+use async_graphql::{EmptySubscription, Schema};
 use anyhow::Context;
 use domain::service::{
-    external_services::ExternalServicesService,
-    media::MediaService,
-    tags::TagsService,
+    external_services::{ExternalServicesService, ExternalServicesServiceInterface},
+    media::{MediaService, MediaServiceInterface},
+    tags::{TagsService, TagsServiceInterface},
 };
+use graphql::{mutation::Mutation, query::Query, APISchema};
 use log::LevelFilter;
 use postgres::{
     external_services::PostgresExternalServicesRepository,
@@ -60,6 +62,25 @@ fn tags_service<T, U>(tags_repository: T, tag_types_repository: U) -> TagsServic
     TagsService::new(tags_repository, tag_types_repository)
 }
 
+fn query<T, U, V>(external_services_service: T, media_service: U, tags_service: V) -> Query<T, U, V> {
+    Query::new(external_services_service, media_service, tags_service)
+}
+
+fn mutation<T, U, V>(external_services_service: T, media_service: U, tags_service: V) -> Mutation<T, U, V> {
+    Mutation::new(external_services_service, media_service, tags_service)
+}
+
+fn schema<T, U, V>(query: Query<T, U, V>, mutation: Mutation<T, U, V>, thumbnail_url_factory: ThumbnailURLFactory) -> APISchema<T, U, V>
+where
+    T: ExternalServicesServiceInterface,
+    U: MediaServiceInterface,
+    V: TagsServiceInterface,
+{
+    Schema::build(query, mutation, EmptySubscription)
+        .data(thumbnail_url_factory)
+        .finish()
+}
+
 fn thumbnail_url_factory() -> ThumbnailURLFactory {
     ThumbnailURLFactory::new("/thumbnails/".to_string())
 }
@@ -107,14 +128,21 @@ impl Application {
         let thumbnail_url_factory = thumbnail_url_factory();
         let thumbnails_handler = thumbnails_handler(media_service.clone());
 
+        let query = query(external_services_service.clone(), media_service.clone(), tags_service.clone());
+        let mutation = mutation(external_services_service, media_service, tags_service);
+        let schema = schema(query, mutation, thumbnail_url_factory);
+
+        if config.print_schema {
+            PrintSchema::new(schema).print(&mut stdout())?;
+            return Ok(());
+        }
+
+        let tls = Option::zip(config.tls_cert, config.tls_key);
         let engine = Engine::new(
             config.port,
-            Option::zip(config.tls_cert, config.tls_key),
-            thumbnail_url_factory,
+            tls,
+            schema,
             thumbnails_handler,
-            external_services_service,
-            media_service,
-            tags_service,
         );
 
         engine.start().await

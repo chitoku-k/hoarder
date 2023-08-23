@@ -23,13 +23,6 @@ workspace = true
 [dependencies.anyhow]
 version = "1.0.75"
 
-[dependencies.async-graphql]
-version = "6.0.4"
-default-features = false
-
-[dependencies.async-graphql-axum]
-version = "6.0.4"
-
 [dependencies.axum]
 version = "0.6.20"
 
