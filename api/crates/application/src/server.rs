@@ -51,7 +51,7 @@ where
             .route("/", get(|| async { "OK" }));
 
         let graphql = Router::new()
-            .route("/", post(graphql::handle::<ExternalServicesService, MediaService, TagsService>))
+            .route("/graphql", post(graphql::handle::<ExternalServicesService, MediaService, TagsService>))
             .route("/", get(graphql::graphiql))
             .layer(Extension(self.schema));
 
