@@ -55,7 +55,7 @@ pub async fn process_upload(ctx: &Context<'_>, upload: Upload) -> anyhow::Result
 }
 
 pub async fn graphiql() -> impl IntoResponse {
-    response::Html(GraphiQLSource::build().endpoint("/").finish())
+    response::Html(GraphiQLSource::build().endpoint("/graphql").finish())
 }
 
 #[derive(Enum, Clone, Copy, Default, Eq, PartialEq)]
