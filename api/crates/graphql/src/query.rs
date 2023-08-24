@@ -75,10 +75,15 @@ where
         #[graphql(validator(maximum = 100))]
         last: Option<i32>,
     ) -> async_graphql::Result<Connection<MediumCursor, Medium>> {
-        let tags = ctx.look_ahead().field("edges").field("node").field("tags").field("tag");
+        let node = ctx.look_ahead().field("nodes");
+        let node = node.exists()
+            .then_some(node)
+            .unwrap_or_else(|| ctx.look_ahead().field("edges").field("node"));
+
+        let tags = node.field("tags").field("tag");
         let tag_depth = tags.exists().then(|| get_tag_depth(&tags));
-        let replicas = ctx.look_ahead().field("edges").field("node").field("replicas").exists();
-        let sources = ctx.look_ahead().field("edges").field("node").field("sources").exists();
+        let replicas = node.field("replicas").exists();
+        let sources = node.field("sources").exists();
 
         query(
             after, before, first, last,
@@ -131,10 +136,12 @@ where
     }
 
     async fn media(&self, ctx: &Context<'_>, ids: Vec<Uuid>) -> anyhow::Result<Vec<Medium>> {
-        let tags = ctx.look_ahead().field("tags").field("tag");
+        let node = ctx.look_ahead();
+
+        let tags = node.field("tags").field("tag");
         let tag_depth = tags.exists().then(|| get_tag_depth(&tags));
-        let replicas = ctx.look_ahead().field("replicas").exists();
-        let sources = ctx.look_ahead().field("sources").exists();
+        let replicas = node.field("replicas").exists();
+        let sources = node.field("sources").exists();
 
         let ids: Map<_, _, _> = ids.into_iter().map(Into::into);
 
@@ -167,7 +174,12 @@ where
         #[graphql(validator(maximum = 100))]
         last: Option<i32>,
     ) -> async_graphql::Result<Connection<TagCursor, Tag>> {
-        let depth = get_tag_depth(&ctx.look_ahead().field("edges").field("node"));
+        let node = ctx.look_ahead().field("nodes");
+        let node = node.exists()
+            .then_some(node)
+            .unwrap_or_else(|| ctx.look_ahead().field("edges").field("node"));
+
+        let depth = get_tag_depth(&node);
 
         query(
             after, before, first, last,
