@@ -4,7 +4,7 @@ use async_graphql::{Schema, EmptyMutation, EmptySubscription, value};
 use chrono::{TimeZone, Utc};
 use domain::{
     entity::tags::{AliasSet, Tag, TagDepth, TagId},
-    repository::OrderDirection,
+    repository::{Direction, Order},
     service::{
         external_services::MockExternalServicesServiceInterface,
         media::MockMediaServiceInterface,
@@ -25,13 +25,13 @@ async fn root_first_succeeds() {
     tags_service
         .expect_get_tags()
         .times(1)
-        .withf(|depth, root, after, before, order, limit| {
-            (depth, root, after, before, order, limit) == (
+        .withf(|depth, root, cursor, order, direction, limit| {
+            (depth, root, cursor, order, direction, limit) == (
                 &TagDepth::new(2, 2),
                 &true,
                 &None,
-                &None,
-                &OrderDirection::Ascending,
+                &Order::Ascending,
+                &Direction::Forward,
                 &4,
             )
         })
@@ -214,13 +214,13 @@ async fn root_last_succeeds() {
     tags_service
         .expect_get_tags()
         .times(1)
-        .withf(|depth, root, after, before, order, limit| {
-            (depth, root, after, before, order, limit) == (
+        .withf(|depth, root, cursor, order, direction, limit| {
+            (depth, root, cursor, order, direction, limit) == (
                 &TagDepth::new(2, 2),
                 &true,
                 &None,
-                &None,
-                &OrderDirection::Descending,
+                &Order::Descending,
+                &Direction::Forward,
                 &4,
             )
         })
@@ -422,13 +422,13 @@ async fn root_after_first_succeeds() {
     tags_service
         .expect_get_tags()
         .times(1)
-        .withf(|depth, root, after, before, order, limit| {
-            (depth, root, after, before, order, limit) == (
+        .withf(|depth, root, cursor, order, direction, limit| {
+            (depth, root, cursor, order, direction, limit) == (
                 &TagDepth::new(2, 2),
                 &true,
                 &Some(("ブルーアーカイブ".to_string(), TagId::from(uuid!("66666666-6666-6666-6666-666666666666")))),
-                &None,
-                &OrderDirection::Ascending,
+                &Order::Ascending,
+                &Direction::Forward,
                 &4,
             )
         })
@@ -576,13 +576,13 @@ async fn root_after_last_succeeds() {
     tags_service
         .expect_get_tags()
         .times(1)
-        .withf(|depth, root, after, before, order, limit| {
-            (depth, root, after, before, order, limit) == (
+        .withf(|depth, root, cursor, order, direction, limit| {
+            (depth, root, cursor, order, direction, limit) == (
                 &TagDepth::new(2, 2),
                 &true,
                 &Some(("げんしん".to_string(), TagId::from(uuid!("44444444-4444-4444-4444-444444444444")))),
-                &None,
-                &OrderDirection::Descending,
+                &Order::Descending,
+                &Direction::Backward,
                 &4,
             )
         })
@@ -690,13 +690,13 @@ async fn root_before_first_succeeds() {
     tags_service
         .expect_get_tags()
         .times(1)
-        .withf(|depth, root, after, before, order, limit| {
-            (depth, root, after, before, order, limit) == (
+        .withf(|depth, root, cursor, order, direction, limit| {
+            (depth, root, cursor, order, direction, limit) == (
                 &TagDepth::new(2, 2),
                 &true,
-                &None,
                 &Some(("ブルーアーカイブ".to_string(), TagId::from(uuid!("66666666-6666-6666-6666-666666666666")))),
-                &OrderDirection::Ascending,
+                &Order::Ascending,
+                &Direction::Backward,
                 &4,
             )
         })
@@ -826,13 +826,13 @@ async fn root_before_last_succeeds() {
     tags_service
         .expect_get_tags()
         .times(1)
-        .withf(|depth, root, after, before, order, limit| {
-            (depth, root, after, before, order, limit) == (
+        .withf(|depth, root, cursor, order, direction, limit| {
+            (depth, root, cursor, order, direction, limit) == (
                 &TagDepth::new(2, 2),
                 &true,
-                &None,
                 &Some(("ブルーアーカイブ".to_string(), TagId::from(uuid!("66666666-6666-6666-6666-666666666666")))),
-                &OrderDirection::Descending,
+                &Order::Descending,
+                &Direction::Forward,
                 &4,
             )
         })

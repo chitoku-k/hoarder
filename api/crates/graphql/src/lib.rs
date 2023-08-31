@@ -59,33 +59,33 @@ pub async fn graphiql() -> impl IntoResponse {
 }
 
 #[derive(Enum, Clone, Copy, Default, Eq, PartialEq)]
-pub(crate) enum OrderDirection {
+pub(crate) enum Order {
     #[default]
     Asc,
     Desc,
 }
 
-impl From<repository::OrderDirection> for OrderDirection {
-    fn from(direction: repository::OrderDirection) -> Self {
-        use repository::OrderDirection::*;
+impl From<repository::Order> for Order {
+    fn from(direction: repository::Order) -> Self {
+        use repository::Order::*;
         match direction {
-            Ascending => OrderDirection::Asc,
-            Descending => OrderDirection::Desc,
+            Ascending => Order::Asc,
+            Descending => Order::Desc,
         }
     }
 }
 
-impl From<OrderDirection> for repository::OrderDirection {
-    fn from(direction: OrderDirection) -> Self {
-        use OrderDirection::*;
+impl From<Order> for repository::Order {
+    fn from(direction: Order) -> Self {
+        use Order::*;
         match direction {
-            Asc => repository::OrderDirection::Ascending,
-            Desc => repository::OrderDirection::Descending,
+            Asc => repository::Order::Ascending,
+            Desc => repository::Order::Descending,
         }
     }
 }
 
-impl OrderDirection {
+impl Order {
     pub fn rev(&self) -> Self {
         match self {
             Self::Asc => Self::Desc,

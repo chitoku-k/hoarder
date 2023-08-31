@@ -9,7 +9,7 @@ use crate::{
         tag_types::TagTypeId,
         tags::{TagDepth, TagId},
     },
-    repository::{DeleteResult, OrderDirection},
+    repository::{DeleteResult, Direction, Order},
 };
 
 #[cfg_attr(feature = "test-mock", mockall::automock)]
@@ -33,9 +33,9 @@ pub trait MediaRepository: Send + Sync + 'static {
         tag_depth: Option<TagDepth>,
         replicas: bool,
         sources: bool,
-        since: Option<(DateTime<Utc>, MediumId)>,
-        until: Option<(DateTime<Utc>, MediumId)>,
-        order: OrderDirection,
+        cursor: Option<(DateTime<Utc>, MediumId)>,
+        order: Order,
+        direction: Direction,
         limit: u64,
     ) -> anyhow::Result<Vec<Medium>>
     where
@@ -48,9 +48,9 @@ pub trait MediaRepository: Send + Sync + 'static {
         tag_depth: Option<TagDepth>,
         replicas: bool,
         sources: bool,
-        since: Option<(DateTime<Utc>, MediumId)>,
-        until: Option<(DateTime<Utc>, MediumId)>,
-        order: OrderDirection,
+        cursor: Option<(DateTime<Utc>, MediumId)>,
+        order: Order,
+        direction: Direction,
         limit: u64,
     ) -> anyhow::Result<Vec<Medium>>
     where
@@ -62,9 +62,9 @@ pub trait MediaRepository: Send + Sync + 'static {
         tag_depth: Option<TagDepth>,
         replicas: bool,
         sources: bool,
-        since: Option<(DateTime<Utc>, MediumId)>,
-        until: Option<(DateTime<Utc>, MediumId)>,
-        order: OrderDirection,
+        cursor: Option<(DateTime<Utc>, MediumId)>,
+        order: Order,
+        direction: Direction,
         limit: u64,
     ) -> anyhow::Result<Vec<Medium>>;
 

@@ -11,7 +11,7 @@ use crate::{
         tag_types::TagTypeId,
         tags::{TagDepth, TagId},
     },
-    repository::{media, replicas, sources, DeleteResult, OrderDirection},
+    repository::{media, replicas, sources, DeleteResult, Direction, Order},
 };
 
 #[cfg_attr(feature = "test-mock", mockall::automock)]
@@ -35,9 +35,9 @@ pub trait MediaServiceInterface: Send + Sync + 'static {
         tag_depth: Option<TagDepth>,
         replicas: bool,
         sources: bool,
-        since: Option<(DateTime<Utc>, MediumId)>,
-        until: Option<(DateTime<Utc>, MediumId)>,
-        order: OrderDirection,
+        cursor: Option<(DateTime<Utc>, MediumId)>,
+        order: Order,
+        direction: Direction,
         limit: u64,
     ) -> anyhow::Result<Vec<Medium>>;
 
@@ -53,9 +53,9 @@ pub trait MediaServiceInterface: Send + Sync + 'static {
         tag_depth: Option<TagDepth>,
         replicas: bool,
         sources: bool,
-        since: Option<(DateTime<Utc>, MediumId)>,
-        until: Option<(DateTime<Utc>, MediumId)>,
-        order: OrderDirection,
+        cursor: Option<(DateTime<Utc>, MediumId)>,
+        order: Order,
+        direction: Direction,
         limit: u64,
     ) -> anyhow::Result<Vec<Medium>>
     where
@@ -68,9 +68,9 @@ pub trait MediaServiceInterface: Send + Sync + 'static {
         tag_depth: Option<TagDepth>,
         replicas: bool,
         sources: bool,
-        since: Option<(DateTime<Utc>, MediumId)>,
-        until: Option<(DateTime<Utc>, MediumId)>,
-        order: OrderDirection,
+        cursor: Option<(DateTime<Utc>, MediumId)>,
+        order: Order,
+        direction: Direction,
         limit: u64,
     ) -> anyhow::Result<Vec<Medium>>
     where
@@ -180,12 +180,12 @@ where
         tag_depth: Option<TagDepth>,
         replicas: bool,
         sources: bool,
-        since: Option<(DateTime<Utc>, MediumId)>,
-        until: Option<(DateTime<Utc>, MediumId)>,
-        order: OrderDirection,
+        cursor: Option<(DateTime<Utc>, MediumId)>,
+        order: Order,
+        direction: Direction,
         limit: u64,
     ) -> anyhow::Result<Vec<Medium>> {
-        match self.media_repository.fetch_all(tag_depth, replicas, sources, since, until, order, limit).await {
+        match self.media_repository.fetch_all(tag_depth, replicas, sources, cursor, order, direction, limit).await {
             Ok(media) => Ok(media),
             Err(e) => {
                 log::error!("failed to get the media\nError: {e:?}");
@@ -213,15 +213,15 @@ where
         tag_depth: Option<TagDepth>,
         replicas: bool,
         sources: bool,
-        since: Option<(DateTime<Utc>, MediumId)>,
-        until: Option<(DateTime<Utc>, MediumId)>,
-        order: OrderDirection,
+        cursor: Option<(DateTime<Utc>, MediumId)>,
+        order: Order,
+        direction: Direction,
         limit: u64,
     ) -> anyhow::Result<Vec<Medium>>
     where
         T: IntoIterator<Item = SourceId> + Send + Sync + 'static,
     {
-        match self.media_repository.fetch_by_source_ids(source_ids, tag_depth, replicas, sources, since, until, order, limit).await {
+        match self.media_repository.fetch_by_source_ids(source_ids, tag_depth, replicas, sources, cursor, order, direction, limit).await {
             Ok(media) => Ok(media),
             Err(e) => {
                 log::error!("failed to get the media\nError: {e:?}");
@@ -236,15 +236,15 @@ where
         tag_depth: Option<TagDepth>,
         replicas: bool,
         sources: bool,
-        since: Option<(DateTime<Utc>, MediumId)>,
-        until: Option<(DateTime<Utc>, MediumId)>,
-        order: OrderDirection,
+        cursor: Option<(DateTime<Utc>, MediumId)>,
+        order: Order,
+        direction: Direction,
         limit: u64,
     ) -> anyhow::Result<Vec<Medium>>
     where
         T: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'static,
     {
-        match self.media_repository.fetch_by_tag_ids(tag_tag_type_ids, tag_depth, replicas, sources, since, until, order, limit).await {
+        match self.media_repository.fetch_by_tag_ids(tag_tag_type_ids, tag_depth, replicas, sources, cursor, order, direction, limit).await {
             Ok(media) => Ok(media),
             Err(e) => {
                 log::error!("failed to get the media\nError: {e:?}");

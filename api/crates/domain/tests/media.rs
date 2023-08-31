@@ -15,7 +15,7 @@ use domain::{
         media::MockMediaRepository,
         replicas::MockReplicasRepository,
         sources::MockSourcesRepository,
-        DeleteResult, OrderDirection,
+        DeleteResult, Direction, Order,
     },
     service::media::{MediaService, MediaServiceInterface},
 };
@@ -442,8 +442,8 @@ async fn get_media_succeeds() {
                 &true,
                 &true,
                 &Some((Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(), MediumId::from(uuid!("11111111-1111-1111-1111-111111111111")))),
-                &None,
-                &OrderDirection::Ascending,
+                &Order::Ascending,
+                &Direction::Forward,
                 &10,
             )
         })
@@ -485,8 +485,8 @@ async fn get_media_succeeds() {
         true,
         true,
         Some((Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(), MediumId::from(uuid!("11111111-1111-1111-1111-111111111111")))),
-        None,
-        OrderDirection::Ascending,
+        Order::Ascending,
+        Direction::Forward,
         10
     ).await.unwrap();
 
@@ -530,8 +530,8 @@ async fn get_media_fails() {
                 &true,
                 &true,
                 &Some((Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(), MediumId::from(uuid!("11111111-1111-1111-1111-111111111111")))),
-                &None,
-                &OrderDirection::Ascending,
+                &Order::Ascending,
+                &Direction::Forward,
                 &10,
             )
         })
@@ -546,8 +546,8 @@ async fn get_media_fails() {
         true,
         true,
         Some((Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(), MediumId::from(uuid!("11111111-1111-1111-1111-111111111111")))),
-        None,
-        OrderDirection::Ascending,
+        Order::Ascending,
+        Direction::Forward,
         10
     ).await;
 
@@ -678,8 +678,8 @@ async fn get_media_by_source_ids_succeeds() {
                 &true,
                 &true,
                 &Some((Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(), MediumId::from(uuid!("11111111-1111-1111-1111-111111111111")))),
-                &None,
-                &OrderDirection::Ascending,
+                &Order::Ascending,
+                &Direction::Forward,
                 &10,
             )
         })
@@ -717,8 +717,8 @@ async fn get_media_by_source_ids_succeeds() {
         true,
         true,
         Some((Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(), MediumId::from(uuid!("11111111-1111-1111-1111-111111111111")))),
-        None,
-        OrderDirection::Ascending,
+        Order::Ascending,
+        Direction::Forward,
         10
     ).await.unwrap();
 
@@ -758,8 +758,8 @@ async fn get_media_by_source_ids_fails() {
                 &true,
                 &true,
                 &Some((Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(), MediumId::from(uuid!("11111111-1111-1111-1111-111111111111")))),
-                &None,
-                &OrderDirection::Ascending,
+                &Order::Ascending,
+                &Direction::Forward,
                 &10,
             )
         })
@@ -778,8 +778,8 @@ async fn get_media_by_source_ids_fails() {
         true,
         true,
         Some((Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(), MediumId::from(uuid!("11111111-1111-1111-1111-111111111111")))),
-        None,
-        OrderDirection::Ascending,
+        Order::Ascending,
+        Direction::Forward,
         10
     ).await;
 
@@ -808,8 +808,8 @@ async fn get_media_by_tag_ids_succeeds() {
                 &true,
                 &true,
                 &Some((Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(), MediumId::from(uuid!("11111111-1111-1111-1111-111111111111")))),
-                &None,
-                &OrderDirection::Ascending,
+                &Order::Ascending,
+                &Direction::Forward,
                 &10,
             )
         })
@@ -853,8 +853,8 @@ async fn get_media_by_tag_ids_succeeds() {
         true,
         true,
         Some((Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(), MediumId::from(uuid!("11111111-1111-1111-1111-111111111111")))),
-        None,
-        OrderDirection::Ascending,
+        Order::Ascending,
+        Direction::Forward,
         10
     ).await.unwrap();
 
@@ -900,8 +900,8 @@ async fn get_media_by_tag_ids_fails() {
                 &true,
                 &true,
                 &Some((Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(), MediumId::from(uuid!("11111111-1111-1111-1111-111111111111")))),
-                &None,
-                &OrderDirection::Ascending,
+                &Order::Ascending,
+                &Direction::Forward,
                 &10,
             )
         })
@@ -926,8 +926,8 @@ async fn get_media_by_tag_ids_fails() {
         true,
         true,
         Some((Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(), MediumId::from(uuid!("11111111-1111-1111-1111-111111111111")))),
-        None,
-        OrderDirection::Ascending,
+        Order::Ascending,
+        Direction::Forward,
         10
     ).await;
 

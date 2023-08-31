@@ -15,7 +15,7 @@ use domain::{
 };
 use futures::TryStreamExt;
 use indexmap::{IndexMap, IndexSet};
-use sea_query::{Alias, Cond, Expr, Iden, JoinType, LikeExpr, LockType, Order, PostgresQueryBuilder, Query, SelectStatement};
+use sea_query::{Alias, BinOper, Cond, Expr, Iden, JoinType, LikeExpr, LockType, Order, PostgresQueryBuilder, Query, SelectStatement};
 use sea_query_binder::SqlxBinder;
 use sqlx::{Acquire, FromRow, PgPool, Postgres, Transaction, PgConnection};
 use thiserror::Error;
@@ -23,7 +23,6 @@ use thiserror::Error;
 use crate::{
     expr::array::ArrayExpr,
     sea_query_uuid_value,
-    OrderDirection,
 };
 
 #[derive(Clone, Constructor)]
@@ -583,8 +582,15 @@ impl TagsRepository for PostgresTagsRepository {
         Ok(tags)
     }
 
-    async fn fetch_all(&self, depth: TagDepth, root: bool, after: Option<(String, TagId)>, before: Option<(String, TagId)>, order: repository::OrderDirection, limit: u64) -> anyhow::Result<Vec<Tag>> {
+    async fn fetch_all(&self, depth: TagDepth, root: bool, cursor: Option<(String, TagId)>, order: repository::Order, direction: repository::Direction, limit: u64) -> anyhow::Result<Vec<Tag>> {
         let mut conn = self.pool.acquire().await?;
+
+        let (comparison, order, rev) = match (order, direction) {
+            (repository::Order::Ascending, repository::Direction::Forward) => (BinOper::GreaterThan, Order::Asc, false),
+            (repository::Order::Ascending, repository::Direction::Backward) => (BinOper::SmallerThan, Order::Desc, true),
+            (repository::Order::Descending, repository::Direction::Forward) => (BinOper::SmallerThan, Order::Desc, false),
+            (repository::Order::Descending, repository::Direction::Backward) => (BinOper::GreaterThan, Order::Asc, true),
+        };
 
         let mut query = Query::select();
         query
@@ -599,29 +605,18 @@ impl TagsRepository for PostgresTagsRepository {
             .from(PostgresTag::Table)
             .and_where(Expr::col((PostgresTag::Table, PostgresTag::Id)).ne(PostgresTagId::from(TagId::root())))
             .and_where_option(
-                after.map(|(kana, tag_id)| {
+                cursor.map(|(kana, tag_id)| {
                     Expr::tuple([
                         Expr::col((PostgresTag::Table, PostgresTag::Kana)).into(),
                         Expr::col((PostgresTag::Table, PostgresTag::Id)).into(),
-                    ]).gt(Expr::tuple([
+                    ]).binary(comparison, Expr::tuple([
                         Expr::value(kana),
                         Expr::value(PostgresTagId::from(tag_id)),
                     ]))
                 })
             )
-            .and_where_option(
-                before.map(|(kana, tag_id)| {
-                    Expr::tuple([
-                        Expr::col((PostgresTag::Table, PostgresTag::Kana)).into(),
-                        Expr::col((PostgresTag::Table, PostgresTag::Id)).into(),
-                    ]).lt(Expr::tuple([
-                        Expr::value(kana),
-                        Expr::value(PostgresTagId::from(tag_id)),
-                    ]))
-                })
-            )
-            .order_by((PostgresTag::Table, PostgresTag::Kana), OrderDirection::from(order).into())
-            .order_by((PostgresTag::Table, PostgresTag::Id), OrderDirection::from(order).into())
+            .order_by((PostgresTag::Table, PostgresTag::Kana), order.clone())
+            .order_by((PostgresTag::Table, PostgresTag::Id), order)
             .limit(limit);
 
         if root {
@@ -650,9 +645,14 @@ impl TagsRepository for PostgresTagsRepository {
 
         let mut tags = fetch_tag_relatives(&mut conn, ids.iter().cloned(), depth, root).await?;
         tags.sort_unstable_by(|a, b| {
-            Option::zip(ids.get_index_of(&a.id), ids.get_index_of(&b.id))
+            let ord = Option::zip(ids.get_index_of(&a.id), ids.get_index_of(&b.id))
                 .map(|(a, b)| Ord::cmp(&a, &b))
-                .unwrap_or_else(|| Ord::cmp(&a.id, &b.id))
+                .unwrap_or_else(|| Ord::cmp(&a.id, &b.id));
+            if rev {
+                ord.reverse()
+            } else {
+                ord
+            }
         });
 
         Ok(tags)

@@ -6,9 +6,15 @@ pub mod tag_types;
 pub mod tags;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum OrderDirection {
+pub enum Order {
     Ascending,
     Descending,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum Direction {
+    Forward,
+    Backward,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]

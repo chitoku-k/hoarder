@@ -20,7 +20,7 @@ use crate::{
     replicas::Replica,
     sources::{ExternalMetadata, Source},
     tags::{get_tag_depth, Tag, TagCursor, TagTagTypeInput, TagType},
-    OrderDirection,
+    Order,
 };
 
 #[derive(Constructor)]
@@ -67,7 +67,7 @@ where
         source_ids: Option<Vec<Uuid>>,
         tag_ids: Option<Vec<TagTagTypeInput>>,
         #[graphql(default)]
-        order: OrderDirection,
+        order: Order,
         after: Option<String>,
         before: Option<String>,
         #[graphql(validator(maximum = 100))]
@@ -93,12 +93,19 @@ where
                     (Some(first), _) => (false, first),
                     (_, Some(last)) => (true, last),
                 };
-
-                let since = after.map(MediumCursor::into_inner);
-                let until = before.map(MediumCursor::into_inner);
                 let order = match rev {
                     true => order.rev().into(),
                     false => order.into(),
+                };
+                let direction = match (&after, &before, first, last) {
+                    (Some(_), _, _, Some(_)) | (_, Some(_), Some(_), _) => repository::Direction::Backward,
+                    _ => repository::Direction::Forward,
+                };
+                let cursor = match (after, before) {
+                    (Some(_), Some(_)) => return Err(QueryError::MutuallyExclusive("after", "before"))?,
+                    (Some(after), _) => Some(MediumCursor::into_inner(after)),
+                    (_, Some(before)) => Some(MediumCursor::into_inner(before)),
+                    (None, None) => None,
                 };
 
                 let media = {
@@ -106,15 +113,15 @@ where
                     match (source_ids, tag_ids) {
                         (Some(_), Some(_)) => return Err(QueryError::MutuallyExclusive("sourceIds", "tagIds"))?,
                         (None, None) => {
-                            self.media_service.get_media(tag_depth, replicas, sources, since, until, order, limit).await?
+                            self.media_service.get_media(tag_depth, replicas, sources, cursor, order, direction, limit).await?
                         },
                         (Some(source_ids), None) => {
                             let source_ids: Map<_, _, _> = source_ids.into_iter().map(Into::into);
-                            self.media_service.get_media_by_source_ids(source_ids, tag_depth, replicas, sources, since, until, order, limit).await?
+                            self.media_service.get_media_by_source_ids(source_ids, tag_depth, replicas, sources, cursor, order, direction, limit).await?
                         },
                         (None, Some(tag_ids)) => {
                             let tag_ids: Map<_, _, _> = tag_ids.into_iter().map(Into::into);
-                            self.media_service.get_media_by_tag_ids(tag_ids, tag_depth, replicas, sources, since, until, order, limit).await?
+                            self.media_service.get_media_by_tag_ids(tag_ids, tag_depth, replicas, sources, cursor, order, direction, limit).await?
                         },
                     }
                 };
@@ -189,20 +196,27 @@ where
                     (Some(first), _) => (false, first),
                     (_, Some(last)) => (true, last),
                 };
-
-                let since = after.map(TagCursor::into_inner);
-                let until = before.map(TagCursor::into_inner);
                 let order = match rev {
-                    true => repository::OrderDirection::Descending,
-                    false => repository::OrderDirection::Ascending,
+                    true => repository::Order::Descending,
+                    false => repository::Order::Ascending,
+                };
+                let direction = match (&after, &before, first, last) {
+                    (Some(_), _, _, Some(_)) | (_, Some(_), Some(_), _) => repository::Direction::Backward,
+                    _ => repository::Direction::Forward,
+                };
+                let cursor = match (after, before) {
+                    (Some(_), Some(_)) => return Err(QueryError::MutuallyExclusive("after", "before"))?,
+                    (Some(after), _) => Some(TagCursor::into_inner(after)),
+                    (_, Some(before)) => Some(TagCursor::into_inner(before)),
+                    (None, None) => None,
                 };
 
                 let tags = self.tags_service.get_tags(
                     depth,
                     root,
-                    since,
-                    until,
+                    cursor,
                     order,
+                    direction,
                     limit as u64 + 1
                 ).await?;
 

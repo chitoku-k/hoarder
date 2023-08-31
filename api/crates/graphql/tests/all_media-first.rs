@@ -4,7 +4,7 @@ use async_graphql::{Schema, EmptyMutation, EmptySubscription, value};
 use chrono::{TimeZone, Utc};
 use domain::{
     entity::media::{Medium, MediumId},
-    repository::OrderDirection,
+    repository::{Direction, Order},
     service::{
         external_services::MockExternalServicesServiceInterface,
         media::MockMediaServiceInterface,
@@ -24,14 +24,14 @@ async fn asc_succeeds() {
     media_service
         .expect_get_media()
         .times(1)
-        .withf(|tag_depth, replicas, sources, since, until, order, limit| {
-            (tag_depth, replicas, sources, since, until, order, limit) == (
+        .withf(|tag_depth, replicas, sources, cursor, order, direction, limit| {
+            (tag_depth, replicas, sources, cursor, order, direction, limit) == (
                 &None,
                 &false,
                 &false,
                 &None,
-                &None,
-                &OrderDirection::Ascending,
+                &Order::Ascending,
+                &Direction::Forward,
                 &4,
             )
         })
@@ -136,14 +136,14 @@ async fn desc_succeeds() {
     media_service
         .expect_get_media()
         .times(1)
-        .withf(|tag_depth, replicas, sources, since, until, order, limit| {
-            (tag_depth, replicas, sources, since, until, order, limit) == (
+        .withf(|tag_depth, replicas, sources, cursor, order, direction, limit| {
+            (tag_depth, replicas, sources, cursor, order, direction, limit) == (
                 &None,
                 &false,
                 &false,
                 &None,
-                &None,
-                &OrderDirection::Descending,
+                &Order::Descending,
+                &Direction::Forward,
                 &4,
             )
         })
@@ -248,14 +248,14 @@ async fn after_asc_succeeds() {
     media_service
         .expect_get_media()
         .times(1)
-        .withf(|tag_depth, replicas, sources, since, until, order, limit| {
-            (tag_depth, replicas, sources, since, until, order, limit) == (
+        .withf(|tag_depth, replicas, sources, cursor, order, direction, limit| {
+            (tag_depth, replicas, sources, cursor, order, direction, limit) == (
                 &None,
                 &false,
                 &false,
                 &Some((Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 57).unwrap(), MediumId::from(uuid!("88888888-8888-8888-8888-888888888888")))),
-                &None,
-                &OrderDirection::Ascending,
+                &Order::Ascending,
+                &Direction::Forward,
                 &4,
             )
         })
@@ -337,14 +337,14 @@ async fn after_desc_succeeds() {
     media_service
         .expect_get_media()
         .times(1)
-        .withf(|tag_depth, replicas, sources, since, until, order, limit| {
-            (tag_depth, replicas, sources, since, until, order, limit) == (
+        .withf(|tag_depth, replicas, sources, cursor, order, direction, limit| {
+            (tag_depth, replicas, sources, cursor, order, direction, limit) == (
                 &None,
                 &false,
                 &false,
                 &Some((Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 58).unwrap(), MediumId::from(uuid!("99999999-9999-9999-9999-999999999999")))),
-                &None,
-                &OrderDirection::Descending,
+                &Order::Descending,
+                &Direction::Forward,
                 &4,
             )
         })
@@ -426,14 +426,14 @@ async fn before_asc_succeeds() {
     media_service
         .expect_get_media()
         .times(1)
-        .withf(|tag_depth, replicas, sources, since, until, order, limit| {
-            (tag_depth, replicas, sources, since, until, order, limit) == (
+        .withf(|tag_depth, replicas, sources, cursor, order, direction, limit| {
+            (tag_depth, replicas, sources, cursor, order, direction, limit) == (
                 &None,
                 &false,
                 &false,
-                &None,
                 &Some((Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 58).unwrap(), MediumId::from(uuid!("99999999-9999-9999-9999-999999999999")))),
-                &OrderDirection::Ascending,
+                &Order::Ascending,
+                &Direction::Backward,
                 &4,
             )
         })
@@ -515,14 +515,14 @@ async fn before_desc_succeeds() {
     media_service
         .expect_get_media()
         .times(1)
-        .withf(|tag_depth, replicas, sources, since, until, order, limit| {
-            (tag_depth, replicas, sources, since, until, order, limit) == (
+        .withf(|tag_depth, replicas, sources, cursor, order, direction, limit| {
+            (tag_depth, replicas, sources, cursor, order, direction, limit) == (
                 &None,
                 &false,
                 &false,
-                &None,
                 &Some((Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 57).unwrap(), MediumId::from(uuid!("88888888-8888-8888-8888-888888888888")))),
-                &OrderDirection::Descending,
+                &Order::Descending,
+                &Direction::Backward,
                 &4,
             )
         })

@@ -7,7 +7,7 @@ use domain::{
         tag_types::TagTypeId,
         tags::TagId,
     },
-    repository::{media::MediaRepository, OrderDirection},
+    repository::{media::MediaRepository, Direction, Order},
 };
 use postgres::media::PostgresMediaRepository;
 use pretty_assertions::assert_eq;
@@ -33,8 +33,8 @@ async fn asc_succeeds(ctx: &DatabaseContext) {
         false,
         false,
         None,
-        None,
-        OrderDirection::Ascending,
+        Order::Ascending,
+        Direction::Forward,
         3,
     ).await.unwrap();
 
@@ -82,8 +82,8 @@ async fn desc_succeeds(ctx: &DatabaseContext) {
         false,
         false,
         None,
-        None,
-        OrderDirection::Descending,
+        Order::Descending,
+        Direction::Forward,
         3,
     ).await.unwrap();
 
@@ -131,8 +131,8 @@ async fn since_asc_succeeds(ctx: &DatabaseContext) {
         false,
         false,
         Some((Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 5).unwrap(), MediumId::from(uuid!("ccc5717b-cf11-403d-b466-f37cf1c2e6f6")))),
-        None,
-        OrderDirection::Ascending,
+        Order::Ascending,
+        Direction::Forward,
         3,
     ).await.unwrap();
 
@@ -180,27 +180,19 @@ async fn since_desc_succeeds(ctx: &DatabaseContext) {
         false,
         false,
         Some((Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(), MediumId::from(uuid!("21cb17ac-6e4c-4da7-8b8a-bc17bc258196")))),
-        None,
-        OrderDirection::Descending,
+        Order::Descending,
+        Direction::Forward,
         3,
     ).await.unwrap();
 
     assert_eq!(actual, vec![
         Medium {
-            id: MediumId::from(uuid!("43b77865-c05d-4733-b336-95b5522a8a46")),
+            id: MediumId::from(uuid!("ccc5717b-cf11-403d-b466-f37cf1c2e6f6")),
             sources: Vec::new(),
             tags: BTreeMap::new(),
             replicas: Vec::new(),
-            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 7).unwrap(),
-            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
-        },
-        Medium {
-            id: MediumId::from(uuid!("2872ed9d-4db9-4b25-b86f-791ad009cc0a")),
-            sources: Vec::new(),
-            tags: BTreeMap::new(),
-            replicas: Vec::new(),
-            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
-            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 5).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
         },
     ]);
 }
@@ -220,9 +212,9 @@ async fn until_asc_succeeds(ctx: &DatabaseContext) {
         None,
         false,
         false,
-        None,
         Some((Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(), MediumId::from(uuid!("2872ed9d-4db9-4b25-b86f-791ad009cc0a")))),
-        OrderDirection::Ascending,
+        Order::Ascending,
+        Direction::Backward,
         3,
     ).await.unwrap();
 
@@ -261,28 +253,20 @@ async fn until_desc_succeeds(ctx: &DatabaseContext) {
         None,
         false,
         false,
-        None,
         Some((Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(), MediumId::from(uuid!("2872ed9d-4db9-4b25-b86f-791ad009cc0a")))),
-        OrderDirection::Descending,
+        Order::Descending,
+        Direction::Backward,
         3,
     ).await.unwrap();
 
     assert_eq!(actual, vec![
         Medium {
-            id: MediumId::from(uuid!("21cb17ac-6e4c-4da7-8b8a-bc17bc258196")),
+            id: MediumId::from(uuid!("43b77865-c05d-4733-b336-95b5522a8a46")),
             sources: Vec::new(),
             tags: BTreeMap::new(),
             replicas: Vec::new(),
-            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
-            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 6).unwrap(),
-        },
-        Medium {
-            id: MediumId::from(uuid!("ccc5717b-cf11-403d-b466-f37cf1c2e6f6")),
-            sources: Vec::new(),
-            tags: BTreeMap::new(),
-            replicas: Vec::new(),
-            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 5).unwrap(),
-            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 7).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
         },
     ]);
 }
