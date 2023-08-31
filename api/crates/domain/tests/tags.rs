@@ -10,7 +10,7 @@ use domain::{
     repository::{
         tag_types::MockTagTypesRepository,
         tags::MockTagsRepository,
-        DeleteResult, OrderDirection,
+        DeleteResult, Direction, Order,
     },
     service::tags::{TagsService, TagsServiceInterface},
 };
@@ -170,8 +170,8 @@ async fn get_tags_succeeds() {
                 &TagDepth::new(0, 1),
                 &false,
                 &None,
-                &None,
-                &OrderDirection::Ascending,
+                &Order::Ascending,
+                &Direction::Forward,
                 &10,
             )
         })
@@ -234,7 +234,7 @@ async fn get_tags_succeeds() {
     let mock_tag_types_repository = MockTagTypesRepository::new();
 
     let service = TagsService::new(mock_tags_repository, mock_tag_types_repository);
-    let actual = service.get_tags(TagDepth::new(0, 1), false, None, None, OrderDirection::Ascending, 10).await.unwrap();
+    let actual = service.get_tags(TagDepth::new(0, 1), false, None, Order::Ascending, Direction::Forward, 10).await.unwrap();
 
     assert_eq!(actual, vec![
         Tag {
@@ -302,8 +302,8 @@ async fn get_tags_fails() {
                 &TagDepth::new(0, 1),
                 &false,
                 &None,
-                &None,
-                &OrderDirection::Ascending,
+                &Order::Ascending,
+                &Direction::Forward,
                 &10,
             )
         })
@@ -312,7 +312,7 @@ async fn get_tags_fails() {
     let mock_tag_types_repository = MockTagTypesRepository::new();
 
     let service = TagsService::new(mock_tags_repository, mock_tag_types_repository);
-    let actual = service.get_tags(TagDepth::new(0, 1), false, None, None, OrderDirection::Ascending, 10).await;
+    let actual = service.get_tags(TagDepth::new(0, 1), false, None, Order::Ascending, Direction::Forward, 10).await;
 
     assert!(actual.is_err());
 }

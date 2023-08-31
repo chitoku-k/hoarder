@@ -6,7 +6,7 @@ use crate::{
         tag_types::{TagType, TagTypeId},
         tags::{Tag, TagDepth, TagId},
     },
-    repository::{tag_types, tags, DeleteResult, OrderDirection},
+    repository::{tag_types, tags, DeleteResult, Direction, Order},
 };
 
 #[cfg_attr(feature = "test-mock", mockall::automock)]
@@ -23,9 +23,9 @@ pub trait TagsServiceInterface: Send + Sync + 'static {
         &self,
         depth: TagDepth,
         root: bool,
-        after: Option<(String, TagId)>,
-        before: Option<(String, TagId)>,
-        order: OrderDirection,
+        cursor: Option<(String, TagId)>,
+        order: Order,
+        direction: Direction,
         limit: u64,
     ) -> anyhow::Result<Vec<Tag>>;
 
@@ -98,12 +98,12 @@ where
         &self,
         depth: TagDepth,
         root: bool,
-        after: Option<(String, TagId)>,
-        before: Option<(String, TagId)>,
-        order: OrderDirection,
+        cursor: Option<(String, TagId)>,
+        order: Order,
+        direction: Direction,
         limit: u64,
     ) -> anyhow::Result<Vec<Tag>> {
-        match self.tags_repository.fetch_all(depth, root, after, before, order, limit).await {
+        match self.tags_repository.fetch_all(depth, root, cursor, order, direction, limit).await {
             Ok(tags) => Ok(tags),
             Err(e) => {
                 log::error!("failed to get tags\nError: {e:?}");

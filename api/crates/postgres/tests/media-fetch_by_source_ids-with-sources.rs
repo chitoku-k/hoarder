@@ -7,7 +7,7 @@ use domain::{
         media::{Medium, MediumId},
         sources::{Source, SourceId},
     },
-    repository::{media::MediaRepository, OrderDirection},
+    repository::{media::MediaRepository, Direction, Order},
 };
 use postgres::media::PostgresMediaRepository;
 use pretty_assertions::assert_eq;
@@ -32,8 +32,8 @@ async fn asc_succeeds(ctx: &DatabaseContext) {
         false,
         true,
         None,
-        None,
-        OrderDirection::Ascending,
+        Order::Ascending,
+        Direction::Forward,
         3,
     ).await.unwrap();
 
@@ -138,8 +138,8 @@ async fn desc_succeeds(ctx: &DatabaseContext) {
         false,
         true,
         None,
-        None,
-        OrderDirection::Descending,
+        Order::Descending,
+        Direction::Forward,
         3,
     ).await.unwrap();
 
@@ -233,8 +233,8 @@ async fn since_asc_succeeds(ctx: &DatabaseContext) {
         false,
         true,
         Some((Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(), MediumId::from(uuid!("2872ed9d-4db9-4b25-b86f-791ad009cc0a")))),
-        None,
-        OrderDirection::Ascending,
+        Order::Ascending,
+        Direction::Forward,
         3,
     ).await.unwrap();
 
@@ -308,15 +308,26 @@ async fn since_desc_succeeds(ctx: &DatabaseContext) {
         false,
         true,
         Some((Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(), MediumId::from(uuid!("2872ed9d-4db9-4b25-b86f-791ad009cc0a")))),
-        None,
-        OrderDirection::Descending,
+        Order::Descending,
+        Direction::Forward,
         3,
     ).await.unwrap();
 
     assert_eq!(actual, vec![
         Medium {
-            id: MediumId::from(uuid!("02c4e79d-2d61-4277-9760-5596adf488ce")),
+            id: MediumId::from(uuid!("ccc5717b-cf11-403d-b466-f37cf1c2e6f6")),
             sources: vec![
+                Source {
+                    id: SourceId::from(uuid!("3e1150b0-144a-4fcf-a202-b93a5f3274db")),
+                    external_service: ExternalService {
+                        id: ExternalServiceId::from(uuid!("4e0c68c7-e5ec-4d60-b9eb-733f47290cd3")),
+                        slug: "pixiv".to_string(),
+                        name: "pixiv".to_string(),
+                    },
+                    external_metadata: ExternalMetadata::Pixiv { id: 2222222 },
+                    created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 5).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
+                },
                 Source {
                     id: SourceId::from(uuid!("76a94241-1736-4823-bb59-bef097c687e1")),
                     external_service: ExternalService {
@@ -331,39 +342,8 @@ async fn since_desc_succeeds(ctx: &DatabaseContext) {
             ],
             tags: BTreeMap::new(),
             replicas: Vec::new(),
-            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 8).unwrap(),
-            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap(),
-        },
-        Medium {
-            id: MediumId::from(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1")),
-            sources: vec![
-                Source {
-                    id: SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
-                    external_service: ExternalService {
-                        id: ExternalServiceId::from(uuid!("4e0c68c7-e5ec-4d60-b9eb-733f47290cd3")),
-                        slug: "pixiv".to_string(),
-                        name: "pixiv".to_string(),
-                    },
-                    external_metadata: ExternalMetadata::Pixiv { id: 4444444 },
-                    created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 7).unwrap(),
-                    updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 12).unwrap(),
-                },
-                Source {
-                    id: SourceId::from(uuid!("5c872f82-2ad0-47c4-8c6f-64efc9443128")),
-                    external_service: ExternalService {
-                        id: ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")),
-                        slug: "twitter".to_string(),
-                        name: "Twitter".to_string(),
-                    },
-                    external_metadata: ExternalMetadata::Twitter { id: 333333333333 },
-                    created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 16).unwrap(),
-                    updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 6).unwrap(),
-                },
-            ],
-            tags: BTreeMap::new(),
-            replicas: Vec::new(),
-            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 7).unwrap(),
-            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 5).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
         },
     ]);
 }
@@ -382,9 +362,9 @@ async fn until_asc_succeeds(ctx: &DatabaseContext) {
         None,
         false,
         true,
-        None,
         Some((Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 7).unwrap(), MediumId::from(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1")))),
-        OrderDirection::Ascending,
+        Order::Ascending,
+        Direction::Backward,
         3,
     ).await.unwrap();
 
@@ -457,47 +437,16 @@ async fn until_desc_succeeds(ctx: &DatabaseContext) {
         None,
         false,
         true,
-        None,
         Some((Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 7).unwrap(), MediumId::from(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1")))),
-        OrderDirection::Descending,
+        Order::Descending,
+        Direction::Backward,
         3,
     ).await.unwrap();
 
     assert_eq!(actual, vec![
         Medium {
-            id: MediumId::from(uuid!("2872ed9d-4db9-4b25-b86f-791ad009cc0a")),
+            id: MediumId::from(uuid!("02c4e79d-2d61-4277-9760-5596adf488ce")),
             sources: vec![
-                Source {
-                    id: SourceId::from(uuid!("8939ee67-5fb8-4204-a496-bb570a952f8b")),
-                    external_service: ExternalService {
-                        id: ExternalServiceId::from(uuid!("4e0c68c7-e5ec-4d60-b9eb-733f47290cd3")),
-                        slug: "pixiv".to_string(),
-                        name: "pixiv".to_string(),
-                    },
-                    external_metadata: ExternalMetadata::Pixiv { id: 1111111 },
-                    created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
-                    updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
-                },
-            ],
-            tags: BTreeMap::new(),
-            replicas: Vec::new(),
-            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
-            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
-        },
-        Medium {
-            id: MediumId::from(uuid!("ccc5717b-cf11-403d-b466-f37cf1c2e6f6")),
-            sources: vec![
-                Source {
-                    id: SourceId::from(uuid!("3e1150b0-144a-4fcf-a202-b93a5f3274db")),
-                    external_service: ExternalService {
-                        id: ExternalServiceId::from(uuid!("4e0c68c7-e5ec-4d60-b9eb-733f47290cd3")),
-                        slug: "pixiv".to_string(),
-                        name: "pixiv".to_string(),
-                    },
-                    external_metadata: ExternalMetadata::Pixiv { id: 2222222 },
-                    created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 5).unwrap(),
-                    updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
-                },
                 Source {
                     id: SourceId::from(uuid!("76a94241-1736-4823-bb59-bef097c687e1")),
                     external_service: ExternalService {
@@ -512,8 +461,8 @@ async fn until_desc_succeeds(ctx: &DatabaseContext) {
             ],
             tags: BTreeMap::new(),
             replicas: Vec::new(),
-            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 5).unwrap(),
-            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 8).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap(),
         },
     ]);
 }

@@ -1,9 +1,5 @@
 #![allow(clippy::enum_variant_names)]
 
-use sea_query::Order;
-
-use domain::repository;
-
 mod expr;
 
 pub mod external_services;
@@ -88,27 +84,3 @@ macro_rules! sea_query_uuid_value {
 }
 
 pub(crate) use sea_query_uuid_value;
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub(crate) enum OrderDirection {
-    Ascending,
-    Descending,
-}
-
-impl From<repository::OrderDirection> for OrderDirection {
-    fn from(direction: repository::OrderDirection) -> Self {
-        match direction {
-            repository::OrderDirection::Ascending => OrderDirection::Ascending,
-            repository::OrderDirection::Descending => OrderDirection::Descending,
-        }
-    }
-}
-
-impl From<OrderDirection> for Order {
-    fn from(direction: OrderDirection) -> Self {
-        match direction {
-            OrderDirection::Ascending => Order::Asc,
-            OrderDirection::Descending => Order::Desc,
-        }
-    }
-}

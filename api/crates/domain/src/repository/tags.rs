@@ -2,7 +2,7 @@ use async_trait::async_trait;
 
 use crate::{
     entity::tags::{Tag, TagDepth, TagId},
-    repository::{DeleteResult, OrderDirection},
+    repository::{DeleteResult, Direction, Order},
 };
 
 #[cfg_attr(feature = "test-mock", mockall::automock)]
@@ -20,7 +20,7 @@ pub trait TagsRepository: Send + Sync + 'static {
     async fn fetch_by_name_or_alias_like(&self, name_or_alias_like: &str, depth: TagDepth) -> anyhow::Result<Vec<Tag>>;
 
     /// Fetches all tags.
-    async fn fetch_all(&self, depth: TagDepth, root: bool, after: Option<(String, TagId)>, before: Option<(String, TagId)>, order: OrderDirection, limit: u64) -> anyhow::Result<Vec<Tag>>;
+    async fn fetch_all(&self, depth: TagDepth, root: bool, cursor: Option<(String, TagId)>, order: Order, direction: Direction, limit: u64) -> anyhow::Result<Vec<Tag>>;
 
     /// Updates the tag by ID.
     async fn update_by_id<T, U>(

@@ -9,7 +9,7 @@ use domain::{
         tag_types::TagTypeId,
         tags::TagId,
     },
-    repository::OrderDirection,
+    repository::{Direction, Order},
     service::{
         external_services::MockExternalServicesServiceInterface,
         media::MockMediaServiceInterface,
@@ -32,18 +32,18 @@ async fn by_source_ids_succeeds() {
     media_service
         .expect_get_media_by_source_ids::<IntoIterMap<Uuid, SourceId>>()
         .times(1)
-        .withf(|source_ids, tag_depth, replicas, sources, since, until, order, limit| {
+        .withf(|source_ids, tag_depth, replicas, sources, cursor, order, direction, limit| {
             source_ids.clone().eq([
                 SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
                 SourceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
             ]) &&
-            (tag_depth, replicas, sources, since, until, order, limit) == (
+            (tag_depth, replicas, sources, cursor, order, direction, limit) == (
                 &None,
                 &false,
                 &false,
                 &None,
-                &None,
-                &OrderDirection::Ascending,
+                &Order::Ascending,
+                &Direction::Forward,
                 &4,
             )
         })
@@ -125,20 +125,20 @@ async fn by_tag_ids_succeeds() {
     media_service
         .expect_get_media_by_tag_ids::<IntoIterMap<TagTagTypeInput, (TagId, TagTypeId)>>()
         .times(1)
-        .withf(|tag_ids, tag_depth, replicas, sources, since, until, order, limit| {
+        .withf(|tag_ids, tag_depth, replicas, sources, cursor, order, direction, limit| {
             tag_ids.clone().eq([
                 (
                     TagId::from(uuid!("22222222-2222-2222-2222-222222222222")),
                     TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
                 ),
             ]) &&
-            (tag_depth, replicas, sources, since, until, order, limit) == (
+            (tag_depth, replicas, sources, cursor, order, direction, limit) == (
                 &None,
                 &false,
                 &false,
                 &None,
-                &None,
-                &OrderDirection::Ascending,
+                &Order::Ascending,
+                &Direction::Forward,
                 &4,
             )
         })

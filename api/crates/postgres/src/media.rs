@@ -16,7 +16,7 @@ use domain::{
 };
 use futures::TryStreamExt;
 use indexmap::IndexSet;
-use sea_query::{Expr, Iden, JoinType, Keyword, LockType, OnConflict, Order, PostgresQueryBuilder, Query};
+use sea_query::{BinOper, Expr, Iden, JoinType, Keyword, LockType, OnConflict, Order, PostgresQueryBuilder, Query};
 use sea_query_binder::SqlxBinder;
 use sqlx::{types::Json, FromRow, PgConnection, PgPool};
 use thiserror::Error;
@@ -29,7 +29,6 @@ use crate::{
     sources::{PostgresExternalServiceMetadata, PostgresSource, PostgresSourceId, PostgresSourceExternalService},
     tag_types::{PostgresTagTagType, PostgresTagTypeId, PostgresTagType},
     tags::{self, PostgresTagId, PostgresTagPath},
-    OrderDirection,
 };
 
 #[derive(Clone, Constructor)]
@@ -495,15 +494,23 @@ impl MediaRepository for PostgresMediaRepository {
         tag_depth: Option<TagDepth>,
         replicas: bool,
         sources: bool,
-        since: Option<(DateTime<Utc>, MediumId)>,
-        until: Option<(DateTime<Utc>, MediumId)>,
-        order: repository::OrderDirection,
+        cursor: Option<(DateTime<Utc>, MediumId)>,
+        order: repository::Order,
+        direction: repository::Direction,
         limit: u64,
     ) -> anyhow::Result<Vec<Medium>>
     where
         T: IntoIterator<Item = SourceId> + Send + Sync + 'static,
     {
         let mut conn = self.pool.acquire().await?;
+
+        let (comparison, order, rev) = match (order, direction) {
+            (repository::Order::Ascending, repository::Direction::Forward) => (BinOper::GreaterThan, Order::Asc, false),
+            (repository::Order::Ascending, repository::Direction::Backward) => (BinOper::SmallerThan, Order::Desc, true),
+            (repository::Order::Descending, repository::Direction::Forward) => (BinOper::SmallerThan, Order::Desc, false),
+            (repository::Order::Descending, repository::Direction::Backward) => (BinOper::GreaterThan, Order::Asc, true),
+        };
+
         let (sql, values) = Query::select()
             .columns([
                 PostgresMedium::Id,
@@ -518,21 +525,20 @@ impl MediaRepository for PostgresMediaRepository {
                     .equals((PostgresMedium::Table, PostgresMedium::Id)),
             )
             .and_where_option(
-                since.map(|(created_at, medium_id)| {
-                    Expr::tuple([Expr::col(PostgresMedium::CreatedAt).into(), Expr::col(PostgresMedium::Id).into()])
-                        .gt(Expr::tuple([Expr::value(created_at), Expr::value(PostgresMediumId::from(medium_id))]))
-                })
-            )
-            .and_where_option(
-                until.map(|(created_at, medium_id)| {
-                    Expr::tuple([Expr::col(PostgresMedium::CreatedAt).into(), Expr::col(PostgresMedium::Id).into()])
-                        .lt(Expr::tuple([Expr::value(created_at), Expr::value(PostgresMediumId::from(medium_id))]))
+                cursor.map(|(created_at, medium_id)| {
+                    Expr::tuple([
+                        Expr::col(PostgresMedium::CreatedAt).into(),
+                        Expr::col(PostgresMedium::Id).into(),
+                    ]).binary(comparison, Expr::tuple([
+                        Expr::value(created_at),
+                        Expr::value(PostgresMediumId::from(medium_id)),
+                    ]))
                 })
             )
             .and_where(Expr::col(PostgresMediumSource::SourceId).is_in(source_ids.into_iter().map(PostgresSourceId::from)))
             .group_by_col(PostgresMedium::Id)
-            .order_by((PostgresMedium::Table, PostgresMedium::CreatedAt), OrderDirection::from(order).into())
-            .order_by((PostgresMedium::Table, PostgresMedium::Id), OrderDirection::from(order).into())
+            .order_by((PostgresMedium::Table, PostgresMedium::CreatedAt), order.clone())
+            .order_by((PostgresMedium::Table, PostgresMedium::Id), order)
             .limit(limit)
             .build_sqlx(PostgresQueryBuilder);
 
@@ -541,6 +547,10 @@ impl MediaRepository for PostgresMediaRepository {
             .map_ok(Into::into)
             .try_collect()
             .await?;
+
+        if rev {
+            media.reverse();
+        }
 
         eager_load(&mut conn, &mut media, tag_depth, replicas, sources).await?;
         Ok(media)
@@ -552,9 +562,9 @@ impl MediaRepository for PostgresMediaRepository {
         tag_depth: Option<TagDepth>,
         replicas: bool,
         sources: bool,
-        since: Option<(DateTime<Utc>, MediumId)>,
-        until: Option<(DateTime<Utc>, MediumId)>,
-        order: repository::OrderDirection,
+        cursor: Option<(DateTime<Utc>, MediumId)>,
+        order: repository::Order,
+        direction: repository::Direction,
         limit: u64,
     ) -> anyhow::Result<Vec<Medium>>
     where
@@ -568,6 +578,14 @@ impl MediaRepository for PostgresMediaRepository {
         let tag_tag_type_ids_len = tag_tag_type_ids.len() as i32;
 
         let mut conn = self.pool.acquire().await?;
+
+        let (comparison, order, rev) = match (order, direction) {
+            (repository::Order::Ascending, repository::Direction::Forward) => (BinOper::GreaterThan, Order::Asc, false),
+            (repository::Order::Ascending, repository::Direction::Backward) => (BinOper::SmallerThan, Order::Desc, true),
+            (repository::Order::Descending, repository::Direction::Forward) => (BinOper::SmallerThan, Order::Desc, false),
+            (repository::Order::Descending, repository::Direction::Backward) => (BinOper::GreaterThan, Order::Asc, true),
+        };
+
         let (sql, values) = Query::select()
             .columns([
                 PostgresMedium::Id,
@@ -588,15 +606,14 @@ impl MediaRepository for PostgresMediaRepository {
                     .equals((PostgresMediumTag::Table, PostgresMediumTag::TagId)),
             )
             .and_where_option(
-                since.map(|(created_at, medium_id)| {
-                    Expr::tuple([Expr::col(PostgresMedium::CreatedAt).into(), Expr::col(PostgresMedium::Id).into()])
-                        .gt(Expr::tuple([Expr::value(created_at), Expr::value(PostgresMediumId::from(medium_id))]))
-                })
-            )
-            .and_where_option(
-                until.map(|(created_at, medium_id)| {
-                    Expr::tuple([Expr::col(PostgresMedium::CreatedAt).into(), Expr::col(PostgresMedium::Id).into()])
-                        .lt(Expr::tuple([Expr::value(created_at), Expr::value(PostgresMediumId::from(medium_id))]))
+                cursor.map(|(created_at, medium_id)| {
+                    Expr::tuple([
+                        Expr::col(PostgresMedium::CreatedAt).into(),
+                        Expr::col(PostgresMedium::Id).into(),
+                    ]).binary(comparison, Expr::tuple([
+                        Expr::value(created_at),
+                        Expr::value(PostgresMediumId::from(medium_id)),
+                    ]))
                 })
             )
             .and_where(
@@ -616,8 +633,8 @@ impl MediaRepository for PostgresMediaRepository {
                     ),
                 ).count().eq(Expr::val(tag_tag_type_ids_len))
             )
-            .order_by((PostgresMedium::Table, PostgresMedium::CreatedAt), OrderDirection::from(order).into())
-            .order_by((PostgresMedium::Table, PostgresMedium::Id), OrderDirection::from(order).into())
+            .order_by((PostgresMedium::Table, PostgresMedium::CreatedAt), order.clone())
+            .order_by((PostgresMedium::Table, PostgresMedium::Id), order)
             .limit(limit)
             .build_sqlx(PostgresQueryBuilder);
 
@@ -626,6 +643,10 @@ impl MediaRepository for PostgresMediaRepository {
             .map_ok(Into::into)
             .try_collect()
             .await?;
+
+        if rev {
+            media.reverse();
+        }
 
         eager_load(&mut conn, &mut media, tag_depth, replicas, sources).await?;
         Ok(media)
@@ -636,12 +657,19 @@ impl MediaRepository for PostgresMediaRepository {
         tag_depth: Option<TagDepth>,
         replicas: bool,
         sources: bool,
-        since: Option<(DateTime<Utc>, MediumId)>,
-        until: Option<(DateTime<Utc>, MediumId)>,
-        order: repository::OrderDirection,
+        cursor: Option<(DateTime<Utc>, MediumId)>,
+        order: repository::Order,
+        direction: repository::Direction,
         limit: u64,
     ) -> anyhow::Result<Vec<Medium>> {
         let mut conn = self.pool.acquire().await?;
+
+        let (comparison, order, rev) = match (order, direction) {
+            (repository::Order::Ascending, repository::Direction::Forward) => (BinOper::GreaterThan, Order::Asc, false),
+            (repository::Order::Ascending, repository::Direction::Backward) => (BinOper::SmallerThan, Order::Desc, true),
+            (repository::Order::Descending, repository::Direction::Forward) => (BinOper::SmallerThan, Order::Desc, false),
+            (repository::Order::Descending, repository::Direction::Backward) => (BinOper::GreaterThan, Order::Asc, true),
+        };
 
         let (sql, values) = Query::select()
             .columns([
@@ -651,29 +679,18 @@ impl MediaRepository for PostgresMediaRepository {
             ])
             .from(PostgresMedium::Table)
             .and_where_option(
-                since.map(|(created_at, medium_id)| {
+                cursor.map(|(created_at, medium_id)| {
                     Expr::tuple([
                         Expr::col(PostgresMedium::CreatedAt).into(),
                         Expr::col(PostgresMedium::Id).into(),
-                    ]).gt(Expr::tuple([
+                    ]).binary(comparison, Expr::tuple([
                         Expr::value(created_at),
                         Expr::value(PostgresMediumId::from(medium_id)),
                     ]))
                 })
             )
-            .and_where_option(
-                until.map(|(created_at, medium_id)| {
-                    Expr::tuple([
-                        Expr::col(PostgresMedium::CreatedAt).into(),
-                        Expr::col(PostgresMedium::Id).into(),
-                    ]).lt(Expr::tuple([
-                        Expr::value(created_at),
-                        Expr::value(PostgresMediumId::from(medium_id)),
-                    ]))
-                })
-            )
-            .order_by(PostgresMedium::CreatedAt, OrderDirection::from(order).into())
-            .order_by(PostgresMedium::Id, OrderDirection::from(order).into())
+            .order_by(PostgresMedium::CreatedAt, order.clone())
+            .order_by(PostgresMedium::Id, order)
             .limit(limit)
             .build_sqlx(PostgresQueryBuilder);
 
@@ -682,6 +699,10 @@ impl MediaRepository for PostgresMediaRepository {
             .map_ok(Into::into)
             .try_collect()
             .await?;
+
+        if rev {
+            media.reverse();
+        }
 
         eager_load(&mut conn, &mut media, tag_depth, replicas, sources).await?;
         Ok(media)

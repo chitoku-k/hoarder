@@ -11,7 +11,7 @@ use domain::{
         tag_types::{TagType, TagTypeId},
         tags::{AliasSet, Tag, TagDepth, TagId},
     },
-    repository::OrderDirection,
+    repository::{Direction, Order},
     service::{
         external_services::MockExternalServicesServiceInterface,
         media::MockMediaServiceInterface,
@@ -32,14 +32,14 @@ async fn tags_asc_succeeds() {
     media_service
         .expect_get_media()
         .times(1)
-        .withf(|tag_depth, replicas, sources, since, until, order, limit| {
-            (tag_depth, replicas, sources, since, until, order, limit) == (
+        .withf(|tag_depth, replicas, sources, cursor, order, direction, limit| {
+            (tag_depth, replicas, sources, cursor, order, direction, limit) == (
                 &Some(TagDepth::new(2, 2)),
                 &false,
                 &false,
                 &None,
-                &None,
-                &OrderDirection::Ascending,
+                &Order::Ascending,
+                &Direction::Forward,
                 &4,
             )
         })
@@ -637,14 +637,14 @@ async fn replicas_asc_succeeds() {
     media_service
         .expect_get_media()
         .times(1)
-        .withf(|tag_depth, replicas, sources, since, until, order, limit| {
-            (tag_depth, replicas, sources, since, until, order, limit) == (
+        .withf(|tag_depth, replicas, sources, cursor, order, direction, limit| {
+            (tag_depth, replicas, sources, cursor, order, direction, limit) == (
                 &None,
                 &true,
                 &false,
                 &None,
-                &None,
-                &OrderDirection::Ascending,
+                &Order::Ascending,
+                &Direction::Forward,
                 &4,
             )
         })
@@ -839,14 +839,14 @@ async fn sources_asc_succeeds() {
     media_service
         .expect_get_media()
         .times(1)
-        .withf(|tag_depth, replicas, sources, since, until, order, limit| {
-            (tag_depth, replicas, sources, since, until, order, limit) == (
+        .withf(|tag_depth, replicas, sources, cursor, order, direction, limit| {
+            (tag_depth, replicas, sources, cursor, order, direction, limit) == (
                 &None,
                 &false,
                 &true,
                 &None,
-                &None,
-                &OrderDirection::Ascending,
+                &Order::Ascending,
+                &Direction::Forward,
                 &4,
             )
         })

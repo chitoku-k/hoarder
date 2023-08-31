@@ -1,6 +1,6 @@
 use domain::{
     entity::tags::{TagDepth, TagId},
-    repository::{tags::TagsRepository, OrderDirection},
+    repository::{tags::TagsRepository, Direction, Order},
 };
 use postgres::tags::PostgresTagsRepository;
 use test_context::test_context;
@@ -17,9 +17,9 @@ async fn with_out_of_bounds_succeeds(ctx: &DatabaseContext) {
     let actual = repository.fetch_all(
         TagDepth::new(2, 2),
         true,
-        None,
         Some(("".to_string(), TagId::from(uuid!("00000000-0000-0000-0000-000000000000")))),
-        OrderDirection::Descending,
+        Order::Descending,
+        Direction::Forward,
         3,
     ).await.unwrap();
 
