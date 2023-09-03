@@ -18,7 +18,7 @@ version = "1.0.75"
 version = "0.1.73"
 
 [dependencies.chrono]
-version = "0.4.26"
+version = "0.4.28"
 default-features = false
 features = ["clock", "std"]
 
@@ -33,7 +33,7 @@ version = "0.11.4"
 optional = true
 
 [dependencies.serde]
-version = "1.0.185"
+version = "1.0.188"
 features = ["derive"]
 
 [dependencies.thiserror]

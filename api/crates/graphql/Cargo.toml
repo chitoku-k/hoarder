@@ -30,10 +30,10 @@ version = "0.6.20"
 features = ["default", "http2"]
 
 [dependencies.base64]
-version = "0.21.2"
+version = "0.21.3"
 
 [dependencies.chrono]
-version = "0.4.26"
+version = "0.4.28"
 default-features = false
 features = ["clock", "std"]
 
@@ -46,7 +46,7 @@ default-features = false
 features = ["alloc", "io-compat"]
 
 [dependencies.serde]
-version = "1.0.185"
+version = "1.0.188"
 features = ["derive"]
 
 [dependencies.serde_json]
