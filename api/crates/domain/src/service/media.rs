@@ -6,7 +6,7 @@ use crate::{
     entity::{
         external_services::{ExternalMetadata, ExternalServiceId},
         media::{Medium, MediumId},
-        replicas::{Replica, ReplicaId, ReplicaThumbnail},
+        replicas::{Replica, ReplicaId, ThumbnailId},
         sources::{Source, SourceId},
         tag_types::TagTypeId,
         tags::{TagDepth, TagId},
@@ -88,7 +88,7 @@ pub trait MediaServiceInterface: Send + Sync + 'static {
     async fn get_source_by_external_metadata(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> anyhow::Result<Source>;
 
     /// Gets the thumbnail by ID.
-    async fn get_thumbnail_by_id(&self, id: ReplicaId) -> anyhow::Result<ReplicaThumbnail>;
+    async fn get_thumbnail_by_id(&self, id: ThumbnailId) -> anyhow::Result<Vec<u8>>;
 
     /// Updates the medium by ID.
     async fn update_medium_by_id<T, U, V, W, X>(
@@ -286,7 +286,7 @@ where
         }
     }
 
-    async fn get_thumbnail_by_id(&self, id: ReplicaId) -> anyhow::Result<ReplicaThumbnail> {
+    async fn get_thumbnail_by_id(&self, id: ThumbnailId) -> anyhow::Result<Vec<u8>> {
         match self.replicas_repository.fetch_thumbnail_by_id(id).await {
             Ok(replica) => Ok(replica),
             Err(e) => {

@@ -24,7 +24,7 @@ use thiserror::Error;
 use crate::{
     expr::distinct::Distinct,
     external_services::{PostgresExternalService, PostgresExternalServiceId, PostgresExternalServiceError},
-    replicas::{PostgresMediumReplica, PostgresReplica, PostgresReplicaId, PostgresReplicaRow},
+    replicas::{PostgresMediumReplica, PostgresReplica, PostgresReplicaId, PostgresReplicaThumbnail, PostgresReplicaThumbnailRow, PostgresThumbnail},
     sea_query_uuid_value,
     sources::{PostgresExternalServiceMetadata, PostgresSource, PostgresSourceId, PostgresSourceExternalService},
     tag_types::{PostgresTagTagType, PostgresTagTypeId, PostgresTagType},
@@ -251,27 +251,30 @@ where
     T: IntoIterator<Item = MediumId>,
 {
     let (sql, values) = Query::select()
-        .expr_as(
-            Expr::col(PostgresReplica::Thumbnail).is_not_null(),
-            PostgresReplica::HasThumbnail,
-        )
-        .columns([
-            PostgresReplica::Id,
-            PostgresReplica::MediumId,
-            PostgresReplica::DisplayOrder,
-            PostgresReplica::OriginalUrl,
-            PostgresReplica::MimeType,
-            PostgresReplica::CreatedAt,
-            PostgresReplica::UpdatedAt,
-        ])
+        .expr_as(Expr::col((PostgresReplica::Table, PostgresReplica::Id)), PostgresReplicaThumbnail::ReplicaId)
+        .expr_as(Expr::col((PostgresReplica::Table, PostgresReplica::MediumId)), PostgresReplicaThumbnail::ReplicaMediumId)
+        .expr_as(Expr::col((PostgresReplica::Table, PostgresReplica::DisplayOrder)), PostgresReplicaThumbnail::ReplicaDisplayOrder)
+        .expr_as(Expr::col((PostgresReplica::Table, PostgresReplica::OriginalUrl)), PostgresReplicaThumbnail::ReplicaOriginalUrl)
+        .expr_as(Expr::col((PostgresReplica::Table, PostgresReplica::MimeType)), PostgresReplicaThumbnail::ReplicaMimeType)
+        .expr_as(Expr::col((PostgresReplica::Table, PostgresReplica::CreatedAt)), PostgresReplicaThumbnail::ReplicaCreatedAt)
+        .expr_as(Expr::col((PostgresReplica::Table, PostgresReplica::UpdatedAt)), PostgresReplicaThumbnail::ReplicaUpdatedAt)
+        .expr_as(Expr::col((PostgresThumbnail::Table, PostgresThumbnail::Id)), PostgresReplicaThumbnail::ThumbnailId)
+        .expr_as(Expr::col((PostgresThumbnail::Table, PostgresThumbnail::CreatedAt)), PostgresReplicaThumbnail::ThumbnailCreatedAt)
+        .expr_as(Expr::col((PostgresThumbnail::Table, PostgresThumbnail::UpdatedAt)), PostgresReplicaThumbnail::ThumbnailUpdatedAt)
         .from(PostgresReplica::Table)
+        .join(
+            JoinType::LeftJoin,
+            PostgresThumbnail::Table,
+            Expr::col((PostgresReplica::Table, PostgresReplica::Id))
+                .equals((PostgresThumbnail::Table, PostgresThumbnail::ReplicaId)),
+        )
         .and_where(Expr::col(PostgresReplica::MediumId).is_in(ids.into_iter().map(PostgresMediumId::from)))
         .order_by(PostgresReplica::MediumId, Order::Asc)
         .order_by(PostgresReplica::DisplayOrder, Order::Asc)
         .build_sqlx(PostgresQueryBuilder);
 
     let mut replicas: HashMap<_, Vec<_>> = HashMap::new();
-    let mut stream = sqlx::query_as_with::<_, PostgresReplicaRow, _>(&sql, values).fetch(&mut *conn);
+    let mut stream = sqlx::query_as_with::<_, PostgresReplicaThumbnailRow, _>(&sql, values).fetch(&mut *conn);
 
     while let Some((medium_id, replica)) = stream.try_next().await?.map(Into::into) {
         replicas

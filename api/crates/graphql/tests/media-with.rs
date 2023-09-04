@@ -6,7 +6,7 @@ use domain::{
     entity::{
         external_services::{ExternalService, ExternalServiceId, ExternalMetadata},
         media::{Medium, MediumId},
-        replicas::{Replica, ReplicaId},
+        replicas::{Replica, ReplicaId, Thumbnail, ThumbnailId},
         sources::{Source, SourceId},
         tag_types::{TagType, TagTypeId},
         tags::{Tag, AliasSet, TagDepth, TagId},
@@ -485,7 +485,11 @@ async fn replicas_succeeds() {
                         Replica {
                             id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
                             display_order: Some(1),
-                            has_thumbnail: true,
+                            thumbnail: Some(Thumbnail {
+                                id: ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888")),
+                                created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 2, 0).unwrap(),
+                                updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 3, 0).unwrap(),
+                            }),
                             original_url: "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png".to_string(),
                             mime_type: "image/png".to_string(),
                             created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
@@ -494,7 +498,11 @@ async fn replicas_succeeds() {
                         Replica {
                             id: ReplicaId::from(uuid!("77777777-7777-7777-7777-777777777777")),
                             display_order: Some(2),
-                            has_thumbnail: true,
+                            thumbnail: Some(Thumbnail {
+                                id: ThumbnailId::from(uuid!("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")),
+                                created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 4, 0).unwrap(),
+                                updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 5, 0).unwrap(),
+                            }),
                             original_url: "file:///var/lib/hoarder/99999999-9999-9999-9999-999999999999.png".to_string(),
                             mime_type: "image/png".to_string(),
                             created_at: Utc.with_ymd_and_hms(2022, 6, 3, 0, 2, 0).unwrap(),
@@ -528,8 +536,13 @@ async fn replicas_succeeds() {
                 replicas {
                     id
                     displayOrder
+                    thumbnail {
+                        id
+                        url
+                        createdAt
+                        updatedAt
+                    }
                     originalUrl
-                    thumbnailUrl
                     mimeType
                     createdAt
                     updatedAt
@@ -549,8 +562,13 @@ async fn replicas_succeeds() {
                     {
                         "id": "66666666-6666-6666-6666-666666666666",
                         "displayOrder": 1,
+                        "thumbnail": {
+                            "id": "88888888-8888-8888-8888-888888888888",
+                            "url": "https://img.example.com/88888888-8888-8888-8888-888888888888",
+                            "createdAt": "2022-06-02T00:02:00+00:00",
+                            "updatedAt": "2022-06-02T00:03:00+00:00",
+                        },
                         "originalUrl": "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png",
-                        "thumbnailUrl": "https://img.example.com/66666666-6666-6666-6666-666666666666",
                         "mimeType": "image/png",
                         "createdAt": "2022-06-02T00:00:00+00:00",
                         "updatedAt": "2022-06-02T00:01:00+00:00",
@@ -558,8 +576,13 @@ async fn replicas_succeeds() {
                     {
                         "id": "77777777-7777-7777-7777-777777777777",
                         "displayOrder": 2,
+                        "thumbnail": {
+                            "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+                            "url": "https://img.example.com/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+                            "createdAt": "2022-06-02T00:04:00+00:00",
+                            "updatedAt": "2022-06-02T00:05:00+00:00",
+                        },
                         "originalUrl": "file:///var/lib/hoarder/99999999-9999-9999-9999-999999999999.png",
-                        "thumbnailUrl": "https://img.example.com/77777777-7777-7777-7777-777777777777",
                         "mimeType": "image/png",
                         "createdAt": "2022-06-03T00:02:00+00:00",
                         "updatedAt": "2022-06-03T00:03:00+00:00",

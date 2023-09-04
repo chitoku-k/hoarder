@@ -5,7 +5,7 @@ use domain::{
     entity::{
         external_services::{ExternalMetadata, ExternalService, ExternalServiceId},
         media::MediumId,
-        replicas::{Replica, ReplicaId},
+        replicas::{Replica, ReplicaId, Thumbnail, ThumbnailId},
         sources::{Source, SourceId},
         tag_types::{TagType, TagTypeId},
         tags::{AliasSet, Tag, TagDepth, TagId},
@@ -334,7 +334,11 @@ async fn with_replicas_succeeds(ctx: &DatabaseContext) {
         Replica {
             id: ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be")),
             display_order: Some(1),
-            has_thumbnail: true,
+            thumbnail: Some(Thumbnail {
+                id: ThumbnailId::from(uuid!("9785df5f-f975-4253-9b50-b5e3abb92a70")),
+                created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 11).unwrap(),
+                updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap(),
+            }),
             original_url: "file:///var/lib/hoarder/1706c7bb-4152-44b2-9bbb-1179d09a19be.png".to_string(),
             mime_type: "image/png".to_string(),
             created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 10).unwrap(),
@@ -343,7 +347,11 @@ async fn with_replicas_succeeds(ctx: &DatabaseContext) {
         Replica {
             id: ReplicaId::from(uuid!("6fae1497-e987-492e-987a-f9870b7d3c5b")),
             display_order: Some(2),
-            has_thumbnail: true,
+            thumbnail: Some(Thumbnail {
+                id: ThumbnailId::from(uuid!("41512f05-a89e-4d2f-899b-9bf7b201679e")),
+                created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 12).unwrap(),
+                updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap(),
+            }),
             original_url: "file:///var/lib/hoarder/6fae1497-e987-492e-987a-f9870b7d3c5b.png".to_string(),
             mime_type: "image/png".to_string(),
             created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 11).unwrap(),
@@ -352,7 +360,7 @@ async fn with_replicas_succeeds(ctx: &DatabaseContext) {
         Replica {
             id: ReplicaId::from(uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5")),
             display_order: Some(3),
-            has_thumbnail: false,
+            thumbnail: None,
             original_url: "file:///var/lib/hoarder/12ca56e2-6e77-43b9-9da9-9d968c80a1a5.png".to_string(),
             mime_type: "image/png".to_string(),
             created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 11).unwrap(),
@@ -860,7 +868,11 @@ async fn reorder_replicas_with_replicas_succeeds(ctx: &DatabaseContext) {
         Replica {
             id: ReplicaId::from(uuid!("6fae1497-e987-492e-987a-f9870b7d3c5b")),
             display_order: Some(1),
-            has_thumbnail: true,
+            thumbnail: Some(Thumbnail {
+                id: ThumbnailId::from(uuid!("41512f05-a89e-4d2f-899b-9bf7b201679e")),
+                created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 12).unwrap(),
+                updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap(),
+            }),
             original_url: "file:///var/lib/hoarder/6fae1497-e987-492e-987a-f9870b7d3c5b.png".to_string(),
             mime_type: "image/png".to_string(),
             created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 11).unwrap(),
@@ -869,7 +881,7 @@ async fn reorder_replicas_with_replicas_succeeds(ctx: &DatabaseContext) {
         Replica {
             id: ReplicaId::from(uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5")),
             display_order: Some(2),
-            has_thumbnail: false,
+            thumbnail: None,
             original_url: "file:///var/lib/hoarder/12ca56e2-6e77-43b9-9da9-9d968c80a1a5.png".to_string(),
             mime_type: "image/png".to_string(),
             created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 11).unwrap(),
@@ -878,7 +890,11 @@ async fn reorder_replicas_with_replicas_succeeds(ctx: &DatabaseContext) {
         Replica {
             id: ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be")),
             display_order: Some(3),
-            has_thumbnail: true,
+            thumbnail: Some(Thumbnail {
+                id: ThumbnailId::from(uuid!("9785df5f-f975-4253-9b50-b5e3abb92a70")),
+                created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 11).unwrap(),
+                updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap(),
+            }),
             original_url: "file:///var/lib/hoarder/1706c7bb-4152-44b2-9bbb-1179d09a19be.png".to_string(),
             mime_type: "image/png".to_string(),
             created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 10).unwrap(),

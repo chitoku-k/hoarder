@@ -10,7 +10,7 @@ use axum::{
 };
 use derive_more::Constructor;
 use domain::{
-    entity::replicas::ReplicaId,
+    entity::replicas::ThumbnailId,
     service::media::MediaServiceInterface,
 };
 
@@ -20,7 +20,7 @@ pub struct ThumbnailURLFactory {
 }
 
 impl ThumbnailURLFactory {
-    pub fn url(&self, id: &ReplicaId) -> String {
+    pub fn url(&self, id: &ThumbnailId) -> String {
         format!("{}{}", self.endpoint, id)
     }
 }
@@ -34,16 +34,15 @@ impl<MediaService> ThumbnailsHandler<MediaService>
 where
     MediaService: MediaServiceInterface,
 {
-    async fn handle(&self, id: ReplicaId) -> anyhow::Result<Vec<u8>> {
-        let replica = self.media_service.get_thumbnail_by_id(id).await?;
-        let thumbnail = replica.thumbnail.context("no thumbnail available")?;
+    async fn handle(&self, id: ThumbnailId) -> anyhow::Result<Vec<u8>> {
+        let thumbnail = self.media_service.get_thumbnail_by_id(id).await.context("no thumbnail available")?;
         Ok(thumbnail)
     }
 }
 
 pub async fn handle<MediaService>(
     Extension(handler): Extension<Arc<ThumbnailsHandler<MediaService>>>,
-    Path(id): Path<ReplicaId>,
+    Path(id): Path<ThumbnailId>,
 ) -> impl IntoResponse
 where
     MediaService: MediaServiceInterface,

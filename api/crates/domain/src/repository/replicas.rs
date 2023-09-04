@@ -3,7 +3,7 @@ use async_trait::async_trait;
 use crate::{
     entity::{
         media::MediumId,
-        replicas::{Replica, ReplicaId, ReplicaThumbnail},
+        replicas::{Replica, ReplicaId, ThumbnailId},
     },
     repository::DeleteResult,
 };
@@ -23,7 +23,7 @@ pub trait ReplicasRepository: Send + Sync + 'static {
     async fn fetch_by_original_url(&self, original_url: &str) -> anyhow::Result<Replica>;
 
     /// Fetches the replica with thumbnail by ID.
-    async fn fetch_thumbnail_by_id(&self, id: ReplicaId) -> anyhow::Result<ReplicaThumbnail>;
+    async fn fetch_thumbnail_by_id(&self, id: ThumbnailId) -> anyhow::Result<Vec<u8>>;
 
     /// Updates the replica.
     async fn update_by_id<'a>(&self, id: ReplicaId, thumbnail: Option<Vec<u8>>, original_url: Option<&'a str>, mime_type: Option<&'a str>) -> anyhow::Result<Replica>;
