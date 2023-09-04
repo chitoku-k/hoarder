@@ -56,7 +56,7 @@ async fn asc_succeeds(ctx: &DatabaseContext) {
                 Replica {
                     id: ReplicaId::from(uuid!("91626dc4-3e2a-4028-8574-8feb3c817fd1")),
                     display_order: Some(1),
-                    has_thumbnail: false,
+                    thumbnail: None,
                     original_url: "file:///var/lib/hoarder/91626dc4-3e2a-4028-8574-8feb3c817fd1.jpg".to_string(),
                     mime_type: "image/jpeg".to_string(),
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 7).unwrap(),
@@ -65,7 +65,7 @@ async fn asc_succeeds(ctx: &DatabaseContext) {
                 Replica {
                     id: ReplicaId::from(uuid!("7f0638e2-aa86-4b00-9e52-b0e803247a4b")),
                     display_order: Some(2),
-                    has_thumbnail: false,
+                    thumbnail: None,
                     original_url: "file:///var/lib/hoarder/7f0638e2-aa86-4b00-9e52-b0e803247a4b.jpg".to_string(),
                     mime_type: "image/jpeg".to_string(),
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 8).unwrap(),
@@ -83,7 +83,7 @@ async fn asc_succeeds(ctx: &DatabaseContext) {
                 Replica {
                     id: ReplicaId::from(uuid!("b7a54e0b-6ab3-4385-a18b-bacadff6b18d")),
                     display_order: Some(1),
-                    has_thumbnail: false,
+                    thumbnail: None,
                     original_url: "file:///var/lib/hoarder/b7a54e0b-6ab3-4385-a18b-bacadff6b18d.jpg".to_string(),
                     mime_type: "image/jpeg".to_string(),
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
@@ -92,7 +92,7 @@ async fn asc_succeeds(ctx: &DatabaseContext) {
                 Replica {
                     id: ReplicaId::from(uuid!("790dc278-2c53-4988-883c-43a037664b24")),
                     display_order: Some(2),
-                    has_thumbnail: false,
+                    thumbnail: None,
                     original_url: "file:///var/lib/hoarder/790dc278-2c53-4988-883c-43a037664b24.jpg".to_string(),
                     mime_type: "image/jpeg".to_string(),
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
@@ -135,7 +135,7 @@ async fn desc_succeeds(ctx: &DatabaseContext) {
                 Replica {
                     id: ReplicaId::from(uuid!("9b73469d-55fe-4017-aee8-dd8f8d7d067a")),
                     display_order: Some(1),
-                    has_thumbnail: false,
+                    thumbnail: None,
                     original_url: "file:///var/lib/hoarder/9b73469d-55fe-4017-aee8-dd8f8d7d067a.jpg".to_string(),
                     mime_type: "image/jpeg".to_string(),
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 9).unwrap(),
@@ -153,7 +153,7 @@ async fn desc_succeeds(ctx: &DatabaseContext) {
                 Replica {
                     id: ReplicaId::from(uuid!("b7a54e0b-6ab3-4385-a18b-bacadff6b18d")),
                     display_order: Some(1),
-                    has_thumbnail: false,
+                    thumbnail: None,
                     original_url: "file:///var/lib/hoarder/b7a54e0b-6ab3-4385-a18b-bacadff6b18d.jpg".to_string(),
                     mime_type: "image/jpeg".to_string(),
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
@@ -162,7 +162,7 @@ async fn desc_succeeds(ctx: &DatabaseContext) {
                 Replica {
                     id: ReplicaId::from(uuid!("790dc278-2c53-4988-883c-43a037664b24")),
                     display_order: Some(2),
-                    has_thumbnail: false,
+                    thumbnail: None,
                     original_url: "file:///var/lib/hoarder/790dc278-2c53-4988-883c-43a037664b24.jpg".to_string(),
                     mime_type: "image/jpeg".to_string(),
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
@@ -180,7 +180,7 @@ async fn desc_succeeds(ctx: &DatabaseContext) {
                 Replica {
                     id: ReplicaId::from(uuid!("91626dc4-3e2a-4028-8574-8feb3c817fd1")),
                     display_order: Some(1),
-                    has_thumbnail: false,
+                    thumbnail: None,
                     original_url: "file:///var/lib/hoarder/91626dc4-3e2a-4028-8574-8feb3c817fd1.jpg".to_string(),
                     mime_type: "image/jpeg".to_string(),
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 7).unwrap(),
@@ -189,7 +189,7 @@ async fn desc_succeeds(ctx: &DatabaseContext) {
                 Replica {
                     id: ReplicaId::from(uuid!("7f0638e2-aa86-4b00-9e52-b0e803247a4b")),
                     display_order: Some(2),
-                    has_thumbnail: false,
+                    thumbnail: None,
                     original_url: "file:///var/lib/hoarder/7f0638e2-aa86-4b00-9e52-b0e803247a4b.jpg".to_string(),
                     mime_type: "image/jpeg".to_string(),
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 8).unwrap(),
@@ -232,7 +232,7 @@ async fn since_asc_succeeds(ctx: &DatabaseContext) {
                 Replica {
                     id: ReplicaId::from(uuid!("91626dc4-3e2a-4028-8574-8feb3c817fd1")),
                     display_order: Some(1),
-                    has_thumbnail: false,
+                    thumbnail: None,
                     original_url: "file:///var/lib/hoarder/91626dc4-3e2a-4028-8574-8feb3c817fd1.jpg".to_string(),
                     mime_type: "image/jpeg".to_string(),
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 7).unwrap(),
@@ -241,7 +241,7 @@ async fn since_asc_succeeds(ctx: &DatabaseContext) {
                 Replica {
                     id: ReplicaId::from(uuid!("7f0638e2-aa86-4b00-9e52-b0e803247a4b")),
                     display_order: Some(2),
-                    has_thumbnail: false,
+                    thumbnail: None,
                     original_url: "file:///var/lib/hoarder/7f0638e2-aa86-4b00-9e52-b0e803247a4b.jpg".to_string(),
                     mime_type: "image/jpeg".to_string(),
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 8).unwrap(),
@@ -259,7 +259,7 @@ async fn since_asc_succeeds(ctx: &DatabaseContext) {
                 Replica {
                     id: ReplicaId::from(uuid!("b7a54e0b-6ab3-4385-a18b-bacadff6b18d")),
                     display_order: Some(1),
-                    has_thumbnail: false,
+                    thumbnail: None,
                     original_url: "file:///var/lib/hoarder/b7a54e0b-6ab3-4385-a18b-bacadff6b18d.jpg".to_string(),
                     mime_type: "image/jpeg".to_string(),
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
@@ -268,7 +268,7 @@ async fn since_asc_succeeds(ctx: &DatabaseContext) {
                 Replica {
                     id: ReplicaId::from(uuid!("790dc278-2c53-4988-883c-43a037664b24")),
                     display_order: Some(2),
-                    has_thumbnail: false,
+                    thumbnail: None,
                     original_url: "file:///var/lib/hoarder/790dc278-2c53-4988-883c-43a037664b24.jpg".to_string(),
                     mime_type: "image/jpeg".to_string(),
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
@@ -286,7 +286,7 @@ async fn since_asc_succeeds(ctx: &DatabaseContext) {
                 Replica {
                     id: ReplicaId::from(uuid!("9b73469d-55fe-4017-aee8-dd8f8d7d067a")),
                     display_order: Some(1),
-                    has_thumbnail: false,
+                    thumbnail: None,
                     original_url: "file:///var/lib/hoarder/9b73469d-55fe-4017-aee8-dd8f8d7d067a.jpg".to_string(),
                     mime_type: "image/jpeg".to_string(),
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 9).unwrap(),
@@ -370,7 +370,7 @@ async fn until_asc_succeeds(ctx: &DatabaseContext) {
                 Replica {
                     id: ReplicaId::from(uuid!("91626dc4-3e2a-4028-8574-8feb3c817fd1")),
                     display_order: Some(1),
-                    has_thumbnail: false,
+                    thumbnail: None,
                     original_url: "file:///var/lib/hoarder/91626dc4-3e2a-4028-8574-8feb3c817fd1.jpg".to_string(),
                     mime_type: "image/jpeg".to_string(),
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 7).unwrap(),
@@ -379,7 +379,7 @@ async fn until_asc_succeeds(ctx: &DatabaseContext) {
                 Replica {
                     id: ReplicaId::from(uuid!("7f0638e2-aa86-4b00-9e52-b0e803247a4b")),
                     display_order: Some(2),
-                    has_thumbnail: false,
+                    thumbnail: None,
                     original_url: "file:///var/lib/hoarder/7f0638e2-aa86-4b00-9e52-b0e803247a4b.jpg".to_string(),
                     mime_type: "image/jpeg".to_string(),
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 8).unwrap(),
@@ -422,7 +422,7 @@ async fn until_desc_succeeds(ctx: &DatabaseContext) {
                 Replica {
                     id: ReplicaId::from(uuid!("9b73469d-55fe-4017-aee8-dd8f8d7d067a")),
                     display_order: Some(1),
-                    has_thumbnail: false,
+                    thumbnail: None,
                     original_url: "file:///var/lib/hoarder/9b73469d-55fe-4017-aee8-dd8f8d7d067a.jpg".to_string(),
                     mime_type: "image/jpeg".to_string(),
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 9).unwrap(),

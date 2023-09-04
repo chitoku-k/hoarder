@@ -6,7 +6,7 @@ use domain::{
     entity::{
         external_services::{ExternalMetadata, ExternalService, ExternalServiceId},
         media::{Medium, MediumId},
-        replicas::{Replica, ReplicaId, ReplicaThumbnail},
+        replicas::{Replica, ReplicaId, Thumbnail, ThumbnailId},
         sources::{Source, SourceId},
         tag_types::{TagType, TagTypeId},
         tags::{Tag, TagDepth, TagId},
@@ -299,7 +299,11 @@ async fn create_replica_succeeds() {
             Ok(Replica {
                 id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
                 display_order: Some(1),
-                has_thumbnail: true,
+                thumbnail: Some(Thumbnail {
+                    id: ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888")),
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 2, 0).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 3, 0).unwrap(),
+                }),
                 original_url: "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png".to_string(),
                 mime_type: "image/png".to_string(),
                 created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
@@ -318,7 +322,11 @@ async fn create_replica_succeeds() {
     assert_eq!(actual, Replica {
         id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
         display_order: Some(1),
-        has_thumbnail: true,
+        thumbnail: Some(Thumbnail {
+            id: ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888")),
+            created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 2, 0).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 3, 0).unwrap(),
+        }),
         original_url: "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png".to_string(),
         mime_type: "image/png".to_string(),
         created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
@@ -954,7 +962,11 @@ async fn get_replicas_by_ids_succeeds() {
                 Replica {
                     id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
                     display_order: Some(1),
-                    has_thumbnail: true,
+                    thumbnail: Some(Thumbnail {
+                        id: ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888")),
+                        created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 2, 0).unwrap(),
+                        updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 3, 0).unwrap(),
+                    }),
                     original_url: "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png".to_string(),
                     mime_type: "image/png".to_string(),
                     created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
@@ -963,7 +975,11 @@ async fn get_replicas_by_ids_succeeds() {
                 Replica {
                     id: ReplicaId::from(uuid!("77777777-7777-7777-7777-777777777777")),
                     display_order: Some(2),
-                    has_thumbnail: true,
+                    thumbnail: Some(Thumbnail {
+                        id: ThumbnailId::from(uuid!("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")),
+                        created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 4, 0).unwrap(),
+                        updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 5, 0).unwrap(),
+                    }),
                     original_url: "file:///var/lib/hoarder/99999999-9999-9999-9999-999999999999.png".to_string(),
                     mime_type: "image/png".to_string(),
                     created_at: Utc.with_ymd_and_hms(2022, 6, 3, 0, 2, 0).unwrap(),
@@ -982,7 +998,11 @@ async fn get_replicas_by_ids_succeeds() {
         Replica {
             id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
             display_order: Some(1),
-            has_thumbnail: true,
+            thumbnail: Some(Thumbnail {
+                id: ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888")),
+                created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 2, 0).unwrap(),
+                updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 3, 0).unwrap(),
+            }),
             original_url: "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png".to_string(),
             mime_type: "image/png".to_string(),
             created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
@@ -991,7 +1011,11 @@ async fn get_replicas_by_ids_succeeds() {
         Replica {
             id: ReplicaId::from(uuid!("77777777-7777-7777-7777-777777777777")),
             display_order: Some(2),
-            has_thumbnail: true,
+            thumbnail: Some(Thumbnail {
+                id: ThumbnailId::from(uuid!("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")),
+                created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 4, 0).unwrap(),
+                updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 5, 0).unwrap(),
+            }),
             original_url: "file:///var/lib/hoarder/99999999-9999-9999-9999-999999999999.png".to_string(),
             mime_type: "image/png".to_string(),
             created_at: Utc.with_ymd_and_hms(2022, 6, 3, 0, 2, 0).unwrap(),
@@ -1040,7 +1064,11 @@ async fn get_replica_by_original_url_succeeds() {
             Ok(Replica {
                 id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
                 display_order: Some(1),
-                has_thumbnail: true,
+                thumbnail: Some(Thumbnail {
+                    id: ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888")),
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 2, 0).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 3, 0).unwrap(),
+                }),
                 original_url: "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png".to_string(),
                 mime_type: "image/png".to_string(),
                 created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
@@ -1054,7 +1082,11 @@ async fn get_replica_by_original_url_succeeds() {
     assert_eq!(actual, Replica {
         id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
         display_order: Some(1),
-        has_thumbnail: true,
+        thumbnail: Some(Thumbnail {
+            id: ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888")),
+            created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 2, 0).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 3, 0).unwrap(),
+        }),
         original_url: "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png".to_string(),
         mime_type: "image/png".to_string(),
         created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
@@ -1163,31 +1195,15 @@ async fn get_thumbnail_by_id_succeeds() {
     mock_replicas_repository
         .expect_fetch_thumbnail_by_id()
         .times(1)
-        .withf(|id| id == &ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")))
+        .withf(|id| id == &ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888")))
         .returning(|_| {
-            Ok(ReplicaThumbnail {
-                id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
-                display_order: Some(1),
-                thumbnail: Some(vec![0x01, 0x02, 0x03, 0x04]),
-                original_url: "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png".to_string(),
-                mime_type: "image/png".to_string(),
-                created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
-                updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 1, 0).unwrap(),
-            })
+            Ok(vec![0x01, 0x02, 0x03, 0x04])
         });
 
     let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository);
-    let actual = service.get_thumbnail_by_id(ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666"))).await.unwrap();
+    let actual = service.get_thumbnail_by_id(ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888"))).await.unwrap();
 
-    assert_eq!(actual, ReplicaThumbnail {
-        id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
-        display_order: Some(1),
-        thumbnail: Some(vec![0x01, 0x02, 0x03, 0x04]),
-        original_url: "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png".to_string(),
-        mime_type: "image/png".to_string(),
-        created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
-        updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 1, 0).unwrap(),
-    });
+    assert_eq!(actual, vec![0x01, 0x02, 0x03, 0x04])
 }
 
 #[tokio::test]
@@ -1199,11 +1215,11 @@ async fn get_thumbnail_by_id_fails() {
     mock_replicas_repository
         .expect_fetch_thumbnail_by_id()
         .times(1)
-        .withf(|id| id == &ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")))
+        .withf(|id| id == &ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888")))
         .returning(|_| Err(anyhow!("error fetching the replica")));
 
     let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository);
-    let actual = service.get_thumbnail_by_id(ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666"))).await;
+    let actual = service.get_thumbnail_by_id(ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888"))).await;
 
     assert!(actual.is_err());
 }
@@ -1440,7 +1456,11 @@ async fn update_replica_by_id_succeeds() {
             Ok(Replica {
                 id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
                 display_order: Some(1),
-                has_thumbnail: true,
+                thumbnail: Some(Thumbnail {
+                    id: ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888")),
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 2, 0).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 3, 0).unwrap(),
+                }),
                 original_url: "file:///var/lib/hoarder/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string(),
                 mime_type: "image/jpeg".to_string(),
                 created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
@@ -1459,7 +1479,11 @@ async fn update_replica_by_id_succeeds() {
     assert_eq!(actual, Replica {
         id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
         display_order: Some(1),
-        has_thumbnail: true,
+        thumbnail: Some(Thumbnail {
+            id: ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888")),
+            created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 2, 0).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 3, 0).unwrap(),
+        }),
         original_url: "file:///var/lib/hoarder/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string(),
         mime_type: "image/jpeg".to_string(),
         created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),

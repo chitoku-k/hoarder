@@ -7,11 +7,14 @@ use uuid::Uuid;
 #[derive(Clone, Copy, Debug, Default, Deref, Deserialize, Display, Eq, From, Hash, PartialEq)]
 pub struct ReplicaId(Uuid);
 
+#[derive(Clone, Copy, Debug, Default, Deref, Deserialize, Display, Eq, From, Hash, PartialEq)]
+pub struct ThumbnailId(Uuid);
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Replica {
     pub id: ReplicaId,
     pub display_order: Option<u32>,
-    pub has_thumbnail: bool,
+    pub thumbnail: Option<Thumbnail>,
     pub original_url: String,
     pub mime_type: String,
     pub created_at: DateTime<Utc>,
@@ -19,12 +22,8 @@ pub struct Replica {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct ReplicaThumbnail {
-    pub id: ReplicaId,
-    pub display_order: Option<u32>,
-    pub thumbnail: Option<Vec<u8>>,
-    pub original_url: String,
-    pub mime_type: String,
+pub struct Thumbnail {
+    pub id: ThumbnailId,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }
@@ -35,4 +34,10 @@ pub enum ReplicaError {
     NotFoundById(ReplicaId),
     #[error("replica not found by URL: {0}")]
     NotFoundByURL(String),
+}
+
+#[derive(Debug, Error)]
+pub enum ThumbnailError {
+    #[error("thumbnail not found: {0}")]
+    NotFoundById(ThumbnailId),
 }

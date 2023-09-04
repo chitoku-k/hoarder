@@ -29,7 +29,6 @@ CREATE TABLE "replicas" (
     "id" uuid DEFAULT uuid_generate_v4(),
     "medium_id" uuid NOT NULL REFERENCES "media" ("id") ON DELETE CASCADE,
     "display_order" integer CHECK ("display_order" IS NULL OR "display_order" > 0),
-    "thumbnail" bytea,
     "original_url" text NOT NULL,
     "mime_type" text NOT NULL,
     "created_at" timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -37,6 +36,15 @@ CREATE TABLE "replicas" (
     PRIMARY KEY ("id"),
     UNIQUE ("medium_id", "display_order"),
     UNIQUE ("original_url")
+);
+CREATE TABLE "thumbnails" (
+    "id" uuid DEFAULT uuid_generate_v4(),
+    "replica_id" uuid NOT NULL REFERENCES "replicas" ("id") ON DELETE CASCADE,
+    "data" bytea NOT NULL,
+    "created_at" timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY ("id"),
+    UNIQUE ("replica_id")
 );
 CREATE TABLE "tags" (
     "id" uuid DEFAULT uuid_generate_v4(),

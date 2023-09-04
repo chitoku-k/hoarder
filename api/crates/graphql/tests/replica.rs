@@ -1,7 +1,7 @@
 use async_graphql::{Schema, EmptyMutation, EmptySubscription, value};
 use chrono::{TimeZone, Utc};
 use domain::{
-    entity::replicas::{self, ReplicaId},
+    entity::replicas::{Replica, ReplicaId, Thumbnail, ThumbnailId},
     service::{
         external_services::MockExternalServicesServiceInterface,
         media::MockMediaServiceInterface,
@@ -24,10 +24,14 @@ async fn succeeds() {
         .times(1)
         .withf(|original_url| original_url == "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png")
         .returning(|_| {
-            Ok(replicas::Replica {
+            Ok(Replica {
                 id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
                 display_order: Some(1),
-                has_thumbnail: true,
+                thumbnail: Some(Thumbnail {
+                    id: ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888")),
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 2, 0).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 3, 0).unwrap(),
+                }),
                 original_url: "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png".to_string(),
                 mime_type: "image/png".to_string(),
                 created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
@@ -46,8 +50,13 @@ async fn succeeds() {
             replica(originalUrl: "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png") {
                 id
                 displayOrder
+                thumbnail {
+                    id
+                    url
+                    createdAt
+                    updatedAt
+                }
                 originalUrl
-                thumbnailUrl
                 mimeType
                 createdAt
                 updatedAt
@@ -60,8 +69,13 @@ async fn succeeds() {
         "replica": {
             "id": "66666666-6666-6666-6666-666666666666",
             "displayOrder": 1,
+            "thumbnail": {
+                "id": "88888888-8888-8888-8888-888888888888",
+                "url": "https://img.example.com/88888888-8888-8888-8888-888888888888",
+                "createdAt": "2022-06-02T00:02:00+00:00",
+                "updatedAt": "2022-06-02T00:03:00+00:00",
+            },
             "originalUrl": "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png",
-            "thumbnailUrl": "https://img.example.com/66666666-6666-6666-6666-666666666666",
             "mimeType": "image/png",
             "createdAt": "2022-06-02T00:00:00+00:00",
             "updatedAt": "2022-06-02T00:01:00+00:00",
