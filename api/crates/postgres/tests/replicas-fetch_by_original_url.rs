@@ -20,7 +20,7 @@ async fn succeeds(ctx: &DatabaseContext) {
 
     assert_eq!(actual, Replica {
         id: ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be")),
-        display_order: Some(1),
+        display_order: 1,
         thumbnail: Some(Thumbnail {
             id: ThumbnailId::from(uuid!("9785df5f-f975-4253-9b50-b5e3abb92a70")),
             created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 11).unwrap(),

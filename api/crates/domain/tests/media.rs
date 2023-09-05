@@ -298,7 +298,7 @@ async fn create_replica_succeeds() {
         .returning(|_, _, _, _| {
             Ok(Replica {
                 id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
-                display_order: Some(1),
+                display_order: 1,
                 thumbnail: Some(Thumbnail {
                     id: ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888")),
                     created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 2, 0).unwrap(),
@@ -321,7 +321,7 @@ async fn create_replica_succeeds() {
 
     assert_eq!(actual, Replica {
         id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
-        display_order: Some(1),
+        display_order: 1,
         thumbnail: Some(Thumbnail {
             id: ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888")),
             created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 2, 0).unwrap(),
@@ -961,7 +961,7 @@ async fn get_replicas_by_ids_succeeds() {
             Ok(vec![
                 Replica {
                     id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
-                    display_order: Some(1),
+                    display_order: 1,
                     thumbnail: Some(Thumbnail {
                         id: ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888")),
                         created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 2, 0).unwrap(),
@@ -974,7 +974,7 @@ async fn get_replicas_by_ids_succeeds() {
                 },
                 Replica {
                     id: ReplicaId::from(uuid!("77777777-7777-7777-7777-777777777777")),
-                    display_order: Some(2),
+                    display_order: 2,
                     thumbnail: Some(Thumbnail {
                         id: ThumbnailId::from(uuid!("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")),
                         created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 4, 0).unwrap(),
@@ -997,7 +997,7 @@ async fn get_replicas_by_ids_succeeds() {
     assert_eq!(actual, vec![
         Replica {
             id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
-            display_order: Some(1),
+            display_order: 1,
             thumbnail: Some(Thumbnail {
                 id: ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888")),
                 created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 2, 0).unwrap(),
@@ -1010,7 +1010,7 @@ async fn get_replicas_by_ids_succeeds() {
         },
         Replica {
             id: ReplicaId::from(uuid!("77777777-7777-7777-7777-777777777777")),
-            display_order: Some(2),
+            display_order: 2,
             thumbnail: Some(Thumbnail {
                 id: ThumbnailId::from(uuid!("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")),
                 created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 4, 0).unwrap(),
@@ -1063,7 +1063,7 @@ async fn get_replica_by_original_url_succeeds() {
         .returning(|_| {
             Ok(Replica {
                 id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
-                display_order: Some(1),
+                display_order: 1,
                 thumbnail: Some(Thumbnail {
                     id: ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888")),
                     created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 2, 0).unwrap(),
@@ -1081,7 +1081,7 @@ async fn get_replica_by_original_url_succeeds() {
 
     assert_eq!(actual, Replica {
         id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
-        display_order: Some(1),
+        display_order: 1,
         thumbnail: Some(Thumbnail {
             id: ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888")),
             created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 2, 0).unwrap(),
@@ -1455,7 +1455,7 @@ async fn update_replica_by_id_succeeds() {
         .returning(|_, _, _, _| {
             Ok(Replica {
                 id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
-                display_order: Some(1),
+                display_order: 1,
                 thumbnail: Some(Thumbnail {
                     id: ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888")),
                     created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 2, 0).unwrap(),
@@ -1478,7 +1478,7 @@ async fn update_replica_by_id_succeeds() {
 
     assert_eq!(actual, Replica {
         id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
-        display_order: Some(1),
+        display_order: 1,
         thumbnail: Some(Thumbnail {
             id: ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888")),
             created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 2, 0).unwrap(),
