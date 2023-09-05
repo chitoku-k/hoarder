@@ -33,7 +33,7 @@ pub(crate) struct PostgresThumbnailId(ThumbnailId);
 #[derive(Debug, FromRow)]
 struct PostgresReplicaRow {
     id: PostgresReplicaId,
-    display_order: Option<i32>,
+    display_order: i32,
     original_url: String,
     mime_type: String,
     created_at: DateTime<Utc>,
@@ -44,7 +44,7 @@ struct PostgresReplicaRow {
 pub(crate) struct PostgresReplicaThumbnailRow {
     replica_id: PostgresReplicaId,
     replica_medium_id: PostgresMediumId,
-    replica_display_order: Option<i32>,
+    replica_display_order: i32,
     replica_original_url: String,
     replica_mime_type: String,
     replica_created_at: DateTime<Utc>,
@@ -116,7 +116,7 @@ impl From<PostgresReplicaRow> for Replica {
     fn from(row: PostgresReplicaRow) -> Self {
         Self {
             id: row.id.into(),
-            display_order: row.display_order.map(|o| o as u32),
+            display_order: row.display_order as u32,
             thumbnail: None,
             original_url: row.original_url,
             mime_type: row.mime_type,
@@ -152,7 +152,7 @@ impl From<PostgresReplicaThumbnailRow> for (MediumId, Replica) {
             row.replica_medium_id.into(),
             Replica {
                 id: row.replica_id.into(),
-                display_order: row.replica_display_order.map(|o| o as u32),
+                display_order: row.replica_display_order as u32,
                 thumbnail,
                 original_url: row.replica_original_url,
                 mime_type: row.replica_mime_type,
@@ -327,8 +327,8 @@ impl ReplicasRepository for PostgresReplicasRepository {
         let (_, replica) = sqlx::query_as_with::<_, PostgresReplicaThumbnailRow, _>(&sql, values)
             .fetch_optional(&self.pool)
             .await?
-            .map(Into::into)
-            .context(ReplicaError::NotFoundByURL(original_url.to_string()))?;
+            .context(ReplicaError::NotFoundByURL(original_url.to_string()))?
+            .into();
 
         Ok(replica)
     }
@@ -345,8 +345,8 @@ impl ReplicasRepository for PostgresReplicasRepository {
         let thumbnail = sqlx::query_as_with::<_, PostgresThumbnailDataRow, _>(&sql, values)
             .fetch_optional(&self.pool)
             .await?
-            .map(Into::into)
-            .context(ThumbnailError::NotFoundById(id))?;
+            .context(ThumbnailError::NotFoundById(id))?
+            .into();
 
         Ok(thumbnail)
     }

@@ -24,7 +24,7 @@ async fn first_replica_with_thumbnail_succeeds(ctx: &DatabaseContext) {
     ).await.unwrap();
     let actual_thumbnail = actual_replica.thumbnail.unwrap();
 
-    assert_eq!(actual_replica.display_order, Some(1));
+    assert_eq!(actual_replica.display_order, 1);
     assert_eq!(actual_replica.original_url, "file:///var/lib/hoarder/replica01.png".to_string());
     assert_eq!(actual_replica.mime_type, "image/png".to_string());
 
@@ -61,7 +61,7 @@ async fn first_replica_without_thumbnail_succeeds(ctx: &DatabaseContext) {
         "image/png",
     ).await.unwrap();
 
-    assert_eq!(actual_replica.display_order, Some(1));
+    assert_eq!(actual_replica.display_order, 1);
     assert_eq!(actual_replica.thumbnail, None);
     assert_eq!(actual_replica.original_url, "file:///var/lib/hoarder/replica01.png".to_string());
     assert_eq!(actual_replica.mime_type, "image/png".to_string());
@@ -91,7 +91,7 @@ async fn non_first_replica_with_thumbnail_succeeds(ctx: &DatabaseContext) {
     ).await.unwrap();
     let actual_thumbnail = actual_replica.thumbnail.unwrap();
 
-    assert_eq!(actual_replica.display_order, Some(3));
+    assert_eq!(actual_replica.display_order, 3);
     assert_eq!(actual_replica.original_url, "file:///var/lib/hoarder/replica02.png".to_string());
     assert_eq!(actual_replica.mime_type, "image/png".to_string());
 
@@ -128,7 +128,7 @@ async fn non_first_replica_without_thumbnail_succeeds(ctx: &DatabaseContext) {
         "image/png",
     ).await.unwrap();
 
-    assert_eq!(actual.display_order, Some(3));
+    assert_eq!(actual.display_order, 3);
     assert_eq!(actual.thumbnail, None);
     assert_eq!(actual.original_url, "file:///var/lib/hoarder/replica02.png".to_string());
     assert_eq!(actual.mime_type, "image/png".to_string());

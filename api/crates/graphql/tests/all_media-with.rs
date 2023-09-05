@@ -657,7 +657,7 @@ async fn replicas_asc_succeeds() {
                     replicas: vec![
                         Replica {
                             id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
-                            display_order: Some(1),
+                            display_order: 1,
                             thumbnail: Some(Thumbnail {
                                 id: ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888")),
                                 created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 2, 0).unwrap(),
@@ -670,7 +670,7 @@ async fn replicas_asc_succeeds() {
                         },
                         Replica {
                             id: ReplicaId::from(uuid!("77777777-7777-7777-7777-777777777777")),
-                            display_order: Some(2),
+                            display_order: 2,
                             thumbnail: Some(Thumbnail {
                                 id: ThumbnailId::from(uuid!("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")),
                                 created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 4, 0).unwrap(),
@@ -692,7 +692,7 @@ async fn replicas_asc_succeeds() {
                     replicas: vec![
                         Replica {
                             id: ReplicaId::from(uuid!("88888888-8888-8888-8888-888888888888")),
-                            display_order: Some(1),
+                            display_order: 1,
                             thumbnail: None,
                             original_url: "file:///var/lib/hoarder/88888888-8888-8888-8888-888888888888.png".to_string(),
                             mime_type: "image/png".to_string(),
@@ -701,7 +701,7 @@ async fn replicas_asc_succeeds() {
                         },
                         Replica {
                             id: ReplicaId::from(uuid!("99999999-9999-9999-9999-999999999999")),
-                            display_order: Some(2),
+                            display_order: 2,
                             thumbnail: None,
                             original_url: "file:///var/lib/hoarder/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.png".to_string(),
                             mime_type: "image/png".to_string(),

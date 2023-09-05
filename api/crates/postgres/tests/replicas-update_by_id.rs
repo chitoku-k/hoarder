@@ -26,7 +26,7 @@ async fn succeeds(ctx: &DatabaseContext) {
     let actual_thumbnail = actual_replica.thumbnail.unwrap();
 
     assert_eq!(actual_replica.id, ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be")));
-    assert_eq!(actual_replica.display_order, Some(1));
+    assert_eq!(actual_replica.display_order, 1);
     assert_eq!(actual_replica.original_url, "file:///var/lib/hoarder/replica_new.jpg".to_string());
     assert_eq!(actual_replica.mime_type, "image/jpeg".to_string());
     assert_eq!(actual_replica.created_at, Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 10).unwrap());

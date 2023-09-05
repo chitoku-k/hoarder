@@ -7,7 +7,7 @@ use uuid::Uuid;
 #[derive(SimpleObject)]
 pub(crate) struct Replica {
     id: Uuid,
-    display_order: Option<u32>,
+    display_order: u32,
     thumbnail: Option<Thumbnail>,
     original_url: String,
     mime_type: String,

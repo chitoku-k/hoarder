@@ -13,7 +13,7 @@ pub struct ThumbnailId(Uuid);
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Replica {
     pub id: ReplicaId,
-    pub display_order: Option<u32>,
+    pub display_order: u32,
     pub thumbnail: Option<Thumbnail>,
     pub original_url: String,
     pub mime_type: String,
