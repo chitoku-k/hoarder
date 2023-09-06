@@ -23,7 +23,7 @@ use thiserror::Error;
 
 use crate::{
     expr::distinct::Distinct,
-    external_services::{PostgresExternalService, PostgresExternalServiceId, PostgresExternalServiceError},
+    external_services::{PostgresExternalService, PostgresExternalServiceId},
     replicas::{PostgresMediumReplica, PostgresReplica, PostgresReplicaId, PostgresReplicaThumbnail, PostgresReplicaThumbnailRow, PostgresThumbnail},
     sea_query_uuid_value,
     sources::{PostgresExternalServiceMetadata, PostgresSource, PostgresSourceId, PostgresSourceExternalService},
@@ -134,13 +134,11 @@ impl From<PostgresMediumReplicaRow> for (Medium, ReplicaId) {
     }
 }
 
-impl TryFrom<PostgresMediumSourceExternalServiceRow> for (MediumId, Source) {
-    type Error = serde_json::Error;
+impl From<PostgresMediumSourceExternalServiceRow> for (MediumId, Source) {
+    fn from(row: PostgresMediumSourceExternalServiceRow) -> Self {
+        let external_metadata = ExternalMetadata::from(row.source_external_metadata.0);
 
-    fn try_from(row: PostgresMediumSourceExternalServiceRow) -> serde_json::Result<Self> {
-        let external_metadata = ExternalMetadata::try_from(row.source_external_metadata.0)?;
-
-        Ok((
+        (
             row.medium_id.into(),
             Source {
                 id: row.source_id.into(),
@@ -153,7 +151,7 @@ impl TryFrom<PostgresMediumSourceExternalServiceRow> for (MediumId, Source) {
                 created_at: row.source_created_at,
                 updated_at: row.source_updated_at,
             },
-        ))
+        )
     }
 }
 
@@ -273,15 +271,17 @@ where
         .order_by(PostgresReplica::DisplayOrder, Order::Asc)
         .build_sqlx(PostgresQueryBuilder);
 
-    let mut replicas: HashMap<_, Vec<_>> = HashMap::new();
-    let mut stream = sqlx::query_as_with::<_, PostgresReplicaThumbnailRow, _>(&sql, values).fetch(&mut *conn);
-
-    while let Some((medium_id, replica)) = stream.try_next().await?.map(Into::into) {
-        replicas
-            .entry(medium_id)
-            .or_default()
-            .push(replica);
-    }
+    let replicas = sqlx::query_as_with::<_, PostgresReplicaThumbnailRow, _>(&sql, values)
+        .fetch(&mut *conn)
+        .map_ok(Into::into)
+        .try_fold(HashMap::<_, Vec<_>>::new(), |mut replicas, (medium_id, replica)| async move {
+            replicas
+                .entry(medium_id)
+                .or_default()
+                .push(replica);
+            Ok(replicas)
+        })
+        .await?;
 
     Ok(replicas)
 }
@@ -317,19 +317,17 @@ where
         .order_by((PostgresMediumSource::Table, PostgresMediumSource::SourceId), Order::Asc)
         .build_sqlx(PostgresQueryBuilder);
 
-    let mut sources = HashMap::<_, Vec<_>>::new();
-    let mut stream = sqlx::query_as_with::<_, PostgresMediumSourceExternalServiceRow, _>(&sql, values).fetch(conn);
-
-    while let Some(row) = stream.try_next().await? {
-        let (medium_id, source) = match row.try_into() {
-             Ok((medium_id, source)) => (medium_id, source),
-             Err(e) => Err(PostgresExternalServiceError::Serialize(e))?,
-        };
-        sources
-            .entry(medium_id)
-            .or_default()
-            .push(source);
-    }
+    let sources = sqlx::query_as_with::<_, PostgresMediumSourceExternalServiceRow, _>(&sql, values)
+        .fetch(conn)
+        .map_ok(Into::into)
+        .try_fold(HashMap::<_, Vec<_>>::new(), |mut sources, (medium_id, source)| async move {
+            sources
+                .entry(medium_id)
+                .or_default()
+                .push(source);
+            Ok(sources)
+        })
+        .await?;
 
     Ok(sources)
 }

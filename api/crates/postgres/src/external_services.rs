@@ -41,8 +41,6 @@ pub(crate) enum PostgresExternalService {
 pub(crate) enum PostgresExternalServiceError {
     #[error("error serializing externalMetadata: {0}")]
     Serialize(serde_json::Error),
-    #[error("error deserializing externalMetadata: {0}")]
-    Deserialize(serde_json::Error),
 }
 
 sea_query_uuid_value!(PostgresExternalServiceId, ExternalServiceId);
