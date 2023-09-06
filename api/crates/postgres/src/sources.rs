@@ -91,21 +91,19 @@ pub(crate) enum PostgresSourceExternalService {
 
 sea_query_uuid_value!(PostgresSourceId, SourceId);
 
-impl TryFrom<PostgresExternalServiceMetadata> for ExternalMetadata {
-    type Error = serde_json::Error;
-
-    fn try_from(metadata: PostgresExternalServiceMetadata) -> serde_json::Result<Self> {
+impl From<PostgresExternalServiceMetadata> for ExternalMetadata {
+    fn from(metadata: PostgresExternalServiceMetadata) -> Self {
         use PostgresExternalServiceMetadata::*;
         match metadata {
-            Fantia { id } => Ok(Self::Fantia { id }),
-            Nijie { id } => Ok(Self::Nijie { id }),
-            Pixiv { id } => Ok(Self::Pixiv { id }),
-            PixivFanbox { id, creator_id } => Ok(Self::PixivFanbox { id, creator_id }),
-            Seiga { id } => Ok(Self::Seiga { id }),
-            Skeb { id, creator_id } => Ok(Self::Skeb { id, creator_id }),
-            Twitter { id } => Ok(Self::Twitter { id }),
-            Website { url } => Ok(Self::Website { url }),
-            Custom(v) => Ok(Self::Custom(serde_json::to_string(&v)?)),
+            Fantia { id } => Self::Fantia { id },
+            Nijie { id } => Self::Nijie { id },
+            Pixiv { id } => Self::Pixiv { id },
+            PixivFanbox { id, creator_id } => Self::PixivFanbox { id, creator_id },
+            Seiga { id } => Self::Seiga { id },
+            Skeb { id, creator_id } => Self::Skeb { id, creator_id },
+            Twitter { id } => Self::Twitter { id },
+            Website { url } => Self::Website { url },
+            Custom(v) => Self::Custom(v.to_string()),
         }
     }
 }
@@ -129,31 +127,27 @@ impl TryFrom<ExternalMetadata> for PostgresExternalServiceMetadata {
     }
 }
 
-impl TryFrom<PostgresSourceRowAndExternalServiceRow> for Source {
-    type Error = serde_json::Error;
-
-    fn try_from(row: PostgresSourceRowAndExternalServiceRow) -> serde_json::Result<Self> {
+impl From<PostgresSourceRowAndExternalServiceRow> for Source {
+    fn from(row: PostgresSourceRowAndExternalServiceRow) -> Self {
         let source_row = row.0;
         let external_service_row = row.1;
-        let external_metadata = ExternalMetadata::try_from(source_row.external_metadata.0)?;
+        let external_metadata = ExternalMetadata::from(source_row.external_metadata.0);
 
-        Ok(Self {
+        Self {
             id: source_row.id.into(),
             external_service: external_service_row.into(),
             external_metadata,
             created_at: source_row.created_at,
             updated_at: source_row.updated_at,
-        })
+        }
     }
 }
 
-impl TryFrom<PostgresSourceExternalServiceRow> for Source {
-    type Error = serde_json::Error;
+impl From<PostgresSourceExternalServiceRow> for Source {
+    fn from(row: PostgresSourceExternalServiceRow) -> Self {
+        let external_metadata = ExternalMetadata::from(row.source_external_metadata.0);
 
-    fn try_from(row: PostgresSourceExternalServiceRow) -> serde_json::Result<Self> {
-        let external_metadata = ExternalMetadata::try_from(row.source_external_metadata.0)?;
-
-        Ok(Self {
+        Self {
             id: row.source_id.into(),
             external_service: ExternalService {
                 id: row.external_service_id.into(),
@@ -163,7 +157,7 @@ impl TryFrom<PostgresSourceExternalServiceRow> for Source {
             external_metadata,
             created_at: row.source_created_at,
             updated_at: row.source_updated_at,
-        })
+        }
     }
 }
 
@@ -215,13 +209,8 @@ impl SourcesRepository for PostgresSourcesRepository {
             .fetch_one(&mut *tx)
             .await?;
 
-        let source = match Source::try_from(PostgresSourceRowAndExternalServiceRow(row, external_service_row)) {
-            Ok(source) => {
-                source.validate()?;
-                source
-            },
-            Err(e) => return Err(PostgresExternalServiceError::Deserialize(e))?,
-        };
+        let source = Source::from(PostgresSourceRowAndExternalServiceRow(row, external_service_row));
+        source.validate()?;
 
         tx.commit().await?;
         Ok(source)
@@ -329,13 +318,8 @@ impl SourcesRepository for PostgresSourcesRepository {
             .fetch_one(&mut *tx)
             .await?;
 
-        let source = match Source::try_from(PostgresSourceRowAndExternalServiceRow(row, external_service_row)) {
-            Ok(source) => {
-                source.validate()?;
-                source
-            },
-            Err(e) => return Err(PostgresExternalServiceError::Deserialize(e))?,
-        };
+        let source = Source::from(PostgresSourceRowAndExternalServiceRow(row, external_service_row));
+        source.validate()?;
 
         tx.commit().await?;
         Ok(source)
@@ -369,7 +353,7 @@ mod tests {
     #[test]
     fn convert_fantia() {
         let metadata = PostgresExternalServiceMetadata::Fantia { id: 123456789 };
-        let actual = ExternalMetadata::try_from(metadata).unwrap();
+        let actual = ExternalMetadata::from(metadata);
 
         assert_eq!(actual, ExternalMetadata::Fantia { id: 123456789 });
 
@@ -382,7 +366,7 @@ mod tests {
     #[test]
     fn convert_nijie() {
         let metadata = PostgresExternalServiceMetadata::Nijie { id: 123456789 };
-        let actual = ExternalMetadata::try_from(metadata).unwrap();
+        let actual = ExternalMetadata::from(metadata);
 
         assert_eq!(actual, ExternalMetadata::Nijie { id: 123456789 });
 
@@ -395,7 +379,7 @@ mod tests {
     #[test]
     fn convert_pixiv() {
         let metadata = PostgresExternalServiceMetadata::Pixiv { id: 123456789 };
-        let actual = ExternalMetadata::try_from(metadata).unwrap();
+        let actual = ExternalMetadata::from(metadata);
 
         assert_eq!(actual, ExternalMetadata::Pixiv { id: 123456789 });
 
@@ -408,7 +392,7 @@ mod tests {
     #[test]
     fn convert_pixiv_fanbox() {
         let metadata = PostgresExternalServiceMetadata::PixivFanbox { id: 123456789, creator_id: "creator_01".to_string() };
-        let actual = ExternalMetadata::try_from(metadata).unwrap();
+        let actual = ExternalMetadata::from(metadata);
 
         assert_eq!(actual, ExternalMetadata::PixivFanbox { id: 123456789, creator_id: "creator_01".to_string() });
 
@@ -421,7 +405,7 @@ mod tests {
     #[test]
     fn convert_seiga() {
         let metadata = PostgresExternalServiceMetadata::Seiga { id: 123456789 };
-        let actual = ExternalMetadata::try_from(metadata).unwrap();
+        let actual = ExternalMetadata::from(metadata);
 
         assert_eq!(actual, ExternalMetadata::Seiga { id: 123456789 });
 
@@ -434,7 +418,7 @@ mod tests {
     #[test]
     fn convert_twitter() {
         let metadata = PostgresExternalServiceMetadata::Twitter { id: 123456789 };
-        let actual = ExternalMetadata::try_from(metadata).unwrap();
+        let actual = ExternalMetadata::from(metadata);
 
         assert_eq!(actual, ExternalMetadata::Twitter { id: 123456789 });
 
@@ -447,7 +431,7 @@ mod tests {
     #[test]
     fn convert_website() {
         let metadata = PostgresExternalServiceMetadata::Website { url: "https://example.com".to_string() };
-        let actual = ExternalMetadata::try_from(metadata).unwrap();
+        let actual = ExternalMetadata::from(metadata);
 
         assert_eq!(actual, ExternalMetadata::Website { url: "https://example.com".to_string() });
 
@@ -460,7 +444,7 @@ mod tests {
     #[test]
     fn convert_custom() {
         let metadata = PostgresExternalServiceMetadata::Custom(json!({ "id": 123456789 }));
-        let actual = ExternalMetadata::try_from(metadata).unwrap();
+        let actual = ExternalMetadata::from(metadata);
 
         assert_eq!(actual, ExternalMetadata::Custom(r#"{"id":123456789}"#.to_string()));
 

@@ -73,21 +73,19 @@ impl TryFrom<external_services::ExternalMetadata> for ExternalMetadata {
     }
 }
 
-impl TryFrom<ExternalMetadata> for external_services::ExternalMetadata {
-    type Error = anyhow::Error;
-
-    fn try_from(value: ExternalMetadata) -> anyhow::Result<Self> {
+impl From<ExternalMetadata> for external_services::ExternalMetadata {
+    fn from(value: ExternalMetadata) -> Self {
         use ExternalMetadata::*;
         match value {
-            Fantia(ExternalMetadataId { id }) => Ok(Self::Fantia { id }),
-            Nijie(ExternalMetadataId { id }) => Ok(Self::Nijie { id }),
-            Pixiv(ExternalMetadataId { id }) => Ok(Self::Pixiv { id }),
-            PixivFanbox(ExternalMetadataIdCreatorId { id, creator_id }) => Ok(Self::PixivFanbox { id, creator_id }),
-            Seiga(ExternalMetadataId { id }) => Ok(Self::Seiga { id }),
-            Skeb(ExternalMetadataIdCreatorId { id, creator_id }) => Ok(Self::Skeb { id, creator_id }),
-            Twitter(ExternalMetadataId { id }) => Ok(Self::Twitter { id }),
-            Website(ExternalMetadataUrl { url }) => Ok(Self::Website { url }),
-            Custom(v) => Ok(Self::Custom(serde_json::to_string(&v)?)),
+            Fantia(ExternalMetadataId { id }) => Self::Fantia { id },
+            Nijie(ExternalMetadataId { id }) => Self::Nijie { id },
+            Pixiv(ExternalMetadataId { id }) => Self::Pixiv { id },
+            PixivFanbox(ExternalMetadataIdCreatorId { id, creator_id }) => Self::PixivFanbox { id, creator_id },
+            Seiga(ExternalMetadataId { id }) => Self::Seiga { id },
+            Skeb(ExternalMetadataIdCreatorId { id, creator_id }) => Self::Skeb { id, creator_id },
+            Twitter(ExternalMetadataId { id }) => Self::Twitter { id },
+            Website(ExternalMetadataUrl { url }) => Self::Website { url },
+            Custom(v) => Self::Custom(v.to_string()),
         }
     }
 }
@@ -118,7 +116,7 @@ mod tests {
     #[test]
     fn convert_fantia() {
         let metadata = ExternalMetadata::Fantia(ExternalMetadataId { id: 123456789 });
-        let actual = external_services::ExternalMetadata::try_from(metadata).unwrap();
+        let actual = external_services::ExternalMetadata::from(metadata);
 
         assert_eq!(actual, external_services::ExternalMetadata::Fantia { id: 123456789 });
 
@@ -131,7 +129,7 @@ mod tests {
     #[test]
     fn convert_nijie() {
         let metadata = ExternalMetadata::Nijie(ExternalMetadataId { id: 123456789 });
-        let actual = external_services::ExternalMetadata::try_from(metadata).unwrap();
+        let actual = external_services::ExternalMetadata::from(metadata);
 
         assert_eq!(actual, external_services::ExternalMetadata::Nijie { id: 123456789 });
 
@@ -144,7 +142,7 @@ mod tests {
     #[test]
     fn convert_pixiv() {
         let metadata = ExternalMetadata::Pixiv(ExternalMetadataId { id: 123456789 });
-        let actual = external_services::ExternalMetadata::try_from(metadata).unwrap();
+        let actual = external_services::ExternalMetadata::from(metadata);
 
         assert_eq!(actual, external_services::ExternalMetadata::Pixiv { id: 123456789 });
 
@@ -157,7 +155,7 @@ mod tests {
     #[test]
     fn convert_pixiv_fanbox() {
         let metadata = ExternalMetadata::PixivFanbox(ExternalMetadataIdCreatorId { id: 123456789, creator_id: "creator_01".to_string() });
-        let actual = external_services::ExternalMetadata::try_from(metadata).unwrap();
+        let actual = external_services::ExternalMetadata::from(metadata);
 
         assert_eq!(actual, external_services::ExternalMetadata::PixivFanbox { id: 123456789, creator_id: "creator_01".to_string() });
 
@@ -170,7 +168,7 @@ mod tests {
     #[test]
     fn convert_seiga() {
         let metadata = ExternalMetadata::Seiga(ExternalMetadataId { id: 123456789 });
-        let actual = external_services::ExternalMetadata::try_from(metadata).unwrap();
+        let actual = external_services::ExternalMetadata::from(metadata);
 
         assert_eq!(actual, external_services::ExternalMetadata::Seiga { id: 123456789 });
 
@@ -183,7 +181,7 @@ mod tests {
     #[test]
     fn convert_skeb() {
         let metadata = ExternalMetadata::Skeb(ExternalMetadataIdCreatorId { id: 123456789, creator_id: "creator_01".to_string() });
-        let actual = external_services::ExternalMetadata::try_from(metadata).unwrap();
+        let actual = external_services::ExternalMetadata::from(metadata);
 
         assert_eq!(actual, external_services::ExternalMetadata::Skeb { id: 123456789, creator_id: "creator_01".to_string() });
 
@@ -196,7 +194,7 @@ mod tests {
     #[test]
     fn convert_twitter() {
         let metadata = ExternalMetadata::Twitter(ExternalMetadataId { id: 123456789 });
-        let actual = external_services::ExternalMetadata::try_from(metadata).unwrap();
+        let actual = external_services::ExternalMetadata::from(metadata);
 
         assert_eq!(actual, external_services::ExternalMetadata::Twitter { id: 123456789 });
 
@@ -209,7 +207,7 @@ mod tests {
     #[test]
     fn convert_website() {
         let metadata = ExternalMetadata::Website(ExternalMetadataUrl { url: "https://example.com".to_string() });
-        let actual = external_services::ExternalMetadata::try_from(metadata).unwrap();
+        let actual = external_services::ExternalMetadata::from(metadata);
 
         assert_eq!(actual, external_services::ExternalMetadata::Website { url: "https://example.com".to_string() });
 
@@ -222,7 +220,7 @@ mod tests {
     #[test]
     fn convert_custom() {
         let metadata = ExternalMetadata::Custom(json!({ "id": 123456789 }));
-        let actual = external_services::ExternalMetadata::try_from(metadata).unwrap();
+        let actual = external_services::ExternalMetadata::from(metadata);
 
         assert_eq!(actual, external_services::ExternalMetadata::Custom(r#"{"id":123456789}"#.to_string()));
 
