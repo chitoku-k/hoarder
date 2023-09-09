@@ -67,7 +67,7 @@ workspace = true
 version = "1.0.75"
 
 [dependencies.async-graphql]
-version = "6.0.4"
+version = "6.0.6"
 default-features = false
 
 [dependencies.clap]
