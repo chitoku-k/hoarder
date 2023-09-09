@@ -21,7 +21,7 @@ version = "1.0.75"
 version = "0.1.73"
 
 [dependencies.chrono]
-version = "0.4.28"
+version = "0.4.30"
 default-features = false
 features = ["clock", "std"]
 
@@ -59,7 +59,7 @@ version = "0.7.1"
 features = ["chrono", "json", "postgres", "runtime-tokio", "tls-rustls", "uuid"]
 
 [dependencies.thiserror]
-version = "1.0.47"
+version = "1.0.48"
 
 [dependencies.uuid]
 version = "1.4.1"
