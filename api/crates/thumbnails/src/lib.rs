@@ -14,6 +14,8 @@ use domain::{
     service::media::MediaServiceInterface,
 };
 
+pub mod parser;
+
 #[derive(Clone, Constructor)]
 pub struct ThumbnailURLFactory {
     endpoint: String,

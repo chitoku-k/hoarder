@@ -6,7 +6,7 @@ use domain::{
     entity::{
         external_services::{ExternalService, ExternalServiceId, ExternalMetadata},
         media::{Medium, MediumId},
-        replicas::{Replica, ReplicaId, Thumbnail, ThumbnailId},
+        replicas::{Replica, ReplicaId, Size, Thumbnail, ThumbnailId},
         sources::{Source, SourceId},
         tag_types::{TagType, TagTypeId},
         tags::{Tag, AliasSet, TagDepth, TagId},
@@ -487,6 +487,7 @@ async fn replicas_succeeds() {
                             display_order: 1,
                             thumbnail: Some(Thumbnail {
                                 id: ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888")),
+                                size: Size::new(240, 240),
                                 created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 2, 0).unwrap(),
                                 updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 3, 0).unwrap(),
                             }),
@@ -500,6 +501,7 @@ async fn replicas_succeeds() {
                             display_order: 2,
                             thumbnail: Some(Thumbnail {
                                 id: ThumbnailId::from(uuid!("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")),
+                                size: Size::new(240, 240),
                                 created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 4, 0).unwrap(),
                                 updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 5, 0).unwrap(),
                             }),
@@ -539,6 +541,8 @@ async fn replicas_succeeds() {
                     thumbnail {
                         id
                         url
+                        width
+                        height
                         createdAt
                         updatedAt
                     }
@@ -565,6 +569,8 @@ async fn replicas_succeeds() {
                         "thumbnail": {
                             "id": "88888888-8888-8888-8888-888888888888",
                             "url": "https://img.example.com/88888888-8888-8888-8888-888888888888",
+                            "width": 240,
+                            "height": 240,
                             "createdAt": "2022-06-02T00:02:00+00:00",
                             "updatedAt": "2022-06-02T00:03:00+00:00",
                         },
@@ -579,6 +585,8 @@ async fn replicas_succeeds() {
                         "thumbnail": {
                             "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
                             "url": "https://img.example.com/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+                            "width": 240,
+                            "height": 240,
                             "createdAt": "2022-06-02T00:04:00+00:00",
                             "updatedAt": "2022-06-02T00:05:00+00:00",
                         },

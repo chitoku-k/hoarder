@@ -1,6 +1,6 @@
 use chrono::{TimeZone, Utc};
 use domain::{
-    entity::replicas::ReplicaId,
+    entity::replicas::{ReplicaId, Size, ThumbnailImage},
     repository::replicas::ReplicasRepository,
 };
 use postgres::replicas::PostgresReplicasRepository;
@@ -19,7 +19,7 @@ async fn succeeds(ctx: &DatabaseContext) {
     let repository = PostgresReplicasRepository::new(ctx.pool.clone());
     let actual_replica = repository.update_by_id(
         ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be")),
-        Some(vec![0x01, 0x02, 0x03, 0x04]),
+        Some(ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(1, 1))),
         Some("file:///var/lib/hoarder/replica_new.jpg"),
         Some("image/jpeg"),
     ).await.unwrap();
@@ -43,14 +43,16 @@ async fn succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual.get::<&str, &str>("original_url"), "file:///var/lib/hoarder/replica_new.jpg");
     assert_eq!(actual.get::<&str, &str>("mime_type"), "image/jpeg");
 
-    let actual = sqlx::query(r#"SELECT "id", "replica_id", "data" FROM "thumbnails" WHERE "id" = $1"#)
+    let actual = sqlx::query(r#"SELECT "id", "replica_id", "data", "width", "height" FROM "thumbnails" WHERE "id" = $1"#)
         .bind(*actual_thumbnail.id)
         .fetch_one(&ctx.pool)
         .await
         .unwrap();
 
     assert_eq!(actual.get::<Uuid, &str>("replica_id"), *actual_replica.id);
-    assert_eq!(actual.get::<Option<Vec<u8>>, &str>("data"), Some(vec![0x01, 0x02, 0x03, 0x04]));
+    assert_eq!(actual.get::<Vec<u8>, &str>("data"), vec![0x01, 0x02, 0x03, 0x04]);
+    assert_eq!(actual.get::<i32, &str>("width"), 1);
+    assert_eq!(actual.get::<i32, &str>("height"), 1);
 }
 
 #[test_context(DatabaseContext)]

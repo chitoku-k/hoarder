@@ -5,7 +5,7 @@ use domain::{
     entity::{
         external_services::{ExternalMetadata, ExternalService, ExternalServiceId},
         media::MediumId,
-        replicas::{Replica, ReplicaId, Thumbnail, ThumbnailId},
+        replicas::{Replica, ReplicaId, Size, Thumbnail, ThumbnailId},
         sources::{Source, SourceId},
         tag_types::{TagType, TagTypeId},
         tags::{AliasSet, Tag, TagDepth, TagId},
@@ -336,6 +336,7 @@ async fn with_replicas_succeeds(ctx: &DatabaseContext) {
             display_order: 1,
             thumbnail: Some(Thumbnail {
                 id: ThumbnailId::from(uuid!("9785df5f-f975-4253-9b50-b5e3abb92a70")),
+                size: Size::new(1, 1),
                 created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 11).unwrap(),
                 updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap(),
             }),
@@ -349,6 +350,7 @@ async fn with_replicas_succeeds(ctx: &DatabaseContext) {
             display_order: 2,
             thumbnail: Some(Thumbnail {
                 id: ThumbnailId::from(uuid!("41512f05-a89e-4d2f-899b-9bf7b201679e")),
+                size: Size::new(1, 1),
                 created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 12).unwrap(),
                 updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap(),
             }),
@@ -870,6 +872,7 @@ async fn reorder_replicas_with_replicas_succeeds(ctx: &DatabaseContext) {
             display_order: 1,
             thumbnail: Some(Thumbnail {
                 id: ThumbnailId::from(uuid!("41512f05-a89e-4d2f-899b-9bf7b201679e")),
+                size: Size::new(1, 1),
                 created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 12).unwrap(),
                 updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap(),
             }),
@@ -892,6 +895,7 @@ async fn reorder_replicas_with_replicas_succeeds(ctx: &DatabaseContext) {
             display_order: 3,
             thumbnail: Some(Thumbnail {
                 id: ThumbnailId::from(uuid!("9785df5f-f975-4253-9b50-b5e3abb92a70")),
+                size: Size::new(1, 1),
                 created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 11).unwrap(),
                 updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap(),
             }),

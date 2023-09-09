@@ -1,7 +1,7 @@
 use async_graphql::{Schema, EmptyMutation, EmptySubscription, value};
 use chrono::{TimeZone, Utc};
 use domain::{
-    entity::replicas::{Replica, ReplicaId, Thumbnail, ThumbnailId},
+    entity::replicas::{Replica, ReplicaId, Size, Thumbnail, ThumbnailId},
     service::{
         external_services::MockExternalServicesServiceInterface,
         media::MockMediaServiceInterface,
@@ -29,6 +29,7 @@ async fn succeeds() {
                 display_order: 1,
                 thumbnail: Some(Thumbnail {
                     id: ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888")),
+                    size: Size::new(240, 240),
                     created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 2, 0).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 3, 0).unwrap(),
                 }),
@@ -53,6 +54,8 @@ async fn succeeds() {
                 thumbnail {
                     id
                     url
+                    width
+                    height
                     createdAt
                     updatedAt
                 }
@@ -72,6 +75,8 @@ async fn succeeds() {
             "thumbnail": {
                 "id": "88888888-8888-8888-8888-888888888888",
                 "url": "https://img.example.com/88888888-8888-8888-8888-888888888888",
+                "width": 240,
+                "height": 240,
                 "createdAt": "2022-06-02T00:02:00+00:00",
                 "updatedAt": "2022-06-02T00:03:00+00:00",
             },

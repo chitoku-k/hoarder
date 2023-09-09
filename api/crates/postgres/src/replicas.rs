@@ -6,7 +6,7 @@ use futures::TryStreamExt;
 use domain::{
     entity::{
         media::MediumId,
-        replicas::{Replica, ReplicaError, ReplicaId, Thumbnail, ThumbnailError, ThumbnailId},
+        replicas::{Replica, ReplicaError, ReplicaId, Size, Thumbnail, ThumbnailError, ThumbnailId, ThumbnailImage},
     },
     repository::{replicas::ReplicasRepository, DeleteResult},
 };
@@ -50,6 +50,8 @@ pub(crate) struct PostgresReplicaThumbnailRow {
     replica_created_at: DateTime<Utc>,
     replica_updated_at: DateTime<Utc>,
     thumbnail_id: Option<PostgresThumbnailId>,
+    thumbnail_width: Option<i32>,
+    thumbnail_height: Option<i32>,
     thumbnail_created_at: Option<DateTime<Utc>>,
     thumbnail_updated_at: Option<DateTime<Utc>>,
 }
@@ -57,6 +59,8 @@ pub(crate) struct PostgresReplicaThumbnailRow {
 #[derive(Debug, FromRow)]
 struct PostgresThumbnailRow {
     id: PostgresThumbnailId,
+    width: i32,
+    height: i32,
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
 }
@@ -86,6 +90,8 @@ pub(crate) enum PostgresThumbnail {
     Id,
     ReplicaId,
     Data,
+    Width,
+    Height,
     CreatedAt,
     UpdatedAt,
 }
@@ -100,6 +106,8 @@ pub(crate) enum PostgresReplicaThumbnail {
     ReplicaCreatedAt,
     ReplicaUpdatedAt,
     ThumbnailId,
+    ThumbnailWidth,
+    ThumbnailHeight,
     ThumbnailCreatedAt,
     ThumbnailUpdatedAt,
 }
@@ -131,15 +139,20 @@ impl From<PostgresReplicaThumbnailRow> for (MediumId, Replica) {
         let thumbnail = {
             if let (
                 Some(id),
+                Some(width),
+                Some(height),
                 Some(created_at),
                 Some(updated_at),
             ) = (
                 row.thumbnail_id,
+                row.thumbnail_width,
+                row.thumbnail_height,
                 row.thumbnail_created_at,
                 row.thumbnail_updated_at,
             ) {
                 Some(Thumbnail {
                     id: id.into(),
+                    size: Size::new(width as u32, height as u32),
                     created_at,
                     updated_at,
                 })
@@ -167,6 +180,7 @@ impl From<PostgresThumbnailRow> for Thumbnail {
     fn from(row: PostgresThumbnailRow) -> Self {
         Self {
             id: row.id.into(),
+            size: Size::new(row.width as u32, row.height as u32),
             created_at: row.created_at,
             updated_at: row.updated_at,
         }
@@ -181,7 +195,7 @@ impl From<PostgresThumbnailDataRow> for Vec<u8> {
 
 #[async_trait]
 impl ReplicasRepository for PostgresReplicasRepository {
-    async fn create(&self, medium_id: MediumId, thumbnail: Option<Vec<u8>>, original_url: &str, mime_type: &str) -> anyhow::Result<Replica> {
+    async fn create(&self, medium_id: MediumId, thumbnail_image: Option<ThumbnailImage>, original_url: &str, mime_type: &str) -> anyhow::Result<Replica> {
         let mut tx = self.pool.begin().await?;
 
         let (sql, values) = Query::select()
@@ -232,21 +246,27 @@ impl ReplicasRepository for PostgresReplicasRepository {
             .await?
             .into();
 
-        if let Some(thumbnail) = thumbnail {
+        if let Some(thumbnail_image) = thumbnail_image {
             let (sql, values) = Query::insert()
                 .into_table(PostgresThumbnail::Table)
                 .columns([
                     PostgresThumbnail::ReplicaId,
                     PostgresThumbnail::Data,
+                    PostgresThumbnail::Width,
+                    PostgresThumbnail::Height,
                 ])
                 .values([
                     PostgresReplicaId::from(replica.id).into(),
-                    thumbnail.into(),
+                    thumbnail_image.body.into(),
+                    thumbnail_image.size.width.into(),
+                    thumbnail_image.size.height.into(),
                 ])?
                 .returning(
                     Query::returning()
                         .exprs([
                             Expr::col(PostgresThumbnail::Id),
+                            Expr::col(PostgresThumbnail::Width),
+                            Expr::col(PostgresThumbnail::Height),
                             Expr::col(PostgresThumbnail::CreatedAt),
                             Expr::col(PostgresThumbnail::UpdatedAt),
                         ])
@@ -278,6 +298,8 @@ impl ReplicasRepository for PostgresReplicasRepository {
             .expr_as(Expr::col((PostgresReplica::Table, PostgresReplica::CreatedAt)), PostgresReplicaThumbnail::ReplicaCreatedAt)
             .expr_as(Expr::col((PostgresReplica::Table, PostgresReplica::UpdatedAt)), PostgresReplicaThumbnail::ReplicaUpdatedAt)
             .expr_as(Expr::col((PostgresThumbnail::Table, PostgresThumbnail::Id)), PostgresReplicaThumbnail::ThumbnailId)
+            .expr_as(Expr::col((PostgresThumbnail::Table, PostgresThumbnail::Width)), PostgresReplicaThumbnail::ThumbnailWidth)
+            .expr_as(Expr::col((PostgresThumbnail::Table, PostgresThumbnail::Height)), PostgresReplicaThumbnail::ThumbnailHeight)
             .expr_as(Expr::col((PostgresThumbnail::Table, PostgresThumbnail::CreatedAt)), PostgresReplicaThumbnail::ThumbnailCreatedAt)
             .expr_as(Expr::col((PostgresThumbnail::Table, PostgresThumbnail::UpdatedAt)), PostgresReplicaThumbnail::ThumbnailUpdatedAt)
             .from(PostgresReplica::Table)
@@ -312,6 +334,8 @@ impl ReplicasRepository for PostgresReplicasRepository {
             .expr_as(Expr::col((PostgresReplica::Table, PostgresReplica::CreatedAt)), PostgresReplicaThumbnail::ReplicaCreatedAt)
             .expr_as(Expr::col((PostgresReplica::Table, PostgresReplica::UpdatedAt)), PostgresReplicaThumbnail::ReplicaUpdatedAt)
             .expr_as(Expr::col((PostgresThumbnail::Table, PostgresThumbnail::Id)), PostgresReplicaThumbnail::ThumbnailId)
+            .expr_as(Expr::col((PostgresThumbnail::Table, PostgresThumbnail::Width)), PostgresReplicaThumbnail::ThumbnailWidth)
+            .expr_as(Expr::col((PostgresThumbnail::Table, PostgresThumbnail::Height)), PostgresReplicaThumbnail::ThumbnailHeight)
             .expr_as(Expr::col((PostgresThumbnail::Table, PostgresThumbnail::CreatedAt)), PostgresReplicaThumbnail::ThumbnailCreatedAt)
             .expr_as(Expr::col((PostgresThumbnail::Table, PostgresThumbnail::UpdatedAt)), PostgresReplicaThumbnail::ThumbnailUpdatedAt)
             .from(PostgresReplica::Table)
@@ -351,7 +375,7 @@ impl ReplicasRepository for PostgresReplicasRepository {
         Ok(thumbnail)
     }
 
-    async fn update_by_id<'a>(&self, id: ReplicaId, thumbnail: Option<Vec<u8>>, original_url: Option<&'a str>, mime_type: Option<&'a str>) -> anyhow::Result<Replica> {
+    async fn update_by_id<'a>(&self, id: ReplicaId, thumbnail_image: Option<ThumbnailImage>, original_url: Option<&'a str>, mime_type: Option<&'a str>) -> anyhow::Result<Replica> {
         let mut tx = self.pool.begin().await?;
 
         let (sql, values) = Query::select()
@@ -403,17 +427,21 @@ impl ReplicasRepository for PostgresReplicasRepository {
             .await?
             .into();
 
-        if let Some(thumbnail) = thumbnail {
+        if let Some(thumbnail_image) = thumbnail_image {
             let mut query = Query::update();
             query
                 .table(PostgresThumbnail::Table)
-                .value(PostgresThumbnail::Data, thumbnail)
+                .value(PostgresThumbnail::Data, thumbnail_image.body)
+                .value(PostgresThumbnail::Width, thumbnail_image.size.width)
+                .value(PostgresThumbnail::Height, thumbnail_image.size.height)
                 .value(PostgresThumbnail::UpdatedAt, Expr::current_timestamp())
                 .and_where(Expr::col(PostgresThumbnail::ReplicaId).eq(PostgresReplicaId::from(replica.id)))
                 .returning(
                     Query::returning()
                         .exprs([
                             Expr::col(PostgresThumbnail::Id),
+                            Expr::col(PostgresThumbnail::Width),
+                            Expr::col(PostgresThumbnail::Height),
                             Expr::col(PostgresThumbnail::CreatedAt),
                             Expr::col(PostgresThumbnail::UpdatedAt),
                         ])

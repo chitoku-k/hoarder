@@ -19,3 +19,6 @@ version = "0.6.20"
 
 [dependencies.derive_more]
 version = "0.99.17"
+
+[dependencies.webp]
+version = "0.2.5"

@@ -4,7 +4,7 @@ use chrono::{TimeZone, Utc};
 use domain::{
     entity::{
         media::{Medium, MediumId},
-        replicas::{Replica, ReplicaId, Thumbnail, ThumbnailId},
+        replicas::{Replica, ReplicaId, Size, Thumbnail, ThumbnailId},
         sources::SourceId,
     },
     repository::{media::MediaRepository, Direction, Order},
@@ -83,6 +83,7 @@ async fn asc_succeeds(ctx: &DatabaseContext) {
                     display_order: 1,
                     thumbnail: Some(Thumbnail {
                         id: ThumbnailId::from(uuid!("9785df5f-f975-4253-9b50-b5e3abb92a70")),
+                        size: Size::new(1, 1),
                         created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 11).unwrap(),
                         updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap(),
                     }),
@@ -96,6 +97,7 @@ async fn asc_succeeds(ctx: &DatabaseContext) {
                     display_order: 2,
                     thumbnail: Some(Thumbnail {
                         id: ThumbnailId::from(uuid!("41512f05-a89e-4d2f-899b-9bf7b201679e")),
+                        size: Size::new(1, 1),
                         created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 12).unwrap(),
                         updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap(),
                     }),
@@ -169,6 +171,7 @@ async fn desc_succeeds(ctx: &DatabaseContext) {
                     display_order: 1,
                     thumbnail: Some(Thumbnail {
                         id: ThumbnailId::from(uuid!("9785df5f-f975-4253-9b50-b5e3abb92a70")),
+                        size: Size::new(1, 1),
                         created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 11).unwrap(),
                         updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap(),
                     }),
@@ -182,6 +185,7 @@ async fn desc_succeeds(ctx: &DatabaseContext) {
                     display_order: 2,
                     thumbnail: Some(Thumbnail {
                         id: ThumbnailId::from(uuid!("41512f05-a89e-4d2f-899b-9bf7b201679e")),
+                        size: Size::new(1, 1),
                         created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 12).unwrap(),
                         updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap(),
                     }),
@@ -264,6 +268,7 @@ async fn since_asc_succeeds(ctx: &DatabaseContext) {
                     display_order: 1,
                     thumbnail: Some(Thumbnail {
                         id: ThumbnailId::from(uuid!("9785df5f-f975-4253-9b50-b5e3abb92a70")),
+                        size: Size::new(1, 1),
                         created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 11).unwrap(),
                         updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap(),
                     }),
@@ -277,6 +282,7 @@ async fn since_asc_succeeds(ctx: &DatabaseContext) {
                     display_order: 2,
                     thumbnail: Some(Thumbnail {
                         id: ThumbnailId::from(uuid!("41512f05-a89e-4d2f-899b-9bf7b201679e")),
+                        size: Size::new(1, 1),
                         created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 12).unwrap(),
                         updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap(),
                     }),
