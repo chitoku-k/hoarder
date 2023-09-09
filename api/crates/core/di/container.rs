@@ -22,7 +22,10 @@ use sqlx::{
     postgres::{PgConnectOptions, PgPoolOptions},
     ConnectOptions, PgPool,
 };
-use thumbnails::{ThumbnailURLFactory, ThumbnailsHandler};
+use thumbnails::{
+    parser::WebPImageParser,
+    ThumbnailURLFactory, ThumbnailsHandler,
+};
 
 use crate::env;
 
@@ -54,8 +57,8 @@ fn external_services_service<T>(external_services_repository: T) -> ExternalServ
     ExternalServicesService::new(external_services_repository)
 }
 
-fn media_service<T, U, V>(media_repository: T, replicas_repository: U, sources_repository: V) -> MediaService<T, U, V> {
-    MediaService::new(media_repository, replicas_repository, sources_repository)
+fn media_service<T, U, V, W>(media_repository: T, replicas_repository: U, sources_repository: V, thumbnail_image_parser: W) -> MediaService<T, U, V, W> {
+    MediaService::new(media_repository, replicas_repository, sources_repository, thumbnail_image_parser)
 }
 
 fn tags_service<T, U>(tags_repository: T, tag_types_repository: U) -> TagsService<T, U> {
@@ -79,6 +82,10 @@ where
     Schema::build(query, mutation, EmptySubscription)
         .data(thumbnail_url_factory)
         .finish()
+}
+
+fn thumbnail_image_parser() -> WebPImageParser {
+    WebPImageParser
 }
 
 fn thumbnail_url_factory() -> ThumbnailURLFactory {
@@ -121,8 +128,10 @@ impl Application {
         let tags_repository = tags_repository(pg_pool.clone());
         let tag_types_repository = tag_types_repository(pg_pool);
 
+        let thumbnail_image_parser = thumbnail_image_parser();
+
         let external_services_service = external_services_service(external_services_repository);
-        let media_service = media_service(media_repository, replicas_repository, sources_repository);
+        let media_service = media_service(media_repository, replicas_repository, sources_repository, thumbnail_image_parser);
         let tags_service = tags_service(tags_repository, tag_types_repository);
 
         let thumbnail_url_factory = thumbnail_url_factory();

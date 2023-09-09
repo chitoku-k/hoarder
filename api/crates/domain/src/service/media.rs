@@ -6,11 +6,12 @@ use crate::{
     entity::{
         external_services::{ExternalMetadata, ExternalServiceId},
         media::{Medium, MediumId},
-        replicas::{Replica, ReplicaId, ThumbnailId},
+        replicas::{Replica, ReplicaId, ThumbnailId, ThumbnailImage},
         sources::{Source, SourceId},
         tag_types::TagTypeId,
         tags::{TagDepth, TagId},
     },
+    parser::thumbnails,
     repository::{media, replicas, sources, DeleteResult, Direction, Order},
 };
 
@@ -128,18 +129,41 @@ pub trait MediaServiceInterface: Send + Sync + 'static {
 }
 
 #[derive(Clone, Constructor)]
-pub struct MediaService<MediaRepository, ReplicasRepository, SourcesRepository> {
+pub struct MediaService<MediaRepository, ReplicasRepository, SourcesRepository, ThumbnailImageParser> {
     media_repository: MediaRepository,
     replicas_repository: ReplicasRepository,
     sources_repository: SourcesRepository,
+    thumbnail_image_parser: ThumbnailImageParser,
+}
+
+impl<MediaRepository, ReplicasRepository, SourcesRepository, ThumbnailImageParser> MediaService<MediaRepository, ReplicasRepository, SourcesRepository, ThumbnailImageParser>
+where
+    ThumbnailImageParser: thumbnails::ThumbnailImageParser,
+{
+    fn to_thumbnail_image(&self, body: Vec<u8>) -> anyhow::Result<ThumbnailImage> {
+        match self.thumbnail_image_parser.get_metadata(&body) {
+            Ok(metadata) => {
+                let size = metadata.size();
+                Ok(ThumbnailImage {
+                    body,
+                    size,
+                })
+            },
+            Err(e) => {
+                log::error!("failed to get the thumbnail size\nError: {e:?}");
+                Err(e)
+            },
+        }
+    }
 }
 
 #[async_trait]
-impl<MediaRepository, ReplicasRepository, SourcesRepository> MediaServiceInterface for MediaService<MediaRepository, ReplicasRepository, SourcesRepository>
+impl<MediaRepository, ReplicasRepository, SourcesRepository, ThumbnailImageParser> MediaServiceInterface for MediaService<MediaRepository, ReplicasRepository, SourcesRepository, ThumbnailImageParser>
 where
     MediaRepository: media::MediaRepository,
     ReplicasRepository: replicas::ReplicasRepository,
     SourcesRepository: sources::SourcesRepository,
+    ThumbnailImageParser: thumbnails::ThumbnailImageParser,
 {
     async fn create_medium<T, U>(&self, source_ids: T, created_at: Option<DateTime<Utc>>, tag_tag_type_ids: U, tag_depth: Option<TagDepth>, sources: bool) -> anyhow::Result<Medium>
     where
@@ -156,7 +180,11 @@ where
     }
 
     async fn create_replica(&self, medium_id: MediumId, thumbnail: Option<Vec<u8>>, original_url: &str, mime_type: &str) -> anyhow::Result<Replica> {
-        match self.replicas_repository.create(medium_id, thumbnail, original_url, mime_type).await {
+        let thumbnail_image = match thumbnail {
+            Some(body) => Some(self.to_thumbnail_image(body)?),
+            None => None,
+        };
+        match self.replicas_repository.create(medium_id, thumbnail_image, original_url, mime_type).await {
             Ok(replica) => Ok(replica),
             Err(e) => {
                 log::error!("failed to create a replica\nError: {e:?}");
@@ -326,7 +354,11 @@ where
     }
 
     async fn update_replica_by_id<'a, 'b>(&self, id: ReplicaId, thumbnail: Option<Vec<u8>>, original_url: Option<&'a str>, mime_type: Option<&'b str>) -> anyhow::Result<Replica> {
-        match self.replicas_repository.update_by_id(id, thumbnail, original_url, mime_type).await {
+        let thumbnail_image = match thumbnail {
+            Some(body) => Some(self.to_thumbnail_image(body)?),
+            None => None,
+        };
+        match self.replicas_repository.update_by_id(id, thumbnail_image, original_url, mime_type).await {
             Ok(replica) => Ok(replica),
             Err(e) => {
                 log::error!("failed to update the replica\nError: {e:?}");

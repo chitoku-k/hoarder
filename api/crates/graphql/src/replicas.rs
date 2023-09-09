@@ -19,6 +19,8 @@ pub(crate) struct Replica {
 #[graphql(complex)]
 pub(crate) struct Thumbnail {
     id: Uuid,
+    width: u32,
+    height: u32,
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
 }
@@ -41,6 +43,8 @@ impl From<replicas::Thumbnail> for Thumbnail {
     fn from(thumbnail: replicas::Thumbnail) -> Self {
         Self {
             id: *thumbnail.id,
+            width: thumbnail.size.width,
+            height: thumbnail.size.height,
             created_at: thumbnail.created_at,
             updated_at: thumbnail.updated_at,
         }

@@ -1,5 +1,5 @@
 use domain::{
-    entity::media::MediumId,
+    entity::{media::MediumId, replicas::{Size, ThumbnailImage}},
     repository::replicas::ReplicasRepository,
 };
 use postgres::replicas::PostgresReplicasRepository;
@@ -18,7 +18,7 @@ async fn first_replica_with_thumbnail_succeeds(ctx: &DatabaseContext) {
     let repository = PostgresReplicasRepository::new(ctx.pool.clone());
     let actual_replica = repository.create(
         MediumId::from(uuid!("ccc5717b-cf11-403d-b466-f37cf1c2e6f6")),
-        Some(vec![0x01, 0x02, 0x03, 0x04]),
+        Some(ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(1, 1))),
         "file:///var/lib/hoarder/replica01.png",
         "image/png",
     ).await.unwrap();
@@ -39,14 +39,16 @@ async fn first_replica_with_thumbnail_succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual.get::<&str, &str>("original_url"), "file:///var/lib/hoarder/replica01.png");
     assert_eq!(actual.get::<&str, &str>("mime_type"), "image/png");
 
-    let actual = sqlx::query(r#"SELECT "id", "replica_id", "data" FROM "thumbnails" WHERE "id" = $1"#)
+    let actual = sqlx::query(r#"SELECT "id", "replica_id", "data", "width", "height" FROM "thumbnails" WHERE "id" = $1"#)
         .bind(*actual_thumbnail.id)
         .fetch_one(&ctx.pool)
         .await
         .unwrap();
 
     assert_eq!(actual.get::<Uuid, &str>("replica_id"), *actual_replica.id);
-    assert_eq!(actual.get::<Option<Vec<u8>>, &str>("data"), Some(vec![0x01, 0x02, 0x03, 0x04]));
+    assert_eq!(actual.get::<Vec<u8>, &str>("data"), vec![0x01, 0x02, 0x03, 0x04]);
+    assert_eq!(actual.get::<i32, &str>("width"), 1);
+    assert_eq!(actual.get::<i32, &str>("height"), 1);
 }
 
 #[test_context(DatabaseContext)]
@@ -85,7 +87,7 @@ async fn non_first_replica_with_thumbnail_succeeds(ctx: &DatabaseContext) {
     let repository = PostgresReplicasRepository::new(ctx.pool.clone());
     let actual_replica = repository.create(
         MediumId::from(uuid!("2872ed9d-4db9-4b25-b86f-791ad009cc0a")),
-        Some(vec![0x01, 0x02, 0x03, 0x04]),
+        Some(ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(1, 1))),
         "file:///var/lib/hoarder/replica02.png",
         "image/png",
     ).await.unwrap();
@@ -106,14 +108,16 @@ async fn non_first_replica_with_thumbnail_succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual.get::<&str, &str>("original_url"), "file:///var/lib/hoarder/replica02.png");
     assert_eq!(actual.get::<&str, &str>("mime_type"), "image/png");
 
-    let actual = sqlx::query(r#"SELECT "id", "replica_id", "data" FROM "thumbnails" WHERE "id" = $1"#)
+    let actual = sqlx::query(r#"SELECT "id", "replica_id", "data", "width", "height" FROM "thumbnails" WHERE "id" = $1"#)
         .bind(*actual_thumbnail.id)
         .fetch_one(&ctx.pool)
         .await
         .unwrap();
 
     assert_eq!(actual.get::<Uuid, &str>("replica_id"), *actual_replica.id);
-    assert_eq!(actual.get::<Option<Vec<u8>>, &str>("data"), Some(vec![0x01, 0x02, 0x03, 0x04]));
+    assert_eq!(actual.get::<Vec<u8>, &str>("data"), vec![0x01, 0x02, 0x03, 0x04]);
+    assert_eq!(actual.get::<i32, &str>("width"), 1);
+    assert_eq!(actual.get::<i32, &str>("height"), 1);
 }
 
 #[test_context(DatabaseContext)]

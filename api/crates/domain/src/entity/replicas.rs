@@ -1,5 +1,5 @@
 use chrono::{DateTime, Utc};
-use derive_more::{Deref, Display, From};
+use derive_more::{Constructor, Deref, Display, From};
 use serde::Deserialize;
 use thiserror::Error;
 use uuid::Uuid;
@@ -24,8 +24,21 @@ pub struct Replica {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Thumbnail {
     pub id: ThumbnailId,
+    pub size: Size,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
+}
+
+#[derive(Clone, Constructor, Debug, Eq, PartialEq)]
+pub struct ThumbnailImage {
+    pub body: Vec<u8>,
+    pub size: Size,
+}
+
+#[derive(Clone, Constructor, Copy, Debug, Eq, PartialEq)]
+pub struct Size {
+    pub width: u32,
+    pub height: u32,
 }
 
 #[derive(Debug, Error)]

@@ -257,6 +257,8 @@ where
         .expr_as(Expr::col((PostgresReplica::Table, PostgresReplica::CreatedAt)), PostgresReplicaThumbnail::ReplicaCreatedAt)
         .expr_as(Expr::col((PostgresReplica::Table, PostgresReplica::UpdatedAt)), PostgresReplicaThumbnail::ReplicaUpdatedAt)
         .expr_as(Expr::col((PostgresThumbnail::Table, PostgresThumbnail::Id)), PostgresReplicaThumbnail::ThumbnailId)
+        .expr_as(Expr::col((PostgresThumbnail::Table, PostgresThumbnail::Width)), PostgresReplicaThumbnail::ThumbnailWidth)
+        .expr_as(Expr::col((PostgresThumbnail::Table, PostgresThumbnail::Height)), PostgresReplicaThumbnail::ThumbnailHeight)
         .expr_as(Expr::col((PostgresThumbnail::Table, PostgresThumbnail::CreatedAt)), PostgresReplicaThumbnail::ThumbnailCreatedAt)
         .expr_as(Expr::col((PostgresThumbnail::Table, PostgresThumbnail::UpdatedAt)), PostgresReplicaThumbnail::ThumbnailUpdatedAt)
         .from(PostgresReplica::Table)

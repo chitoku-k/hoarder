@@ -41,6 +41,8 @@ CREATE TABLE "thumbnails" (
     "id" uuid DEFAULT uuid_generate_v4(),
     "replica_id" uuid NOT NULL REFERENCES "replicas" ("id") ON DELETE CASCADE,
     "data" bytea NOT NULL,
+    "width" integer NOT NULL,
+    "height" integer NOT NULL,
     "created_at" timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY ("id"),

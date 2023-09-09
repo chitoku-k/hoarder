@@ -3,7 +3,7 @@ use async_trait::async_trait;
 use crate::{
     entity::{
         media::MediumId,
-        replicas::{Replica, ReplicaId, ThumbnailId},
+        replicas::{Replica, ReplicaId, ThumbnailId, ThumbnailImage},
     },
     repository::DeleteResult,
 };
@@ -12,7 +12,7 @@ use crate::{
 #[async_trait]
 pub trait ReplicasRepository: Send + Sync + 'static {
     /// Creates a replica.
-    async fn create(&self, medium_id: MediumId, thumbnail: Option<Vec<u8>>, original_url: &str, mime_type: &str) -> anyhow::Result<Replica>;
+    async fn create(&self, medium_id: MediumId, thumbnail_image: Option<ThumbnailImage>, original_url: &str, mime_type: &str) -> anyhow::Result<Replica>;
 
     /// Fetches the replicas by IDs.
     async fn fetch_by_ids<T>(&self, ids: T) -> anyhow::Result<Vec<Replica>>
@@ -26,7 +26,7 @@ pub trait ReplicasRepository: Send + Sync + 'static {
     async fn fetch_thumbnail_by_id(&self, id: ThumbnailId) -> anyhow::Result<Vec<u8>>;
 
     /// Updates the replica.
-    async fn update_by_id<'a>(&self, id: ReplicaId, thumbnail: Option<Vec<u8>>, original_url: Option<&'a str>, mime_type: Option<&'a str>) -> anyhow::Result<Replica>;
+    async fn update_by_id<'a>(&self, id: ReplicaId, thumbnail_image: Option<ThumbnailImage>, original_url: Option<&'a str>, mime_type: Option<&'a str>) -> anyhow::Result<Replica>;
 
     /// Deletes the replica.
     async fn delete_by_id(&self, id: ReplicaId) -> anyhow::Result<DeleteResult>;
