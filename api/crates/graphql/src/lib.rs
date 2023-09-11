@@ -2,7 +2,7 @@
 
 use async_graphql::{
     http::GraphiQLSource,
-    Context, Enum, Schema, Upload,
+    Enum, Schema,
 };
 use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
 use axum::{response::{self, IntoResponse}, Extension};
@@ -14,7 +14,6 @@ use domain::{
         tags::TagsServiceInterface,
     },
 };
-use futures::io::AsyncReadExt;
 
 use crate::{mutation::Mutation, query::Query, subscription::Subscription};
 
@@ -44,15 +43,6 @@ where
     TagsService: TagsServiceInterface,
 {
     schema.execute(req.into_inner()).await.into()
-}
-
-pub async fn process_upload(ctx: &Context<'_>, upload: Upload) -> anyhow::Result<Vec<u8>> {
-    let value = upload.value(ctx)?;
-
-    let mut buf = Vec::with_capacity(value.size().unwrap_or_default() as usize);
-    value.into_async_read().read_to_end(&mut buf).await?;
-
-    Ok(buf)
 }
 
 pub async fn graphiql() -> impl IntoResponse {

@@ -1,4 +1,4 @@
-use async_graphql::{Context, Object, SimpleObject, Upload};
+use async_graphql::{Context, Object, SimpleObject};
 use chrono::{DateTime, FixedOffset};
 use derive_more::Constructor;
 use domain::{
@@ -14,7 +14,6 @@ use uuid::Uuid;
 use crate::{
     external_services::ExternalService,
     media::Medium,
-    process_upload,
     replicas::Replica,
     sources::{ExternalMetadata, Source},
     tags::{get_tag_depth, Tag, TagTagTypeInput, TagType},
@@ -84,16 +83,8 @@ where
         medium.try_into()
     }
 
-    async fn create_replica(&self, ctx: &Context<'_>, medium_id: Uuid, thumbnail: Option<Upload>, original_url: String, mime_type: String) -> anyhow::Result<Replica> {
-        let thumbnail = match thumbnail {
-            Some(upload) => {
-                let thumbnail = process_upload(ctx, upload).await?;
-                Some(thumbnail)
-            },
-            None => None,
-        };
-
-        let replica = self.media_service.create_replica(medium_id.into(), thumbnail, &original_url, &mime_type).await?;
+    async fn create_replica(&self, medium_id: Uuid, original_url: String) -> anyhow::Result<Replica> {
+        let replica = self.media_service.create_replica(medium_id.into(), &original_url).await?;
         Ok(replica.into())
     }
 
@@ -146,16 +137,8 @@ where
         medium.try_into()
     }
 
-    async fn update_replica(&self, ctx: &Context<'_>, id: Uuid, thumbnail: Option<Upload>, original_url: Option<String>, mime_type: Option<String>) -> anyhow::Result<Replica> {
-        let thumbnail = match thumbnail {
-            Some(upload) => {
-                let thumbnail = process_upload(ctx, upload).await?;
-                Some(thumbnail)
-            },
-            None => None,
-        };
-
-        let replica = self.media_service.update_replica_by_id(id.into(), thumbnail, original_url.as_deref(), mime_type.as_deref()).await?;
+    async fn update_replica(&self, id: Uuid, original_url: Option<String>) -> anyhow::Result<Replica> {
+        let replica = self.media_service.update_replica_by_id(id.into(), original_url.as_deref()).await?;
         Ok(replica.into())
     }
 
