@@ -1,14 +1,13 @@
 use std::{io::stdout, time::Duration};
 
 use application::{commands::PrintSchema, server::Engine};
-use async_graphql::{EmptySubscription, Schema};
 use anyhow::Context;
 use domain::service::{
     external_services::{ExternalServicesService, ExternalServicesServiceInterface},
     media::{MediaService, MediaServiceInterface},
     tags::{TagsService, TagsServiceInterface},
 };
-use graphql::{mutation::Mutation, query::Query, APISchema};
+use graphql::{mutation::Mutation, query::Query, subscription::Subscription, APISchema};
 use log::LevelFilter;
 use postgres::{
     external_services::PostgresExternalServicesRepository,
@@ -17,10 +16,7 @@ use postgres::{
     sources::PostgresSourcesRepository,
     tag_types::PostgresTagTypesRepository,
     tags::PostgresTagsRepository,
-};
-use sqlx::{
-    postgres::{PgConnectOptions, PgPoolOptions},
-    ConnectOptions, PgPool,
+    ConnectOptions, PgConnectOptions, PgPool, PgPoolOptions,
 };
 use thumbnails::{
     parser::WebPImageParser,
@@ -79,7 +75,7 @@ where
     U: MediaServiceInterface,
     V: TagsServiceInterface,
 {
-    Schema::build(query, mutation, EmptySubscription)
+    APISchema::build(query, mutation, Subscription)
         .data(thumbnail_url_factory)
         .finish()
 }

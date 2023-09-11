@@ -1203,14 +1203,12 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "application",
- "async-graphql",
  "clap",
  "domain",
  "env_logger",
  "graphql",
  "log",
  "postgres",
- "sqlx",
  "thumbnails",
  "tokio",
 ]
