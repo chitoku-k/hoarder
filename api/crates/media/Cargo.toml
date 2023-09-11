@@ -1,5 +1,5 @@
 [package]
-name = "thumbnails"
+name = "media"
 version = "0.0.0"
 authors.workspace = true
 edition.workspace = true
@@ -17,15 +17,11 @@ version = "1.0.75"
 [dependencies.async-trait]
 version = "0.1.73"
 
-[dependencies.axum]
-version = "0.6.20"
-
 [dependencies.derive_more]
 version = "0.99.17"
 
 [dependencies.image]
 version = "0.24.7"
-features = ["webp-encoder"]
 
 [dependencies.tokio]
 version = "1.32.0"

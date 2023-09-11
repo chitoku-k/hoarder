@@ -11,6 +11,8 @@ pub(crate) struct Replica {
     thumbnail: Option<Thumbnail>,
     original_url: String,
     mime_type: String,
+    width: u32,
+    height: u32,
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
 }
@@ -33,6 +35,8 @@ impl From<replicas::Replica> for Replica {
             thumbnail: replica.thumbnail.map(Into::into),
             original_url: replica.original_url,
             mime_type: replica.mime_type,
+            width: replica.size.width,
+            height: replica.size.height,
             created_at: replica.created_at,
             updated_at: replica.updated_at,
         }

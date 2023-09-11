@@ -29,6 +29,7 @@ async fn succeeds(ctx: &DatabaseContext) {
         }),
         original_url: "file:///var/lib/hoarder/1706c7bb-4152-44b2-9bbb-1179d09a19be.png".to_string(),
         mime_type: "image/png".to_string(),
+        size: Size::new(1920, 1600),
         created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 10).unwrap(),
         updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap(),
     });

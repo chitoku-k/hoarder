@@ -17,6 +17,7 @@ pub struct Replica {
     pub thumbnail: Option<Thumbnail>,
     pub original_url: String,
     pub mime_type: String,
+    pub size: Size,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }
@@ -32,6 +33,12 @@ pub struct Thumbnail {
 #[derive(Clone, Constructor, Debug, Eq, PartialEq)]
 pub struct ThumbnailImage {
     pub body: Vec<u8>,
+    pub size: Size,
+}
+
+#[derive(Clone, Constructor, Debug, Eq, PartialEq)]
+pub struct OriginalImage {
+    pub mime_type: &'static str,
     pub size: Size,
 }
 

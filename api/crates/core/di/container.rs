@@ -2,13 +2,17 @@ use std::{io::stdout, time::Duration};
 
 use application::{commands::PrintSchema, server::Engine};
 use anyhow::Context;
-use domain::service::{
-    external_services::{ExternalServicesService, ExternalServicesServiceInterface},
-    media::{MediaService, MediaServiceInterface},
-    tags::{TagsService, TagsServiceInterface},
+use domain::{
+    entity::replicas::Size,
+    service::{
+        external_services::{ExternalServicesService, ExternalServicesServiceInterface},
+        media::{MediaService, MediaServiceInterface},
+        tags::{TagsService, TagsServiceInterface},
+    },
 };
 use graphql::{mutation::Mutation, query::Query, subscription::Subscription, APISchema};
 use log::LevelFilter;
+use media::parser::FileImageParser;
 use postgres::{
     external_services::PostgresExternalServicesRepository,
     media::PostgresMediaRepository,
@@ -19,7 +23,7 @@ use postgres::{
     ConnectOptions, PgConnectOptions, PgPool, PgPoolOptions,
 };
 use thumbnails::{
-    parser::WebPImageParser,
+    processor::{FileImageProcessor, FilterType, ImageOutputFormat},
     ThumbnailURLFactory, ThumbnailsHandler,
 };
 
@@ -53,8 +57,8 @@ fn external_services_service<T>(external_services_repository: T) -> ExternalServ
     ExternalServicesService::new(external_services_repository)
 }
 
-fn media_service<T, U, V, W>(media_repository: T, replicas_repository: U, sources_repository: V, thumbnail_image_parser: W) -> MediaService<T, U, V, W> {
-    MediaService::new(media_repository, replicas_repository, sources_repository, thumbnail_image_parser)
+fn media_service<T, U, V, W, X>(media_repository: T, replicas_repository: U, sources_repository: V, medium_image_parser: W, medium_image_processor: X) -> MediaService<T, U, V, W, X> {
+    MediaService::new(media_repository, replicas_repository, sources_repository, medium_image_parser, medium_image_processor)
 }
 
 fn tags_service<T, U>(tags_repository: T, tag_types_repository: U) -> TagsService<T, U> {
@@ -80,8 +84,12 @@ where
         .finish()
 }
 
-fn thumbnail_image_parser() -> WebPImageParser {
-    WebPImageParser
+fn medium_image_parser() -> FileImageParser {
+    FileImageParser::new()
+}
+
+fn medium_image_processor() -> FileImageProcessor {
+    FileImageProcessor::new(Size::new(240, 240), ImageOutputFormat::WebP, FilterType::CatmullRom)
 }
 
 fn thumbnail_url_factory() -> ThumbnailURLFactory {
@@ -124,10 +132,11 @@ impl Application {
         let tags_repository = tags_repository(pg_pool.clone());
         let tag_types_repository = tag_types_repository(pg_pool);
 
-        let thumbnail_image_parser = thumbnail_image_parser();
+        let medium_image_parser = medium_image_parser();
+        let medium_image_processor = medium_image_processor();
 
         let external_services_service = external_services_service(external_services_repository);
-        let media_service = media_service(media_repository, replicas_repository, sources_repository, thumbnail_image_parser);
+        let media_service = media_service(media_repository, replicas_repository, sources_repository, medium_image_parser, medium_image_processor);
         let tags_service = tags_service(tags_repository, tag_types_repository);
 
         let thumbnail_url_factory = thumbnail_url_factory();

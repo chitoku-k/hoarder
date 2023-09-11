@@ -493,6 +493,7 @@ async fn replicas_succeeds() {
                             }),
                             original_url: "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png".to_string(),
                             mime_type: "image/png".to_string(),
+                            size: Size::new(720, 720),
                             created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
                             updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 1, 0).unwrap(),
                         },
@@ -507,6 +508,7 @@ async fn replicas_succeeds() {
                             }),
                             original_url: "file:///var/lib/hoarder/99999999-9999-9999-9999-999999999999.png".to_string(),
                             mime_type: "image/png".to_string(),
+                            size: Size::new(720, 720),
                             created_at: Utc.with_ymd_and_hms(2022, 6, 3, 0, 2, 0).unwrap(),
                             updated_at: Utc.with_ymd_and_hms(2022, 6, 3, 0, 3, 0).unwrap(),
                         },
@@ -548,6 +550,8 @@ async fn replicas_succeeds() {
                     }
                     originalUrl
                     mimeType
+                    width
+                    height
                     createdAt
                     updatedAt
                 }
@@ -576,6 +580,8 @@ async fn replicas_succeeds() {
                         },
                         "originalUrl": "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png",
                         "mimeType": "image/png",
+                        "width": 720,
+                        "height": 720,
                         "createdAt": "2022-06-02T00:00:00+00:00",
                         "updatedAt": "2022-06-02T00:01:00+00:00",
                     },
@@ -592,6 +598,8 @@ async fn replicas_succeeds() {
                         },
                         "originalUrl": "file:///var/lib/hoarder/99999999-9999-9999-9999-999999999999.png",
                         "mimeType": "image/png",
+                        "width": 720,
+                        "height": 720,
                         "createdAt": "2022-06-03T00:02:00+00:00",
                         "updatedAt": "2022-06-03T00:03:00+00:00",
                     },
