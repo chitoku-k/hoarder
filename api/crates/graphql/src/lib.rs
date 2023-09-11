@@ -2,7 +2,7 @@
 
 use async_graphql::{
     http::GraphiQLSource,
-    Context, EmptySubscription, Enum, Schema, Upload,
+    Context, Enum, Schema, Upload,
 };
 use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
 use axum::{response::{self, IntoResponse}, Extension};
@@ -16,10 +16,11 @@ use domain::{
 };
 use futures::io::AsyncReadExt;
 
-use crate::{mutation::Mutation, query::Query};
+use crate::{mutation::Mutation, query::Query, subscription::Subscription};
 
 pub mod mutation;
 pub mod query;
+pub mod subscription;
 
 pub mod external_services;
 pub mod media;
@@ -30,7 +31,7 @@ pub mod tags;
 pub type APISchema<ExternalServicesService, MediaService, TagsService> = Schema<
     Query<ExternalServicesService, MediaService, TagsService>,
     Mutation<ExternalServicesService, MediaService, TagsService>,
-    EmptySubscription,
+    Subscription,
 >;
 
 pub async fn handle<ExternalServicesService, MediaService, TagsService>(

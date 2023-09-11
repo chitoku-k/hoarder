@@ -9,6 +9,11 @@ pub mod sources;
 pub mod tag_types;
 pub mod tags;
 
+pub use sqlx::{
+    postgres::{PgConnectOptions, PgPoolOptions},
+    ConnectOptions, PgPool,
+};
+
 macro_rules! sea_query_uuid_value {
     ($newtype:ty, $innertype:ty) => {
         const _: () = {
