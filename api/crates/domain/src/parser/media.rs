@@ -18,7 +18,7 @@ pub struct MediumMetadata {
 }
 
 impl MediumMetadata {
-    pub fn mime_type(&self) -> &'static str {
+    pub const fn mime_type(&self) -> &'static str {
         self.mime_type
     }
 

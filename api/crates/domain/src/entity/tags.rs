@@ -38,8 +38,8 @@ impl TagId {
         Self(Uuid::nil())
     }
 
-    pub fn is_root(&self) -> bool {
-        self.is_nil()
+    pub const fn is_root(&self) -> bool {
+        self.0.is_nil()
     }
 }
 
