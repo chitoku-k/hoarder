@@ -24,11 +24,11 @@ pub enum DeleteResult {
 }
 
 impl DeleteResult {
-    pub fn is_not_found(&self) -> bool {
+    pub const fn is_not_found(&self) -> bool {
         matches!(self, DeleteResult::NotFound)
     }
 
-    pub fn is_deleted(&self) -> bool {
+    pub const fn is_deleted(&self) -> bool {
         matches!(self, DeleteResult::Deleted(_))
     }
 }

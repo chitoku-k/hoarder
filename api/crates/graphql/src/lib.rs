@@ -77,7 +77,7 @@ impl From<Order> for repository::Order {
 }
 
 impl Order {
-    pub fn rev(&self) -> Self {
+    pub const fn rev(&self) -> Self {
         match self {
             Self::Asc => Self::Desc,
             Self::Desc => Self::Asc,

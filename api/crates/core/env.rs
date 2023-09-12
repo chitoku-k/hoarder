@@ -24,6 +24,6 @@ pub fn get() -> Config {
     Config::parse()
 }
 
-fn version() -> &'static str {
+const fn version() -> &'static str {
     crate_version!()
 }
