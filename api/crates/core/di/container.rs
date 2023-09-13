@@ -4,6 +4,7 @@ use application::{
     server::Engine,
     service::{
         graphql::GraphQLServiceInterface,
+        media::MediaURLFactoryInterface,
         thumbnails::ThumbnailURLFactoryInterface,
     },
 };
@@ -18,7 +19,7 @@ use domain::{
 };
 use graphql::{mutation::Mutation, query::Query, subscription::Subscription, APISchema, GraphQLService};
 use log::LevelFilter;
-use media::parser::FileImageParser;
+use media::{parser::FileImageParser, NoopMediaURLFactory, Regex, RegexMediaURLFactory};
 use postgres::{
     external_services::PostgresExternalServicesRepository,
     media::PostgresMediaRepository,
@@ -79,13 +80,19 @@ fn mutation<T, U, V>(external_services_service: T, media_service: U, tags_servic
     Mutation::new(external_services_service, media_service, tags_service)
 }
 
-fn schema<T, U, V>(query: Query<T, U, V>, mutation: Mutation<T, U, V>, thumbnail_url_factory: Arc<dyn ThumbnailURLFactoryInterface>) -> APISchema<T, U, V>
+fn schema<T, U, V>(
+    query: Query<T, U, V>,
+    mutation: Mutation<T, U, V>,
+    media_url_factory: Arc<dyn MediaURLFactoryInterface>,
+    thumbnail_url_factory: Arc<dyn ThumbnailURLFactoryInterface>,
+) -> APISchema<T, U, V>
 where
     T: ExternalServicesServiceInterface,
     U: MediaServiceInterface,
     V: TagsServiceInterface,
 {
     APISchema::build(query, mutation, Subscription)
+        .data(media_url_factory)
         .data(thumbnail_url_factory)
         .finish()
 }
@@ -105,6 +112,14 @@ where
     V: TagsServiceInterface,
 {
     GraphQLService::new(schema, "/graphql")
+}
+
+fn regex_media_url_factory(rewrite_from: Regex, rewrite_to: String) -> RegexMediaURLFactory {
+    RegexMediaURLFactory::new(rewrite_from, rewrite_to)
+}
+
+fn noop_media_url_factory() -> NoopMediaURLFactory {
+    NoopMediaURLFactory::new()
 }
 
 fn thumbnail_url_factory() -> ThumbnailURLFactory {
@@ -154,12 +169,18 @@ impl Application {
         let media_service = media_service(media_repository, replicas_repository, sources_repository, medium_image_parser, medium_image_processor);
         let tags_service = tags_service(tags_repository, tag_types_repository);
 
-        let thumbnail_url_factory = thumbnail_url_factory();
+        let rewrite_original_url_regex = Option::zip(config.rewrite_original_url_from, config.rewrite_original_url_to);
+        let media_url_factory: Arc<dyn MediaURLFactoryInterface> = match rewrite_original_url_regex {
+            Some((from, to)) => Arc::new(regex_media_url_factory(from, to)),
+            None => Arc::new(noop_media_url_factory()),
+        };
+
+        let thumbnail_url_factory = Arc::new(thumbnail_url_factory());
         let thumbnails_service = thumbnails_service(media_service.clone());
 
         let query = query(external_services_service.clone(), media_service.clone(), tags_service.clone());
         let mutation = mutation(external_services_service, media_service, tags_service);
-        let schema = schema(query, mutation, Arc::new(thumbnail_url_factory));
+        let schema = schema(query, mutation, media_url_factory, thumbnail_url_factory);
         let graphql_service = graphql_service(schema);
 
         if config.print_schema {
