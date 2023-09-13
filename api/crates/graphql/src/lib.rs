@@ -1,7 +1,5 @@
 #![allow(clippy::too_many_arguments)]
 
-use std::io::Write;
-
 use application::service::graphql::GraphQLServiceInterface;
 use async_graphql::{http::GraphiQLSource, Enum, Schema};
 use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
@@ -75,13 +73,8 @@ where
         res.into_response()
     }
 
-    fn print<W>(&self, w: &mut W) -> anyhow::Result<()>
-    where
-        W: Write,
-    {
-        write!(w, "{}", self.schema.sdl())?;
-
-        Ok(())
+    fn definitions(&self) -> String {
+        self.schema.sdl()
     }
 }
 
