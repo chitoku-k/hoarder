@@ -1,12 +1,16 @@
 use std::sync::Arc;
 
-use application::service::thumbnails::ThumbnailURLFactoryInterface;
+use application::service::{
+    media::MediaURLFactoryInterface,
+    thumbnails::ThumbnailURLFactoryInterface,
+};
 use async_graphql::{ComplexObject, Context, SimpleObject};
 use chrono::{DateTime, Utc};
 use domain::entity::replicas;
 use uuid::Uuid;
 
 #[derive(SimpleObject)]
+#[graphql(complex)]
 pub(crate) struct Replica {
     id: Uuid,
     display_order: u32,
@@ -54,6 +58,14 @@ impl From<replicas::Thumbnail> for Thumbnail {
             created_at: thumbnail.created_at,
             updated_at: thumbnail.updated_at,
         }
+    }
+}
+
+#[ComplexObject]
+impl Replica {
+    async fn url(&self, ctx: &Context<'_>) -> String {
+        let media_url_factory = ctx.data_unchecked::<Arc<dyn MediaURLFactoryInterface>>();
+        media_url_factory.rewrite_original_url(self.original_url.to_string())
     }
 }
 
