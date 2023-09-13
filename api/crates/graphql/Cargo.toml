@@ -43,11 +43,6 @@ features = ["clock", "std"]
 [dependencies.derive_more]
 version = "0.99.17"
 
-[dependencies.futures]
-version = "0.3.28"
-default-features = false
-features = ["alloc", "io-compat"]
-
 [dependencies.serde]
 version = "1.0.188"
 features = ["derive"]
