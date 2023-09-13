@@ -1,4 +1,4 @@
-use std::net::Ipv6Addr;
+use std::{net::Ipv6Addr, sync::Arc};
 
 use anyhow::Context;
 use axum::{
@@ -6,7 +6,6 @@ use axum::{
     Router,
 };
 use axum_server::Handle;
-use derive_more::Constructor;
 use thiserror::Error;
 use tokio::{
     signal::unix::{self, SignalKind},
@@ -25,12 +24,8 @@ use crate::service::{
     thumbnails::{self, ThumbnailsServiceInterface},
 };
 
-#[derive(Constructor)]
-pub struct Engine<GraphQLService, ThumbnailsService> {
-    port: u16,
-    tls: Option<(String, String)>,
-    graphql_service: GraphQLService,
-    thumbnails_service: ThumbnailsService,
+pub struct Engine {
+    app: Router,
 }
 
 #[derive(Debug, Error)]
@@ -42,35 +37,47 @@ pub(crate) enum EngineError {
     Certificate,
 }
 
-impl<GraphQLService, ThumbnailsService> Engine<GraphQLService, ThumbnailsService>
-where
-    GraphQLService: GraphQLServiceInterface + Clone,
-    ThumbnailsService: ThumbnailsServiceInterface + Clone,
-{
-    pub async fn start(self) -> anyhow::Result<()> {
+impl Engine {
+    pub fn new<GraphQLService, ThumbnailsService>(
+        graphql_service: GraphQLService,
+        thumbnails_service: ThumbnailsService,
+    ) -> Self
+    where
+        GraphQLService: GraphQLServiceInterface,
+        ThumbnailsService: ThumbnailsServiceInterface,
+    {
         let health = Router::new()
             .route("/", get(|| async { "OK" }));
 
-        let graphql_endpoint = self.graphql_service.endpoint();
+        let graphql_endpoint = graphql_service.endpoint();
         let graphql = Router::new()
             .route(graphql_endpoint, post(graphql::execute::<GraphQLService>))
             .route("/", get(graphql::graphiql::<GraphQLService>))
-            .with_state(self.graphql_service);
+            .with_state(Arc::new(graphql_service));
 
         let thumbnails = Router::new()
             .route("/:id", get(thumbnails::show::<ThumbnailsService>))
-            .with_state(self.thumbnails_service);
+            .with_state(Arc::new(thumbnails_service));
 
-        let handle = Handle::new();
-        enable_graceful_shutdown(handle.clone(), self.tls.is_some());
-
-        let addr = (Ipv6Addr::UNSPECIFIED, self.port).into();
         let app = Router::new()
             .nest("/", graphql)
             .nest("/thumbnails", thumbnails)
             .nest("/healthz", health);
 
-        match self.tls {
+        Self { app }
+    }
+
+    pub fn into_inner(self) -> Router {
+        self.app
+    }
+
+    pub async fn start(self, port: u16, tls: Option<(String, String)>) -> anyhow::Result<()> {
+        let addr = (Ipv6Addr::UNSPECIFIED, port).into();
+
+        let handle = Handle::new();
+        enable_graceful_shutdown(handle.clone(), tls.is_some());
+
+        match tls {
             #[cfg(not(feature = "tls"))]
             Some(_) => {
                 panic!("TLS is not enabled.");
@@ -82,14 +89,14 @@ where
 
                 axum_server::bind_rustls(addr, config)
                     .handle(handle)
-                    .serve(app.into_make_service())
+                    .serve(self.app.into_make_service())
                     .await
                     .context(EngineError::Serve)
             },
             None => {
                 axum_server::bind(addr)
                     .handle(handle)
-                    .serve(app.into_make_service())
+                    .serve(self.app.into_make_service())
                     .await
                     .context(EngineError::Serve)
             },

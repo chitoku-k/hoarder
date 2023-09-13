@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use async_trait::async_trait;
 use axum::{
     body::BoxBody,
@@ -16,7 +18,7 @@ pub trait ThumbnailsServiceInterface: Send + Sync + 'static {
     async fn show(&self, id: ThumbnailId) -> Response<BoxBody>;
 }
 
-pub(crate) async fn show<ThumbnailsService>(thumbnails_service: State<ThumbnailsService>, Path(id): Path<ThumbnailId>) -> Response<BoxBody>
+pub(crate) async fn show<ThumbnailsService>(thumbnails_service: State<Arc<ThumbnailsService>>, Path(id): Path<ThumbnailId>) -> Response<BoxBody>
 where
     ThumbnailsService: ThumbnailsServiceInterface,
 {

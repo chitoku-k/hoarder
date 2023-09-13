@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use async_trait::async_trait;
 use axum::{
     body::{BoxBody, Body},
@@ -17,14 +19,14 @@ pub trait GraphQLServiceInterface: Send + Sync + 'static {
     fn definitions(&self) -> String;
 }
 
-pub(crate) async fn execute<GraphQLService>(graphql_service: State<GraphQLService>, req: Request<Body>) -> Response<BoxBody>
+pub(crate) async fn execute<GraphQLService>(graphql_service: State<Arc<GraphQLService>>, req: Request<Body>) -> Response<BoxBody>
 where
     GraphQLService: GraphQLServiceInterface,
 {
     graphql_service.execute(req).await
 }
 
-pub(crate) async fn graphiql<GraphQLService>(graphql_service: State<GraphQLService>) -> Response<BoxBody>
+pub(crate) async fn graphiql<GraphQLService>(graphql_service: State<Arc<GraphQLService>>) -> Response<BoxBody>
 where
     GraphQLService: GraphQLServiceInterface,
 {
