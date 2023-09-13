@@ -13,6 +13,7 @@ pub trait ThumbnailURLFactoryInterface: Send + Sync + 'static {
     fn get(&self, id: ThumbnailId) -> String;
 }
 
+#[cfg_attr(feature = "test-mock", mockall::automock)]
 #[async_trait]
 pub trait ThumbnailsServiceInterface: Send + Sync + 'static {
     async fn show(&self, id: ThumbnailId) -> Response<BoxBody>;
