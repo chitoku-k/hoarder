@@ -10,8 +10,6 @@ services:
     environment:
       LOG_LEVEL: debug
       PORT: 8080
-      TLS_CERT:
-      TLS_KEY:
       PGHOST: database
       PGDATABASE: hoarder
       PGUSER: hoarder
