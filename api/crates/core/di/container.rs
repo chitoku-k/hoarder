@@ -1,4 +1,4 @@
-use std::{io::stdout, sync::Arc, time::Duration};
+use std::{sync::Arc, time::Duration};
 
 use application::{
     server::Engine,
@@ -163,7 +163,7 @@ impl Application {
         let graphql_service = graphql_service(schema);
 
         if config.print_schema {
-            graphql_service.print(&mut stdout())?;
+            println!("{}", graphql_service.definitions());
             return Ok(());
         }
 

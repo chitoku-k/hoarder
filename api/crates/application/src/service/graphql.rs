@@ -1,5 +1,3 @@
-use std::io::Write;
-
 use async_trait::async_trait;
 use axum::{
     body::{BoxBody, Body},
@@ -16,9 +14,7 @@ pub trait GraphQLServiceInterface: Send + Sync + 'static {
 
     fn graphiql(&self) -> Response<BoxBody>;
 
-    fn print<W>(&self, w: &mut W) -> anyhow::Result<()>
-    where
-        W: Write;
+    fn definitions(&self) -> String;
 }
 
 pub(crate) async fn execute<GraphQLService>(graphql_service: State<GraphQLService>, req: Request<Body>) -> Response<BoxBody>
