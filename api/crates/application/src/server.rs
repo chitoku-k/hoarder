@@ -1,14 +1,11 @@
-use std::{
-    net::Ipv6Addr,
-    sync::{mpsc::channel, Arc},
-};
+use std::{net::Ipv6Addr, sync::Arc};
 
 use anyhow::Context;
 use axum::{
     routing::{get, post},
     Extension, Router,
 };
-use axum_server::{tls_rustls::RustlsConfig, Handle};
+use axum_server::Handle;
 use derive_more::Constructor;
 use domain::service::{
     external_services::ExternalServicesServiceInterface,
@@ -16,13 +13,19 @@ use domain::service::{
     tags::TagsServiceInterface,
 };
 use graphql::{self, APISchema};
-use notify::Watcher;
 use thiserror::Error;
 use thumbnails::{self, ThumbnailsHandler};
 use tokio::{
     signal::unix::{self, SignalKind},
     task::JoinHandle,
 };
+
+#[cfg(feature = "tls")]
+use std::sync::mpsc::channel;
+#[cfg(feature = "tls")]
+use axum_server::tls_rustls::RustlsConfig;
+#[cfg(feature = "tls")]
+use notify::Watcher;
 
 #[derive(Constructor)]
 pub struct Engine<ExternalServicesService, MediaService, TagsService> {
@@ -36,6 +39,7 @@ pub struct Engine<ExternalServicesService, MediaService, TagsService> {
 pub(crate) enum EngineError {
     #[error("error starting server")]
     Serve,
+    #[cfg(feature = "tls")]
     #[error("error loading certificate")]
     Certificate,
 }
@@ -69,6 +73,11 @@ where
             .nest("/healthz", health);
 
         match self.tls {
+            #[cfg(not(feature = "tls"))]
+            Some(_) => {
+                panic!("TLS is not enabled.");
+            },
+            #[cfg(feature = "tls")]
             Some((tls_cert, tls_key)) => {
                 let config = RustlsConfig::from_pem_file(&tls_cert, &tls_key).await.context(EngineError::Certificate)?;
                 enable_auto_reload(config.clone(), tls_cert, tls_key);
@@ -90,6 +99,7 @@ where
     }
 }
 
+#[cfg(feature = "tls")]
 fn enable_auto_reload(config: RustlsConfig, tls_cert: String, tls_key: String) -> JoinHandle<anyhow::Result<()>> {
     let (tx, rx) = channel();
 
