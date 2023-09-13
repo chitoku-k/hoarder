@@ -1,20 +1,13 @@
-use std::{net::Ipv6Addr, sync::Arc};
+use std::net::Ipv6Addr;
 
 use anyhow::Context;
 use axum::{
     routing::{get, post},
-    Extension, Router,
+    Router,
 };
 use axum_server::Handle;
 use derive_more::Constructor;
-use domain::service::{
-    external_services::ExternalServicesServiceInterface,
-    media::MediaServiceInterface,
-    tags::TagsServiceInterface,
-};
-use graphql::{self, APISchema};
 use thiserror::Error;
-use thumbnails::{self, ThumbnailsHandler};
 use tokio::{
     signal::unix::{self, SignalKind},
     task::JoinHandle,
@@ -27,12 +20,17 @@ use axum_server::tls_rustls::RustlsConfig;
 #[cfg(feature = "tls")]
 use notify::Watcher;
 
+use crate::service::{
+    graphql::{self, GraphQLServiceInterface},
+    thumbnails::{self, ThumbnailsServiceInterface},
+};
+
 #[derive(Constructor)]
-pub struct Engine<ExternalServicesService, MediaService, TagsService> {
+pub struct Engine<GraphQLService, ThumbnailsService> {
     port: u16,
     tls: Option<(String, String)>,
-    schema: APISchema<ExternalServicesService, MediaService, TagsService>,
-    thumbnails_handler: ThumbnailsHandler<MediaService>,
+    graphql_service: GraphQLService,
+    thumbnails_service: ThumbnailsService,
 }
 
 #[derive(Debug, Error)]
@@ -44,24 +42,24 @@ pub(crate) enum EngineError {
     Certificate,
 }
 
-impl<ExternalServicesService, MediaService, TagsService> Engine<ExternalServicesService, MediaService, TagsService>
+impl<GraphQLService, ThumbnailsService> Engine<GraphQLService, ThumbnailsService>
 where
-    ExternalServicesService: ExternalServicesServiceInterface,
-    MediaService: MediaServiceInterface,
-    TagsService: TagsServiceInterface,
+    GraphQLService: GraphQLServiceInterface + Clone,
+    ThumbnailsService: ThumbnailsServiceInterface + Clone,
 {
     pub async fn start(self) -> anyhow::Result<()> {
         let health = Router::new()
             .route("/", get(|| async { "OK" }));
 
+        let graphql_endpoint = self.graphql_service.endpoint();
         let graphql = Router::new()
-            .route("/graphql", post(graphql::handle::<ExternalServicesService, MediaService, TagsService>))
-            .route("/", get(graphql::graphiql))
-            .layer(Extension(self.schema));
+            .route(graphql_endpoint, post(graphql::execute::<GraphQLService>))
+            .route("/", get(graphql::graphiql::<GraphQLService>))
+            .with_state(self.graphql_service);
 
         let thumbnails = Router::new()
-            .route("/:id", get(thumbnails::handle::<MediaService>))
-            .layer(Extension(Arc::new(self.thumbnails_handler)));
+            .route("/:id", get(thumbnails::show::<ThumbnailsService>))
+            .with_state(self.thumbnails_service);
 
         let handle = Handle::new();
         enable_graceful_shutdown(handle.clone(), self.tls.is_some());

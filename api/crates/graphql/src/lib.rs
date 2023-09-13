@@ -1,11 +1,18 @@
 #![allow(clippy::too_many_arguments)]
 
-use async_graphql::{
-    http::GraphiQLSource,
-    Enum, Schema,
-};
+use std::io::Write;
+
+use application::service::graphql::GraphQLServiceInterface;
+use async_graphql::{http::GraphiQLSource, Enum, Schema};
 use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
-use axum::{response::{self, IntoResponse}, Extension};
+use async_trait::async_trait;
+use axum::{
+    body::{BoxBody, Body},
+    extract::FromRequest,
+    http::Request,
+    response::{IntoResponse, Html, Response},
+};
+use derive_more::Constructor;
 use domain::{
     repository,
     service::{
@@ -33,20 +40,49 @@ pub type APISchema<ExternalServicesService, MediaService, TagsService> = Schema<
     Subscription,
 >;
 
-pub async fn handle<ExternalServicesService, MediaService, TagsService>(
-    schema: Extension<APISchema<ExternalServicesService, MediaService, TagsService>>,
-    req: GraphQLRequest,
-) -> GraphQLResponse
+#[derive(Clone, Constructor)]
+pub struct GraphQLService<ExternalServicesService, MediaService, TagsService> {
+    schema: APISchema<ExternalServicesService, MediaService, TagsService>,
+    endpoint: &'static str,
+}
+
+#[async_trait]
+impl<ExternalServicesService, MediaService, TagsService> GraphQLServiceInterface for GraphQLService<ExternalServicesService, MediaService, TagsService>
 where
     ExternalServicesService: ExternalServicesServiceInterface,
     MediaService: MediaServiceInterface,
     TagsService: TagsServiceInterface,
 {
-    schema.execute(req.into_inner()).await.into()
-}
+    async fn execute(&self, req: Request<Body>) -> Response<BoxBody> {
+        let req: GraphQLRequest = match GraphQLRequest::from_request(req, &()).await {
+            Ok(req) => req,
+            Err(rejection) => return rejection.into_response(),
+        };
+        let req = req.into_inner();
 
-pub async fn graphiql() -> impl IntoResponse {
-    response::Html(GraphiQLSource::build().endpoint("/graphql").finish())
+        let res = self.schema.execute(req).await;
+        let res = GraphQLResponse::from(res);
+        res.into_response()
+    }
+
+    fn endpoint(&self) -> &str {
+        self.endpoint
+    }
+
+    fn graphiql(&self) -> Response<BoxBody> {
+        let res = GraphiQLSource::build().endpoint(self.endpoint).finish();
+        let res = Html(res);
+        res.into_response()
+    }
+
+    fn print<W>(&self, w: &mut W) -> anyhow::Result<()>
+    where
+        W: Write,
+    {
+        write!(w, "{}", self.schema.sdl())?;
+
+        Ok(())
+    }
 }
 
 #[derive(Enum, Clone, Copy, Default, Eq, PartialEq)]

@@ -86,15 +86,15 @@ name = "application"
 version = "0.0.0"
 dependencies = [
  "anyhow",
+ "async-trait",
  "axum",
  "axum-server",
  "derive_more",
  "domain",
- "graphql",
  "log",
+ "mockall",
  "notify",
  "thiserror",
- "thumbnails",
  "tokio",
 ]
 
@@ -1148,6 +1148,7 @@ name = "graphql"
 version = "0.0.0"
 dependencies = [
  "anyhow",
+ "application",
  "async-graphql",
  "async-graphql-axum",
  "async-trait",
@@ -1163,7 +1164,6 @@ dependencies = [
  "serde_json",
  "serde_with",
  "thiserror",
- "thumbnails",
  "tokio",
  "uuid",
 ]
@@ -3061,6 +3061,7 @@ name = "thumbnails"
 version = "0.0.0"
 dependencies = [
  "anyhow",
+ "application",
  "async-trait",
  "axum",
  "derive_more",

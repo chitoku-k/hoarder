@@ -1,12 +1,12 @@
-use std::sync::Arc;
-
-use anyhow::Context;
+use async_trait::async_trait;
+use application::service::thumbnails::{ThumbnailsServiceInterface, ThumbnailURLFactoryInterface};
 use axum::{
-    body::Body,
-    extract::Path,
-    http::{Response, StatusCode},
-    response::IntoResponse,
-    Extension,
+    body::{Body, BoxBody},
+    http::{
+        Response as HttpResponse,
+        StatusCode,
+    },
+    response::{Response, IntoResponse},
 };
 use derive_more::Constructor;
 use domain::{
@@ -16,53 +16,45 @@ use domain::{
 
 pub mod processor;
 
-#[derive(Clone, Constructor)]
+#[derive(Constructor)]
 pub struct ThumbnailURLFactory {
-    endpoint: String,
+    endpoint: &'static str,
 }
 
-impl ThumbnailURLFactory {
-    pub fn url(&self, id: &ThumbnailId) -> String {
-        format!("{}{}", self.endpoint, id)
+impl ThumbnailURLFactoryInterface for ThumbnailURLFactory {
+    fn get(&self, id: ThumbnailId) -> String {
+        format!("{}/{}", self.endpoint, id)
     }
 }
 
 #[derive(Clone, Constructor)]
-pub struct ThumbnailsHandler<MediaService> {
+pub struct ThumbnailsService<MediaService> {
     media_service: MediaService,
 }
 
-impl<MediaService> ThumbnailsHandler<MediaService>
+#[async_trait]
+impl<MediaService> ThumbnailsServiceInterface for ThumbnailsService<MediaService>
 where
     MediaService: MediaServiceInterface,
 {
-    async fn handle(&self, id: ThumbnailId) -> anyhow::Result<Vec<u8>> {
-        let thumbnail = self.media_service.get_thumbnail_by_id(id).await.context("no thumbnail available")?;
-        Ok(thumbnail)
-    }
-}
-
-pub async fn handle<MediaService>(
-    Extension(handler): Extension<Arc<ThumbnailsHandler<MediaService>>>,
-    Path(id): Path<ThumbnailId>,
-) -> impl IntoResponse
-where
-    MediaService: MediaServiceInterface,
-{
-    match handler.handle(id).await {
-        Ok(thumbnail) => {
-            Response::builder()
-                .status(StatusCode::OK)
-                .header("Content-Type", "image/webp")
-                .body(Body::from(thumbnail))
-                .unwrap()
+    async fn show(&self, id: ThumbnailId) -> Response<BoxBody> {
+        match self.media_service.get_thumbnail_by_id(id).await {
+            Ok(thumbnail) => {
+                HttpResponse::builder()
+                    .status(StatusCode::OK)
+                    .header("Content-Type", "image/webp")
+                    .body(Body::from(thumbnail))
+                    .unwrap()
+                    .into_response()
+            },
+            Err(_) => {
+                HttpResponse::builder()
+                    .status(StatusCode::NOT_FOUND)
+                    .header("Content-Type", "text/plain; charset=utf-8")
+                    .body(Body::from("Not Found\n"))
+                    .unwrap()
+                    .into_response()
+            },
         }
-        Err(_) => {
-            Response::builder()
-                .status(StatusCode::NOT_FOUND)
-                .header("Content-Type", "text/plain; charset=utf-8")
-                .body(Body::from("Not Found\n"))
-                .unwrap()
-        },
     }
 }
