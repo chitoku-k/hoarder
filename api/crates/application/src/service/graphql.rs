@@ -8,6 +8,7 @@ use axum::{
     response::Response,
 };
 
+#[cfg_attr(feature = "test-mock", mockall::automock)]
 #[async_trait]
 pub trait GraphQLServiceInterface: Send + Sync + 'static {
     async fn execute(&self, req: Request<Body>) -> Response<BoxBody>;
