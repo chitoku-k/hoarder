@@ -14,7 +14,6 @@ use domain::{
 use graphql::query::Query;
 use indoc::indoc;
 use pretty_assertions::assert_eq;
-use thumbnails::ThumbnailURLFactory;
 use uuid::uuid;
 
 #[tokio::test]
@@ -48,9 +47,8 @@ async fn succeeds() {
     let tags_service = MockTagsServiceInterface::new();
 
     let query = Query::new(external_services_service, media_service, tags_service);
-    let schema = Schema::build(query, EmptyMutation, EmptySubscription)
-        .data(ThumbnailURLFactory::new("https://img.example.com/".to_string()))
-        .finish();
+    let schema = Schema::build(query, EmptyMutation, EmptySubscription).finish();
+
     let req = indoc! {r#"
         query {
             source(

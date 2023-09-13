@@ -1,6 +1,12 @@
-use std::{io::stdout, time::Duration};
+use std::{io::stdout, sync::Arc, time::Duration};
 
-use application::{commands::PrintSchema, server::Engine};
+use application::{
+    server::Engine,
+    service::{
+        graphql::GraphQLServiceInterface,
+        thumbnails::ThumbnailURLFactoryInterface,
+    },
+};
 use anyhow::Context;
 use domain::{
     entity::replicas::Size,
@@ -10,7 +16,7 @@ use domain::{
         tags::{TagsService, TagsServiceInterface},
     },
 };
-use graphql::{mutation::Mutation, query::Query, subscription::Subscription, APISchema};
+use graphql::{mutation::Mutation, query::Query, subscription::Subscription, APISchema, GraphQLService};
 use log::LevelFilter;
 use media::parser::FileImageParser;
 use postgres::{
@@ -24,7 +30,7 @@ use postgres::{
 };
 use thumbnails::{
     processor::{FileImageProcessor, FilterType, ImageOutputFormat},
-    ThumbnailURLFactory, ThumbnailsHandler,
+    ThumbnailURLFactory, ThumbnailsService,
 };
 
 use crate::env;
@@ -73,7 +79,7 @@ fn mutation<T, U, V>(external_services_service: T, media_service: U, tags_servic
     Mutation::new(external_services_service, media_service, tags_service)
 }
 
-fn schema<T, U, V>(query: Query<T, U, V>, mutation: Mutation<T, U, V>, thumbnail_url_factory: ThumbnailURLFactory) -> APISchema<T, U, V>
+fn schema<T, U, V>(query: Query<T, U, V>, mutation: Mutation<T, U, V>, thumbnail_url_factory: Arc<dyn ThumbnailURLFactoryInterface>) -> APISchema<T, U, V>
 where
     T: ExternalServicesServiceInterface,
     U: MediaServiceInterface,
@@ -92,12 +98,21 @@ fn medium_image_processor() -> FileImageProcessor {
     FileImageProcessor::new(Size::new(240, 240), ImageOutputFormat::WebP, FilterType::CatmullRom)
 }
 
-fn thumbnail_url_factory() -> ThumbnailURLFactory {
-    ThumbnailURLFactory::new("/thumbnails/".to_string())
+fn graphql_service<T, U, V>(schema: APISchema<T, U, V>) -> GraphQLService<T, U, V>
+where
+    T: ExternalServicesServiceInterface,
+    U: MediaServiceInterface,
+    V: TagsServiceInterface,
+{
+    GraphQLService::new(schema, "/graphql")
 }
 
-fn thumbnails_handler<T>(media_service: T) -> ThumbnailsHandler<T> {
-    ThumbnailsHandler::new(media_service)
+fn thumbnail_url_factory() -> ThumbnailURLFactory {
+    ThumbnailURLFactory::new("/thumbnails")
+}
+
+fn thumbnails_service<T>(media_service: T) -> ThumbnailsService<T> {
+    ThumbnailsService::new(media_service)
 }
 
 pub struct Application;
@@ -140,14 +155,15 @@ impl Application {
         let tags_service = tags_service(tags_repository, tag_types_repository);
 
         let thumbnail_url_factory = thumbnail_url_factory();
-        let thumbnails_handler = thumbnails_handler(media_service.clone());
+        let thumbnails_service = thumbnails_service(media_service.clone());
 
         let query = query(external_services_service.clone(), media_service.clone(), tags_service.clone());
         let mutation = mutation(external_services_service, media_service, tags_service);
-        let schema = schema(query, mutation, thumbnail_url_factory);
+        let schema = schema(query, mutation, Arc::new(thumbnail_url_factory));
+        let graphql_service = graphql_service(schema);
 
         if config.print_schema {
-            PrintSchema::new(schema).print(&mut stdout())?;
+            graphql_service.print(&mut stdout())?;
             return Ok(());
         }
 
@@ -155,8 +171,8 @@ impl Application {
         let engine = Engine::new(
             config.port,
             tls,
-            schema,
-            thumbnails_handler,
+            graphql_service,
+            thumbnails_service,
         );
 
         engine.start().await

@@ -13,7 +13,6 @@ use domain::{
 use graphql::query::Query;
 use indoc::indoc;
 use pretty_assertions::assert_eq;
-use thumbnails::ThumbnailURLFactory;
 use uuid::{uuid, Uuid};
 
 // Concrete type is required both in implementation and expectation.
@@ -90,9 +89,8 @@ async fn succeeds() {
         });
 
     let query = Query::new(external_services_service, media_service, tags_service);
-    let schema = Schema::build(query, EmptyMutation, EmptySubscription)
-        .data(ThumbnailURLFactory::new("https://img.example.com/".to_string()))
-        .finish();
+    let schema = Schema::build(query, EmptyMutation, EmptySubscription).finish();
+
     let req = indoc! {r#"
         query {
             tags(ids: ["33333333-3333-3333-3333-333333333333", "22222222-2222-2222-2222-222222222222"]) {

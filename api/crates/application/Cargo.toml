@@ -10,18 +10,16 @@ doctest = false
 
 [features]
 tls = ["axum-server/tls-rustls"]
+test-mock = ["mockall"]
 
 [dependencies.domain]
 workspace = true
 
-[dependencies.graphql]
-workspace = true
-
-[dependencies.thumbnails]
-workspace = true
-
 [dependencies.anyhow]
 version = "1.0.75"
+
+[dependencies.async-trait]
+version = "0.1.73"
 
 [dependencies.axum]
 version = "0.6.20"
@@ -34,6 +32,10 @@ version = "0.99.17"
 
 [dependencies.log]
 version = "0.4.20"
+
+[dependencies.mockall]
+version = "0.11.4"
+optional = true
 
 [dependencies.notify]
 version = "6.1.1"

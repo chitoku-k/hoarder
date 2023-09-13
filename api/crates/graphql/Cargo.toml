@@ -8,10 +8,10 @@ license.workspace = true
 [lib]
 doctest = false
 
-[dependencies.domain]
+[dependencies.application]
 workspace = true
 
-[dependencies.thumbnails]
+[dependencies.domain]
 workspace = true
 
 [dependencies.anyhow]
@@ -24,6 +24,9 @@ default-features = false
 
 [dependencies.async-graphql-axum]
 version = "6.0.6"
+
+[dependencies.async-trait]
+version = "0.1.73"
 
 [dependencies.axum]
 version = "0.6.20"
@@ -62,6 +65,10 @@ version = "1.0.48"
 
 [dependencies.uuid]
 version = "1.4.1"
+
+[dev-dependencies.application]
+workspace = true
+features = ["test-mock"]
 
 [dev-dependencies.domain]
 workspace = true
