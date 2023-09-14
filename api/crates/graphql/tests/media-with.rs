@@ -1,6 +1,9 @@
 use std::{collections::{BTreeMap, BTreeSet}, sync::Arc};
 
-use application::service::thumbnails::{MockThumbnailURLFactoryInterface, ThumbnailURLFactoryInterface};
+use application::service::{
+    media::{MediaURLFactoryInterface, MockMediaURLFactoryInterface},
+    thumbnails::{MockThumbnailURLFactoryInterface, ThumbnailURLFactoryInterface},
+};
 use async_graphql::{Schema, EmptyMutation, EmptySubscription, value};
 use chrono::{TimeZone, Utc};
 use domain::{
@@ -529,6 +532,19 @@ async fn replicas_succeeds() {
 
     let tags_service = MockTagsServiceInterface::new();
 
+    let mut media_url_factory = MockMediaURLFactoryInterface::new();
+    media_url_factory
+        .expect_rewrite_original_url()
+        .times(1)
+        .withf(|original_url| original_url == "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png")
+        .returning(|_| "https://original.example.com/77777777-7777-7777-7777-777777777777.png".to_string());
+
+    media_url_factory
+        .expect_rewrite_original_url()
+        .times(1)
+        .withf(|original_url| original_url == "file:///var/lib/hoarder/99999999-9999-9999-9999-999999999999.png")
+        .returning(|_| "https://original.example.com/99999999-9999-9999-9999-999999999999.png".to_string());
+
     let mut thumbnail_url_factory = MockThumbnailURLFactoryInterface::new();
     thumbnail_url_factory
         .expect_get()
@@ -544,6 +560,7 @@ async fn replicas_succeeds() {
 
     let query = Query::new(external_services_service, media_service, tags_service);
     let schema = Schema::build(query, EmptyMutation, EmptySubscription)
+        .data::<Arc<dyn MediaURLFactoryInterface>>(Arc::new(media_url_factory))
         .data::<Arc<dyn ThumbnailURLFactoryInterface>>(Arc::new(thumbnail_url_factory))
         .finish();
 
@@ -562,6 +579,7 @@ async fn replicas_succeeds() {
                         createdAt
                         updatedAt
                     }
+                    url
                     originalUrl
                     mimeType
                     width
@@ -592,6 +610,7 @@ async fn replicas_succeeds() {
                             "createdAt": "2022-06-02T00:02:00+00:00",
                             "updatedAt": "2022-06-02T00:03:00+00:00",
                         },
+                        "url": "https://original.example.com/77777777-7777-7777-7777-777777777777.png",
                         "originalUrl": "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png",
                         "mimeType": "image/png",
                         "width": 720,
@@ -610,6 +629,7 @@ async fn replicas_succeeds() {
                             "createdAt": "2022-06-02T00:04:00+00:00",
                             "updatedAt": "2022-06-02T00:05:00+00:00",
                         },
+                        "url": "https://original.example.com/99999999-9999-9999-9999-999999999999.png",
                         "originalUrl": "file:///var/lib/hoarder/99999999-9999-9999-9999-999999999999.png",
                         "mimeType": "image/png",
                         "width": 720,
