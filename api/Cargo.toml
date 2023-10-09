@@ -74,7 +74,7 @@ workspace = true
 version = "1.0.75"
 
 [dependencies.clap]
-version = "4.4.2"
+version = "4.4.6"
 features = ["cargo", "derive", "env", "help", "std", "string", "suggestions", "usage"]
 default-features = false
 
