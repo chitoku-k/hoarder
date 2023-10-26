@@ -19,7 +19,7 @@ workspace = true
 version = "1.0.75"
 
 [dependencies.async-trait]
-version = "0.1.73"
+version = "0.1.74"
 
 [dependencies.axum]
 version = "0.6.20"
@@ -41,10 +41,10 @@ optional = true
 version = "6.1.1"
 
 [dependencies.thiserror]
-version = "1.0.49"
+version = "1.0.50"
 
 [dependencies.tokio]
-version = "1.32.0"
+version = "1.33.0"
 features = ["macros", "net", "process", "rt-multi-thread", "signal"]
 
 [dev-dependencies.hyper]
@@ -57,7 +57,7 @@ version = "2.0.4"
 version = "1.3.0"
 
 [dev-dependencies.serde]
-version = "1.0.188"
+version = "1.0.190"
 
 [dev-dependencies.serde_json]
 version = "1.0.107"

@@ -18,7 +18,7 @@ workspace = true
 version = "1.0.75"
 
 [dependencies.async-trait]
-version = "0.1.73"
+version = "0.1.74"
 
 [dependencies.derive_more]
 version = "0.99.17"
@@ -27,8 +27,8 @@ version = "0.99.17"
 version = "0.24.7"
 
 [dependencies.regex]
-version = "1.9.6"
+version = "1.10.2"
 
 [dependencies.tokio]
-version = "1.32.0"
+version = "1.33.0"
 features = ["rt-multi-thread"]
