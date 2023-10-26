@@ -18,7 +18,7 @@ workspace = true
 version = "1.0.75"
 
 [dependencies.async-trait]
-version = "0.1.73"
+version = "0.1.74"
 
 [dependencies.axum]
 version = "0.6.20"
@@ -31,5 +31,5 @@ version = "0.24.7"
 features = ["webp-encoder"]
 
 [dependencies.tokio]
-version = "1.32.0"
+version = "1.33.0"
 features = ["rt-multi-thread"]

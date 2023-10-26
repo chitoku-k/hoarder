@@ -18,22 +18,22 @@ workspace = true
 version = "1.0.75"
 
 [dependencies.async-graphql]
-version = "6.0.7"
+version = "6.0.9"
 features = ["chrono", "graphiql", "tempfile", "unblock", "uuid"]
 default-features = false
 
 [dependencies.async-graphql-axum]
-version = "6.0.7"
+version = "6.0.9"
 
 [dependencies.async-trait]
-version = "0.1.73"
+version = "0.1.74"
 
 [dependencies.axum]
 version = "0.6.20"
 features = ["default", "http2"]
 
 [dependencies.base64]
-version = "0.21.4"
+version = "0.21.5"
 
 [dependencies.chrono]
 version = "0.4.31"
@@ -44,22 +44,22 @@ features = ["clock", "std"]
 version = "0.99.17"
 
 [dependencies.serde]
-version = "1.0.188"
+version = "1.0.190"
 features = ["derive"]
 
 [dependencies.serde_json]
 version = "1.0.107"
 
 [dependencies.serde_with]
-version = "3.3.0"
+version = "3.4.0"
 default-features = false
 features = ["macros"]
 
 [dependencies.thiserror]
-version = "1.0.49"
+version = "1.0.50"
 
 [dependencies.uuid]
-version = "1.4.1"
+version = "1.5.0"
 
 [dev-dependencies.application]
 workspace = true
@@ -79,5 +79,5 @@ version = "2.0.4"
 version = "1.3.0"
 
 [dev-dependencies.tokio]
-version = "1.32.0"
+version = "1.33.0"
 features = ["macros", "rt-multi-thread"]
