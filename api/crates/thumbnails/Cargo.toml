@@ -31,5 +31,5 @@ version = "0.24.7"
 features = ["webp-encoder"]
 
 [dependencies.tokio]
-version = "1.33.0"
+version = "1.35.0"
 features = ["rt-multi-thread"]
