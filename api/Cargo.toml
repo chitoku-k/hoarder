@@ -74,15 +74,15 @@ workspace = true
 version = "1.0.75"
 
 [dependencies.clap]
-version = "4.4.7"
+version = "4.4.11"
 features = ["cargo", "derive", "env", "help", "std", "string", "suggestions", "usage"]
 default-features = false
 
 [dependencies.env_logger]
-version = "0.10.0"
+version = "0.10.1"
 
 [dependencies.log]
 version = "0.4.20"
 
 [dependencies.tokio]
-version = "1.33.0"
+version = "1.35.0"
