@@ -15,9 +15,9 @@ use domain::{
 };
 use futures::TryStreamExt;
 use indexmap::{IndexMap, IndexSet};
-use sea_query::{Alias, BinOper, Cond, Expr, Iden, JoinType, LikeExpr, LockType, Order, PostgresQueryBuilder, Query, SelectStatement};
+use sea_query::{Alias, Asterisk, BinOper, Cond, Expr, Iden, JoinType, LikeExpr, LockType, Order, PostgresQueryBuilder, Query, SelectStatement};
 use sea_query_binder::SqlxBinder;
-use sqlx::{Acquire, FromRow, PgPool, Postgres, Transaction, PgConnection};
+use sqlx::{Acquire, FromRow, PgPool, Postgres, Transaction, PgConnection, Row};
 use thiserror::Error;
 
 use crate::{
@@ -131,6 +131,8 @@ pub(crate) enum PostgresTagError {
     ChildrenExist(usize),
     #[error("tag cannot be attached to itself")]
     TagAttachedToItself,
+    #[error("tag cannot be attached to its descendants")]
+    TagAttachedToDescendant,
 }
 
 sea_query_uuid_value!(PostgresTagId, TagId);
@@ -727,6 +729,23 @@ impl TagsRepository for PostgresTagsRepository {
         }
 
         let mut tx = self.pool.begin().await?;
+
+        let (sql, values) = Query::select()
+            .expr(Expr::col(Asterisk).count())
+            .from(PostgresTagPath::Table)
+            .and_where(Expr::col(PostgresTagPath::AncestorId).eq(PostgresTagId::from(id)))
+            .and_where(Expr::col(PostgresTagPath::DescendantId).eq(PostgresTagId::from(parent_id)))
+            .build_sqlx(PostgresQueryBuilder);
+
+        let count: i64 = sqlx::query_with(&sql, values)
+            .fetch_one(&mut *tx)
+            .await?
+            .try_get(0)?;
+
+        if count > 0 {
+            return Err(PostgresTagError::TagAttachedToDescendant)?;
+        }
+
         detach_parent(&mut tx, id).await?;
         attach_parent(&mut tx, id, parent_id).await?;
 
