@@ -129,6 +129,8 @@ pub(crate) enum PostgresTagError {
     RootDeleted,
     #[error("{0} {}", if .0 == &1 { "child exists" } else { "children exist" })]
     ChildrenExist(usize),
+    #[error("tag cannot be attached to itself")]
+    TagAttachedToItself,
 }
 
 sea_query_uuid_value!(PostgresTagId, TagId);
@@ -718,6 +720,10 @@ impl TagsRepository for PostgresTagsRepository {
     async fn attach_by_id(&self, id: TagId, parent_id: TagId, depth: TagDepth) -> anyhow::Result<Tag> {
         if id.is_root() || parent_id.is_root() {
             return Err(PostgresTagError::RootAttached)?;
+        }
+
+        if id == parent_id {
+            return Err(PostgresTagError::TagAttachedToItself)?;
         }
 
         let mut tx = self.pool.begin().await?;

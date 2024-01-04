@@ -350,6 +350,20 @@ async fn root_parent_fails(ctx: &DatabaseContext) {
 #[test_context(DatabaseContext)]
 #[tokio::test]
 #[cfg_attr(not(feature = "test-postgres"), ignore)]
+async fn self_fails(ctx: &DatabaseContext) {
+    let repository = PostgresTagsRepository::new(ctx.pool.clone());
+    let actual = repository.attach_by_id(
+        TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
+        TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
+        TagDepth::new(0, 0),
+    ).await.unwrap_err();
+
+    assert_eq!(actual.to_string(), "tag cannot be attached to itself");
+}
+
+#[test_context(DatabaseContext)]
+#[tokio::test]
+#[cfg_attr(not(feature = "test-postgres"), ignore)]
 async fn non_existing_fails(ctx: &DatabaseContext) {
     let repository = PostgresTagsRepository::new(ctx.pool.clone());
     let actual = repository.attach_by_id(
