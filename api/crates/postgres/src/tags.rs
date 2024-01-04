@@ -46,6 +46,7 @@ struct PostgresTagRow {
 #[derive(Debug, FromRow)]
 struct PostgresTagDescendantRow {
     descendant_id: PostgresTagId,
+    distance: i32,
 }
 
 #[derive(Debug, FromRow)]
@@ -126,7 +127,7 @@ pub(crate) enum PostgresTagError {
     RootDetached,
     #[error("root tag cannot be deleted")]
     RootDeleted,
-    #[error("{0} children exist")]
+    #[error("{0} {}", if .0 == &1 { "child exists" } else { "children exist" })]
     ChildrenExist(usize),
 }
 
@@ -755,22 +756,28 @@ impl TagsRepository for PostgresTagsRepository {
 
         let (sql, values) = Query::select()
             .columns([
-                PostgresTagPath::AncestorId,
                 PostgresTagPath::DescendantId,
+                PostgresTagPath::Distance,
             ])
             .from(PostgresTagPath::Table)
             .and_where(Expr::col(PostgresTagPath::AncestorId).eq(PostgresTagId::from(id)))
             .lock(LockType::Update)
             .build_sqlx(PostgresQueryBuilder);
 
-        let ids: Vec<_> = sqlx::query_as_with::<_, PostgresTagDescendantRow, _>(&sql, values)
+        let (ids, children) = sqlx::query_as_with::<_, PostgresTagDescendantRow, _>(&sql, values)
             .fetch(&mut *tx)
-            .map_ok(|r| r.descendant_id)
-            .try_collect()
+            .try_fold((Vec::new(), 0), |(mut ids, children), row| async move {
+                ids.push(row.descendant_id);
+                if row.distance == 1 {
+                    Ok((ids, children + 1))
+                } else {
+                    Ok((ids, children))
+                }
+            })
             .await?;
 
-        if !recursive && ids.len() > 1 {
-            return Err(PostgresTagError::ChildrenExist(ids.len() - 1))?;
+        if !recursive && children > 0 {
+            return Err(PostgresTagError::ChildrenExist(children))?;
         }
 
         let (sql, values) = Query::delete()
