@@ -716,7 +716,7 @@ impl TagsRepository for PostgresTagsRepository {
     }
 
     async fn attach_by_id(&self, id: TagId, parent_id: TagId, depth: TagDepth) -> anyhow::Result<Tag> {
-        if id.is_root() {
+        if id.is_root() || parent_id.is_root() {
             return Err(PostgresTagError::RootAttached)?;
         }
 

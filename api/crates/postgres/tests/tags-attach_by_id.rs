@@ -328,9 +328,23 @@ async fn root_fails(ctx: &DatabaseContext) {
         TagId::from(uuid!("00000000-0000-0000-0000-000000000000")),
         TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
         TagDepth::new(0, 0),
-    ).await;
+    ).await.unwrap_err();
 
-    assert!(actual.is_err());
+    assert_eq!(actual.to_string(), "root tag cannot be attached");
+}
+
+#[test_context(DatabaseContext)]
+#[tokio::test]
+#[cfg_attr(not(feature = "test-postgres"), ignore)]
+async fn root_parent_fails(ctx: &DatabaseContext) {
+    let repository = PostgresTagsRepository::new(ctx.pool.clone());
+    let actual = repository.attach_by_id(
+        TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
+        TagId::from(uuid!("00000000-0000-0000-0000-000000000000")),
+        TagDepth::new(0, 0),
+    ).await.unwrap_err();
+
+    assert_eq!(actual.to_string(), "root tag cannot be attached");
 }
 
 #[test_context(DatabaseContext)]
