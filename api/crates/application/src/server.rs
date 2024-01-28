@@ -15,7 +15,7 @@ use tokio::{
 #[cfg(feature = "tls")]
 use std::sync::mpsc::channel;
 #[cfg(feature = "tls")]
-use axum_server::tls_rustls::RustlsConfig;
+use axum_server::tls_openssl::OpenSSLConfig;
 #[cfg(feature = "tls")]
 use notify::Watcher;
 
@@ -84,10 +84,10 @@ impl Engine {
             },
             #[cfg(feature = "tls")]
             Some((tls_cert, tls_key)) => {
-                let config = RustlsConfig::from_pem_file(&tls_cert, &tls_key).await.context(EngineError::Certificate)?;
+                let config = OpenSSLConfig::from_pem_file(&tls_cert, &tls_key).context(EngineError::Certificate)?;
                 enable_auto_reload(config.clone(), tls_cert, tls_key);
 
-                axum_server::bind_rustls(addr, config)
+                axum_server::bind_openssl(addr, config)
                     .handle(handle)
                     .serve(self.app.into_make_service())
                     .await
@@ -105,7 +105,7 @@ impl Engine {
 }
 
 #[cfg(feature = "tls")]
-fn enable_auto_reload(config: RustlsConfig, tls_cert: String, tls_key: String) -> JoinHandle<anyhow::Result<()>> {
+fn enable_auto_reload(config: OpenSSLConfig, tls_cert: String, tls_key: String) -> JoinHandle<anyhow::Result<()>> {
     let (tx, rx) = channel();
 
     tokio::spawn(async move {
@@ -114,7 +114,7 @@ fn enable_auto_reload(config: RustlsConfig, tls_cert: String, tls_key: String) -
 
         for event in rx {
             if event?.kind.is_modify() {
-                config.reload_from_pem_file(&tls_cert, &tls_key).await?;
+                config.reload_from_pem_file(&tls_cert, &tls_key)?;
             }
         }
         Ok(())
