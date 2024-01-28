@@ -209,6 +209,19 @@ impl ReplicasRepository for PostgresReplicasRepository {
         let mut tx = self.pool.begin().await?;
 
         let (sql, values) = Query::select()
+            .columns([
+                PostgresReplica::Id,
+            ])
+            .from(PostgresReplica::Table)
+            .and_where(Expr::col(PostgresReplica::MediumId).eq(PostgresMediumId::from(medium_id)))
+            .lock(LockType::Update)
+            .build_sqlx(PostgresQueryBuilder);
+
+        sqlx::query_with(&sql, values)
+            .fetch_all(&mut *tx)
+            .await?;
+
+        let (sql, values) = Query::select()
             .expr(
                 Expr::col(Asterisk)
                     .count()
