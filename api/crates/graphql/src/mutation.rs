@@ -70,7 +70,7 @@ where
         created_at: Option<DateTime<FixedOffset>>,
         tag_ids: Option<Vec<TagTagTypeInput>>,
     ) -> anyhow::Result<Medium> {
-        let tags = ctx.look_ahead().field("tags");
+        let tags = ctx.look_ahead().field("tags").field("tag");
         let tag_depth = tags.exists().then(|| get_tag_depth(&tags));
         let sources = ctx.look_ahead().field("sources").exists();
 
@@ -107,7 +107,7 @@ where
         replica_orders: Option<Vec<Uuid>>,
         created_at: Option<DateTime<FixedOffset>>,
     ) -> anyhow::Result<Medium> {
-        let tags = ctx.look_ahead().field("tags");
+        let tags = ctx.look_ahead().field("tags").field("tag");
         let tag_depth = tags.exists().then(|| get_tag_depth(&tags));
         let replicas = ctx.look_ahead().field("replicas").exists();
         let sources = ctx.look_ahead().field("sources").exists();
