@@ -21,8 +21,6 @@ pub struct Source {
 pub enum SourceError {
     #[error("source not found: {0}")]
     NotFound(SourceId),
-    #[error("unknown external source")]
-    UnknwonExternalSource,
 }
 
 impl Source {

@@ -31,7 +31,7 @@ async fn succeeds() {
             )
         })
         .returning(|_, _| {
-            Ok(sources::Source {
+            Ok(Some(sources::Source {
                 id: SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
                 external_service: external_services::ExternalService {
                     id: ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
@@ -41,7 +41,7 @@ async fn succeeds() {
                 external_metadata: external_services::ExternalMetadata::Twitter { id: 727620202049900544 },
                 created_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 0).unwrap(),
                 updated_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 1).unwrap(),
-            })
+            }))
         });
 
     let tags_service = MockTagsServiceInterface::new();
@@ -89,5 +89,55 @@ async fn succeeds() {
             "createdAt": "2016-05-04T07:05:00+00:00",
             "updatedAt": "2016-05-04T07:05:01+00:00",
         },
+    }));
+}
+
+#[tokio::test]
+async fn not_found() {
+    let external_services_service = MockExternalServicesServiceInterface::new();
+
+    let mut media_service = MockMediaServiceInterface::new();
+    media_service
+        .expect_get_source_by_external_metadata()
+        .times(1)
+        .withf(|external_service_id, external_metadata| {
+            (external_service_id, external_metadata) == (
+                &ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
+                &external_services::ExternalMetadata::Twitter { id: 727620202049900544 },
+            )
+        })
+        .returning(|_, _| Ok(None));
+
+    let tags_service = MockTagsServiceInterface::new();
+
+    let query = Query::new(external_services_service, media_service, tags_service);
+    let schema = Schema::build(query, EmptyMutation, EmptySubscription).finish();
+
+    let req = indoc! {r#"
+        query {
+            source(
+                externalServiceId: "33333333-3333-3333-3333-333333333333",
+                externalMetadata: {
+                    twitter: {
+                        id: "727620202049900544",
+                    },
+                },
+            ) {
+                id
+                externalService {
+                    id
+                    slug
+                    name
+                }
+                externalMetadata
+                createdAt
+                updatedAt
+            }
+        }
+    "#};
+    let actual = schema.execute(req).await.into_result().unwrap();
+
+    assert_eq!(actual.data, value!({
+        "source": null,
     }));
 }
