@@ -6,7 +6,7 @@ use derive_more::{Constructor, From, Into};
 use domain::{
     entity::{
         external_services::{ExternalMetadata, ExternalService},
-        media::{Medium, MediumError, MediumId},
+        media::{Medium, MediumId},
         replicas::{Replica, ReplicaId},
         sources::{Source, SourceId},
         tag_types::{TagType, TagTypeId},
@@ -761,10 +761,6 @@ impl MediaRepository for PostgresMediaRepository {
             .map_ok(|(_, replica_id)| replica_id)
             .try_collect()
             .await?;
-
-        if replica_ids.is_empty() {
-            return Err(MediumError::NotFound(id))?;
-        }
 
         let replica_orders: IndexSet<_> = replica_orders.into_iter().collect();
         if !replica_orders.is_empty() {
