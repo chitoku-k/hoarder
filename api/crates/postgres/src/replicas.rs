@@ -1,5 +1,4 @@
 use anyhow::Context;
-use async_trait::async_trait;
 use chrono::{DateTime, Utc};
 use derive_more::{Constructor, From, Into};
 use futures::{future, TryStreamExt};
@@ -203,7 +202,6 @@ impl From<PostgresThumbnailDataRow> for Vec<u8> {
     }
 }
 
-#[async_trait]
 impl ReplicasRepository for PostgresReplicasRepository {
     async fn create(&self, medium_id: MediumId, thumbnail_image: Option<ThumbnailImage>, original_url: &str, original_image: OriginalImage) -> anyhow::Result<Replica> {
         let mut tx = self.pool.begin().await?;

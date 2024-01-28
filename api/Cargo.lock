@@ -129,11 +129,11 @@ name = "application"
 version = "0.0.0"
 dependencies = [
  "anyhow",
- "async-trait",
  "axum",
  "axum-server",
  "derive_more",
  "domain",
+ "futures",
  "hyper",
  "indoc",
  "log",
@@ -824,10 +824,10 @@ name = "domain"
 version = "0.0.0"
 dependencies = [
  "anyhow",
- "async-trait",
  "chrono",
  "derive_more",
  "domain",
+ "futures",
  "log",
  "mockall",
  "pretty_assertions",
@@ -1227,12 +1227,12 @@ dependencies = [
  "application",
  "async-graphql",
  "async-graphql-axum",
- "async-trait",
  "axum",
  "base64 0.21.7",
  "chrono",
  "derive_more",
  "domain",
+ "futures",
  "indoc",
  "pretty_assertions",
  "serde",
@@ -1765,7 +1765,6 @@ version = "0.0.0"
 dependencies = [
  "anyhow",
  "application",
- "async-trait",
  "derive_more",
  "domain",
  "image",
@@ -2199,7 +2198,6 @@ name = "postgres"
 version = "0.0.0"
 dependencies = [
  "anyhow",
- "async-trait",
  "chrono",
  "cow-utils",
  "derive_more",
@@ -3095,7 +3093,6 @@ version = "0.0.0"
 dependencies = [
  "anyhow",
  "application",
- "async-trait",
  "axum",
  "derive_more",
  "domain",

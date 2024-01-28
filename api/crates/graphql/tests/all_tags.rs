@@ -11,6 +11,7 @@ use domain::{
         tags::MockTagsServiceInterface,
     },
 };
+use futures::future::ok;
 use graphql::query::Query;
 use indoc::indoc;
 use pretty_assertions::assert_eq;
@@ -36,7 +37,7 @@ async fn root_first_succeeds() {
             )
         })
         .returning(|_, _, _, _, _, _| {
-            Ok(vec![
+            Box::pin(ok(vec![
                 Tag {
                     id: TagId::from(uuid!("11111111-1111-1111-1111-111111111111")),
                     name: "アークナイツ".to_string(),
@@ -98,7 +99,7 @@ async fn root_first_succeeds() {
                     created_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 1, 0).unwrap(),
                 },
-            ])
+            ]))
         });
 
     let query = Query::new(external_services_service, media_service, tags_service);
@@ -225,7 +226,7 @@ async fn root_last_succeeds() {
             )
         })
         .returning(|_, _, _, _, _, _| {
-            Ok(vec![
+            Box::pin(ok(vec![
                 Tag {
                     id: TagId::from(uuid!("22222222-2222-2222-2222-222222222222")),
                     name: "ゆるゆり".to_string(),
@@ -287,7 +288,7 @@ async fn root_last_succeeds() {
                     created_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 4, 0).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 0).unwrap(),
                 },
-            ])
+            ]))
         });
 
     let query = Query::new(external_services_service, media_service, tags_service);
@@ -433,7 +434,7 @@ async fn root_after_first_succeeds() {
             )
         })
         .returning(|_, _, _, _, _, _| {
-            Ok(vec![
+            Box::pin(ok(vec![
                 Tag {
                     id: TagId::from(uuid!("22222222-2222-2222-2222-222222222222")),
                     name: "ゆるゆり".to_string(),
@@ -465,7 +466,7 @@ async fn root_after_first_succeeds() {
                     created_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 1, 0).unwrap(),
                 },
-            ])
+            ]))
         });
 
     let query = Query::new(external_services_service, media_service, tags_service);
@@ -587,7 +588,7 @@ async fn root_after_last_succeeds() {
             )
         })
         .returning(|_, _, _, _, _, _| {
-            Ok(vec![
+            Box::pin(ok(vec![
                 Tag {
                     id: TagId::from(uuid!("11111111-1111-1111-1111-111111111111")),
                     name: "アークナイツ".to_string(),
@@ -598,7 +599,7 @@ async fn root_after_last_succeeds() {
                     created_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 4, 0).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 0).unwrap(),
                 },
-            ])
+            ]))
         });
 
     let query = Query::new(external_services_service, media_service, tags_service);
@@ -701,7 +702,7 @@ async fn root_before_first_succeeds() {
             )
         })
         .returning(|_, _, _, _, _, _| {
-            Ok(vec![
+            Box::pin(ok(vec![
                 Tag {
                     id: TagId::from(uuid!("11111111-1111-1111-1111-111111111111")),
                     name: "アークナイツ".to_string(),
@@ -722,7 +723,7 @@ async fn root_before_first_succeeds() {
                     created_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 3, 0).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 4, 0).unwrap(),
                 },
-            ])
+            ]))
         });
 
     let query = Query::new(external_services_service, media_service, tags_service);
@@ -837,7 +838,7 @@ async fn root_before_last_succeeds() {
             )
         })
         .returning(|_, _, _, _, _, _| {
-            Ok(vec![
+            Box::pin(ok(vec![
                 Tag {
                     id: TagId::from(uuid!("44444444-4444-4444-4444-444444444444")),
                     name: "原神".to_string(),
@@ -858,7 +859,7 @@ async fn root_before_last_succeeds() {
                     created_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 4, 0).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 0).unwrap(),
                 },
-            ])
+            ]))
         });
 
     let query = Query::new(external_services_service, media_service, tags_service);

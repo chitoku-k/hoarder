@@ -1,5 +1,4 @@
 use anyhow::Context;
-use async_trait::async_trait;
 use chrono::{DateTime, Utc};
 use derive_more::{Constructor, From, Into};
 use domain::{
@@ -161,7 +160,6 @@ impl From<PostgresSourceExternalServiceRow> for Source {
     }
 }
 
-#[async_trait]
 impl SourcesRepository for PostgresSourcesRepository {
     async fn create(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> anyhow::Result<Source> {
         let mut tx = self.pool.begin().await?;

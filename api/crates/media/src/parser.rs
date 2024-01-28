@@ -1,7 +1,6 @@
 use std::{fs::File, io::BufReader};
 
 use anyhow::Context;
-use async_trait::async_trait;
 use derive_more::Constructor;
 use domain::parser::media::{MediumImageParser, MediumMetadata};
 use image::io::Reader;
@@ -10,7 +9,6 @@ use tokio::task;
 #[derive(Clone, Constructor)]
 pub struct FileImageParser;
 
-#[async_trait]
 impl MediumImageParser for FileImageParser {
     async fn get_metadata(&self, path: &str) -> anyhow::Result<MediumMetadata> {
         let path = path.to_string();

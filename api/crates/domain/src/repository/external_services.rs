@@ -1,4 +1,4 @@
-use async_trait::async_trait;
+use std::future::Future;
 
 use crate::{
     entity::external_services::{ExternalService, ExternalServiceId},
@@ -6,22 +6,21 @@ use crate::{
 };
 
 #[cfg_attr(feature = "test-mock", mockall::automock)]
-#[async_trait]
 pub trait ExternalServicesRepository: Send + Sync + 'static {
     /// Creates an external service.
-    async fn create(&self, slug: &str, name: &str) -> anyhow::Result<ExternalService>;
+    fn create(&self, slug: &str, name: &str) -> impl Future<Output = anyhow::Result<ExternalService>> + Send;
 
     /// Fetches the external services by their IDs.
-    async fn fetch_by_ids<T>(&self, ids: T) -> anyhow::Result<Vec<ExternalService>>
+    fn fetch_by_ids<T>(&self, ids: T) -> impl Future<Output = anyhow::Result<Vec<ExternalService>>> + Send
     where
         T: IntoIterator<Item = ExternalServiceId> + Send + Sync + 'static;
 
     /// Fetches all external services.
-    async fn fetch_all(&self) -> anyhow::Result<Vec<ExternalService>>;
+    fn fetch_all(&self) -> impl Future<Output = anyhow::Result<Vec<ExternalService>>> + Send;
 
     /// Updates the external service by ID.
-    async fn update_by_id<'a>(&self, id: ExternalServiceId, name: Option<&'a str>) -> anyhow::Result<ExternalService>;
+    fn update_by_id<'a>(&self, id: ExternalServiceId, name: Option<&'a str>) -> impl Future<Output = anyhow::Result<ExternalService>> + Send;
 
     /// Deletes the external service by ID.
-    async fn delete_by_id(&self, id: ExternalServiceId) -> anyhow::Result<DeleteResult>;
+    fn delete_by_id(&self, id: ExternalServiceId) -> impl Future<Output = anyhow::Result<DeleteResult>> + Send;
 }

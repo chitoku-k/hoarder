@@ -10,6 +10,7 @@ use axum::{
     http::{Method, Request},
     response::{IntoResponse, Response},
 };
+use futures::future::ready;
 use hyper::StatusCode;
 use indoc::indoc;
 use pretty_assertions::assert_eq;
@@ -58,12 +59,13 @@ async fn graphql() {
         .expect_execute()
         .times(1)
         .returning(move |_| {
-            Response::builder()
-                .status(StatusCode::OK)
-                .header("Content-Type", "application/json")
-                .body(Body::new(expected.to_string()))
-                .unwrap()
-                .into_response()
+            Box::pin(ready(
+                Response::builder()
+                    .status(StatusCode::OK)
+                    .header("Content-Type", "application/json")
+                    .body(Body::new(expected.to_string()))
+                    .unwrap()
+                    .into_response()))
         });
 
     let mock_thumbnails_service = MockThumbnailsServiceInterface::new();
@@ -175,12 +177,13 @@ async fn thumbnail_show() {
         .expect_show()
         .times(1)
         .returning(move |_| {
-            Response::builder()
-                .status(StatusCode::OK)
-                .header("Content-Type", "image/webp")
-                .body(Body::from(expected.clone()))
-                .unwrap()
-                .into_response()
+            Box::pin(ready(
+                Response::builder()
+                    .status(StatusCode::OK)
+                    .header("Content-Type", "image/webp")
+                    .body(Body::from(expected.clone()))
+                    .unwrap()
+                    .into_response()))
         });
 
     let app = Engine::new(mock_graphql_service, mock_thumbnails_service).into_inner();

@@ -14,6 +14,7 @@ use domain::{
         tags::MockTagsServiceInterface,
     },
 };
+use futures::future::ok;
 use graphql::query::Query;
 use indoc::indoc;
 use pretty_assertions::assert_eq;
@@ -29,7 +30,7 @@ async fn succeeds() {
         .times(1)
         .withf(|original_url| original_url == "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png")
         .returning(|_| {
-            Ok(Replica {
+            Box::pin(ok(Replica {
                 id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
                 display_order: 1,
                 thumbnail: Some(Thumbnail {
@@ -43,7 +44,7 @@ async fn succeeds() {
                 size: Size::new(720, 720),
                 created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
                 updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 1, 0).unwrap(),
-            })
+            }))
         });
 
     let tags_service = MockTagsServiceInterface::new();

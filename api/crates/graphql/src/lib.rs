@@ -3,7 +3,6 @@
 use application::service::graphql::GraphQLServiceInterface;
 use async_graphql::{http::GraphiQLSource, Enum, Schema};
 use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
-use async_trait::async_trait;
 use axum::{
     body::Body,
     extract::FromRequest,
@@ -44,7 +43,6 @@ pub struct GraphQLService<ExternalServicesService, MediaService, TagsService> {
     endpoint: &'static str,
 }
 
-#[async_trait]
 impl<ExternalServicesService, MediaService, TagsService> GraphQLServiceInterface for GraphQLService<ExternalServicesService, MediaService, TagsService>
 where
     ExternalServicesService: ExternalServicesServiceInterface,

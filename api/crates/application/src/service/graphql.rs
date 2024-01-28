@@ -1,6 +1,5 @@
-use std::sync::Arc;
+use std::{future::Future, sync::Arc};
 
-use async_trait::async_trait;
 use axum::{
     body::Body,
     extract::State,
@@ -9,9 +8,8 @@ use axum::{
 };
 
 #[cfg_attr(feature = "test-mock", mockall::automock)]
-#[async_trait]
 pub trait GraphQLServiceInterface: Send + Sync + 'static {
-    async fn execute(&self, req: Request<Body>) -> Response<Body>;
+    fn execute(&self, req: Request<Body>) -> impl Future<Output = Response<Body>> + Send;
 
     fn endpoint(&self) -> &str;
 

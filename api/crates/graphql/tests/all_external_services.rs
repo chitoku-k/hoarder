@@ -7,6 +7,7 @@ use domain::{
         tags::MockTagsServiceInterface,
     },
 };
+use futures::future::ok;
 use graphql::query::Query;
 use indoc::indoc;
 use pretty_assertions::assert_eq;
@@ -19,7 +20,7 @@ async fn succeeds() {
         .expect_get_external_services()
         .times(1)
         .returning(|| {
-            Ok(vec![
+            Box::pin(ok(vec![
                 ExternalService {
                     id: ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
                     slug: "pixiv".to_string(),
@@ -35,7 +36,7 @@ async fn succeeds() {
                     slug: "twitter".to_string(),
                     name: "Twitter".to_string(),
                 },
-            ])
+            ]))
         });
 
     let media_service = MockMediaServiceInterface::new();

@@ -25,9 +25,6 @@ default-features = false
 [dependencies.async-graphql-axum]
 version = "7.0.1"
 
-[dependencies.async-trait]
-version = "0.1.77"
-
 [dependencies.axum]
 version = "0.7.4"
 features = ["default", "http2"]
@@ -64,8 +61,8 @@ features = ["test-mock"]
 workspace = true
 features = ["test-mock"]
 
-[dev-dependencies.async-trait]
-version = "0.1.73"
+[dev-dependencies.futures]
+version = "0.3.30"
 
 [dev-dependencies.indoc]
 version = "2.0.4"

@@ -1,4 +1,4 @@
-use async_trait::async_trait;
+use std::future::Future;
 
 use crate::{
     entity::{
@@ -9,25 +9,24 @@ use crate::{
 };
 
 #[cfg_attr(feature = "test-mock", mockall::automock)]
-#[async_trait]
 pub trait ReplicasRepository: Send + Sync + 'static {
     /// Creates a replica.
-    async fn create(&self, medium_id: MediumId, thumbnail_image: Option<ThumbnailImage>, original_url: &str, original_image: OriginalImage) -> anyhow::Result<Replica>;
+    fn create(&self, medium_id: MediumId, thumbnail_image: Option<ThumbnailImage>, original_url: &str, original_image: OriginalImage) -> impl Future<Output = anyhow::Result<Replica>> + Send;
 
     /// Fetches the replicas by IDs.
-    async fn fetch_by_ids<T>(&self, ids: T) -> anyhow::Result<Vec<Replica>>
+    fn fetch_by_ids<T>(&self, ids: T) -> impl Future<Output = anyhow::Result<Vec<Replica>>> + Send
     where
         T: IntoIterator<Item = ReplicaId> + Send + Sync + 'static;
 
     /// Fetches the replica by its original URL.
-    async fn fetch_by_original_url(&self, original_url: &str) -> anyhow::Result<Replica>;
+    fn fetch_by_original_url(&self, original_url: &str) -> impl Future<Output = anyhow::Result<Replica>> + Send;
 
     /// Fetches the replica with thumbnail by ID.
-    async fn fetch_thumbnail_by_id(&self, id: ThumbnailId) -> anyhow::Result<Vec<u8>>;
+    fn fetch_thumbnail_by_id(&self, id: ThumbnailId) -> impl Future<Output = anyhow::Result<Vec<u8>>> + Send;
 
     /// Updates the replica.
-    async fn update_by_id<'a>(&self, id: ReplicaId, thumbnail_image: Option<ThumbnailImage>, original_url: Option<&'a str>, original_image: Option<OriginalImage>) -> anyhow::Result<Replica>;
+    fn update_by_id<'a>(&self, id: ReplicaId, thumbnail_image: Option<ThumbnailImage>, original_url: Option<&'a str>, original_image: Option<OriginalImage>) -> impl Future<Output = anyhow::Result<Replica>> + Send;
 
     /// Deletes the replica.
-    async fn delete_by_id(&self, id: ReplicaId) -> anyhow::Result<DeleteResult>;
+    fn delete_by_id(&self, id: ReplicaId) -> impl Future<Output = anyhow::Result<DeleteResult>> + Send;
 }

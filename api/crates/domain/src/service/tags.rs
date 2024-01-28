@@ -1,4 +1,5 @@
-use async_trait::async_trait;
+use std::future::Future;
+
 use derive_more::Constructor;
 
 use crate::{
@@ -10,16 +11,15 @@ use crate::{
 };
 
 #[cfg_attr(feature = "test-mock", mockall::automock)]
-#[async_trait]
 pub trait TagsServiceInterface: Send + Sync + 'static {
     /// Creates a tag.
-    async fn create_tag(&self, name: &str, kana: &str, aliases: &[String], parent_id: Option<TagId>, depth: TagDepth) -> anyhow::Result<Tag>;
+    fn create_tag(&self, name: &str, kana: &str, aliases: &[String], parent_id: Option<TagId>, depth: TagDepth) -> impl Future<Output = anyhow::Result<Tag>> + Send;
 
     /// Creates a tag type.
-    async fn create_tag_type(&self, slug: &str, name: &str) -> anyhow::Result<TagType>;
+    fn create_tag_type(&self, slug: &str, name: &str) -> impl Future<Output = anyhow::Result<TagType>> + Send;
 
     /// Gets tags.
-    async fn get_tags(
+    fn get_tags(
         &self,
         depth: TagDepth,
         root: bool,
@@ -27,39 +27,39 @@ pub trait TagsServiceInterface: Send + Sync + 'static {
         order: Order,
         direction: Direction,
         limit: u64,
-    ) -> anyhow::Result<Vec<Tag>>;
+    ) -> impl Future<Output = anyhow::Result<Vec<Tag>>> + Send;
 
     /// Gets the tags by their IDs.
-    async fn get_tags_by_ids<T>(&self, ids: T, depth: TagDepth) -> anyhow::Result<Vec<Tag>>
+    fn get_tags_by_ids<T>(&self, ids: T, depth: TagDepth) -> impl Future<Output = anyhow::Result<Vec<Tag>>> + Send
     where
         T: IntoIterator<Item = TagId> + Send + Sync + 'static;
 
     /// Gets the tags by their name or alias.
-    async fn get_tags_by_name_or_alias_like(&self, name_or_alias_like: &str, depth: TagDepth) -> anyhow::Result<Vec<Tag>>;
+    fn get_tags_by_name_or_alias_like(&self, name_or_alias_like: &str, depth: TagDepth) -> impl Future<Output = anyhow::Result<Vec<Tag>>> + Send;
 
     /// Gets tag types.
-    async fn get_tag_types(&self) -> anyhow::Result<Vec<TagType>>;
+    fn get_tag_types(&self) -> impl Future<Output = anyhow::Result<Vec<TagType>>> + Send;
 
     /// Updates the tag by ID.
-    async fn update_tag_by_id<T, U>(&self, id: TagId, name: Option<String>, kana: Option<String>, add_aliases: T, remove_aliases: U, depth: TagDepth) -> anyhow::Result<Tag>
+    fn update_tag_by_id<T, U>(&self, id: TagId, name: Option<String>, kana: Option<String>, add_aliases: T, remove_aliases: U, depth: TagDepth) -> impl Future<Output = anyhow::Result<Tag>> + Send
     where
         T: IntoIterator<Item = String> + Send + Sync + 'static,
         U: IntoIterator<Item = String> + Send + Sync + 'static;
 
     /// Updates the tag type by ID.
-    async fn update_tag_type_by_id<'a, 'b>(&self, id: TagTypeId, slug: Option<&'a str>, name: Option<&'b str>) -> anyhow::Result<TagType>;
+    fn update_tag_type_by_id<'a, 'b>(&self, id: TagTypeId, slug: Option<&'a str>, name: Option<&'b str>) -> impl Future<Output = anyhow::Result<TagType>> + Send;
 
     /// Attaches the tag by ID.
-    async fn attach_tag_by_id(&self, id: TagId, parent_id: TagId, depth: TagDepth) -> anyhow::Result<Tag>;
+    fn attach_tag_by_id(&self, id: TagId, parent_id: TagId, depth: TagDepth) -> impl Future<Output = anyhow::Result<Tag>> + Send;
 
     /// Detaches the tag by ID.
-    async fn detach_tag_by_id(&self, id: TagId, depth: TagDepth) -> anyhow::Result<Tag>;
+    fn detach_tag_by_id(&self, id: TagId, depth: TagDepth) -> impl Future<Output = anyhow::Result<Tag>> + Send;
 
     /// Delete the tag by ID.
-    async fn delete_tag_by_id(&self, id: TagId, recursive: bool) -> anyhow::Result<DeleteResult>;
+    fn delete_tag_by_id(&self, id: TagId, recursive: bool) -> impl Future<Output = anyhow::Result<DeleteResult>> + Send;
 
     /// Delete the tag type by ID.
-    async fn delete_tag_type_by_id(&self, id: TagTypeId) -> anyhow::Result<DeleteResult>;
+    fn delete_tag_type_by_id(&self, id: TagTypeId) -> impl Future<Output = anyhow::Result<DeleteResult>> + Send;
 }
 
 #[derive(Clone, Constructor)]
@@ -68,7 +68,6 @@ pub struct TagsService<TagsRepository, TagTypesRepository> {
     tag_types_repository: TagTypesRepository,
 }
 
-#[async_trait]
 impl<TagsRepository, TagTypesRepository> TagsServiceInterface for TagsService<TagsRepository, TagTypesRepository>
 where
     TagsRepository: tags::TagsRepository,

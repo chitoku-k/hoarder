@@ -1,5 +1,6 @@
+use std::future::Future;
+
 use anyhow::anyhow;
-use async_trait::async_trait;
 use chrono::{DateTime, Utc};
 use derive_more::Constructor;
 use tokio::try_join;
@@ -18,22 +19,21 @@ use crate::{
 };
 
 #[cfg_attr(feature = "test-mock", mockall::automock)]
-#[async_trait]
 pub trait MediaServiceInterface: Send + Sync + 'static {
     /// Creates a medium.
-    async fn create_medium<T, U>(&self, source_ids: T, created_at: Option<DateTime<Utc>>, tag_tag_type_ids: U, tag_depth: Option<TagDepth>, sources: bool) -> anyhow::Result<Medium>
+    fn create_medium<T, U>(&self, source_ids: T, created_at: Option<DateTime<Utc>>, tag_tag_type_ids: U, tag_depth: Option<TagDepth>, sources: bool) -> impl Future<Output = anyhow::Result<Medium>> + Send
     where
         T: IntoIterator<Item = SourceId> + Send + Sync + 'static,
         U: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'static;
 
     /// Creates a replica.
-    async fn create_replica(&self, medium_id: MediumId, original_url: &str) -> anyhow::Result<Replica>;
+    fn create_replica(&self, medium_id: MediumId, original_url: &str) -> impl Future<Output = anyhow::Result<Replica>> + Send;
 
     /// Creates a source.
-    async fn create_source(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> anyhow::Result<Source>;
+    fn create_source(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> impl Future<Output = anyhow::Result<Source>> + Send;
 
     /// Gets media.
-    async fn get_media(
+    fn get_media(
         &self,
         tag_depth: Option<TagDepth>,
         replicas: bool,
@@ -42,15 +42,15 @@ pub trait MediaServiceInterface: Send + Sync + 'static {
         order: Order,
         direction: Direction,
         limit: u64,
-    ) -> anyhow::Result<Vec<Medium>>;
+    ) -> impl Future<Output = anyhow::Result<Vec<Medium>>> + Send;
 
     /// Gets the media by their IDs.
-    async fn get_media_by_ids<T>(&self, ids: T, tag_depth: Option<TagDepth>, replicas: bool, sources: bool) -> anyhow::Result<Vec<Medium>>
+    fn get_media_by_ids<T>(&self, ids: T, tag_depth: Option<TagDepth>, replicas: bool, sources: bool) -> impl Future<Output = anyhow::Result<Vec<Medium>>> + Send
     where
         T: IntoIterator<Item = MediumId> + Send + Sync + 'static;
 
     /// Gets the media by their source IDs.
-    async fn get_media_by_source_ids<T>(
+    fn get_media_by_source_ids<T>(
         &self,
         source_ids: T,
         tag_depth: Option<TagDepth>,
@@ -60,12 +60,12 @@ pub trait MediaServiceInterface: Send + Sync + 'static {
         order: Order,
         direction: Direction,
         limit: u64,
-    ) -> anyhow::Result<Vec<Medium>>
+    ) -> impl Future<Output = anyhow::Result<Vec<Medium>>> + Send
     where
         T: IntoIterator<Item = SourceId> + Send + Sync + 'static;
 
     /// Gets the media by their tag IDs.
-    async fn get_media_by_tag_ids<T>(
+    fn get_media_by_tag_ids<T>(
         &self,
         tag_tag_type_ids: T,
         tag_depth: Option<TagDepth>,
@@ -75,26 +75,26 @@ pub trait MediaServiceInterface: Send + Sync + 'static {
         order: Order,
         direction: Direction,
         limit: u64,
-    ) -> anyhow::Result<Vec<Medium>>
+    ) -> impl Future<Output = anyhow::Result<Vec<Medium>>> + Send
     where
         T: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'static;
 
     /// Gets the replicas by their IDs.
-    async fn get_replicas_by_ids<T>(&self, ids: T) -> anyhow::Result<Vec<Replica>>
+    fn get_replicas_by_ids<T>(&self, ids: T) -> impl Future<Output = anyhow::Result<Vec<Replica>>> + Send
     where
         T: IntoIterator<Item = ReplicaId> + Send + Sync + 'static;
 
     /// Gets the replica by original URL.
-    async fn get_replica_by_original_url(&self, original_url: &str) -> anyhow::Result<Replica>;
+    fn get_replica_by_original_url(&self, original_url: &str) -> impl Future<Output = anyhow::Result<Replica>> + Send;
 
     /// Gets the source by its external metadata.
-    async fn get_source_by_external_metadata(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> anyhow::Result<Option<Source>>;
+    fn get_source_by_external_metadata(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> impl Future<Output = anyhow::Result<Option<Source>>> + Send;
 
     /// Gets the by ID.
-    async fn get_thumbnail_by_id(&self, id: ThumbnailId) -> anyhow::Result<Vec<u8>>;
+    fn get_thumbnail_by_id(&self, id: ThumbnailId) -> impl Future<Output = anyhow::Result<Vec<u8>>> + Send;
 
     /// Updates the medium by ID.
-    async fn update_medium_by_id<T, U, V, W, X>(
+    fn update_medium_by_id<T, U, V, W, X>(
         &self,
         id: MediumId,
         add_source_ids: T,
@@ -106,7 +106,7 @@ pub trait MediaServiceInterface: Send + Sync + 'static {
         tag_depth: Option<TagDepth>,
         replicas: bool,
         sources: bool,
-    ) -> anyhow::Result<Medium>
+    ) -> impl Future<Output = anyhow::Result<Medium>> + Send
     where
         T: IntoIterator<Item = SourceId> + Send + Sync + 'static,
         U: IntoIterator<Item = SourceId> + Send + Sync + 'static,
@@ -115,19 +115,19 @@ pub trait MediaServiceInterface: Send + Sync + 'static {
         X: IntoIterator<Item = ReplicaId> + Send + Sync + 'static;
 
     /// Updates the replica by ID.
-    async fn update_replica_by_id<'a, 'b>(&self, id: ReplicaId, original_url: Option<&'a str>) -> anyhow::Result<Replica>;
+    fn update_replica_by_id<'a>(&self, id: ReplicaId, original_url: Option<&'a str>) -> impl Future<Output = anyhow::Result<Replica>> + Send;
 
     /// Updates the source by ID.
-    async fn update_source_by_id(&self, id: SourceId, external_service_id: Option<ExternalServiceId>, external_metadata: Option<ExternalMetadata>) -> anyhow::Result<Source>;
+    fn update_source_by_id(&self, id: SourceId, external_service_id: Option<ExternalServiceId>, external_metadata: Option<ExternalMetadata>) -> impl Future<Output = anyhow::Result<Source>> + Send;
 
     /// Deletes the medium by ID.
-    async fn delete_medium_by_id(&self, id: MediumId) -> anyhow::Result<DeleteResult>;
+    fn delete_medium_by_id(&self, id: MediumId) -> impl Future<Output = anyhow::Result<DeleteResult>> + Send;
 
     /// Deletes the replica by ID.
-    async fn delete_replica_by_id(&self, id: ReplicaId) -> anyhow::Result<DeleteResult>;
+    fn delete_replica_by_id(&self, id: ReplicaId) -> impl Future<Output = anyhow::Result<DeleteResult>> + Send;
 
     /// Deletes the source by ID.
-    async fn delete_source_by_id(&self, id: SourceId) -> anyhow::Result<DeleteResult>;
+    fn delete_source_by_id(&self, id: SourceId) -> impl Future<Output = anyhow::Result<DeleteResult>> + Send;
 }
 
 #[derive(Clone, Constructor)]
@@ -179,7 +179,6 @@ where
     }
 }
 
-#[async_trait]
 impl<MediaRepository, ReplicasRepository, SourcesRepository, MediumImageParser, MediumImageProcessor> MediaServiceInterface for MediaService<MediaRepository, ReplicasRepository, SourcesRepository, MediumImageParser, MediumImageProcessor>
 where
     MediaRepository: media::MediaRepository,
@@ -376,7 +375,7 @@ where
         }
     }
 
-    async fn update_replica_by_id<'a, 'b>(&self, id: ReplicaId, original_url: Option<&'a str>) -> anyhow::Result<Replica> {
+    async fn update_replica_by_id<'a>(&self, id: ReplicaId, original_url: Option<&'a str>) -> anyhow::Result<Replica> {
         let (thumbnail_image, original_image) = match original_url {
             Some(original_url) => {
                 let (thumbnail_image, original_image) = try_join!(

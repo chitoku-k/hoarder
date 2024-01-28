@@ -1,5 +1,4 @@
 use anyhow::Context;
-use async_trait::async_trait;
 use derive_more::{Constructor, From, Into};
 use domain::{
     entity::tag_types::{TagType, TagTypeError, TagTypeId},
@@ -55,7 +54,6 @@ impl From<PostgresTagTypeRow> for TagType {
     }
 }
 
-#[async_trait]
 impl TagTypesRepository for PostgresTagTypesRepository {
     async fn create(&self, slug: &str, name: &str) -> anyhow::Result<TagType> {
         let (sql, values) = Query::insert()

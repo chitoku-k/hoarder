@@ -17,9 +17,6 @@ workspace = true
 [dependencies.anyhow]
 version = "1.0.79"
 
-[dependencies.async-trait]
-version = "0.1.77"
-
 [dependencies.axum]
 version = "0.7.4"
 

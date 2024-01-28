@@ -10,6 +10,7 @@ use domain::{
         tags::MockTagsServiceInterface,
     },
 };
+use futures::future::ok;
 use graphql::query::Query;
 use indoc::indoc;
 use pretty_assertions::assert_eq;
@@ -34,7 +35,7 @@ async fn succeeds() {
             ]) && depth == &TagDepth::new(2, 2)
         })
         .returning(|_, _| {
-            Ok(vec![
+            Box::pin(ok(vec![
                 Tag {
                     id: TagId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                     name: "赤座あかり".to_string(),
@@ -85,7 +86,7 @@ async fn succeeds() {
                     created_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 1, 0).unwrap(),
                 },
-            ])
+            ]))
         });
 
     let query = Query::new(external_services_service, media_service, tags_service);

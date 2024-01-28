@@ -5,7 +5,6 @@ use std::{
 };
 
 use anyhow::Context;
-use async_trait::async_trait;
 use chrono::{DateTime, Utc};
 use cow_utils::CowUtils;
 use derive_more::{Constructor, From, Into};
@@ -465,7 +464,6 @@ async fn detach_parent(tx: &mut Transaction<'_, Postgres>, id: TagId) -> anyhow:
     Ok(())
 }
 
-#[async_trait]
 impl TagsRepository for PostgresTagsRepository {
     async fn create(&self, name: &str, kana: &str, aliases: &[String], parent_id: Option<TagId>, depth: TagDepth) -> anyhow::Result<Tag> {
         let mut tx = self.pool.begin().await?;

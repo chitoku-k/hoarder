@@ -1,4 +1,3 @@
-use async_trait::async_trait;
 use application::service::thumbnails::{ThumbnailsServiceInterface, ThumbnailURLFactoryInterface};
 use axum::{
     body::Body,
@@ -32,7 +31,6 @@ pub struct ThumbnailsService<MediaService> {
     media_service: MediaService,
 }
 
-#[async_trait]
 impl<MediaService> ThumbnailsServiceInterface for ThumbnailsService<MediaService>
 where
     MediaService: MediaServiceInterface,
