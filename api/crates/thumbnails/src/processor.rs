@@ -23,7 +23,12 @@ pub struct FileImageProcessor {
 #[async_trait]
 impl MediumImageProcessor for FileImageProcessor {
     async fn generate_thumbnail(&self, path: &str) -> anyhow::Result<ThumbnailImage> {
-        task::block_in_place(move || {
+        let size = self.thumbnail_size;
+        let filter = self.thumbnail_filter;
+        let format = self.thumbnail_format.clone();
+        let path = path.to_string();
+
+        task::spawn_blocking(move || {
             let file = File::open(path).context("failed to open image")?;
             let reader = Reader::new(BufReader::new(file))
                 .with_guessed_format()
@@ -32,12 +37,12 @@ impl MediumImageProcessor for FileImageProcessor {
             let image = reader.decode().context("failed to decode image")?;
             let mut body = Vec::new();
 
-            let thumbnail = image.resize(self.thumbnail_size.width, self.thumbnail_size.height, self.thumbnail_filter);
+            let thumbnail = image.resize(size.width, size.height, filter);
             thumbnail
-                .write_to(&mut Cursor::new(&mut body), self.thumbnail_format.clone())
+                .write_to(&mut Cursor::new(&mut body), format)
                 .context("failed to generate thumbnail")?;
 
             Ok(ThumbnailImage::new(body, Size::new(thumbnail.width(), thumbnail.height())))
-        })
+        }).await?
     }
 }
