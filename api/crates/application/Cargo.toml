@@ -9,7 +9,7 @@ license.workspace = true
 doctest = false
 
 [features]
-tls = ["axum-server/tls-rustls"]
+tls = ["axum-server/tls-openssl"]
 test-mock = ["mockall"]
 
 [dependencies.domain]
