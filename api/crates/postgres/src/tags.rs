@@ -573,6 +573,7 @@ impl TagsRepository for PostgresTagsRepository {
             .cond_where(
                 Cond::any()
                     .add(Expr::col(PostgresTag::Name).like(LikeExpr::new(name_or_alias_like.clone())))
+                    .add(Expr::col(PostgresTag::Kana).like(LikeExpr::new(name_or_alias_like.clone())))
                     .add(Expr::col(alias).like(LikeExpr::new(name_or_alias_like))),
             )
             .build_sqlx(PostgresQueryBuilder);
