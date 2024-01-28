@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 use application::service::thumbnails::{ThumbnailsServiceInterface, ThumbnailURLFactoryInterface};
 use axum::{
-    body::{Body, BoxBody},
+    body::Body,
     http::{
         Response as HttpResponse,
         StatusCode,
@@ -37,7 +37,7 @@ impl<MediaService> ThumbnailsServiceInterface for ThumbnailsService<MediaService
 where
     MediaService: MediaServiceInterface,
 {
-    async fn show(&self, id: ThumbnailId) -> Response<BoxBody> {
+    async fn show(&self, id: ThumbnailId) -> Response<Body> {
         match self.media_service.get_thumbnail_by_id(id).await {
             Ok(thumbnail) => {
                 HttpResponse::builder()

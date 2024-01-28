@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use async_trait::async_trait;
 use axum::{
-    body::BoxBody,
+    body::Body,
     extract::{Path, State},
     response::Response,
 };
@@ -16,10 +16,10 @@ pub trait ThumbnailURLFactoryInterface: Send + Sync + 'static {
 #[cfg_attr(feature = "test-mock", mockall::automock)]
 #[async_trait]
 pub trait ThumbnailsServiceInterface: Send + Sync + 'static {
-    async fn show(&self, id: ThumbnailId) -> Response<BoxBody>;
+    async fn show(&self, id: ThumbnailId) -> Response<Body>;
 }
 
-pub(crate) async fn show<ThumbnailsService>(thumbnails_service: State<Arc<ThumbnailsService>>, Path(id): Path<ThumbnailId>) -> Response<BoxBody>
+pub(crate) async fn show<ThumbnailsService>(thumbnails_service: State<Arc<ThumbnailsService>>, Path(id): Path<ThumbnailId>) -> Response<Body>
 where
     ThumbnailsService: ThumbnailsServiceInterface,
 {

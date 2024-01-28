@@ -6,10 +6,11 @@ use application::{
     },
 };
 use axum::{
+    body::{self, Body},
     http::{Method, Request},
     response::{IntoResponse, Response},
 };
-use hyper::{body::{self, Body}, StatusCode};
+use hyper::StatusCode;
 use indoc::indoc;
 use pretty_assertions::assert_eq;
 use serde_json::json;
@@ -60,7 +61,7 @@ async fn graphql() {
             Response::builder()
                 .status(StatusCode::OK)
                 .header("Content-Type", "application/json")
-                .body(Body::from(expected.to_string()))
+                .body(Body::new(expected.to_string()))
                 .unwrap()
                 .into_response()
         });
@@ -74,7 +75,7 @@ async fn graphql() {
                 .method(Method::POST)
                 .uri("/graphql")
                 .header("Content-Type", "application/json")
-                .body(Body::from(req.to_string()))
+                .body(Body::new(req.to_string()))
                 .unwrap())
         .await
         .unwrap();
@@ -98,7 +99,7 @@ async fn graphql() {
         },
     });
 
-    let actual = body::to_bytes(actual.into_body()).await.unwrap();
+    let actual = body::to_bytes(actual.into_body(), usize::MAX).await.unwrap();
     let actual = String::from_utf8(actual.to_vec()).unwrap();
     assert_eq!(actual, expected.to_string());
 }
@@ -154,7 +155,7 @@ async fn graphiql() {
         </html>
     "#};
 
-    let actual = body::to_bytes(actual.into_body()).await.unwrap();
+    let actual = body::to_bytes(actual.into_body(), usize::MAX).await.unwrap();
     let actual = String::from_utf8(actual.to_vec()).unwrap();
     assert_eq!(actual, expected.to_string());
 }
@@ -197,6 +198,6 @@ async fn thumbnail_show() {
 
     let expected = vec![0x01, 0x02, 0x03, 0x04];
 
-    let actual = body::to_bytes(actual.into_body()).await.unwrap();
+    let actual = body::to_bytes(actual.into_body(), usize::MAX).await.unwrap();
     assert_eq!(actual.to_vec(), expected);
 }
