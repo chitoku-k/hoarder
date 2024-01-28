@@ -5,7 +5,7 @@ use async_graphql::{http::GraphiQLSource, Enum, Schema};
 use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
 use async_trait::async_trait;
 use axum::{
-    body::{BoxBody, Body},
+    body::Body,
     extract::FromRequest,
     http::Request,
     response::{IntoResponse, Html, Response},
@@ -51,7 +51,7 @@ where
     MediaService: MediaServiceInterface,
     TagsService: TagsServiceInterface,
 {
-    async fn execute(&self, req: Request<Body>) -> Response<BoxBody> {
+    async fn execute(&self, req: Request<Body>) -> Response<Body> {
         let req: GraphQLRequest = match GraphQLRequest::from_request(req, &()).await {
             Ok(req) => req,
             Err(rejection) => return rejection.into_response(),
@@ -67,7 +67,7 @@ where
         self.endpoint
     }
 
-    fn graphiql(&self) -> Response<BoxBody> {
+    fn graphiql(&self) -> Response<Body> {
         let res = GraphiQLSource::build().endpoint(self.endpoint).finish();
         let res = Html(res);
         res.into_response()

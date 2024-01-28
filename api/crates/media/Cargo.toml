@@ -15,20 +15,20 @@ workspace = true
 workspace = true
 
 [dependencies.anyhow]
-version = "1.0.75"
+version = "1.0.79"
 
 [dependencies.async-trait]
-version = "0.1.74"
+version = "0.1.77"
 
 [dependencies.derive_more]
 version = "0.99.17"
 
 [dependencies.image]
-version = "0.24.7"
+version = "0.24.8"
 
 [dependencies.regex]
-version = "1.10.2"
+version = "1.10.3"
 
 [dependencies.tokio]
-version = "1.35.0"
+version = "1.35.1"
 features = ["rt-multi-thread"]

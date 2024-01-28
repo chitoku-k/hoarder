@@ -12,13 +12,13 @@ doctest = false
 test-mock = ["mockall"]
 
 [dependencies.anyhow]
-version = "1.0.75"
+version = "1.0.79"
 
 [dependencies.async-trait]
-version = "0.1.74"
+version = "0.1.77"
 
 [dependencies.chrono]
-version = "0.4.31"
+version = "0.4.33"
 default-features = false
 features = ["clock", "std"]
 
@@ -29,22 +29,22 @@ version = "0.99.17"
 version = "0.4.20"
 
 [dependencies.mockall]
-version = "0.12.0"
+version = "0.12.1"
 optional = true
 
 [dependencies.serde]
-version = "1.0.193"
+version = "1.0.196"
 features = ["derive"]
 
 [dependencies.thiserror]
-version = "1.0.51"
+version = "1.0.56"
 
 [dependencies.tokio]
-version = "1.35.0"
+version = "1.35.1"
 features = ["macros", "rt-multi-thread"]
 
 [dependencies.uuid]
-version = "1.6.1"
+version = "1.7.0"
 features = ["serde", "v4"]
 
 [dev-dependencies.pretty_assertions]
