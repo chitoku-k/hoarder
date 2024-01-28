@@ -55,7 +55,7 @@ async fn succeeds() {
                 externalServiceId: "33333333-3333-3333-3333-333333333333",
                 externalMetadata: {
                     twitter: {
-                        id: 727620202049900544,
+                        id: "727620202049900544",
                     },
                 },
             ) {

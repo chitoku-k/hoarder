@@ -50,11 +50,6 @@ features = ["derive"]
 [dependencies.serde_json]
 version = "1.0.108"
 
-[dependencies.serde_with]
-version = "3.4.0"
-default-features = false
-features = ["macros"]
-
 [dependencies.thiserror]
 version = "1.0.51"
 
