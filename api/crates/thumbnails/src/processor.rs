@@ -30,7 +30,7 @@ impl MediumImageProcessor for FileImageProcessor {
 
         task::spawn_blocking(move || {
             let file = File::open(path).context("failed to open image")?;
-            let reader = Reader::new(BufReader::new(file))
+            let reader = Reader::new(BufReader::with_capacity(5 * 1024 * 1024, file))
                 .with_guessed_format()
                 .context("failed to detect image format")?;
 
