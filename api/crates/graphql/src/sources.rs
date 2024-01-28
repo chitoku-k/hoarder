@@ -17,11 +17,12 @@ pub(crate) struct Source {
 
 #[derive(Debug, Eq, OneofObject, PartialEq, Serialize)]
 #[graphql(name = "ExternalMetadataInput")]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "snake_case")]
 pub(crate) enum ExternalMetadata {
     Fantia(ExternalMetadataId),
     Nijie(ExternalMetadataId),
     Pixiv(ExternalMetadataId),
+    #[graphql(name = "pixiv_fanbox")]
     PixivFanbox(ExternalMetadataIdCreatorId),
     Seiga(ExternalMetadataId),
     Skeb(ExternalMetadataIdCreatorId),
