@@ -2,7 +2,7 @@ use anyhow::Context;
 use async_trait::async_trait;
 use chrono::{DateTime, Utc};
 use derive_more::{Constructor, From, Into};
-use futures::TryStreamExt;
+use futures::{future, TryStreamExt};
 use domain::{
     entity::{
         media::MediumId,
@@ -540,14 +540,14 @@ impl ReplicasRepository for PostgresReplicasRepository {
                     .equals((PostgresReplica::Table, PostgresReplica::MediumId)),
             )
             .and_where(Expr::col((PostgresReplica::Table, PostgresReplica::Id)).eq(PostgresReplicaId::from(id)))
-            .and_where(Expr::col((siblings.clone(), PostgresReplica::Id)).ne(PostgresReplicaId::from(id)))
             .order_by((siblings, PostgresReplica::DisplayOrder), Order::Asc)
             .lock(LockType::Update)
             .build_sqlx(PostgresQueryBuilder);
 
         let siblings: Vec<Replica> = sqlx::query_as_with::<_, PostgresReplicaRow, _>(&sql, values)
             .fetch(&mut *tx)
-            .map_ok(Into::into)
+            .map_ok(Replica::from)
+            .try_filter(|r| future::ready(r.id != id))
             .try_collect()
             .await?;
 
