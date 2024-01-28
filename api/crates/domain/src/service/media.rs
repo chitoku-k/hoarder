@@ -88,7 +88,7 @@ pub trait MediaServiceInterface: Send + Sync + 'static {
     async fn get_replica_by_original_url(&self, original_url: &str) -> anyhow::Result<Replica>;
 
     /// Gets the source by its external metadata.
-    async fn get_source_by_external_metadata(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> anyhow::Result<Source>;
+    async fn get_source_by_external_metadata(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> anyhow::Result<Option<Source>>;
 
     /// Gets the by ID.
     async fn get_thumbnail_by_id(&self, id: ThumbnailId) -> anyhow::Result<Vec<u8>>;
@@ -327,7 +327,7 @@ where
         }
     }
 
-    async fn get_source_by_external_metadata(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> anyhow::Result<Source> {
+    async fn get_source_by_external_metadata(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> anyhow::Result<Option<Source>> {
         match self.sources_repository.fetch_by_external_metadata(external_service_id, external_metadata).await {
             Ok(source) => Ok(source),
             Err(e) => {

@@ -216,7 +216,7 @@ impl SourcesRepository for PostgresSourcesRepository {
         Ok(source)
     }
 
-    async fn fetch_by_external_metadata(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> anyhow::Result<Source> {
+    async fn fetch_by_external_metadata(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> anyhow::Result<Option<Source>> {
         let external_metadata = PostgresExternalServiceMetadata::try_from(external_metadata)?;
         let external_metadata = match serde_json::to_value(&external_metadata) {
             Ok(value) => value,
@@ -245,8 +245,7 @@ impl SourcesRepository for PostgresSourcesRepository {
         let source = sqlx::query_as_with::<_, PostgresSourceExternalServiceRow, _>(&sql, values)
             .fetch_optional(&self.pool)
             .await?
-            .context(SourceError::UnknwonExternalSource)?
-            .try_into()?;
+            .map(Into::into);
 
         Ok(source)
     }

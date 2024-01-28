@@ -161,12 +161,12 @@ where
         Ok(replica.into())
     }
 
-    async fn source(&self, external_service_id: Uuid, external_metadata: ExternalMetadata) -> anyhow::Result<Source> {
+    async fn source(&self, external_service_id: Uuid, external_metadata: ExternalMetadata) -> anyhow::Result<Option<Source>> {
         let external_service_id = external_service_id.into();
         let external_metadata = external_metadata.try_into()?;
 
         let source = self.media_service.get_source_by_external_metadata(external_service_id, external_metadata).await?;
-        source.try_into()
+        source.map(TryInto::try_into).transpose()
     }
 
     async fn all_tags(

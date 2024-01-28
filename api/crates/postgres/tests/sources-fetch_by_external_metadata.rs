@@ -24,7 +24,7 @@ async fn succeeds(ctx: &DatabaseContext) {
         ExternalMetadata::Pixiv { id: 8888888 },
     ).await.unwrap();
 
-    assert_eq!(actual, Source {
+    assert_eq!(actual, Some(Source {
         id: SourceId::from(uuid!("94055dd8-7a22-4137-b8eb-3a374df5e5d1")),
         external_service: ExternalService {
             id: ExternalServiceId::from(uuid!("4e0c68c7-e5ec-4d60-b9eb-733f47290cd3")),
@@ -34,5 +34,18 @@ async fn succeeds(ctx: &DatabaseContext) {
         external_metadata: ExternalMetadata::Pixiv { id: 8888888 },
         created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 8).unwrap(),
         updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 14).unwrap(),
-    });
+    }));
+}
+
+#[test_context(DatabaseContext)]
+#[tokio::test]
+#[cfg_attr(not(feature = "test-postgres"), ignore)]
+async fn not_found(ctx: &DatabaseContext) {
+    let repository = PostgresSourcesRepository::new(ctx.pool.clone());
+    let actual = repository.fetch_by_external_metadata(
+        ExternalServiceId::from(uuid!("4e0c68c7-e5ec-4d60-b9eb-733f47290cd3")),
+        ExternalMetadata::Pixiv { id: 10000000 },
+    ).await.unwrap();
+
+    assert!(actual.is_none());
 }
