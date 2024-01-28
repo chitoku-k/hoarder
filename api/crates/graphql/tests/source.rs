@@ -11,6 +11,7 @@ use domain::{
         tags::MockTagsServiceInterface,
     },
 };
+use futures::future::ok;
 use graphql::query::Query;
 use indoc::indoc;
 use pretty_assertions::assert_eq;
@@ -31,7 +32,7 @@ async fn succeeds() {
             )
         })
         .returning(|_, _| {
-            Ok(Some(sources::Source {
+            Box::pin(ok(Some(sources::Source {
                 id: SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
                 external_service: external_services::ExternalService {
                     id: ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
@@ -41,7 +42,7 @@ async fn succeeds() {
                 external_metadata: external_services::ExternalMetadata::Twitter { id: 727620202049900544 },
                 created_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 0).unwrap(),
                 updated_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 1).unwrap(),
-            }))
+            })))
         });
 
     let tags_service = MockTagsServiceInterface::new();
@@ -106,7 +107,7 @@ async fn not_found() {
                 &external_services::ExternalMetadata::Twitter { id: 727620202049900544 },
             )
         })
-        .returning(|_, _| Ok(None));
+        .returning(|_, _| Box::pin(ok(None)));
 
     let tags_service = MockTagsServiceInterface::new();
 

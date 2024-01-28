@@ -1,13 +1,13 @@
-use async_trait::async_trait;
+use std::future::Future;
+
 use derive_more::{Constructor, From};
 
 use crate::entity::replicas::Size;
 
 #[cfg_attr(feature = "test-mock", mockall::automock)]
-#[async_trait]
 pub trait MediumImageParser: Send + Sync + 'static {
     /// Gets metadata for the image on the given path.
-    async fn get_metadata(&self, path: &str) -> anyhow::Result<MediumMetadata>;
+    fn get_metadata(&self, path: &str) -> impl Future<Output = anyhow::Result<MediumMetadata>> + Send;
 }
 
 #[derive(Clone, Constructor, Copy, Debug, Eq, From, PartialEq)]

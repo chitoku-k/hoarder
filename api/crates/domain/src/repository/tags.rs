@@ -1,4 +1,4 @@
-use async_trait::async_trait;
+use std::future::Future;
 
 use crate::{
     entity::tags::{Tag, TagDepth, TagId},
@@ -6,24 +6,23 @@ use crate::{
 };
 
 #[cfg_attr(feature = "test-mock", mockall::automock)]
-#[async_trait]
 pub trait TagsRepository: Send + Sync + 'static {
     /// Creates a tag.
-    async fn create(&self, name: &str, kana: &str, aliases: &[String], parent_id: Option<TagId>, depth: TagDepth) -> anyhow::Result<Tag>;
+    fn create(&self, name: &str, kana: &str, aliases: &[String], parent_id: Option<TagId>, depth: TagDepth) -> impl Future<Output = anyhow::Result<Tag>> + Send;
 
     /// Fetches tags by their IDs.
-    async fn fetch_by_ids<T>(&self, ids: T, depth: TagDepth) -> anyhow::Result<Vec<Tag>>
+    fn fetch_by_ids<T>(&self, ids: T, depth: TagDepth) -> impl Future<Output = anyhow::Result<Vec<Tag>>> + Send
     where
         T: IntoIterator<Item = TagId> + Send + Sync + 'static;
 
     /// Fetches tags by their names like the given parameter.
-    async fn fetch_by_name_or_alias_like(&self, name_or_alias_like: &str, depth: TagDepth) -> anyhow::Result<Vec<Tag>>;
+    fn fetch_by_name_or_alias_like(&self, name_or_alias_like: &str, depth: TagDepth) -> impl Future<Output = anyhow::Result<Vec<Tag>>> + Send;
 
     /// Fetches all tags.
-    async fn fetch_all(&self, depth: TagDepth, root: bool, cursor: Option<(String, TagId)>, order: Order, direction: Direction, limit: u64) -> anyhow::Result<Vec<Tag>>;
+    fn fetch_all(&self, depth: TagDepth, root: bool, cursor: Option<(String, TagId)>, order: Order, direction: Direction, limit: u64) -> impl Future<Output = anyhow::Result<Vec<Tag>>> + Send;
 
     /// Updates the tag by ID.
-    async fn update_by_id<T, U>(
+    fn update_by_id<T, U>(
         &self,
         id: TagId,
         name: Option<String>,
@@ -31,17 +30,17 @@ pub trait TagsRepository: Send + Sync + 'static {
         add_aliases: T,
         remove_aliases: U,
         depth: TagDepth,
-    ) -> anyhow::Result<Tag>
+    ) -> impl Future<Output = anyhow::Result<Tag>> + Send
     where
         T: IntoIterator<Item = String> + Send + Sync + 'static,
         U: IntoIterator<Item = String> + Send + Sync + 'static;
 
     /// Attaches the tag to the existing tag by ID.
-    async fn attach_by_id(&self, id: TagId, parent_id: TagId, depth: TagDepth) -> anyhow::Result<Tag>;
+    fn attach_by_id(&self, id: TagId, parent_id: TagId, depth: TagDepth) -> impl Future<Output = anyhow::Result<Tag>> + Send;
 
     /// Detaches the tag from its parent by ID.
-    async fn detach_by_id(&self, id: TagId, depth: TagDepth) -> anyhow::Result<Tag>;
+    fn detach_by_id(&self, id: TagId, depth: TagDepth) -> impl Future<Output = anyhow::Result<Tag>> + Send;
 
     /// Deletes the tag by ID.
-    async fn delete_by_id(&self, id: TagId, recursive: bool) -> anyhow::Result<DeleteResult>;
+    fn delete_by_id(&self, id: TagId, recursive: bool) -> impl Future<Output = anyhow::Result<DeleteResult>> + Send;
 }

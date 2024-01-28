@@ -21,6 +21,7 @@ use domain::{
     },
     service::media::{MediaService, MediaServiceInterface},
 };
+use futures::future::{err, ok};
 use pretty_assertions::assert_eq;
 use uuid::uuid;
 
@@ -52,7 +53,7 @@ async fn create_medium_succeeds() {
             )
         })
         .returning(|_, _, _, _, _| {
-            Ok(Medium {
+            Box::pin(ok(Medium {
                 id: MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
                 sources: vec![
                     Source {
@@ -123,7 +124,7 @@ async fn create_medium_succeeds() {
                 replicas: Vec::new(),
                 created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 56).unwrap(),
                 updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 0).unwrap(),
-            })
+            }))
         });
 
     let mock_replicas_repository = MockReplicasRepository::new();
@@ -253,7 +254,7 @@ async fn create_medium_fails() {
                 &true,
             )
         })
-        .returning(|_, _, _, _, _| Err(anyhow!("error creating a medium")));
+        .returning(|_, _, _, _, _| Box::pin(err(anyhow!("error creating a medium"))));
 
     let mock_replicas_repository = MockReplicasRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
@@ -294,14 +295,14 @@ async fn create_replica_succeeds() {
         .expect_get_metadata()
         .times(1)
         .withf(|path| path == "/var/lib/hoarder/77777777-7777-7777-7777-777777777777.png")
-        .returning(|_| Ok(MediumMetadata::new("image/png", 720, 720)));
+        .returning(|_| Box::pin(ok(MediumMetadata::new("image/png", 720, 720))));
 
     let mut mock_medium_image_processor = MockMediumImageProcessor::new();
     mock_medium_image_processor
         .expect_generate_thumbnail()
         .times(1)
         .withf(|path| path == "/var/lib/hoarder/77777777-7777-7777-7777-777777777777.png")
-        .returning(|_| Ok(ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240))));
+        .returning(|_| Box::pin(ok(ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240)))));
 
     let mut mock_replicas_repository = MockReplicasRepository::new();
     mock_replicas_repository
@@ -316,7 +317,7 @@ async fn create_replica_succeeds() {
             )
         })
         .returning(|_, _, _, _| {
-            Ok(Replica {
+            Box::pin(ok(Replica {
                 id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
                 display_order: 1,
                 thumbnail: Some(Thumbnail {
@@ -330,7 +331,7 @@ async fn create_replica_succeeds() {
                 size: Size::new(720, 720),
                 created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
                 updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 1, 0).unwrap(),
-            })
+            }))
         });
 
     let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
@@ -366,14 +367,14 @@ async fn create_replica_fails() {
         .expect_get_metadata()
         .times(1)
         .withf(|path| path == "/var/lib/hoarder/77777777-7777-7777-7777-777777777777.png")
-        .returning(|_| Ok(MediumMetadata::new("image/png", 720, 720)));
+        .returning(|_| Box::pin(ok(MediumMetadata::new("image/png", 720, 720))));
 
     let mut mock_medium_image_processor = MockMediumImageProcessor::new();
     mock_medium_image_processor
         .expect_generate_thumbnail()
         .times(1)
         .withf(|path| path == "/var/lib/hoarder/77777777-7777-7777-7777-777777777777.png")
-        .returning(|_| Ok(ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240))));
+        .returning(|_| Box::pin(ok(ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240)))));
 
     let mut mock_replicas_repository = MockReplicasRepository::new();
     mock_replicas_repository
@@ -387,7 +388,7 @@ async fn create_replica_fails() {
                 &OriginalImage::new("image/png", Size::new(720, 720)),
             )
         })
-        .returning(|_, _, _, _| Err(anyhow!("error creating a replica")));
+        .returning(|_, _, _, _| Box::pin(err(anyhow!("error creating a replica"))));
 
     let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
     let actual = service.create_replica(
@@ -416,7 +417,7 @@ async fn create_source_succeeds() {
             )
         })
         .returning(|_, _| {
-            Ok(Source {
+            Box::pin(ok(Source {
                 id: SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
                 external_service: ExternalService {
                     id: ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
@@ -426,7 +427,7 @@ async fn create_source_succeeds() {
                 external_metadata: ExternalMetadata::Twitter { id: 727620202049900544 },
                 created_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 0).unwrap(),
                 updated_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 1).unwrap(),
-            })
+            }))
         });
 
     let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
@@ -465,7 +466,7 @@ async fn create_source_fails() {
                 &ExternalMetadata::Twitter { id: 727620202049900544 },
             )
         })
-        .returning(|_, _| Err(anyhow!("error creating a source")));
+        .returning(|_, _| Box::pin(err(anyhow!("error creating a source"))));
 
     let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
     let actual = service.create_source(
@@ -494,7 +495,7 @@ async fn get_media_succeeds() {
             )
         })
         .returning(|_, _, _, _, _, _, _| {
-            Ok(vec![
+            Box::pin(ok(vec![
                 Medium {
                     id: MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
                     sources: Vec::new(),
@@ -519,7 +520,7 @@ async fn get_media_succeeds() {
                     created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 58).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 2).unwrap(),
                 },
-            ])
+            ]))
         });
 
     let mock_replicas_repository = MockReplicasRepository::new();
@@ -583,7 +584,7 @@ async fn get_media_fails() {
                 &10,
             )
         })
-        .returning(|_, _, _, _, _, _, _| Err(anyhow!("error fetching media")));
+        .returning(|_, _, _, _, _, _, _| Box::pin(err(anyhow!("error fetching media"))));
 
     let mock_replicas_repository = MockReplicasRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
@@ -622,7 +623,7 @@ async fn get_media_by_ids_succeeds() {
             )
         })
         .returning(|_, _, _, _| {
-            Ok(vec![
+            Box::pin(ok(vec![
                 Medium {
                     id: MediumId::from(uuid!("88888888-8888-8888-8888-888888888888")),
                     sources: Vec::new(),
@@ -639,7 +640,7 @@ async fn get_media_by_ids_succeeds() {
                     created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 58).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 2).unwrap(),
                 },
-            ])
+            ]))
         });
 
     let mock_replicas_repository = MockReplicasRepository::new();
@@ -695,7 +696,7 @@ async fn get_media_by_ids_fails() {
                 &true,
             )
         })
-        .returning(|_, _, _, _| Err(anyhow!("error fetching the media")));
+        .returning(|_, _, _, _| Box::pin(err(anyhow!("error fetching the media"))));
 
     let mock_replicas_repository = MockReplicasRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
@@ -738,7 +739,7 @@ async fn get_media_by_source_ids_succeeds() {
             )
         })
         .returning(|_, _, _, _, _, _, _, _| {
-            Ok(vec![
+            Box::pin(ok(vec![
                 Medium {
                     id: MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
                     sources: Vec::new(),
@@ -755,7 +756,7 @@ async fn get_media_by_source_ids_succeeds() {
                     created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 57).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 1).unwrap(),
                 },
-            ])
+            ]))
         });
 
     let mock_replicas_repository = MockReplicasRepository::new();
@@ -819,7 +820,7 @@ async fn get_media_by_source_ids_fails() {
                 &10,
             )
         })
-        .returning(|_, _, _, _, _, _, _, _| Err(anyhow!("error fetching the media")));
+        .returning(|_, _, _, _, _, _, _, _| Box::pin(err(anyhow!("error fetching the media"))));
 
     let mock_replicas_repository = MockReplicasRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
@@ -872,7 +873,7 @@ async fn get_media_by_tag_ids_succeeds() {
             )
         })
         .returning(|_, _, _, _, _, _, _, _| {
-            Ok(vec![
+            Box::pin(ok(vec![
                 Medium {
                     id: MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
                     sources: Vec::new(),
@@ -889,7 +890,7 @@ async fn get_media_by_tag_ids_succeeds() {
                     created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 58).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 2).unwrap(),
                 },
-            ])
+            ]))
         });
 
     let mock_replicas_repository = MockReplicasRepository::new();
@@ -965,7 +966,7 @@ async fn get_media_by_tag_ids_fails() {
                 &10,
             )
         })
-        .returning(|_, _, _, _, _, _, _, _| Err(anyhow!("error fetching the media")));
+        .returning(|_, _, _, _, _, _, _, _| Box::pin(err(anyhow!("error fetching the media"))));
 
     let mock_replicas_repository = MockReplicasRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
@@ -1014,7 +1015,7 @@ async fn get_replicas_by_ids_succeeds() {
             ]
         })
         .returning(|_| {
-            Ok(vec![
+            Box::pin(ok(vec![
                 Replica {
                     id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
                     display_order: 1,
@@ -1045,7 +1046,7 @@ async fn get_replicas_by_ids_succeeds() {
                     created_at: Utc.with_ymd_and_hms(2022, 6, 3, 0, 2, 0).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 6, 3, 0, 3, 0).unwrap(),
                 },
-            ])
+            ]))
         });
 
     let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
@@ -1105,7 +1106,7 @@ async fn get_replicas_by_ids_fails() {
                 ReplicaId::from(uuid!("77777777-7777-7777-7777-777777777777")),
             ]
         })
-        .returning(|_| Err(anyhow!("error fetching the replicas")));
+        .returning(|_| Box::pin(err(anyhow!("error fetching the replicas"))));
 
     let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
     let actual = service.get_replicas_by_ids(vec![
@@ -1129,7 +1130,7 @@ async fn get_replica_by_original_url_succeeds() {
         .times(1)
         .withf(|original_url| original_url == "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png")
         .returning(|_| {
-            Ok(Replica {
+            Box::pin(ok(Replica {
                 id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
                 display_order: 1,
                 thumbnail: Some(Thumbnail {
@@ -1143,7 +1144,7 @@ async fn get_replica_by_original_url_succeeds() {
                 size: Size::new(720, 720),
                 created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
                 updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 1, 0).unwrap(),
-            })
+            }))
         });
 
     let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
@@ -1178,7 +1179,7 @@ async fn get_replica_by_original_url_fails() {
         .expect_fetch_by_original_url()
         .times(1)
         .withf(|original_url| original_url == "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png")
-        .returning(|_| Err(anyhow!("error fetching the replica")));
+        .returning(|_| Box::pin(err(anyhow!("error fetching the replica"))));
 
     let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
     let actual = service.get_replica_by_original_url("file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png").await;
@@ -1204,7 +1205,7 @@ async fn get_source_by_external_metadata_succeeds() {
              )
         })
         .returning(|_, _| {
-            Ok(Some(Source {
+            Box::pin(ok(Some(Source {
                 id: SourceId::from(uuid!("22222222-2222-2222-2222-222222222222")),
                 external_service: ExternalService {
                     id: ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
@@ -1214,7 +1215,7 @@ async fn get_source_by_external_metadata_succeeds() {
                 external_metadata: ExternalMetadata::Pixiv { id: 56736941 },
                 created_at: Utc.with_ymd_and_hms(2016, 5, 6, 5, 14, 0).unwrap(),
                 updated_at: Utc.with_ymd_and_hms(2016, 5, 6, 5, 14, 1).unwrap(),
-            }))
+            })))
         });
 
     let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
@@ -1253,7 +1254,7 @@ async fn get_sources_by_external_metadata_not_found() {
                  &ExternalMetadata::Pixiv { id: 56736941 },
              )
         })
-        .returning(|_, _| Ok(None));
+        .returning(|_, _| Box::pin(ok(None)));
 
     let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
     let actual = service.get_source_by_external_metadata(
@@ -1281,7 +1282,7 @@ async fn get_sources_by_external_metadata_fails() {
                  &ExternalMetadata::Pixiv { id: 56736941 },
              )
         })
-        .returning(|_, _| Err(anyhow!("error fetching the sources")));
+        .returning(|_, _| Box::pin(err(anyhow!("error fetching the sources"))));
 
     let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
     let actual = service.get_source_by_external_metadata(
@@ -1304,9 +1305,7 @@ async fn get_thumbnail_by_id_succeeds() {
         .expect_fetch_thumbnail_by_id()
         .times(1)
         .withf(|id| id == &ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888")))
-        .returning(|_| {
-            Ok(vec![0x01, 0x02, 0x03, 0x04])
-        });
+        .returning(|_| Box::pin(ok(vec![0x01, 0x02, 0x03, 0x04])));
 
     let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
     let actual = service.get_thumbnail_by_id(ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888"))).await.unwrap();
@@ -1326,7 +1325,7 @@ async fn get_thumbnail_by_id_fails() {
         .expect_fetch_thumbnail_by_id()
         .times(1)
         .withf(|id| id == &ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888")))
-        .returning(|_| Err(anyhow!("error fetching the replica")));
+        .returning(|_| Box::pin(err(anyhow!("error fetching the replica"))));
 
     let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
     let actual = service.get_thumbnail_by_id(ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888"))).await;
@@ -1394,14 +1393,14 @@ async fn update_medium_by_id_succeeds() {
             )
         })
         .returning(|_, _, _, _, _, _, _, _, _, _| {
-            Ok(Medium {
+            Box::pin(ok(Medium {
                 id: MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
                 sources: Vec::new(),
                 tags: BTreeMap::new(),
                 replicas: Vec::new(),
                 created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 56).unwrap(),
                 updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 0).unwrap(),
-            })
+            }))
         });
 
     let mock_replicas_repository = MockReplicasRepository::new();
@@ -1509,7 +1508,7 @@ async fn update_medium_by_id_fails() {
                 &true,
             )
         })
-        .returning(|_, _, _, _, _, _, _, _, _, _| Err(anyhow!("error updating the medium")));
+        .returning(|_, _, _, _, _, _, _, _, _, _| Box::pin(err(anyhow!("error updating the medium"))));
 
     let mock_replicas_repository = MockReplicasRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
@@ -1560,14 +1559,14 @@ async fn update_replica_by_id_succeeds() {
         .expect_get_metadata()
         .times(1)
         .withf(|path| path == "/var/lib/hoarder/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg")
-        .returning(|_| Ok(MediumMetadata::new("image/jpeg", 720, 720)));
+        .returning(|_| Box::pin(ok(MediumMetadata::new("image/jpeg", 720, 720))));
 
     let mut mock_medium_image_processor = MockMediumImageProcessor::new();
     mock_medium_image_processor
         .expect_generate_thumbnail()
         .times(1)
         .withf(|path| path == "/var/lib/hoarder/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg")
-        .returning(|_| Ok(ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240))));
+        .returning(|_| Box::pin(ok(ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240)))));
 
     let mut mock_replicas_repository = MockReplicasRepository::new();
     mock_replicas_repository
@@ -1582,7 +1581,7 @@ async fn update_replica_by_id_succeeds() {
             )
         })
         .returning(|_, _, _, _| {
-            Ok(Replica {
+            Box::pin(ok(Replica {
                 id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
                 display_order: 1,
                 thumbnail: Some(Thumbnail {
@@ -1596,7 +1595,7 @@ async fn update_replica_by_id_succeeds() {
                 size: Size::new(720, 720),
                 created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
                 updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 1, 0).unwrap(),
-            })
+            }))
         });
 
     let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
@@ -1632,14 +1631,14 @@ async fn update_replica_by_id_fails() {
         .expect_get_metadata()
         .times(1)
         .withf(|path| path == "/var/lib/hoarder/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg")
-        .returning(|_| Ok(MediumMetadata::new("image/jpeg", 720, 720)));
+        .returning(|_| Box::pin(ok(MediumMetadata::new("image/jpeg", 720, 720))));
 
     let mut mock_medium_image_processor = MockMediumImageProcessor::new();
     mock_medium_image_processor
         .expect_generate_thumbnail()
         .times(1)
         .withf(|path| path == "/var/lib/hoarder/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg")
-        .returning(|_| Ok(ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240))));
+        .returning(|_| Box::pin(ok(ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240)))));
 
     let mut mock_replicas_repository = MockReplicasRepository::new();
     mock_replicas_repository
@@ -1653,7 +1652,7 @@ async fn update_replica_by_id_fails() {
                 &Some(OriginalImage::new("image/jpeg", Size::new(720, 720))),
             )
         })
-        .returning(|_, _, _, _| Err(anyhow!("error updating the replica")));
+        .returning(|_, _, _, _| Box::pin(err(anyhow!("error updating the replica"))));
 
     let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
     let actual = service.update_replica_by_id(
@@ -1683,7 +1682,7 @@ async fn update_source_by_id_succeeds() {
             )
         })
         .returning(|_, _, _| {
-            Ok(Source {
+            Box::pin(ok(Source {
                 id: SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
                 external_service: ExternalService {
                     id: ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
@@ -1693,7 +1692,7 @@ async fn update_source_by_id_succeeds() {
                 external_metadata: ExternalMetadata::Pixiv { id: 56736941 },
                 created_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 0).unwrap(),
                 updated_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 1).unwrap(),
-            })
+            }))
         });
 
     let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
@@ -1734,7 +1733,7 @@ async fn update_source_by_id_fails() {
                 &Some(ExternalMetadata::Pixiv { id: 56736941 }),
             )
         })
-        .returning(|_, _, _| Err(anyhow!("error updating the source")));
+        .returning(|_, _, _| Box::pin(err(anyhow!("error updating the source"))));
 
     let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
     let actual = service.update_source_by_id(
@@ -1753,7 +1752,7 @@ async fn delete_medium_by_id_succeeds() {
         .expect_delete_by_id()
         .times(1)
         .withf(|id| id == &MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")))
-        .returning(|_| Ok(DeleteResult::Deleted(1)));
+        .returning(|_| Box::pin(ok(DeleteResult::Deleted(1))));
 
     let mock_replicas_repository = MockReplicasRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
@@ -1773,7 +1772,7 @@ async fn delete_medium_by_id_fails() {
         .expect_delete_by_id()
         .times(1)
         .withf(|id| id == &MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")))
-        .returning(|_| Err(anyhow!("error deleting the medium")));
+        .returning(|_| Box::pin(err(anyhow!("error deleting the medium"))));
 
     let mock_replicas_repository = MockReplicasRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
@@ -1798,7 +1797,7 @@ async fn delete_replica_by_id_succeeds() {
         .expect_delete_by_id()
         .times(1)
         .withf(|id| id == &ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")))
-        .returning(|_| Ok(DeleteResult::Deleted(1)));
+        .returning(|_| Box::pin(ok(DeleteResult::Deleted(1))));
 
     let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
     let actual = service.delete_replica_by_id(ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666"))).await.unwrap();
@@ -1818,7 +1817,7 @@ async fn delete_replica_by_id_fails() {
         .expect_delete_by_id()
         .times(1)
         .withf(|id| id == &ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")))
-        .returning(|_| Err(anyhow!("error deleting the replica")));
+        .returning(|_| Box::pin(err(anyhow!("error deleting the replica"))));
 
     let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
     let actual = service.delete_replica_by_id(ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666"))).await;
@@ -1838,7 +1837,7 @@ async fn delete_source_by_id_succeeds() {
         .expect_delete_by_id()
         .times(1)
         .withf(|id| id == &SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")))
-        .returning(|_| Ok(DeleteResult::Deleted(1)));
+        .returning(|_| Box::pin(ok(DeleteResult::Deleted(1))));
 
     let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
     let actual = service.delete_source_by_id(SourceId::from(uuid!("11111111-1111-1111-1111-111111111111"))).await.unwrap();
@@ -1858,7 +1857,7 @@ async fn delete_source_by_id_fails() {
         .expect_delete_by_id()
         .times(1)
         .withf(|id| id == &SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")))
-        .returning(|_| Err(anyhow!("error deleting the source")));
+        .returning(|_| Box::pin(err(anyhow!("error deleting the source"))));
 
     let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
     let actual = service.delete_source_by_id(SourceId::from(uuid!("11111111-1111-1111-1111-111111111111"))).await;

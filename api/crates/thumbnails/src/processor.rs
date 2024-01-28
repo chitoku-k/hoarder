@@ -1,7 +1,6 @@
 use std::{fs::File, io::{BufReader, Cursor}};
 
 use anyhow::Context;
-use async_trait::async_trait;
 use derive_more::Constructor;
 use domain::{
     entity::replicas::{Size, ThumbnailImage},
@@ -20,7 +19,6 @@ pub struct FileImageProcessor {
     thumbnail_filter: FilterType,
 }
 
-#[async_trait]
 impl MediumImageProcessor for FileImageProcessor {
     async fn generate_thumbnail(&self, path: &str) -> anyhow::Result<ThumbnailImage> {
         let size = self.thumbnail_size;

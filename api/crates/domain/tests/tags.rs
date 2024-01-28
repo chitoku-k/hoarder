@@ -14,6 +14,7 @@ use domain::{
     },
     service::tags::{TagsService, TagsServiceInterface},
 };
+use futures::future::{err, ok};
 use pretty_assertions::assert_eq;
 use uuid::uuid;
 
@@ -33,7 +34,7 @@ async fn create_tag_succeeds() {
             )
         })
         .returning(|_, _, _, _, _| {
-            Ok(Tag {
+            Box::pin(ok(Tag {
                 id: TagId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                 name: "赤座あかり".to_string(),
                 kana: "あかざあかり".to_string(),
@@ -51,7 +52,7 @@ async fn create_tag_succeeds() {
                 children: Vec::new(),
                 created_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(),
                 updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 1, 0).unwrap(),
-            })
+            }))
         });
 
     let mock_tag_types_repository = MockTagTypesRepository::new();
@@ -101,7 +102,7 @@ async fn create_tag_fails() {
                 &TagDepth::new(1, 1),
             )
         })
-        .returning(|_, _, _, _, _| Err(anyhow!("error creating a tag")));
+        .returning(|_, _, _, _, _| Box::pin(err(anyhow!("error creating a tag"))));
 
     let mock_tag_types_repository = MockTagTypesRepository::new();
 
@@ -126,11 +127,11 @@ async fn create_tag_type_succeeds() {
         .times(1)
         .withf(|slug, name| (slug, name) == ("character", "キャラクター"))
         .returning(|_, _| {
-            Ok(TagType {
+            Box::pin(ok(TagType {
                 id: TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
                 slug: "character".to_string(),
                 name: "キャラクター".to_string(),
-            })
+            }))
         });
 
     let service = TagsService::new(mock_tags_repository, mock_tag_types_repository);
@@ -151,7 +152,7 @@ async fn create_tag_type_fails() {
         .expect_create()
         .times(1)
         .withf(|slug, name| (slug, name) == ("character", "キャラクター"))
-        .returning(|_, _| Err(anyhow!("error creating a tag type")));
+        .returning(|_, _| Box::pin(err(anyhow!("error creating a tag type"))));
 
     let service = TagsService::new(mock_tags_repository, mock_tag_types_repository);
     let actual = service.create_tag_type("character", "キャラクター").await;
@@ -176,7 +177,7 @@ async fn get_tags_succeeds() {
             )
         })
         .returning(|_, _, _, _, _, _| {
-            Ok(vec![
+            Box::pin(ok(vec![
                 Tag {
                     id: TagId::from(uuid!("22222222-2222-2222-2222-222222222222")),
                     name: "ゆるゆり".to_string(),
@@ -228,7 +229,7 @@ async fn get_tags_succeeds() {
                     created_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 2, 0).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 3, 0).unwrap(),
                 },
-            ])
+            ]))
         });
 
     let mock_tag_types_repository = MockTagTypesRepository::new();
@@ -307,7 +308,7 @@ async fn get_tags_fails() {
                 &10,
             )
         })
-        .returning(|_, _, _, _, _, _| Err(anyhow!("error fetching tags")));
+        .returning(|_, _, _, _, _, _| Box::pin(err(anyhow!("error fetching tags"))));
 
     let mock_tag_types_repository = MockTagTypesRepository::new();
 
@@ -333,7 +334,7 @@ async fn get_tags_by_ids_succeeds() {
             )
         })
         .returning(|_, _| {
-            Ok(vec![
+            Box::pin(ok(vec![
                 Tag {
                     id: TagId::from(uuid!("22222222-2222-2222-2222-222222222222")),
                     name: "ゆるゆり".to_string(),
@@ -375,7 +376,7 @@ async fn get_tags_by_ids_succeeds() {
                     created_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 2, 0).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 3, 0).unwrap(),
                 },
-            ])
+            ]))
         });
 
     let mock_tag_types_repository = MockTagTypesRepository::new();
@@ -449,7 +450,7 @@ async fn get_tags_by_ids_fails() {
                 &TagDepth::new(0, 1),
             )
         })
-        .returning(|_, _| Err(anyhow!("error fetching the tags")));
+        .returning(|_, _| Box::pin(err(anyhow!("error fetching the tags"))));
 
     let mock_tag_types_repository = MockTagTypesRepository::new();
 
@@ -473,7 +474,7 @@ async fn get_tags_by_name_or_alias_like_succeeds() {
         .times(1)
         .withf(|name_or_alias_like, depth| (name_or_alias_like, depth) == ("り", &TagDepth::new(0, 1)))
         .returning(|_, _| {
-            Ok(vec![
+            Box::pin(ok(vec![
                 Tag {
                     id: TagId::from(uuid!("22222222-2222-2222-2222-222222222222")),
                     name: "ゆるゆり".to_string(),
@@ -515,7 +516,7 @@ async fn get_tags_by_name_or_alias_like_succeeds() {
                     created_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 1, 0).unwrap(),
                 },
-            ])
+            ]))
         });
 
     let mock_tag_types_repository = MockTagTypesRepository::new();
@@ -575,7 +576,7 @@ async fn get_tags_by_name_or_alias_like_fails() {
         .expect_fetch_by_name_or_alias_like()
         .times(1)
         .withf(|name_or_alias_like, depth| (name_or_alias_like, depth) == ("り", &TagDepth::new(0, 1)))
-        .returning(|_, _| Err(anyhow!("error fetching the tags")));
+        .returning(|_, _| Box::pin(err(anyhow!("error fetching the tags"))));
 
     let mock_tag_types_repository = MockTagTypesRepository::new();
 
@@ -593,7 +594,7 @@ async fn get_tag_types_succeeds() {
         .expect_fetch_all()
         .times(1)
         .returning(|| {
-            Ok(vec![
+            Box::pin(ok(vec![
                 TagType {
                     id: TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
                     slug: "character".to_string(),
@@ -604,7 +605,7 @@ async fn get_tag_types_succeeds() {
                     slug: "illustrator".to_string(),
                     name: "イラストレーター".to_string(),
                 },
-            ])
+            ]))
         });
 
     let service = TagsService::new(mock_tags_repository, mock_tag_types_repository);
@@ -631,7 +632,7 @@ async fn get_tag_types_fails() {
     mock_tag_types_repository
         .expect_fetch_all()
         .times(1)
-        .returning(|| Err(anyhow!("error fetching the tag types")));
+        .returning(|| Box::pin(err(anyhow!("error fetching the tag types"))));
 
     let service = TagsService::new(mock_tags_repository, mock_tag_types_repository);
     let actual = service.get_tag_types().await;
@@ -656,7 +657,7 @@ async fn update_tag_by_id_succeeds() {
             )
         })
         .returning(|_, _, _, _, _, _| {
-            Ok(Tag {
+            Box::pin(ok(Tag {
                 id: TagId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                 name: "赤座あかり".to_string(),
                 kana: "あかざあかり".to_string(),
@@ -674,7 +675,7 @@ async fn update_tag_by_id_succeeds() {
                 children: Vec::new(),
                 created_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(),
                 updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 1, 0).unwrap(),
-            })
+            }))
         });
 
     let mock_tag_types_repository = MockTagTypesRepository::new();
@@ -726,7 +727,7 @@ async fn update_tag_by_id_fails() {
                 &TagDepth::new(0, 1),
             )
         })
-        .returning(|_, _, _, _, _, _| Err(anyhow!("error updating the tag")));
+        .returning(|_, _, _, _, _, _| Box::pin(err(anyhow!("error updating the tag"))));
 
     let mock_tag_types_repository = MockTagTypesRepository::new();
 
@@ -758,11 +759,11 @@ async fn update_tag_type_by_id_succeeds() {
             )
         })
         .returning(|_, _, _| {
-            Ok(TagType {
+            Box::pin(ok(TagType {
                 id: TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
                 slug: "characters".to_string(),
                 name: "キャラクター".to_string(),
-            })
+            }))
         });
 
     let service = TagsService::new(mock_tags_repository, mock_tag_types_repository);
@@ -793,7 +794,7 @@ async fn update_tag_type_by_id_fails() {
                 &None,
             )
         })
-        .returning(|_, _, _| Err(anyhow!("error updating the tag type")));
+        .returning(|_, _, _| Box::pin(err(anyhow!("error updating the tag type"))));
 
     let service = TagsService::new(mock_tags_repository, mock_tag_types_repository);
     let actual = service.update_tag_type_by_id(
@@ -819,7 +820,7 @@ async fn attach_tag_by_id_succeeds() {
             )
         })
         .returning(|_, _, _| {
-            Ok(Tag {
+            Box::pin(ok(Tag {
                 id: TagId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                 name: "赤座あかり".to_string(),
                 kana: "あかざあかり".to_string(),
@@ -837,7 +838,7 @@ async fn attach_tag_by_id_succeeds() {
                 children: Vec::new(),
                 created_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(),
                 updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 1, 0).unwrap(),
-            })
+            }))
         });
 
     let mock_tag_types_repository = MockTagTypesRepository::new();
@@ -883,7 +884,7 @@ async fn attach_tag_by_id_fails() {
                 &TagDepth::new(1, 1),
             )
         })
-        .returning(|_, _, _| Err(anyhow!("error attaching the tag")));
+        .returning(|_, _, _| Box::pin(err(anyhow!("error attaching the tag"))));
 
     let mock_tag_types_repository = MockTagTypesRepository::new();
 
@@ -910,7 +911,7 @@ async fn detach_tag_by_id_succeeds() {
             )
         })
         .returning(|_, _| {
-            Ok(Tag {
+            Box::pin(ok(Tag {
                 id: TagId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                 name: "赤座あかり".to_string(),
                 kana: "あかざあかり".to_string(),
@@ -919,7 +920,7 @@ async fn detach_tag_by_id_succeeds() {
                 children: Vec::new(),
                 created_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(),
                 updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 1, 0).unwrap(),
-            })
+            }))
         });
 
     let mock_tag_types_repository = MockTagTypesRepository::new();
@@ -954,7 +955,7 @@ async fn detach_tag_by_id_fails() {
                 &TagDepth::new(1, 1),
             )
         })
-        .returning(|_, _| Err(anyhow!("error detaching the tag")));
+        .returning(|_, _| Box::pin(err(anyhow!("error detaching the tag"))));
 
     let mock_tag_types_repository = MockTagTypesRepository::new();
 
@@ -974,7 +975,7 @@ async fn delete_tag_by_id_succeeds() {
         .expect_delete_by_id()
         .times(1)
         .withf(|id, recursive| id == &TagId::from(uuid!("33333333-3333-3333-3333-333333333333")) && *recursive)
-        .returning(|_, _| Ok(DeleteResult::Deleted(1)));
+        .returning(|_, _| Box::pin(ok(DeleteResult::Deleted(1))));
 
     let mock_tag_types_repository = MockTagTypesRepository::new();
 
@@ -991,7 +992,7 @@ async fn delete_tag_by_id_fails() {
         .expect_delete_by_id()
         .times(1)
         .withf(|id, recursive| id == &TagId::from(uuid!("33333333-3333-3333-3333-333333333333")) && *recursive)
-        .returning(|_, _| Err(anyhow!("error deleting the tag")));
+        .returning(|_, _| Box::pin(err(anyhow!("error deleting the tag"))));
 
     let mock_tag_types_repository = MockTagTypesRepository::new();
 
@@ -1009,7 +1010,7 @@ async fn delete_tag_type_by_id_succeeds() {
         .expect_delete_by_id()
         .times(1)
         .withf(|id| id == &TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")))
-        .returning(|_| Ok(DeleteResult::Deleted(1)));
+        .returning(|_| Box::pin(ok(DeleteResult::Deleted(1))));
 
     let service = TagsService::new(mock_tags_repository, mock_tag_types_repository);
     let actual = service.delete_tag_type_by_id(TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444"))).await.unwrap();
@@ -1025,7 +1026,7 @@ async fn delete_tag_type_by_id_fails() {
         .expect_delete_by_id()
         .times(1)
         .withf(|id| id == &TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")))
-        .returning(|_| Err(anyhow!("error deleting the tag type")));
+        .returning(|_| Box::pin(err(anyhow!("error deleting the tag type"))));
 
     let service = TagsService::new(mock_tags_repository, mock_tag_types_repository);
     let actual = service.delete_tag_type_by_id(TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444"))).await;

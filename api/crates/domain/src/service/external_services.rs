@@ -1,4 +1,5 @@
-use async_trait::async_trait;
+use std::future::Future;
+
 use derive_more::Constructor;
 
 use crate::{
@@ -7,24 +8,23 @@ use crate::{
 };
 
 #[cfg_attr(feature = "test-mock", mockall::automock)]
-#[async_trait]
 pub trait ExternalServicesServiceInterface: Send + Sync + 'static {
     /// Creates an external service.
-    async fn create_external_service(&self, slug: &str, name: &str) -> anyhow::Result<ExternalService>;
+    fn create_external_service(&self, slug: &str, name: &str) -> impl Future<Output = anyhow::Result<ExternalService>> + Send;
 
     /// Gets external services.
-    async fn get_external_services(&self) -> anyhow::Result<Vec<ExternalService>>;
+    fn get_external_services(&self) -> impl Future<Output = anyhow::Result<Vec<ExternalService>>> + Send;
 
     /// Gets the external services by their IDs.
-    async fn get_external_services_by_ids<T>(&self, ids: T) -> anyhow::Result<Vec<ExternalService>>
+    fn get_external_services_by_ids<T>(&self, ids: T) -> impl Future<Output = anyhow::Result<Vec<ExternalService>>> + Send
     where
         T: IntoIterator<Item = ExternalServiceId> + Send + Sync + 'static;
 
     /// Updates the external service by ID.
-    async fn update_external_service_by_id<'a>(&self, id: ExternalServiceId, name: Option<&'a str>) -> anyhow::Result<ExternalService>;
+    fn update_external_service_by_id<'a>(&self, id: ExternalServiceId, name: Option<&'a str>) -> impl Future<Output = anyhow::Result<ExternalService>> + Send;
 
     /// Deletes the external service by ID.
-    async fn delete_external_service_by_id(&self, id: ExternalServiceId) -> anyhow::Result<DeleteResult>;
+    fn delete_external_service_by_id(&self, id: ExternalServiceId) -> impl Future<Output = anyhow::Result<DeleteResult>> + Send;
 }
 
 #[derive(Clone, Constructor)]
@@ -32,7 +32,6 @@ pub struct ExternalServicesService<ExternalServicesRepository> {
     external_services_repository: ExternalServicesRepository,
 }
 
-#[async_trait]
 impl<ExternalServicesRepository> ExternalServicesServiceInterface for ExternalServicesService<ExternalServicesRepository>
 where
     ExternalServicesRepository: external_services::ExternalServicesRepository,

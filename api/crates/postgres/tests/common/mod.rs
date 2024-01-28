@@ -1,5 +1,6 @@
+use std::{future::Future, pin::Pin};
+
 use anyhow::Context;
-use async_trait::async_trait;
 use include_dir::{include_dir, Dir};
 use sqlx::{
     postgres::{PgConnectOptions, PgPoolOptions},
@@ -58,32 +59,35 @@ async fn drop_database(conn: &mut PgConnection, name: &str) -> anyhow::Result<()
     Ok(())
 }
 
-#[async_trait]
 impl AsyncTestContext for DatabaseContext {
-    async fn setup() -> Self {
-        let name = format!("hoarder_{}", Uuid::new_v4());
-        let mut conn = create_database(&name).await.unwrap();
+    fn setup<'a>() -> Pin<Box<dyn Future<Output = Self> + Send + 'a>> {
+        Box::pin(async move {
+            let name = format!("hoarder_{}", Uuid::new_v4());
+            let mut conn = create_database(&name).await.unwrap();
 
-        let pool = match connect_database(&name).await {
-            Ok(pool) => pool,
-            Err(e) => {
-                drop_database(&mut conn, &name).await.unwrap();
-                panic!("{e:?}");
-            },
-        };
+            let pool = match connect_database(&name).await {
+                Ok(pool) => pool,
+                Err(e) => {
+                    drop_database(&mut conn, &name).await.unwrap();
+                    panic!("{e:?}");
+                },
+            };
 
-        match setup_database(&pool).await {
-            Ok(()) => Self { conn, pool, name },
-            Err(e) => {
-                pool.close().await;
-                drop_database(&mut conn, &name).await.unwrap();
-                panic!("{e:?}");
-            },
-        }
+            match setup_database(&pool).await {
+                Ok(()) => Self { conn, pool, name },
+                Err(e) => {
+                    pool.close().await;
+                    drop_database(&mut conn, &name).await.unwrap();
+                    panic!("{e:?}");
+                },
+            }
+        })
     }
 
-    async fn teardown(mut self) {
-        self.pool.close().await;
-        drop_database(&mut self.conn, &self.name).await.unwrap();
+    fn teardown<'a>(mut self) -> Pin<Box<dyn Future<Output = ()> + Send + 'a>> {
+        Box::pin(async move {
+            self.pool.close().await;
+            drop_database(&mut self.conn, &self.name).await.unwrap();
+        })
     }
 }

@@ -16,6 +16,7 @@ use domain::{
         tags::MockTagsServiceInterface,
     },
 };
+use futures::future::ok;
 use graphql::{query::Query, tags::TagTagTypeInput};
 use indoc::indoc;
 use pretty_assertions::assert_eq;
@@ -48,7 +49,7 @@ async fn by_source_ids_succeeds() {
             )
         })
         .returning(|_, _, _, _, _, _, _, _| {
-            Ok(vec![
+            Box::pin(ok(vec![
                 Medium {
                     id: MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
                     sources: Vec::new(),
@@ -65,7 +66,7 @@ async fn by_source_ids_succeeds() {
                     created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 57).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 1).unwrap(),
                 },
-            ])
+            ]))
         });
 
     let tags_service = MockTagsServiceInterface::new();
@@ -143,7 +144,7 @@ async fn by_tag_ids_succeeds() {
             )
         })
         .returning(|_, _, _, _, _, _, _, _| {
-            Ok(vec![
+            Box::pin(ok(vec![
                 Medium {
                     id: MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
                     sources: Vec::new(),
@@ -168,7 +169,7 @@ async fn by_tag_ids_succeeds() {
                     created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 58).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 2).unwrap(),
                 },
-            ])
+            ]))
         });
 
     let tags_service = MockTagsServiceInterface::new();

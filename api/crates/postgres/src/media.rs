@@ -1,6 +1,5 @@
 use std::collections::{BTreeMap, HashMap};
 
-use async_trait::async_trait;
 use chrono::{DateTime, Utc};
 use derive_more::{Constructor, From, Into};
 use domain::{
@@ -367,7 +366,6 @@ async fn eager_load(conn: &mut PgConnection, media: &mut [Medium], tag_depth: Op
     Ok(())
 }
 
-#[async_trait]
 impl MediaRepository for PostgresMediaRepository {
     async fn create<T, U>(&self, source_ids: T, created_at: Option<DateTime<Utc>>, tag_tag_type_ids: U, tag_depth: Option<TagDepth>, sources: bool) -> anyhow::Result<Medium>
     where

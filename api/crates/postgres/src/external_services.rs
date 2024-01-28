@@ -1,5 +1,4 @@
 use anyhow::Context;
-use async_trait::async_trait;
 use derive_more::{Constructor, From, Into};
 use domain::{
     entity::external_services::{ExternalService, ExternalServiceError, ExternalServiceId},
@@ -55,7 +54,6 @@ impl From<PostgresExternalServiceRow> for ExternalService {
     }
 }
 
-#[async_trait]
 impl ExternalServicesRepository for PostgresExternalServicesRepository {
     async fn create(&self, slug: &str, name: &str) -> anyhow::Result<ExternalService> {
         let (sql, values) = Query::insert()

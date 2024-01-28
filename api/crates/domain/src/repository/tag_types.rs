@@ -1,4 +1,4 @@
-use async_trait::async_trait;
+use std::future::Future;
 
 use crate::{
     entity::tag_types::{TagType, TagTypeId},
@@ -6,17 +6,16 @@ use crate::{
 };
 
 #[cfg_attr(feature = "test-mock", mockall::automock)]
-#[async_trait]
 pub trait TagTypesRepository: Send + Sync + 'static {
     /// Creates a tag type.
-    async fn create(&self, slug: &str, name: &str) -> anyhow::Result<TagType>;
+    fn create(&self, slug: &str, name: &str) -> impl Future<Output = anyhow::Result<TagType>> + Send;
 
     /// Fetches all tag types.
-    async fn fetch_all(&self) -> anyhow::Result<Vec<TagType>>;
+    fn fetch_all(&self) -> impl Future<Output = anyhow::Result<Vec<TagType>>> + Send;
 
     /// Updates the tag type by ID.
-    async fn update_by_id<'a>(&self, id: TagTypeId, slug: Option<&'a str>, name: Option<&'a str>) -> anyhow::Result<TagType>;
+    fn update_by_id<'a>(&self, id: TagTypeId, slug: Option<&'a str>, name: Option<&'a str>) -> impl Future<Output = anyhow::Result<TagType>> + Send;
 
     /// Deletes the tag type by Id.
-    async fn delete_by_id(&self, id: TagTypeId) -> anyhow::Result<DeleteResult>;
+    fn delete_by_id(&self, id: TagTypeId) -> impl Future<Output = anyhow::Result<DeleteResult>> + Send;
 }
