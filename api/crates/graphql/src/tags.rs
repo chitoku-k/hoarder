@@ -22,30 +22,8 @@ pub struct Tag {
     name: String,
     kana: String,
     aliases: BTreeSet<String>,
-    parent: Option<Box<TagParent>>,
-    children: Vec<TagChild>,
-    created_at: DateTime<Utc>,
-    updated_at: DateTime<Utc>,
-}
-
-#[derive(SimpleObject)]
-pub(crate) struct TagParent {
-    id: Uuid,
-    name: String,
-    kana: String,
-    aliases: BTreeSet<String>,
-    parent: Option<Box<Self>>,
-    created_at: DateTime<Utc>,
-    updated_at: DateTime<Utc>,
-}
-
-#[derive(SimpleObject)]
-pub(crate) struct TagChild {
-    id: Uuid,
-    name: String,
-    kana: String,
-    aliases: BTreeSet<String>,
-    children: Vec<Self>,
+    parent: Option<Box<Tag>>,
+    children: Vec<Tag>,
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
 }
@@ -90,43 +68,6 @@ impl From<tags::Tag> for Tag {
             kana: tag.kana,
             aliases: tag.aliases.into_inner(),
             parent,
-            children,
-            created_at: tag.created_at,
-            updated_at: tag.updated_at,
-        }
-    }
-}
-
-impl From<tags::Tag> for TagParent {
-    fn from(tag: tags::Tag) -> Self {
-        let parent = tag.parent
-            .map(|p| (*p).into())
-            .map(Box::new);
-
-        Self {
-            id: *tag.id,
-            name: tag.name,
-            kana: tag.kana,
-            aliases: tag.aliases.into_inner(),
-            parent,
-            created_at: tag.created_at,
-            updated_at: tag.updated_at,
-        }
-    }
-}
-
-impl From<tags::Tag> for TagChild {
-    fn from(tag: tags::Tag) -> Self {
-        let children = tag.children
-            .into_iter()
-            .map(Into::into)
-            .collect();
-
-        Self {
-            id: *tag.id,
-            name: tag.name,
-            kana: tag.kana,
-            aliases: tag.aliases.into_inner(),
             children,
             created_at: tag.created_at,
             updated_at: tag.updated_at,
