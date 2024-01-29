@@ -53,7 +53,7 @@ version = "1.0.112"
 
 [dependencies.sqlx]
 version = "0.7.3"
-features = ["chrono", "json", "postgres", "runtime-tokio", "tls-rustls", "uuid"]
+features = ["chrono", "json", "postgres", "runtime-tokio", "tls-native-tls", "uuid"]
 
 [dependencies.thiserror]
 version = "1.0.56"
