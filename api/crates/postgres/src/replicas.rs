@@ -212,6 +212,7 @@ impl ReplicasRepository for PostgresReplicasRepository {
             ])
             .from(PostgresReplica::Table)
             .and_where(Expr::col(PostgresReplica::MediumId).eq(PostgresMediumId::from(medium_id)))
+            .order_by(PostgresReplica::Id, Order::Asc)
             .lock(LockType::Update)
             .build_sqlx(PostgresQueryBuilder);
 
