@@ -1,33 +1,26 @@
-use std::borrow::Cow;
-
 use application::service::media::MediaURLFactoryInterface;
 use derive_more::Constructor;
-
-pub use regex::Regex;
 
 pub mod parser;
 
 #[derive(Constructor)]
-pub struct RegexMediaURLFactory {
-    rewrite_from: Regex,
-    rewrite_to: String,
+pub struct FileMediaURLFactory {
+    root_url: String,
 }
 
 #[derive(Constructor)]
 pub struct NoopMediaURLFactory;
 
-impl MediaURLFactoryInterface for RegexMediaURLFactory {
-    fn rewrite_original_url(&self, original_url: String) -> String {
-        match self.rewrite_from.replace(&original_url, &self.rewrite_to) {
-            Cow::Borrowed(b) if b.len() == original_url.len() => original_url,
-            Cow::Borrowed(b) => b.to_string(),
-            Cow::Owned(o) => o,
-        }
+impl MediaURLFactoryInterface for FileMediaURLFactory {
+    fn public_url(&self, original_url: &str) -> Option<String> {
+        original_url
+            .strip_prefix("file://")
+            .map(|s| format!("{}{}", &self.root_url, s))
     }
 }
 
 impl MediaURLFactoryInterface for NoopMediaURLFactory {
-    fn rewrite_original_url(&self, original_url: String) -> String {
-        original_url
+    fn public_url(&self, _: &str) -> Option<String> {
+        None
     }
 }

@@ -20,14 +20,14 @@ async fn succeeds(ctx: &DatabaseContext) {
     let actual_replica = repository.update_by_id(
         ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be")),
         Some(ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(1, 1))),
-        Some("file:///var/lib/hoarder/replica_new.jpg"),
+        Some("file:///replica_new.jpg"),
         Some(OriginalImage::new("image/jpeg", Size::new(720, 720))),
     ).await.unwrap();
     let actual_thumbnail = actual_replica.thumbnail.unwrap();
 
     assert_eq!(actual_replica.id, ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be")));
     assert_eq!(actual_replica.display_order, 1);
-    assert_eq!(actual_replica.original_url, "file:///var/lib/hoarder/replica_new.jpg".to_string());
+    assert_eq!(actual_replica.original_url, "file:///replica_new.jpg".to_string());
     assert_eq!(actual_replica.mime_type, "image/jpeg".to_string());
     assert_eq!(actual_replica.size.width, 720);
     assert_eq!(actual_replica.size.height, 720);
@@ -42,7 +42,7 @@ async fn succeeds(ctx: &DatabaseContext) {
 
     assert_eq!(actual.get::<Uuid, &str>("medium_id"), uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1"));
     assert_eq!(actual.get::<i32, &str>("display_order"), 1);
-    assert_eq!(actual.get::<&str, &str>("original_url"), "file:///var/lib/hoarder/replica_new.jpg");
+    assert_eq!(actual.get::<&str, &str>("original_url"), "file:///replica_new.jpg");
     assert_eq!(actual.get::<&str, &str>("mime_type"), "image/jpeg");
     assert_eq!(actual.get::<i32, &str>("width"), 720);
     assert_eq!(actual.get::<i32, &str>("height"), 720);

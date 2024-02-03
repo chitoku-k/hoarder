@@ -294,14 +294,14 @@ async fn create_replica_succeeds() {
     mock_medium_image_parser
         .expect_get_metadata()
         .times(1)
-        .withf(|path| path == "/var/lib/hoarder/77777777-7777-7777-7777-777777777777.png")
+        .withf(|path| path == "/77777777-7777-7777-7777-777777777777.png")
         .returning(|_| Box::pin(ok(MediumMetadata::new("image/png", 720, 720))));
 
     let mut mock_medium_image_processor = MockMediumImageProcessor::new();
     mock_medium_image_processor
         .expect_generate_thumbnail()
         .times(1)
-        .withf(|path| path == "/var/lib/hoarder/77777777-7777-7777-7777-777777777777.png")
+        .withf(|path| path == "/77777777-7777-7777-7777-777777777777.png")
         .returning(|_| Box::pin(ok(ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240)))));
 
     let mut mock_replicas_repository = MockReplicasRepository::new();
@@ -312,7 +312,7 @@ async fn create_replica_succeeds() {
             (medium_id, thumbnail_image, original_url, original_image) == (
                 &MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
                 &Some(ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240))),
-                "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png",
+                "file:///77777777-7777-7777-7777-777777777777.png",
                 &OriginalImage::new("image/png", Size::new(720, 720)),
             )
         })
@@ -326,7 +326,7 @@ async fn create_replica_succeeds() {
                     created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 2, 0).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 3, 0).unwrap(),
                 }),
-                original_url: "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png".to_string(),
+                original_url: "file:///77777777-7777-7777-7777-777777777777.png".to_string(),
                 mime_type: "image/png".to_string(),
                 size: Size::new(720, 720),
                 created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
@@ -337,7 +337,7 @@ async fn create_replica_succeeds() {
     let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
     let actual = service.create_replica(
         MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
-        "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png",
+        "file:///77777777-7777-7777-7777-777777777777.png",
     ).await.unwrap();
 
     assert_eq!(actual, Replica {
@@ -349,7 +349,7 @@ async fn create_replica_succeeds() {
             created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 2, 0).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 3, 0).unwrap(),
         }),
-        original_url: "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png".to_string(),
+        original_url: "file:///77777777-7777-7777-7777-777777777777.png".to_string(),
         mime_type: "image/png".to_string(),
         size: Size::new(720, 720),
         created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
@@ -366,14 +366,14 @@ async fn create_replica_fails() {
     mock_medium_image_parser
         .expect_get_metadata()
         .times(1)
-        .withf(|path| path == "/var/lib/hoarder/77777777-7777-7777-7777-777777777777.png")
+        .withf(|path| path == "/77777777-7777-7777-7777-777777777777.png")
         .returning(|_| Box::pin(ok(MediumMetadata::new("image/png", 720, 720))));
 
     let mut mock_medium_image_processor = MockMediumImageProcessor::new();
     mock_medium_image_processor
         .expect_generate_thumbnail()
         .times(1)
-        .withf(|path| path == "/var/lib/hoarder/77777777-7777-7777-7777-777777777777.png")
+        .withf(|path| path == "/77777777-7777-7777-7777-777777777777.png")
         .returning(|_| Box::pin(ok(ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240)))));
 
     let mut mock_replicas_repository = MockReplicasRepository::new();
@@ -384,7 +384,7 @@ async fn create_replica_fails() {
             (medium_id, thumbnail_image, original_url, original_image) == (
                 &MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
                 &Some(ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240))),
-                "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png",
+                "file:///77777777-7777-7777-7777-777777777777.png",
                 &OriginalImage::new("image/png", Size::new(720, 720)),
             )
         })
@@ -393,7 +393,7 @@ async fn create_replica_fails() {
     let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
     let actual = service.create_replica(
         MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
-        "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png",
+        "file:///77777777-7777-7777-7777-777777777777.png",
     ).await;
 
     assert!(actual.is_err());
@@ -1025,7 +1025,7 @@ async fn get_replicas_by_ids_succeeds() {
                         created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 2, 0).unwrap(),
                         updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 3, 0).unwrap(),
                     }),
-                    original_url: "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png".to_string(),
+                    original_url: "file:///77777777-7777-7777-7777-777777777777.png".to_string(),
                     mime_type: "image/png".to_string(),
                     size: Size::new(720, 720),
                     created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
@@ -1040,7 +1040,7 @@ async fn get_replicas_by_ids_succeeds() {
                         created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 4, 0).unwrap(),
                         updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 5, 0).unwrap(),
                     }),
-                    original_url: "file:///var/lib/hoarder/99999999-9999-9999-9999-999999999999.png".to_string(),
+                    original_url: "file:///99999999-9999-9999-9999-999999999999.png".to_string(),
                     mime_type: "image/png".to_string(),
                     size: Size::new(720, 720),
                     created_at: Utc.with_ymd_and_hms(2022, 6, 3, 0, 2, 0).unwrap(),
@@ -1065,7 +1065,7 @@ async fn get_replicas_by_ids_succeeds() {
                 created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 2, 0).unwrap(),
                 updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 3, 0).unwrap(),
             }),
-            original_url: "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png".to_string(),
+            original_url: "file:///77777777-7777-7777-7777-777777777777.png".to_string(),
             mime_type: "image/png".to_string(),
             size: Size::new(720, 720),
             created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
@@ -1080,7 +1080,7 @@ async fn get_replicas_by_ids_succeeds() {
                 created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 4, 0).unwrap(),
                 updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 5, 0).unwrap(),
             }),
-            original_url: "file:///var/lib/hoarder/99999999-9999-9999-9999-999999999999.png".to_string(),
+            original_url: "file:///99999999-9999-9999-9999-999999999999.png".to_string(),
             mime_type: "image/png".to_string(),
             size: Size::new(720, 720),
             created_at: Utc.with_ymd_and_hms(2022, 6, 3, 0, 2, 0).unwrap(),
@@ -1128,7 +1128,7 @@ async fn get_replica_by_original_url_succeeds() {
     mock_replicas_repository
         .expect_fetch_by_original_url()
         .times(1)
-        .withf(|original_url| original_url == "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png")
+        .withf(|original_url| original_url == "file:///77777777-7777-7777-7777-777777777777.png")
         .returning(|_| {
             Box::pin(ok(Replica {
                 id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
@@ -1139,7 +1139,7 @@ async fn get_replica_by_original_url_succeeds() {
                     created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 2, 0).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 3, 0).unwrap(),
                 }),
-                original_url: "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png".to_string(),
+                original_url: "file:///77777777-7777-7777-7777-777777777777.png".to_string(),
                 mime_type: "image/png".to_string(),
                 size: Size::new(720, 720),
                 created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
@@ -1148,7 +1148,7 @@ async fn get_replica_by_original_url_succeeds() {
         });
 
     let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
-    let actual = service.get_replica_by_original_url("file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png").await.unwrap();
+    let actual = service.get_replica_by_original_url("file:///77777777-7777-7777-7777-777777777777.png").await.unwrap();
 
     assert_eq!(actual, Replica {
         id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
@@ -1159,7 +1159,7 @@ async fn get_replica_by_original_url_succeeds() {
             created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 2, 0).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 3, 0).unwrap(),
         }),
-        original_url: "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png".to_string(),
+        original_url: "file:///77777777-7777-7777-7777-777777777777.png".to_string(),
         mime_type: "image/png".to_string(),
         size: Size::new(720, 720),
         created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
@@ -1178,11 +1178,11 @@ async fn get_replica_by_original_url_fails() {
     mock_replicas_repository
         .expect_fetch_by_original_url()
         .times(1)
-        .withf(|original_url| original_url == "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png")
+        .withf(|original_url| original_url == "file:///77777777-7777-7777-7777-777777777777.png")
         .returning(|_| Box::pin(err(anyhow!("error fetching the replica"))));
 
     let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
-    let actual = service.get_replica_by_original_url("file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png").await;
+    let actual = service.get_replica_by_original_url("file:///77777777-7777-7777-7777-777777777777.png").await;
 
     assert!(actual.is_err());
 }
@@ -1558,14 +1558,14 @@ async fn update_replica_by_id_succeeds() {
     mock_medium_image_parser
         .expect_get_metadata()
         .times(1)
-        .withf(|path| path == "/var/lib/hoarder/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg")
+        .withf(|path| path == "/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg")
         .returning(|_| Box::pin(ok(MediumMetadata::new("image/jpeg", 720, 720))));
 
     let mut mock_medium_image_processor = MockMediumImageProcessor::new();
     mock_medium_image_processor
         .expect_generate_thumbnail()
         .times(1)
-        .withf(|path| path == "/var/lib/hoarder/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg")
+        .withf(|path| path == "/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg")
         .returning(|_| Box::pin(ok(ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240)))));
 
     let mut mock_replicas_repository = MockReplicasRepository::new();
@@ -1576,7 +1576,7 @@ async fn update_replica_by_id_succeeds() {
             (id, thumbnail_image, original_url, original_image) == (
                 &ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
                 &Some(ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240))),
-                &Some("file:///var/lib/hoarder/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg"),
+                &Some("file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg"),
                 &Some(OriginalImage::new("image/jpeg", Size::new(720, 720))),
             )
         })
@@ -1590,7 +1590,7 @@ async fn update_replica_by_id_succeeds() {
                     created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 2, 0).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 3, 0).unwrap(),
                 }),
-                original_url: "file:///var/lib/hoarder/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string(),
+                original_url: "file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string(),
                 mime_type: "image/jpeg".to_string(),
                 size: Size::new(720, 720),
                 created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
@@ -1601,7 +1601,7 @@ async fn update_replica_by_id_succeeds() {
     let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
     let actual = service.update_replica_by_id(
         ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
-        Some("file:///var/lib/hoarder/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg"),
+        Some("file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg"),
     ).await.unwrap();
 
     assert_eq!(actual, Replica {
@@ -1613,7 +1613,7 @@ async fn update_replica_by_id_succeeds() {
             created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 2, 0).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 3, 0).unwrap(),
         }),
-        original_url: "file:///var/lib/hoarder/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string(),
+        original_url: "file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string(),
         mime_type: "image/jpeg".to_string(),
         size: Size::new(720, 720),
         created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
@@ -1630,14 +1630,14 @@ async fn update_replica_by_id_fails() {
     mock_medium_image_parser
         .expect_get_metadata()
         .times(1)
-        .withf(|path| path == "/var/lib/hoarder/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg")
+        .withf(|path| path == "/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg")
         .returning(|_| Box::pin(ok(MediumMetadata::new("image/jpeg", 720, 720))));
 
     let mut mock_medium_image_processor = MockMediumImageProcessor::new();
     mock_medium_image_processor
         .expect_generate_thumbnail()
         .times(1)
-        .withf(|path| path == "/var/lib/hoarder/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg")
+        .withf(|path| path == "/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg")
         .returning(|_| Box::pin(ok(ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240)))));
 
     let mut mock_replicas_repository = MockReplicasRepository::new();
@@ -1648,7 +1648,7 @@ async fn update_replica_by_id_fails() {
             (id, thumbnail_image, original_url, original_image) == (
                 &ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
                 &Some(ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240))),
-                &Some("file:///var/lib/hoarder/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg"),
+                &Some("file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg"),
                 &Some(OriginalImage::new("image/jpeg", Size::new(720, 720))),
             )
         })
@@ -1657,7 +1657,7 @@ async fn update_replica_by_id_fails() {
     let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
     let actual = service.update_replica_by_id(
         ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
-        Some("file:///var/lib/hoarder/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg"),
+        Some("file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg"),
     ).await;
 
     assert!(actual.is_err());
