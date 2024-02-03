@@ -785,6 +785,8 @@ impl TagsRepository for PostgresTagsRepository {
             ])
             .from(PostgresTagPath::Table)
             .and_where(Expr::col(PostgresTagPath::AncestorId).eq(PostgresTagId::from(id)))
+            .order_by(PostgresTagPath::AncestorId, Order::Asc)
+            .order_by(PostgresTagPath::DescendantId, Order::Asc)
             .lock(LockType::Update)
             .build_sqlx(PostgresQueryBuilder);
 
