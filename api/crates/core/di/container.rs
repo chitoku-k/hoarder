@@ -19,7 +19,7 @@ use domain::{
 };
 use graphql::{mutation::Mutation, query::Query, subscription::Subscription, APISchema, GraphQLService};
 use log::LevelFilter;
-use media::{parser::FileImageParser, NoopMediaURLFactory, Regex, RegexMediaURLFactory};
+use media::{parser::FileImageParser, FileMediaURLFactory, NoopMediaURLFactory};
 use postgres::{
     external_services::PostgresExternalServicesRepository,
     media::PostgresMediaRepository,
@@ -97,12 +97,12 @@ where
         .finish()
 }
 
-fn medium_image_parser() -> FileImageParser {
-    FileImageParser::new()
+fn medium_image_parser(root_dir: String) -> FileImageParser {
+    FileImageParser::new(root_dir)
 }
 
-fn medium_image_processor() -> FileImageProcessor {
-    FileImageProcessor::new(Size::new(240, 240), ImageOutputFormat::WebP, FilterType::CatmullRom)
+fn medium_image_processor(root_dir: String) -> FileImageProcessor {
+    FileImageProcessor::new(root_dir, Size::new(240, 240), ImageOutputFormat::WebP, FilterType::CatmullRom)
 }
 
 fn graphql_service<T, U, V>(schema: APISchema<T, U, V>) -> GraphQLService<T, U, V>
@@ -114,8 +114,8 @@ where
     GraphQLService::new(schema, "/graphql")
 }
 
-fn regex_media_url_factory(rewrite_from: Regex, rewrite_to: String) -> RegexMediaURLFactory {
-    RegexMediaURLFactory::new(rewrite_from, rewrite_to)
+fn file_media_url_factory(root_url: String) -> FileMediaURLFactory {
+    FileMediaURLFactory::new(root_url)
 }
 
 fn noop_media_url_factory() -> NoopMediaURLFactory {
@@ -162,16 +162,15 @@ impl Application {
         let tags_repository = tags_repository(pg_pool.clone());
         let tag_types_repository = tag_types_repository(pg_pool);
 
-        let medium_image_parser = medium_image_parser();
-        let medium_image_processor = medium_image_processor();
+        let medium_image_parser = medium_image_parser(config.media_root_dir.clone());
+        let medium_image_processor = medium_image_processor(config.media_root_dir.clone());
 
         let external_services_service = external_services_service(external_services_repository);
         let media_service = media_service(media_repository, replicas_repository, sources_repository, medium_image_parser, medium_image_processor);
         let tags_service = tags_service(tags_repository, tag_types_repository);
 
-        let rewrite_original_url_regex = Option::zip(config.rewrite_original_url_from, config.rewrite_original_url_to);
-        let media_url_factory: Arc<dyn MediaURLFactoryInterface> = match rewrite_original_url_regex {
-            Some((from, to)) => Arc::new(regex_media_url_factory(from, to)),
+        let media_url_factory: Arc<dyn MediaURLFactoryInterface> = match config.media_root_url {
+            Some(media_root_url) => Arc::new(file_media_url_factory(media_root_url)),
             None => Arc::new(noop_media_url_factory()),
         };
 

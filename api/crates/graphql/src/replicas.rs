@@ -63,9 +63,9 @@ impl From<replicas::Thumbnail> for Thumbnail {
 
 #[ComplexObject]
 impl Replica {
-    async fn url(&self, ctx: &Context<'_>) -> String {
+    async fn url(&self, ctx: &Context<'_>) -> Option<String> {
         let media_url_factory = ctx.data_unchecked::<Arc<dyn MediaURLFactoryInterface>>();
-        media_url_factory.rewrite_original_url(self.original_url.to_string())
+        media_url_factory.public_url(&self.original_url)
     }
 }
 

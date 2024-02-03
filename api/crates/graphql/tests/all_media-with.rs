@@ -668,7 +668,7 @@ async fn replicas_asc_succeeds() {
                                 created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 2, 0).unwrap(),
                                 updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 3, 0).unwrap(),
                             }),
-                            original_url: "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png".to_string(),
+                            original_url: "file:///77777777-7777-7777-7777-777777777777.png".to_string(),
                             mime_type: "image/png".to_string(),
                             size: Size::new(720, 720),
                             created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
@@ -683,7 +683,7 @@ async fn replicas_asc_succeeds() {
                                 created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 4, 0).unwrap(),
                                 updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 5, 0).unwrap(),
                             }),
-                            original_url: "file:///var/lib/hoarder/99999999-9999-9999-9999-999999999999.png".to_string(),
+                            original_url: "file:///99999999-9999-9999-9999-999999999999.png".to_string(),
                             mime_type: "image/png".to_string(),
                             size: Size::new(720, 720),
                             created_at: Utc.with_ymd_and_hms(2022, 6, 3, 0, 2, 0).unwrap(),
@@ -702,7 +702,7 @@ async fn replicas_asc_succeeds() {
                             id: ReplicaId::from(uuid!("88888888-8888-8888-8888-888888888888")),
                             display_order: 1,
                             thumbnail: None,
-                            original_url: "file:///var/lib/hoarder/88888888-8888-8888-8888-888888888888.png".to_string(),
+                            original_url: "file:///88888888-8888-8888-8888-888888888888.png".to_string(),
                             mime_type: "image/png".to_string(),
                             size: Size::new(720, 720),
                             created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
@@ -712,7 +712,7 @@ async fn replicas_asc_succeeds() {
                             id: ReplicaId::from(uuid!("99999999-9999-9999-9999-999999999999")),
                             display_order: 2,
                             thumbnail: None,
-                            original_url: "file:///var/lib/hoarder/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.png".to_string(),
+                            original_url: "file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.png".to_string(),
                             mime_type: "image/png".to_string(),
                             size: Size::new(720, 720),
                             created_at: Utc.with_ymd_and_hms(2022, 6, 3, 0, 2, 0).unwrap(),
@@ -745,28 +745,28 @@ async fn replicas_asc_succeeds() {
 
     let mut media_url_factory = MockMediaURLFactoryInterface::new();
     media_url_factory
-        .expect_rewrite_original_url()
+        .expect_public_url()
         .times(1)
-        .withf(|original_url| original_url == "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png")
-        .returning(|_| "https://original.example.com/77777777-7777-7777-7777-777777777777.png".to_string());
+        .withf(|original_url| original_url == "file:///77777777-7777-7777-7777-777777777777.png")
+        .returning(|_| Some("https://original.example.com/77777777-7777-7777-7777-777777777777.png".to_string()));
 
     media_url_factory
-        .expect_rewrite_original_url()
+        .expect_public_url()
         .times(1)
-        .withf(|original_url| original_url == "file:///var/lib/hoarder/88888888-8888-8888-8888-888888888888.png")
-        .returning(|_| "https://original.example.com/88888888-8888-8888-8888-888888888888.png".to_string());
+        .withf(|original_url| original_url == "file:///88888888-8888-8888-8888-888888888888.png")
+        .returning(|_| Some("https://original.example.com/88888888-8888-8888-8888-888888888888.png".to_string()));
 
     media_url_factory
-        .expect_rewrite_original_url()
+        .expect_public_url()
         .times(1)
-        .withf(|original_url| original_url == "file:///var/lib/hoarder/99999999-9999-9999-9999-999999999999.png")
-        .returning(|_| "https://original.example.com/99999999-9999-9999-9999-999999999999.png".to_string());
+        .withf(|original_url| original_url == "file:///99999999-9999-9999-9999-999999999999.png")
+        .returning(|_| Some("https://original.example.com/99999999-9999-9999-9999-999999999999.png".to_string()));
 
     media_url_factory
-        .expect_rewrite_original_url()
+        .expect_public_url()
         .times(1)
-        .withf(|original_url| original_url == "file:///var/lib/hoarder/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.png")
-        .returning(|_| "https://original.example.com/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.png".to_string());
+        .withf(|original_url| original_url == "file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.png")
+        .returning(|_| Some("https://original.example.com/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.png".to_string()));
 
     let mut thumbnail_url_factory = MockThumbnailURLFactoryInterface::new();
     thumbnail_url_factory
@@ -848,7 +848,7 @@ async fn replicas_asc_succeeds() {
                                     "updatedAt": "2022-06-02T00:03:00+00:00",
                                 },
                                 "url": "https://original.example.com/77777777-7777-7777-7777-777777777777.png",
-                                "originalUrl": "file:///var/lib/hoarder/77777777-7777-7777-7777-777777777777.png",
+                                "originalUrl": "file:///77777777-7777-7777-7777-777777777777.png",
                                 "mimeType": "image/png",
                                 "width": 720,
                                 "height": 720,
@@ -867,7 +867,7 @@ async fn replicas_asc_succeeds() {
                                     "updatedAt": "2022-06-02T00:05:00+00:00",
                                 },
                                 "url": "https://original.example.com/99999999-9999-9999-9999-999999999999.png",
-                                "originalUrl": "file:///var/lib/hoarder/99999999-9999-9999-9999-999999999999.png",
+                                "originalUrl": "file:///99999999-9999-9999-9999-999999999999.png",
                                 "mimeType": "image/png",
                                 "width": 720,
                                 "height": 720,
@@ -888,7 +888,7 @@ async fn replicas_asc_succeeds() {
                                 "displayOrder": 1,
                                 "thumbnail": null,
                                 "url": "https://original.example.com/88888888-8888-8888-8888-888888888888.png",
-                                "originalUrl": "file:///var/lib/hoarder/88888888-8888-8888-8888-888888888888.png",
+                                "originalUrl": "file:///88888888-8888-8888-8888-888888888888.png",
                                 "mimeType": "image/png",
                                 "width": 720,
                                 "height": 720,
@@ -900,7 +900,7 @@ async fn replicas_asc_succeeds() {
                                 "displayOrder": 2,
                                 "thumbnail": null,
                                 "url": "https://original.example.com/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.png",
-                                "originalUrl": "file:///var/lib/hoarder/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.png",
+                                "originalUrl": "file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.png",
                                 "mimeType": "image/png",
                                 "width": 720,
                                 "height": 720,

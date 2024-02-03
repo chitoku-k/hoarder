@@ -1,5 +1,4 @@
 use clap::{crate_version, Parser};
-use media::Regex;
 
 #[derive(Debug, Parser)]
 #[command(version = version())]
@@ -20,13 +19,13 @@ pub struct Config {
     #[arg(long, env)]
     pub tls_key: Option<String>,
 
-    /// Regex pattern from which media URLs are rewritten
+    /// Root directory for media
     #[arg(long, env)]
-    pub rewrite_original_url_from: Option<Regex>,
+    pub media_root_dir: String,
 
-    /// Replacement target to which media URLs are rewritten
+    /// Root URL for media
     #[arg(long, env)]
-    pub rewrite_original_url_to: Option<String>,
+    pub media_root_url: Option<String>,
 }
 
 pub fn get() -> Config {

@@ -23,8 +23,8 @@ version = "0.99.17"
 [dependencies.image]
 version = "0.24.8"
 
-[dependencies.regex]
-version = "1.10.3"
+[dependencies.normalize-path]
+version = "0.2.1"
 
 [dependencies.tokio]
 version = "1.35.1"

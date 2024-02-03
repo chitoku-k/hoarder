@@ -16,7 +16,7 @@ use common::DatabaseContext;
 #[cfg_attr(not(feature = "test-postgres"), ignore)]
 async fn succeeds(ctx: &DatabaseContext) {
     let repository = PostgresReplicasRepository::new(ctx.pool.clone());
-    let actual = repository.fetch_by_original_url("file:///var/lib/hoarder/1706c7bb-4152-44b2-9bbb-1179d09a19be.png").await.unwrap();
+    let actual = repository.fetch_by_original_url("file:///1706c7bb-4152-44b2-9bbb-1179d09a19be.png").await.unwrap();
 
     assert_eq!(actual, Replica {
         id: ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be")),
@@ -27,7 +27,7 @@ async fn succeeds(ctx: &DatabaseContext) {
             created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 11).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap(),
         }),
-        original_url: "file:///var/lib/hoarder/1706c7bb-4152-44b2-9bbb-1179d09a19be.png".to_string(),
+        original_url: "file:///1706c7bb-4152-44b2-9bbb-1179d09a19be.png".to_string(),
         mime_type: "image/png".to_string(),
         size: Size::new(1920, 1600),
         created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 10).unwrap(),
@@ -40,7 +40,7 @@ async fn succeeds(ctx: &DatabaseContext) {
 #[cfg_attr(not(feature = "test-postgres"), ignore)]
 async fn fails(ctx: &DatabaseContext) {
     let repository = PostgresReplicasRepository::new(ctx.pool.clone());
-    let actual = repository.fetch_by_original_url("file:///var/lib/hoarder/not-found.png").await;
+    let actual = repository.fetch_by_original_url("file:///not-found.png").await;
 
     assert!(actual.is_err());
 }
