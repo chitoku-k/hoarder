@@ -1,8 +1,6 @@
 use application::service::media::MediaURLFactoryInterface;
 use derive_more::Constructor;
 
-pub mod parser;
-
 #[derive(Constructor)]
 pub struct FileMediaURLFactory {
     root_url: String,

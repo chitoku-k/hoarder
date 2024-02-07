@@ -39,6 +39,10 @@ version = "1.0.56"
 version = "1.35.1"
 features = ["macros", "rt-multi-thread"]
 
+[dependencies.tokio-util]
+version = "0.7.10"
+features = ["io", "io-util"]
+
 [dependencies.uuid]
 version = "1.7.0"
 features = ["serde", "v4"]

@@ -1,0 +1,36 @@
+[package]
+name = "storage"
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lib]
+doctest = false
+
+[dependencies.domain]
+workspace = true
+
+[dependencies.anyhow]
+version = "1.0.79"
+
+[dependencies.derive_more]
+version = "0.99.17"
+
+[dependencies.futures]
+version = "0.3.30"
+default-features = false
+
+[dependencies.icu]
+version = "1.4.0"
+features = ["sync"]
+
+[dependencies.normalize-path]
+version = "0.2.1"
+
+[dependencies.tokio]
+version = "1.35.1"
+features = ["fs", "io-util", "rt-multi-thread"]
+
+[dependencies.tokio-stream]
+version = "0.1.14"
+features = ["fs"]

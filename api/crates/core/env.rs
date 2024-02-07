@@ -1,4 +1,5 @@
 use clap::{crate_version, Parser};
+use icu::locid::Locale;
 
 #[derive(Debug, Parser)]
 #[command(version = version())]
@@ -10,6 +11,10 @@ pub struct Config {
     /// Port number
     #[arg(long, env)]
     pub port: u16,
+
+    /// ICU Locale
+    #[arg(long, env)]
+    pub icu_locale: Locale,
 
     /// Path to TLS certificate (if not specified, application is served over HTTP)
     #[arg(long, env)]

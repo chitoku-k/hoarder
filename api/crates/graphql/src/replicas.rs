@@ -4,9 +4,9 @@ use application::service::{
     media::MediaURLFactoryInterface,
     thumbnails::ThumbnailURLFactoryInterface,
 };
-use async_graphql::{ComplexObject, Context, SimpleObject};
+use async_graphql::{ComplexObject, Context, InputObject, SimpleObject, Upload};
 use chrono::{DateTime, Utc};
-use domain::entity::replicas;
+use domain::{entity::replicas, service::media::MediumOverwriteBehavior};
 use uuid::Uuid;
 
 #[derive(SimpleObject)]
@@ -21,6 +21,12 @@ pub(crate) struct Replica {
     height: u32,
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
+}
+
+#[derive(Clone, Copy, InputObject)]
+pub struct ReplicaInput {
+    file: Upload,
+    overwrite: bool,
 }
 
 #[derive(SimpleObject)]
@@ -46,6 +52,18 @@ impl From<replicas::Replica> for Replica {
             created_at: replica.created_at,
             updated_at: replica.updated_at,
         }
+    }
+}
+
+impl From<ReplicaInput> for (Upload, MediumOverwriteBehavior) {
+    fn from(input: ReplicaInput) -> Self {
+        let file = input.file;
+        let overwrite = match input.overwrite {
+            true => MediumOverwriteBehavior::Overwrite,
+            false => MediumOverwriteBehavior::Fail,
+        };
+
+        (file, overwrite)
     }
 }
 

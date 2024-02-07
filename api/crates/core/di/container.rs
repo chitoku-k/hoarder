@@ -18,8 +18,10 @@ use domain::{
     },
 };
 use graphql::{mutation::Mutation, query::Query, subscription::Subscription, APISchema, GraphQLService};
+use icu::collator::{Collator, CollatorOptions};
+use icu_provider::DataLocale;
 use log::LevelFilter;
-use media::{parser::FileImageParser, FileMediaURLFactory, NoopMediaURLFactory};
+use media::{FileMediaURLFactory, NoopMediaURLFactory};
 use postgres::{
     external_services::PostgresExternalServicesRepository,
     media::PostgresMediaRepository,
@@ -29,8 +31,9 @@ use postgres::{
     tags::PostgresTagsRepository,
     ConnectOptions, PgConnectOptions, PgPool, PgPoolOptions,
 };
+use storage::filesystem::FilesystemObjectsRepository;
 use thumbnails::{
-    processor::{FileImageProcessor, FilterType, ImageOutputFormat},
+    processor::{FilterType, ImageOutputFormat, InMemoryImageProcessor},
     ThumbnailURLFactory, ThumbnailsService,
 };
 
@@ -60,12 +63,16 @@ fn tag_types_repository(pg_pool: PgPool) -> PostgresTagTypesRepository {
     PostgresTagTypesRepository::new(pg_pool)
 }
 
+fn objects_repository(collator: Collator, root_dir: String) -> FilesystemObjectsRepository {
+    FilesystemObjectsRepository::new(Arc::new(collator), root_dir)
+}
+
 fn external_services_service<T>(external_services_repository: T) -> ExternalServicesService<T> {
     ExternalServicesService::new(external_services_repository)
 }
 
-fn media_service<T, U, V, W, X>(media_repository: T, replicas_repository: U, sources_repository: V, medium_image_parser: W, medium_image_processor: X) -> MediaService<T, U, V, W, X> {
-    MediaService::new(media_repository, replicas_repository, sources_repository, medium_image_parser, medium_image_processor)
+fn media_service<T, U, V, W, X>(media_repository: T, objects_repository: U, replicas_repository: V, sources_repository: W, medium_image_processor: X) -> MediaService<T, U, V, W, X> {
+    MediaService::new(media_repository, objects_repository, replicas_repository, sources_repository, medium_image_processor)
 }
 
 fn tags_service<T, U>(tags_repository: T, tag_types_repository: U) -> TagsService<T, U> {
@@ -97,12 +104,8 @@ where
         .finish()
 }
 
-fn medium_image_parser(root_dir: String) -> FileImageParser {
-    FileImageParser::new(root_dir)
-}
-
-fn medium_image_processor(root_dir: String) -> FileImageProcessor {
-    FileImageProcessor::new(root_dir, Size::new(240, 240), ImageOutputFormat::WebP, FilterType::CatmullRom)
+fn medium_image_processor() -> InMemoryImageProcessor {
+    InMemoryImageProcessor::new(Size::new(240, 240), ImageOutputFormat::WebP, FilterType::CatmullRom)
 }
 
 fn graphql_service<T, U, V>(schema: APISchema<T, U, V>) -> GraphQLService<T, U, V>
@@ -143,6 +146,8 @@ impl Application {
             .init();
 
         let config = env::get();
+        let collator = Collator::try_new(&DataLocale::from(config.icu_locale), CollatorOptions::new())
+            .context("error instantiating collator")?;
 
         let pg_options = PgConnectOptions::new()
             .log_statements(LevelFilter::Debug)
@@ -162,11 +167,11 @@ impl Application {
         let tags_repository = tags_repository(pg_pool.clone());
         let tag_types_repository = tag_types_repository(pg_pool);
 
-        let medium_image_parser = medium_image_parser(config.media_root_dir.clone());
-        let medium_image_processor = medium_image_processor(config.media_root_dir.clone());
+        let objects_repository = objects_repository(collator, config.media_root_dir);
+        let medium_image_processor = medium_image_processor();
 
         let external_services_service = external_services_service(external_services_repository);
-        let media_service = media_service(media_repository, replicas_repository, sources_repository, medium_image_parser, medium_image_processor);
+        let media_service = media_service(media_repository, objects_repository, replicas_repository, sources_repository, medium_image_processor);
         let tags_service = tags_service(tags_repository, tag_types_repository);
 
         let media_url_factory: Arc<dyn MediaURLFactoryInterface> = match config.media_root_url {
