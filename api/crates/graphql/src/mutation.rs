@@ -5,16 +5,18 @@ use domain::{
     repository,
     service::{
         external_services::ExternalServicesServiceInterface,
-        media::MediaServiceInterface,
+        media::{MediaServiceInterface, MediumSource},
         tags::TagsServiceInterface,
     },
 };
+use thiserror::Error;
 use uuid::Uuid;
 
 use crate::{
     external_services::ExternalService,
     media::Medium,
-    replicas::Replica,
+    process_upload,
+    replicas::{Replica, ReplicaInput},
     sources::{ExternalMetadata, Source},
     tags::{get_tag_depth, Tag, TagTagTypeInput, TagType},
 };
@@ -39,7 +41,30 @@ pub struct Mutation<ExternalServicesService, MediaService, TagsService> {
     tags_service: TagsService,
 }
 
+#[derive(Debug, Error)]
+pub(crate) enum MutationError {
+    #[error("original_url or upload is required")]
+    MediumSourceRequired,
+    #[error("both {0} and {1} cannot be specified")]
+    MutuallyExclusive(&'static str, &'static str),
+}
+
 type Map<T, U, V> = std::iter::Map<T, fn(U) -> V>;
+
+async fn create_medium_source(ctx: &Context<'_>, original_url: Option<String>, upload: Option<ReplicaInput>) -> anyhow::Result<MediumSource> {
+    match (original_url, upload) {
+        (None, None) => Err(MutationError::MediumSourceRequired)?,
+        (Some(_), Some(_)) => Err(MutationError::MutuallyExclusive("original_url", "upload"))?,
+        (Some(original_url), None) => Ok(MediumSource::Url(original_url)),
+        (None, Some(input)) => {
+            let (file, overwrite) = input.into();
+            let value = file.value(ctx)?;
+            let filename = format!("file://{}", value.filename);
+            let content = process_upload(value).await?;
+            Ok(MediumSource::Content(filename, content, overwrite))
+        },
+    }
+}
 
 #[Object]
 impl<ExternalServicesService, MediaService, TagsService> Mutation<ExternalServicesService, MediaService, TagsService>
@@ -83,8 +108,9 @@ where
         medium.try_into()
     }
 
-    async fn create_replica(&self, medium_id: Uuid, original_url: String) -> anyhow::Result<Replica> {
-        let replica = self.media_service.create_replica(medium_id.into(), &original_url).await?;
+    async fn create_replica(&self, ctx: &Context<'_>, medium_id: Uuid, original_url: Option<String>, upload: Option<ReplicaInput>) -> anyhow::Result<Replica> {
+        let medium_source = create_medium_source(ctx, original_url, upload).await?;
+        let replica = self.media_service.create_replica(medium_id.into(), medium_source).await?;
         Ok(replica.into())
     }
 
@@ -137,8 +163,9 @@ where
         medium.try_into()
     }
 
-    async fn update_replica(&self, id: Uuid, original_url: Option<String>) -> anyhow::Result<Replica> {
-        let replica = self.media_service.update_replica_by_id(id.into(), original_url.as_deref()).await?;
+    async fn update_replica(&self, ctx: &Context<'_>, id: Uuid, original_url: Option<String>, upload: Option<ReplicaInput>) -> anyhow::Result<Replica> {
+        let medium_source = create_medium_source(ctx, original_url, upload).await?;
+        let replica = self.media_service.update_replica_by_id(id.into(), medium_source).await?;
         Ok(replica.into())
     }
 

@@ -33,11 +33,16 @@ version = "0.21.7"
 
 [dependencies.chrono]
 version = "0.4.33"
-default-features = false
 features = ["clock", "std"]
+default-features = false
 
 [dependencies.derive_more]
 version = "0.99.17"
+
+[dependencies.futures]
+version = "0.3.30"
+features = ["std"]
+default-features = false
 
 [dependencies.serde]
 version = "1.0.196"
@@ -59,9 +64,6 @@ features = ["test-mock"]
 [dev-dependencies.domain]
 workspace = true
 features = ["test-mock"]
-
-[dev-dependencies.futures]
-version = "0.3.30"
 
 [dev-dependencies.indoc]
 version = "2.0.4"

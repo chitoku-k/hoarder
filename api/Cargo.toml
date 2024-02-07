@@ -16,6 +16,7 @@ members = [
     "crates/graphql",
     "crates/media",
     "crates/postgres",
+    "crates/storage",
     "crates/thumbnails",
 ]
 
@@ -38,6 +39,9 @@ path = "crates/media"
 
 [workspace.dependencies.postgres]
 path = "crates/postgres"
+
+[workspace.dependencies.storage]
+path = "crates/storage"
 
 [workspace.dependencies.thumbnails]
 path = "crates/thumbnails"
@@ -70,6 +74,9 @@ workspace = true
 [dependencies.postgres]
 workspace = true
 
+[dependencies.storage]
+workspace = true
+
 [dependencies.thumbnails]
 workspace = true
 
@@ -83,6 +90,13 @@ default-features = false
 
 [dependencies.env_logger]
 version = "0.11.1"
+
+[dependencies.icu]
+version = "1.4.0"
+features = ["std", "sync"]
+
+[dependencies.icu_provider]
+version = "1.4.0"
 
 [dependencies.log]
 version = "0.4.20"

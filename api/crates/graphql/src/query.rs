@@ -17,6 +17,7 @@ use uuid::Uuid;
 use crate::{
     external_services::ExternalService,
     media::{Medium, MediumCursor},
+    objects::{ObjectEntry, ObjectKind},
     replicas::Replica,
     sources::{ExternalMetadata, Source},
     tags::{get_tag_depth, Tag, TagCursor, TagTagTypeInput, TagType},
@@ -167,6 +168,13 @@ where
 
         let source = self.media_service.get_source_by_external_metadata(external_service_id, external_metadata).await?;
         source.map(TryInto::try_into).transpose()
+    }
+
+    async fn objects(&self, prefix: String, kind: Option<ObjectKind>) -> anyhow::Result<Vec<ObjectEntry>> {
+        let kind = kind.map(Into::into);
+
+        let objects = self.media_service.get_objects(&prefix, kind).await?;
+        Ok(objects.into_iter().map(Into::into).collect())
     }
 
     async fn all_tags(

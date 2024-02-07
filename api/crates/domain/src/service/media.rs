@@ -1,22 +1,45 @@
-use std::future::Future;
+use std::{future::Future, io::{BufRead, Cursor, Seek}};
 
-use anyhow::anyhow;
+use anyhow::Context;
 use chrono::{DateTime, Utc};
 use derive_more::Constructor;
-use tokio::try_join;
+use tokio::io::{AsyncRead, BufReader};
+use tokio_util::io::SyncIoBridge;
 
 use crate::{
     entity::{
         external_services::{ExternalMetadata, ExternalServiceId},
         media::{Medium, MediumId},
+        objects::{Entry, Kind},
         replicas::{OriginalImage, Replica, ReplicaId, ThumbnailId, ThumbnailImage},
         sources::{Source, SourceId},
         tag_types::TagTypeId,
         tags::{TagDepth, TagId},
     },
-    parser, processor,
-    repository::{media, replicas, sources, DeleteResult, Direction, Order},
+    processor,
+    repository::{media, objects, replicas, sources, DeleteResult, Direction, Order},
 };
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum MediumSource {
+    Url(String),
+    Content(String, Vec<u8>, MediumOverwriteBehavior),
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum MediumOverwriteBehavior {
+    Overwrite,
+    Fail,
+}
+
+impl From<MediumOverwriteBehavior> for objects::ObjectOverwriteBehavior {
+    fn from(value: MediumOverwriteBehavior) -> Self {
+        match value {
+            MediumOverwriteBehavior::Overwrite => objects::ObjectOverwriteBehavior::Overwrite,
+            MediumOverwriteBehavior::Fail => objects::ObjectOverwriteBehavior::Fail,
+        }
+    }
+}
 
 #[cfg_attr(feature = "test-mock", mockall::automock)]
 pub trait MediaServiceInterface: Send + Sync + 'static {
@@ -27,7 +50,7 @@ pub trait MediaServiceInterface: Send + Sync + 'static {
         U: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'static;
 
     /// Creates a replica.
-    fn create_replica(&self, medium_id: MediumId, original_url: &str) -> impl Future<Output = anyhow::Result<Replica>> + Send;
+    fn create_replica(&self, medium_id: MediumId, medium_source: MediumSource) -> impl Future<Output = anyhow::Result<Replica>> + Send;
 
     /// Creates a source.
     fn create_source(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> impl Future<Output = anyhow::Result<Source>> + Send;
@@ -93,6 +116,9 @@ pub trait MediaServiceInterface: Send + Sync + 'static {
     /// Gets the by ID.
     fn get_thumbnail_by_id(&self, id: ThumbnailId) -> impl Future<Output = anyhow::Result<Vec<u8>>> + Send;
 
+    /// Gets objects.
+    fn get_objects(&self, prefix: &str, kind: Option<Kind>) -> impl Future<Output = anyhow::Result<Vec<Entry>>> + Send;
+
     /// Updates the medium by ID.
     fn update_medium_by_id<T, U, V, W, X>(
         &self,
@@ -115,7 +141,7 @@ pub trait MediaServiceInterface: Send + Sync + 'static {
         X: IntoIterator<Item = ReplicaId> + Send + Sync + 'static;
 
     /// Updates the replica by ID.
-    fn update_replica_by_id<'a>(&self, id: ReplicaId, original_url: Option<&'a str>) -> impl Future<Output = anyhow::Result<Replica>> + Send;
+    fn update_replica_by_id(&self, id: ReplicaId, medium_source: MediumSource) -> impl Future<Output = anyhow::Result<Replica>> + Send;
 
     /// Updates the source by ID.
     fn update_source_by_id(&self, id: SourceId, external_service_id: Option<ExternalServiceId>, external_metadata: Option<ExternalMetadata>) -> impl Future<Output = anyhow::Result<Source>> + Send;
@@ -131,46 +157,54 @@ pub trait MediaServiceInterface: Send + Sync + 'static {
 }
 
 #[derive(Clone, Constructor)]
-pub struct MediaService<MediaRepository, ReplicasRepository, SourcesRepository, MediumImageParser, MediumImageProcessor> {
+pub struct MediaService<MediaRepository, ObjectsRepository, ReplicasRepository, SourcesRepository, MediumImageProcessor> {
     media_repository: MediaRepository,
+    objects_repository: ObjectsRepository,
     replicas_repository: ReplicasRepository,
     sources_repository: SourcesRepository,
-    medium_image_parser: MediumImageParser,
     medium_image_processor: MediumImageProcessor,
 }
 
-fn extract_file_path(url: &str) -> anyhow::Result<&str> {
-    match url.split_once("://") {
-        Some(("file", path)) => Ok(path),
-        Some((scheme, _)) => Err(anyhow!("unsupported scheme: {}", scheme)),
-        None => Err(anyhow!("unsupported url: {}", url)),
-    }
-}
-
-impl<MediaRepository, ReplicasRepository, SourcesRepository, MediumImageParser, MediumImageProcessor> MediaService<MediaRepository, ReplicasRepository, SourcesRepository, MediumImageParser, MediumImageProcessor>
+impl<MediaRepository, ObjectsRepository, ReplicasRepository, SourcesRepository, MediumImageProcessor> MediaService<MediaRepository, ObjectsRepository, ReplicasRepository, SourcesRepository, MediumImageProcessor>
 where
-    MediumImageParser: parser::media::MediumImageParser,
+    ObjectsRepository: objects::ObjectsRepository,
 {
-    async fn fetch_original_image(&self, url: &str) -> anyhow::Result<OriginalImage> {
-        let path = extract_file_path(url)?;
-        match self.medium_image_parser.get_metadata(path).await {
-            Ok(metadata) => Ok(OriginalImage::new(metadata.mime_type(), metadata.size())),
+    async fn get_image(&self, url: &str) -> anyhow::Result<ObjectsRepository::Read> {
+        let path = url.strip_prefix("file://").context("unsupported scheme")?;
+        match self.objects_repository.get(path).await {
+            Ok(read) => Ok(read),
             Err(e) => {
-                log::error!("failed to get the original image size\nError: {e:?}");
+                log::error!("failed to get an image\nError: {e:?}");
+                Err(e)
+            },
+        }
+    }
+
+    async fn put_image<R>(&self, url: &str, read: R, overwrite: MediumOverwriteBehavior) -> anyhow::Result<()>
+    where
+        R: AsyncRead + Send + Unpin,
+    {
+        let path = url.strip_prefix("file://").context("unsupported scheme")?;
+        match self.objects_repository.put(path, read, overwrite.into()).await {
+            Ok(()) => Ok(()),
+            Err(e) => {
+                log::error!("failed to put an image\nError: {e:?}");
                 Err(e)
             },
         }
     }
 }
 
-impl<MediaRepository, ReplicasRepository, SourcesRepository, MediumImageParser, MediumImageProcessor> MediaService<MediaRepository, ReplicasRepository, SourcesRepository, MediumImageParser, MediumImageProcessor>
+impl<MediaRepository, ObjectsRepository, ReplicasRepository, SourcesRepository, MediumImageProcessor> MediaService<MediaRepository, ObjectsRepository, ReplicasRepository, SourcesRepository, MediumImageProcessor>
 where
     MediumImageProcessor: processor::media::MediumImageProcessor,
 {
-    async fn generate_thumbnail_image(&self, url: &str) -> anyhow::Result<ThumbnailImage> {
-        let path = extract_file_path(url)?;
-        match self.medium_image_processor.generate_thumbnail(path).await {
-            Ok(thumbnail_image) => Ok(thumbnail_image),
+    async fn generate_thumbnail_image<R>(&self, read: R) -> anyhow::Result<(OriginalImage, ThumbnailImage)>
+    where
+        R: BufRead + Seek + Send + 'static,
+    {
+        match self.medium_image_processor.generate_thumbnail(read).await {
+            Ok((original_image, thumbnail_image)) => Ok((original_image, thumbnail_image)),
             Err(e) => {
                 log::error!("failed to generate a thumbnail image\nError: {e:?}");
                 Err(e)
@@ -179,12 +213,38 @@ where
     }
 }
 
-impl<MediaRepository, ReplicasRepository, SourcesRepository, MediumImageParser, MediumImageProcessor> MediaServiceInterface for MediaService<MediaRepository, ReplicasRepository, SourcesRepository, MediumImageParser, MediumImageProcessor>
+impl<MediaRepository, ObjectsRepository, ReplicasRepository, SourcesRepository, MediumImageProcessor> MediaService<MediaRepository, ObjectsRepository, ReplicasRepository, SourcesRepository, MediumImageProcessor>
+where
+    MediumImageProcessor: processor::media::MediumImageProcessor,
+    ObjectsRepository: objects::ObjectsRepository,
+{
+    async fn extract_medium_source(&self, medium_source: MediumSource) -> anyhow::Result<(String, OriginalImage, ThumbnailImage)> {
+        match medium_source {
+            MediumSource::Url(url) => {
+                let read = self.get_image(&url).await?;
+                let read = SyncIoBridge::new(BufReader::new(read));
+
+                let (original_image, thumbnail_image) = self.generate_thumbnail_image(read).await?;
+                Ok((url, original_image, thumbnail_image))
+            },
+            MediumSource::Content(url, content, overwrite) => {
+                let read = Cursor::new(&*content);
+                self.put_image(&url, read, overwrite).await?;
+
+                let read = Cursor::new(content);
+                let (original_image, thumbnail_image) = self.generate_thumbnail_image(read).await?;
+                Ok((url, original_image, thumbnail_image))
+            },
+        }
+    }
+}
+
+impl<MediaRepository, ObjectsRepository, ReplicasRepository, SourcesRepository, MediumImageProcessor> MediaServiceInterface for MediaService<MediaRepository, ObjectsRepository, ReplicasRepository, SourcesRepository, MediumImageProcessor>
 where
     MediaRepository: media::MediaRepository,
+    ObjectsRepository: objects::ObjectsRepository,
     ReplicasRepository: replicas::ReplicasRepository,
     SourcesRepository: sources::SourcesRepository,
-    MediumImageParser: parser::media::MediumImageParser,
     MediumImageProcessor: processor::media::MediumImageProcessor,
 {
     async fn create_medium<T, U>(&self, source_ids: T, created_at: Option<DateTime<Utc>>, tag_tag_type_ids: U, tag_depth: Option<TagDepth>, sources: bool) -> anyhow::Result<Medium>
@@ -201,12 +261,9 @@ where
         }
     }
 
-    async fn create_replica(&self, medium_id: MediumId, original_url: &str) -> anyhow::Result<Replica> {
-        let (thumbnail_image, original_image) = try_join!(
-            self.generate_thumbnail_image(original_url),
-            self.fetch_original_image(original_url),
-        )?;
-        match self.replicas_repository.create(medium_id, Some(thumbnail_image), original_url, original_image).await {
+    async fn create_replica(&self, medium_id: MediumId, medium_source: MediumSource) -> anyhow::Result<Replica> {
+        let (url, original_image, thumbnail_image) = self.extract_medium_source(medium_source).await?;
+        match self.replicas_repository.create(medium_id, Some(thumbnail_image), &url, original_image).await {
             Ok(replica) => Ok(replica),
             Err(e) => {
                 log::error!("failed to create a replica\nError: {e:?}");
@@ -346,6 +403,21 @@ where
         }
     }
 
+    async fn get_objects(&self, prefix: &str, kind: Option<Kind>) -> anyhow::Result<Vec<Entry>> {
+        match self.objects_repository.list(prefix).await {
+            Ok(mut entries) => {
+                if let Some(kind) = kind {
+                    entries.retain(|e| e.kind == kind);
+                }
+                Ok(entries)
+            },
+            Err(e) => {
+                log::error!("failed to get objects\nError: {e:?}");
+                Err(e)
+            },
+        }
+    }
+
     async fn update_medium_by_id<T, U, V, W, X>(
         &self,
         id: MediumId,
@@ -375,18 +447,9 @@ where
         }
     }
 
-    async fn update_replica_by_id<'a>(&self, id: ReplicaId, original_url: Option<&'a str>) -> anyhow::Result<Replica> {
-        let (thumbnail_image, original_image) = match original_url {
-            Some(original_url) => {
-                let (thumbnail_image, original_image) = try_join!(
-                    self.generate_thumbnail_image(original_url),
-                    self.fetch_original_image(original_url),
-                )?;
-                (Some(thumbnail_image), Some(original_image))
-            },
-            None => (None, None),
-        };
-        match self.replicas_repository.update_by_id(id, thumbnail_image, original_url, original_image).await {
+    async fn update_replica_by_id(&self, id: ReplicaId, medium_source: MediumSource) -> anyhow::Result<Replica> {
+        let (url, original_image, thumbnail_image) = self.extract_medium_source(medium_source).await?;
+        match self.replicas_repository.update_by_id(id, Some(thumbnail_image), Some(&url), Some(original_image)).await {
             Ok(replica) => Ok(replica),
             Err(e) => {
                 log::error!("failed to update the replica\nError: {e:?}");

@@ -1,4 +1,4 @@
-use std::collections::BTreeMap;
+use std::{collections::BTreeMap, io::Cursor};
 
 use anyhow::anyhow;
 use chrono::{TimeZone, Utc};
@@ -6,23 +6,26 @@ use domain::{
     entity::{
         external_services::{ExternalMetadata, ExternalService, ExternalServiceId},
         media::{Medium, MediumId},
+        objects::{Entry, Kind},
         replicas::{OriginalImage, Replica, ReplicaId, Size, Thumbnail, ThumbnailId, ThumbnailImage},
         sources::{Source, SourceId},
         tag_types::{TagType, TagTypeId},
         tags::{Tag, TagDepth, TagId},
     },
-    parser::media::{MediumMetadata, MockMediumImageParser},
     processor::media::MockMediumImageProcessor,
     repository::{
         media::MockMediaRepository,
+        objects::{MockObjectsRepository, ObjectOverwriteBehavior},
         replicas::MockReplicasRepository,
         sources::MockSourcesRepository,
         DeleteResult, Direction, Order,
     },
-    service::media::{MediaService, MediaServiceInterface},
+    service::media::{MediaService, MediaServiceInterface, MediumOverwriteBehavior, MediumSource},
 };
 use futures::future::{err, ok};
 use pretty_assertions::assert_eq;
+use tokio::io::BufReader;
+use tokio_util::io::SyncIoBridge;
 use uuid::uuid;
 
 #[tokio::test]
@@ -127,12 +130,12 @@ async fn create_medium_succeeds() {
             }))
         });
 
+    let mock_objects_repository = MockObjectsRepository::new();
     let mock_replicas_repository = MockReplicasRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
-    let mock_medium_image_parser = MockMediumImageParser::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
 
-    let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.create_medium(
         vec![
             SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
@@ -256,12 +259,12 @@ async fn create_medium_fails() {
         })
         .returning(|_, _, _, _, _| Box::pin(err(anyhow!("error creating a medium"))));
 
+    let mock_objects_repository = MockObjectsRepository::new();
     let mock_replicas_repository = MockReplicasRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
-    let mock_medium_image_parser = MockMediumImageParser::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
 
-    let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.create_medium(
         vec![
             SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
@@ -286,23 +289,27 @@ async fn create_medium_fails() {
 }
 
 #[tokio::test]
-async fn create_replica_succeeds() {
+async fn create_replica_from_url_succeeds() {
     let mock_media_repository = MockMediaRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
 
-    let mut mock_medium_image_parser = MockMediumImageParser::new();
-    mock_medium_image_parser
-        .expect_get_metadata()
-        .times(1)
-        .withf(|path| path == "/77777777-7777-7777-7777-777777777777.png")
-        .returning(|_| Box::pin(ok(MediumMetadata::new("image/png", 720, 720))));
-
     let mut mock_medium_image_processor = MockMediumImageProcessor::new();
     mock_medium_image_processor
-        .expect_generate_thumbnail()
+        .expect_generate_thumbnail::<SyncIoBridge<BufReader<Cursor<&[_]>>>>()
+        .times(1)
+        .returning(|_| {
+            Box::pin(ok((
+                OriginalImage::new("image/png", Size::new(720, 720)),
+                ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240)),
+            )))
+        });
+
+    let mut mock_objects_repository = MockObjectsRepository::new();
+    mock_objects_repository
+        .expect_get()
         .times(1)
         .withf(|path| path == "/77777777-7777-7777-7777-777777777777.png")
-        .returning(|_| Box::pin(ok(ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240)))));
+        .returning(|_| Box::pin(ok(Cursor::new(&[0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08][..]))));
 
     let mut mock_replicas_repository = MockReplicasRepository::new();
     mock_replicas_repository
@@ -334,10 +341,96 @@ async fn create_replica_succeeds() {
             }))
         });
 
-    let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.create_replica(
         MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
-        "file:///77777777-7777-7777-7777-777777777777.png",
+        MediumSource::Url("file:///77777777-7777-7777-7777-777777777777.png".to_string()),
+    ).await.unwrap();
+
+    assert_eq!(actual, Replica {
+        id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
+        display_order: 1,
+        thumbnail: Some(Thumbnail {
+            id: ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888")),
+            size: Size::new(240, 240),
+            created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 2, 0).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 3, 0).unwrap(),
+        }),
+        original_url: "file:///77777777-7777-7777-7777-777777777777.png".to_string(),
+        mime_type: "image/png".to_string(),
+        size: Size::new(720, 720),
+        created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
+        updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 1, 0).unwrap(),
+    });
+}
+
+#[tokio::test]
+async fn create_replica_from_content_succeeds() {
+    let mock_media_repository = MockMediaRepository::new();
+    let mock_sources_repository = MockSourcesRepository::new();
+
+    let mut mock_medium_image_processor = MockMediumImageProcessor::new();
+    mock_medium_image_processor
+        .expect_generate_thumbnail::<Cursor<Vec<_>>>()
+        .times(1)
+        .withf(|read| read == &Cursor::new(vec![0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08]))
+        .returning(|_| {
+            Box::pin(ok((
+                OriginalImage::new("image/png", Size::new(720, 720)),
+                ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240)),
+            )))
+        });
+
+    let mut mock_objects_repository = MockObjectsRepository::new();
+    mock_objects_repository
+        .expect_put()
+        .times(1)
+        .withf(|path, _read, overwrite| {
+            (path, overwrite) == (
+                "/77777777-7777-7777-7777-777777777777.png",
+                &ObjectOverwriteBehavior::Overwrite,
+            )
+        })
+        .returning(|_, _, _| Box::pin(ok(())));
+
+    let mut mock_replicas_repository = MockReplicasRepository::new();
+    mock_replicas_repository
+        .expect_create()
+        .times(1)
+        .withf(|medium_id, thumbnail_image, original_url, original_image| {
+            (medium_id, thumbnail_image, original_url, original_image) == (
+                &MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
+                &Some(ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240))),
+                "file:///77777777-7777-7777-7777-777777777777.png",
+                &OriginalImage::new("image/png", Size::new(720, 720)),
+            )
+        })
+        .returning(|_, _, _, _| {
+            Box::pin(ok(Replica {
+                id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
+                display_order: 1,
+                thumbnail: Some(Thumbnail {
+                    id: ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888")),
+                    size: Size::new(240, 240),
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 2, 0).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 3, 0).unwrap(),
+                }),
+                original_url: "file:///77777777-7777-7777-7777-777777777777.png".to_string(),
+                mime_type: "image/png".to_string(),
+                size: Size::new(720, 720),
+                created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
+                updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 1, 0).unwrap(),
+            }))
+        });
+
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
+    let actual = service.create_replica(
+        MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
+        MediumSource::Content(
+            "file:///77777777-7777-7777-7777-777777777777.png".to_string(),
+            vec![0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08],
+            MediumOverwriteBehavior::Overwrite,
+        ),
     ).await.unwrap();
 
     assert_eq!(actual, Replica {
@@ -362,19 +455,23 @@ async fn create_replica_fails() {
     let mock_media_repository = MockMediaRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
 
-    let mut mock_medium_image_parser = MockMediumImageParser::new();
-    mock_medium_image_parser
-        .expect_get_metadata()
-        .times(1)
-        .withf(|path| path == "/77777777-7777-7777-7777-777777777777.png")
-        .returning(|_| Box::pin(ok(MediumMetadata::new("image/png", 720, 720))));
-
     let mut mock_medium_image_processor = MockMediumImageProcessor::new();
     mock_medium_image_processor
-        .expect_generate_thumbnail()
+        .expect_generate_thumbnail::<SyncIoBridge<BufReader<Cursor<&[_]>>>>()
+        .times(1)
+        .returning(|_| {
+            Box::pin(ok((
+                OriginalImage::new("image/png", Size::new(720, 720)),
+                ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240)),
+            )))
+        });
+
+    let mut mock_objects_repository = MockObjectsRepository::new();
+    mock_objects_repository
+        .expect_get()
         .times(1)
         .withf(|path| path == "/77777777-7777-7777-7777-777777777777.png")
-        .returning(|_| Box::pin(ok(ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240)))));
+        .returning(|_| Box::pin(ok(Cursor::new(&[0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08][..]))));
 
     let mut mock_replicas_repository = MockReplicasRepository::new();
     mock_replicas_repository
@@ -390,10 +487,10 @@ async fn create_replica_fails() {
         })
         .returning(|_, _, _, _| Box::pin(err(anyhow!("error creating a replica"))));
 
-    let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.create_replica(
         MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
-        "file:///77777777-7777-7777-7777-777777777777.png",
+        MediumSource::Url("file:///77777777-7777-7777-7777-777777777777.png".to_string()),
     ).await;
 
     assert!(actual.is_err());
@@ -402,8 +499,8 @@ async fn create_replica_fails() {
 #[tokio::test]
 async fn create_source_succeeds() {
     let mock_media_repository = MockMediaRepository::new();
+    let mock_objects_repository = MockObjectsRepository::new();
     let mock_replicas_repository = MockReplicasRepository::new();
-    let mock_medium_image_parser = MockMediumImageParser::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
 
     let mut mock_sources_repository = MockSourcesRepository::new();
@@ -430,7 +527,7 @@ async fn create_source_succeeds() {
             }))
         });
 
-    let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.create_source(
         ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
         ExternalMetadata::Twitter { id: 727620202049900544 },
@@ -452,8 +549,8 @@ async fn create_source_succeeds() {
 #[tokio::test]
 async fn create_source_fails() {
     let mock_media_repository = MockMediaRepository::new();
+    let mock_objects_repository = MockObjectsRepository::new();
     let mock_replicas_repository = MockReplicasRepository::new();
-    let mock_medium_image_parser = MockMediumImageParser::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
 
     let mut mock_sources_repository = MockSourcesRepository::new();
@@ -468,7 +565,7 @@ async fn create_source_fails() {
         })
         .returning(|_, _| Box::pin(err(anyhow!("error creating a source"))));
 
-    let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.create_source(
         ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
         ExternalMetadata::Twitter { id: 727620202049900544 },
@@ -523,12 +620,12 @@ async fn get_media_succeeds() {
             ]))
         });
 
+    let mock_objects_repository = MockObjectsRepository::new();
     let mock_replicas_repository = MockReplicasRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
-    let mock_medium_image_parser = MockMediumImageParser::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
 
-    let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.get_media(
         Some(TagDepth::new(1, 1)),
         true,
@@ -586,12 +683,12 @@ async fn get_media_fails() {
         })
         .returning(|_, _, _, _, _, _, _| Box::pin(err(anyhow!("error fetching media"))));
 
+    let mock_objects_repository = MockObjectsRepository::new();
     let mock_replicas_repository = MockReplicasRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
-    let mock_medium_image_parser = MockMediumImageParser::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
 
-    let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.get_media(
         Some(TagDepth::new(1, 1)),
         true,
@@ -643,12 +740,12 @@ async fn get_media_by_ids_succeeds() {
             ]))
         });
 
+    let mock_objects_repository = MockObjectsRepository::new();
     let mock_replicas_repository = MockReplicasRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
-    let mock_medium_image_parser = MockMediumImageParser::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
 
-    let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.get_media_by_ids(
         vec![
             MediumId::from(uuid!("88888888-8888-8888-8888-888888888888")),
@@ -698,12 +795,12 @@ async fn get_media_by_ids_fails() {
         })
         .returning(|_, _, _, _| Box::pin(err(anyhow!("error fetching the media"))));
 
+    let mock_objects_repository = MockObjectsRepository::new();
     let mock_replicas_repository = MockReplicasRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
-    let mock_medium_image_parser = MockMediumImageParser::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
 
-    let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.get_media_by_ids(
         vec![
             MediumId::from(uuid!("88888888-8888-8888-8888-888888888888")),
@@ -759,12 +856,12 @@ async fn get_media_by_source_ids_succeeds() {
             ]))
         });
 
+    let mock_objects_repository = MockObjectsRepository::new();
     let mock_replicas_repository = MockReplicasRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
-    let mock_medium_image_parser = MockMediumImageParser::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
 
-    let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.get_media_by_source_ids(
         vec![
             SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
@@ -822,12 +919,12 @@ async fn get_media_by_source_ids_fails() {
         })
         .returning(|_, _, _, _, _, _, _, _| Box::pin(err(anyhow!("error fetching the media"))));
 
+    let mock_objects_repository = MockObjectsRepository::new();
     let mock_replicas_repository = MockReplicasRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
-    let mock_medium_image_parser = MockMediumImageParser::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
 
-    let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.get_media_by_source_ids(
         vec![
             SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
@@ -893,12 +990,12 @@ async fn get_media_by_tag_ids_succeeds() {
             ]))
         });
 
+    let mock_objects_repository = MockObjectsRepository::new();
     let mock_replicas_repository = MockReplicasRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
-    let mock_medium_image_parser = MockMediumImageParser::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
 
-    let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.get_media_by_tag_ids(
         vec![
             (
@@ -968,12 +1065,12 @@ async fn get_media_by_tag_ids_fails() {
         })
         .returning(|_, _, _, _, _, _, _, _| Box::pin(err(anyhow!("error fetching the media"))));
 
+    let mock_objects_repository = MockObjectsRepository::new();
     let mock_replicas_repository = MockReplicasRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
-    let mock_medium_image_parser = MockMediumImageParser::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
 
-    let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.get_media_by_tag_ids(
         vec![
             (
@@ -1000,8 +1097,8 @@ async fn get_media_by_tag_ids_fails() {
 #[tokio::test]
 async fn get_replicas_by_ids_succeeds() {
     let mock_media_repository = MockMediaRepository::new();
+    let mock_objects_repository = MockObjectsRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
-    let mock_medium_image_parser = MockMediumImageParser::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
 
     let mut mock_replicas_repository = MockReplicasRepository::new();
@@ -1049,7 +1146,7 @@ async fn get_replicas_by_ids_succeeds() {
             ]))
         });
 
-    let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.get_replicas_by_ids(vec![
         ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
         ReplicaId::from(uuid!("77777777-7777-7777-7777-777777777777")),
@@ -1092,8 +1189,8 @@ async fn get_replicas_by_ids_succeeds() {
 #[tokio::test]
 async fn get_replicas_by_ids_fails() {
     let mock_media_repository = MockMediaRepository::new();
+    let mock_objects_repository = MockObjectsRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
-    let mock_medium_image_parser = MockMediumImageParser::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
 
     let mut mock_replicas_repository = MockReplicasRepository::new();
@@ -1108,7 +1205,7 @@ async fn get_replicas_by_ids_fails() {
         })
         .returning(|_| Box::pin(err(anyhow!("error fetching the replicas"))));
 
-    let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.get_replicas_by_ids(vec![
         ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
         ReplicaId::from(uuid!("77777777-7777-7777-7777-777777777777")),
@@ -1120,8 +1217,8 @@ async fn get_replicas_by_ids_fails() {
 #[tokio::test]
 async fn get_replica_by_original_url_succeeds() {
     let mock_media_repository = MockMediaRepository::new();
+    let mock_objects_repository = MockObjectsRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
-    let mock_medium_image_parser = MockMediumImageParser::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
 
     let mut mock_replicas_repository = MockReplicasRepository::new();
@@ -1147,7 +1244,7 @@ async fn get_replica_by_original_url_succeeds() {
             }))
         });
 
-    let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.get_replica_by_original_url("file:///77777777-7777-7777-7777-777777777777.png").await.unwrap();
 
     assert_eq!(actual, Replica {
@@ -1170,8 +1267,8 @@ async fn get_replica_by_original_url_succeeds() {
 #[tokio::test]
 async fn get_replica_by_original_url_fails() {
     let mock_media_repository = MockMediaRepository::new();
+    let mock_objects_repository = MockObjectsRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
-    let mock_medium_image_parser = MockMediumImageParser::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
 
     let mut mock_replicas_repository = MockReplicasRepository::new();
@@ -1181,7 +1278,7 @@ async fn get_replica_by_original_url_fails() {
         .withf(|original_url| original_url == "file:///77777777-7777-7777-7777-777777777777.png")
         .returning(|_| Box::pin(err(anyhow!("error fetching the replica"))));
 
-    let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.get_replica_by_original_url("file:///77777777-7777-7777-7777-777777777777.png").await;
 
     assert!(actual.is_err());
@@ -1190,8 +1287,8 @@ async fn get_replica_by_original_url_fails() {
 #[tokio::test]
 async fn get_source_by_external_metadata_succeeds() {
     let mock_media_repository = MockMediaRepository::new();
+    let mock_objects_repository = MockObjectsRepository::new();
     let mock_replicas_repository = MockReplicasRepository::new();
-    let mock_medium_image_parser = MockMediumImageParser::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
 
     let mut mock_sources_repository = MockSourcesRepository::new();
@@ -1218,7 +1315,7 @@ async fn get_source_by_external_metadata_succeeds() {
             })))
         });
 
-    let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.get_source_by_external_metadata(
          ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
          ExternalMetadata::Pixiv { id: 56736941 },
@@ -1240,8 +1337,8 @@ async fn get_source_by_external_metadata_succeeds() {
 #[tokio::test]
 async fn get_sources_by_external_metadata_not_found() {
     let mock_media_repository = MockMediaRepository::new();
+    let mock_objects_repository = MockObjectsRepository::new();
     let mock_replicas_repository = MockReplicasRepository::new();
-    let mock_medium_image_parser = MockMediumImageParser::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
 
     let mut mock_sources_repository = MockSourcesRepository::new();
@@ -1256,7 +1353,7 @@ async fn get_sources_by_external_metadata_not_found() {
         })
         .returning(|_, _| Box::pin(ok(None)));
 
-    let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.get_source_by_external_metadata(
          ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
          ExternalMetadata::Pixiv { id: 56736941 },
@@ -1268,8 +1365,8 @@ async fn get_sources_by_external_metadata_not_found() {
 #[tokio::test]
 async fn get_sources_by_external_metadata_fails() {
     let mock_media_repository = MockMediaRepository::new();
+    let mock_objects_repository = MockObjectsRepository::new();
     let mock_replicas_repository = MockReplicasRepository::new();
-    let mock_medium_image_parser = MockMediumImageParser::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
 
     let mut mock_sources_repository = MockSourcesRepository::new();
@@ -1284,7 +1381,7 @@ async fn get_sources_by_external_metadata_fails() {
         })
         .returning(|_, _| Box::pin(err(anyhow!("error fetching the sources"))));
 
-    let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.get_source_by_external_metadata(
          ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
          ExternalMetadata::Pixiv { id: 56736941 },
@@ -1296,8 +1393,8 @@ async fn get_sources_by_external_metadata_fails() {
 #[tokio::test]
 async fn get_thumbnail_by_id_succeeds() {
     let mock_media_repository = MockMediaRepository::new();
+    let mock_objects_repository = MockObjectsRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
-    let mock_medium_image_parser = MockMediumImageParser::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
 
     let mut mock_replicas_repository = MockReplicasRepository::new();
@@ -1307,17 +1404,17 @@ async fn get_thumbnail_by_id_succeeds() {
         .withf(|id| id == &ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888")))
         .returning(|_| Box::pin(ok(vec![0x01, 0x02, 0x03, 0x04])));
 
-    let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.get_thumbnail_by_id(ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888"))).await.unwrap();
 
-    assert_eq!(actual, vec![0x01, 0x02, 0x03, 0x04])
+    assert_eq!(actual, vec![0x01, 0x02, 0x03, 0x04]);
 }
 
 #[tokio::test]
 async fn get_thumbnail_by_id_fails() {
     let mock_media_repository = MockMediaRepository::new();
+    let mock_objects_repository = MockObjectsRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
-    let mock_medium_image_parser = MockMediumImageParser::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
 
     let mut mock_replicas_repository = MockReplicasRepository::new();
@@ -1327,8 +1424,93 @@ async fn get_thumbnail_by_id_fails() {
         .withf(|id| id == &ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888")))
         .returning(|_| Box::pin(err(anyhow!("error fetching the replica"))));
 
-    let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.get_thumbnail_by_id(ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888"))).await;
+
+    assert!(actual.is_err());
+}
+
+#[tokio::test]
+async fn get_objects_all_kinds_succeeds() {
+    let mock_media_repository = MockMediaRepository::new();
+    let mock_replicas_repository = MockReplicasRepository::new();
+    let mock_sources_repository = MockSourcesRepository::new();
+    let mock_medium_image_processor = MockMediumImageProcessor::new();
+
+    let mut mock_objects_repository = MockObjectsRepository::new();
+    mock_objects_repository
+        .expect_list()
+        .times(1)
+        .withf(|prefix| prefix == "/path/to/dest")
+        .returning(|_| {
+            Box::pin(ok(vec![
+                Entry::new("container01".to_string(), "/path/to/dest/container01".to_string(), Kind::Container),
+                Entry::new("container02".to_string(), "/path/to/dest/container02".to_string(), Kind::Container),
+                Entry::new("object01".to_string(), "/path/to/dest/object01".to_string(), Kind::Object),
+                Entry::new("object02".to_string(), "/path/to/dest/object02".to_string(), Kind::Object),
+                Entry::new("unknown".to_string(), "/path/to/dest/unknown".to_string(), Kind::Unknown),
+            ]))
+        });
+
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
+    let actual = service.get_objects("/path/to/dest", None).await.unwrap();
+
+    assert_eq!(actual, vec![
+        Entry::new("container01".to_string(), "/path/to/dest/container01".to_string(), Kind::Container),
+        Entry::new("container02".to_string(), "/path/to/dest/container02".to_string(), Kind::Container),
+        Entry::new("object01".to_string(), "/path/to/dest/object01".to_string(), Kind::Object),
+        Entry::new("object02".to_string(), "/path/to/dest/object02".to_string(), Kind::Object),
+        Entry::new("unknown".to_string(), "/path/to/dest/unknown".to_string(), Kind::Unknown),
+    ]);
+}
+
+#[tokio::test]
+async fn get_objects_with_kind_succeeds() {
+    let mock_media_repository = MockMediaRepository::new();
+    let mock_replicas_repository = MockReplicasRepository::new();
+    let mock_sources_repository = MockSourcesRepository::new();
+    let mock_medium_image_processor = MockMediumImageProcessor::new();
+
+    let mut mock_objects_repository = MockObjectsRepository::new();
+    mock_objects_repository
+        .expect_list()
+        .times(1)
+        .withf(|prefix| prefix == "/path/to/dest")
+        .returning(|_| {
+            Box::pin(ok(vec![
+                Entry::new("container01".to_string(), "/path/to/dest/container01".to_string(), Kind::Container),
+                Entry::new("container02".to_string(), "/path/to/dest/container02".to_string(), Kind::Container),
+                Entry::new("object01".to_string(), "/path/to/dest/object01".to_string(), Kind::Object),
+                Entry::new("object02".to_string(), "/path/to/dest/object02".to_string(), Kind::Object),
+                Entry::new("unknown".to_string(), "/path/to/dest/unknown".to_string(), Kind::Unknown),
+            ]))
+        });
+
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
+    let actual = service.get_objects("/path/to/dest", Some(Kind::Container)).await.unwrap();
+
+    assert_eq!(actual, vec![
+        Entry::new("container01".to_string(), "/path/to/dest/container01".to_string(), Kind::Container),
+        Entry::new("container02".to_string(), "/path/to/dest/container02".to_string(), Kind::Container),
+    ]);
+}
+
+#[tokio::test]
+async fn get_objects_fails() {
+    let mock_media_repository = MockMediaRepository::new();
+    let mock_replicas_repository = MockReplicasRepository::new();
+    let mock_sources_repository = MockSourcesRepository::new();
+    let mock_medium_image_processor = MockMediumImageProcessor::new();
+
+    let mut mock_objects_repository = MockObjectsRepository::new();
+    mock_objects_repository
+        .expect_list()
+        .times(1)
+        .withf(|prefix| prefix == "/path/to/dest")
+        .returning(|_| Box::pin(err(anyhow!("failed to read dir: /path/to/dest"))));
+
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
+    let actual = service.get_objects("/path/to/dest", None).await;
 
     assert!(actual.is_err());
 }
@@ -1403,12 +1585,12 @@ async fn update_medium_by_id_succeeds() {
             }))
         });
 
+    let mock_objects_repository = MockObjectsRepository::new();
     let mock_replicas_repository = MockReplicasRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
-    let mock_medium_image_parser = MockMediumImageParser::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
 
-    let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.update_medium_by_id(
         MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
         [
@@ -1510,12 +1692,12 @@ async fn update_medium_by_id_fails() {
         })
         .returning(|_, _, _, _, _, _, _, _, _, _| Box::pin(err(anyhow!("error updating the medium"))));
 
+    let mock_objects_repository = MockObjectsRepository::new();
     let mock_replicas_repository = MockReplicasRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
-    let mock_medium_image_parser = MockMediumImageParser::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
 
-    let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.update_medium_by_id(
         MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
         [
@@ -1550,23 +1732,27 @@ async fn update_medium_by_id_fails() {
 }
 
 #[tokio::test]
-async fn update_replica_by_id_succeeds() {
+async fn update_replica_by_id_from_url_succeeds() {
     let mock_media_repository = MockMediaRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
 
-    let mut mock_medium_image_parser = MockMediumImageParser::new();
-    mock_medium_image_parser
-        .expect_get_metadata()
-        .times(1)
-        .withf(|path| path == "/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg")
-        .returning(|_| Box::pin(ok(MediumMetadata::new("image/jpeg", 720, 720))));
-
     let mut mock_medium_image_processor = MockMediumImageProcessor::new();
     mock_medium_image_processor
-        .expect_generate_thumbnail()
+        .expect_generate_thumbnail::<SyncIoBridge<BufReader<Cursor<&[_]>>>>()
+        .times(1)
+        .returning(|_| {
+            Box::pin(ok((
+                OriginalImage::new("image/jpeg", Size::new(720, 720)),
+                ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240)),
+            )))
+        });
+
+    let mut mock_objects_repository = MockObjectsRepository::new();
+    mock_objects_repository
+        .expect_get()
         .times(1)
         .withf(|path| path == "/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg")
-        .returning(|_| Box::pin(ok(ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240)))));
+        .returning(|_| Box::pin(ok(Cursor::new(&[0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08][..]))));
 
     let mut mock_replicas_repository = MockReplicasRepository::new();
     mock_replicas_repository
@@ -1598,10 +1784,96 @@ async fn update_replica_by_id_succeeds() {
             }))
         });
 
-    let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.update_replica_by_id(
         ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
-        Some("file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg"),
+        MediumSource::Url("file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string()),
+    ).await.unwrap();
+
+    assert_eq!(actual, Replica {
+        id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
+        display_order: 1,
+        thumbnail: Some(Thumbnail {
+            id: ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888")),
+            size: Size::new(240, 240),
+            created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 2, 0).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 3, 0).unwrap(),
+        }),
+        original_url: "file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string(),
+        mime_type: "image/jpeg".to_string(),
+        size: Size::new(720, 720),
+        created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
+        updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 1, 0).unwrap(),
+    });
+}
+
+#[tokio::test]
+async fn update_replica_by_id_from_content_succeeds() {
+    let mock_media_repository = MockMediaRepository::new();
+    let mock_sources_repository = MockSourcesRepository::new();
+
+    let mut mock_medium_image_processor = MockMediumImageProcessor::new();
+    mock_medium_image_processor
+        .expect_generate_thumbnail::<Cursor<Vec<_>>>()
+        .times(1)
+        .withf(|read| read == &Cursor::new(vec![0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08]))
+        .returning(|_| {
+            Box::pin(ok((
+                OriginalImage::new("image/jpeg", Size::new(720, 720)),
+                ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240)),
+            )))
+        });
+
+    let mut mock_objects_repository = MockObjectsRepository::new();
+    mock_objects_repository
+        .expect_put()
+        .times(1)
+        .withf(|path, _read, overwrite| {
+            (path, overwrite) == (
+                "/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg",
+                &ObjectOverwriteBehavior::Overwrite,
+            )
+        })
+        .returning(|_, _, _| Box::pin(ok(())));
+
+    let mut mock_replicas_repository = MockReplicasRepository::new();
+    mock_replicas_repository
+        .expect_update_by_id()
+        .times(1)
+        .withf(|id, thumbnail_image, original_url, original_image| {
+            (id, thumbnail_image, original_url, original_image) == (
+                &ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
+                &Some(ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240))),
+                &Some("file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg"),
+                &Some(OriginalImage::new("image/jpeg", Size::new(720, 720))),
+            )
+        })
+        .returning(|_, _, _, _| {
+            Box::pin(ok(Replica {
+                id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
+                display_order: 1,
+                thumbnail: Some(Thumbnail {
+                    id: ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888")),
+                    size: Size::new(240, 240),
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 2, 0).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 3, 0).unwrap(),
+                }),
+                original_url: "file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string(),
+                mime_type: "image/jpeg".to_string(),
+                size: Size::new(720, 720),
+                created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
+                updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 1, 0).unwrap(),
+            }))
+        });
+
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
+    let actual = service.update_replica_by_id(
+        ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
+        MediumSource::Content(
+            "file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string(),
+            vec![0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08],
+            MediumOverwriteBehavior::Overwrite,
+        ),
     ).await.unwrap();
 
     assert_eq!(actual, Replica {
@@ -1626,19 +1898,23 @@ async fn update_replica_by_id_fails() {
     let mock_media_repository = MockMediaRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
 
-    let mut mock_medium_image_parser = MockMediumImageParser::new();
-    mock_medium_image_parser
-        .expect_get_metadata()
-        .times(1)
-        .withf(|path| path == "/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg")
-        .returning(|_| Box::pin(ok(MediumMetadata::new("image/jpeg", 720, 720))));
-
     let mut mock_medium_image_processor = MockMediumImageProcessor::new();
     mock_medium_image_processor
-        .expect_generate_thumbnail()
+        .expect_generate_thumbnail::<SyncIoBridge<BufReader<Cursor<&[_]>>>>()
+        .times(1)
+        .returning(|_| {
+            Box::pin(ok((
+                OriginalImage::new("image/jpeg", Size::new(720, 720)),
+                ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240)),
+            )))
+        });
+
+    let mut mock_objects_repository = MockObjectsRepository::new();
+    mock_objects_repository
+        .expect_get()
         .times(1)
         .withf(|path| path == "/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg")
-        .returning(|_| Box::pin(ok(ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240)))));
+        .returning(|_| Box::pin(ok(Cursor::new(&[0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08][..]))));
 
     let mut mock_replicas_repository = MockReplicasRepository::new();
     mock_replicas_repository
@@ -1654,10 +1930,10 @@ async fn update_replica_by_id_fails() {
         })
         .returning(|_, _, _, _| Box::pin(err(anyhow!("error updating the replica"))));
 
-    let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.update_replica_by_id(
         ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
-        Some("file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg"),
+        MediumSource::Url("file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string()),
     ).await;
 
     assert!(actual.is_err());
@@ -1666,8 +1942,8 @@ async fn update_replica_by_id_fails() {
 #[tokio::test]
 async fn update_source_by_id_succeeds() {
     let mock_media_repository = MockMediaRepository::new();
+    let mock_objects_repository = MockObjectsRepository::new();
     let mock_replicas_repository = MockReplicasRepository::new();
-    let mock_medium_image_parser = MockMediumImageParser::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
 
     let mut mock_sources_repository = MockSourcesRepository::new();
@@ -1695,7 +1971,7 @@ async fn update_source_by_id_succeeds() {
             }))
         });
 
-    let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.update_source_by_id(
         SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
         Some(ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111"))),
@@ -1718,8 +1994,8 @@ async fn update_source_by_id_succeeds() {
 #[tokio::test]
 async fn update_source_by_id_fails() {
     let mock_media_repository = MockMediaRepository::new();
+    let mock_objects_repository = MockObjectsRepository::new();
     let mock_replicas_repository = MockReplicasRepository::new();
-    let mock_medium_image_parser = MockMediumImageParser::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
 
     let mut mock_sources_repository = MockSourcesRepository::new();
@@ -1735,7 +2011,7 @@ async fn update_source_by_id_fails() {
         })
         .returning(|_, _, _| Box::pin(err(anyhow!("error updating the source"))));
 
-    let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.update_source_by_id(
         SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
         Some(ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111"))),
@@ -1754,12 +2030,12 @@ async fn delete_medium_by_id_succeeds() {
         .withf(|id| id == &MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")))
         .returning(|_| Box::pin(ok(DeleteResult::Deleted(1))));
 
+    let mock_objects_repository = MockObjectsRepository::new();
     let mock_replicas_repository = MockReplicasRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
-    let mock_medium_image_parser = MockMediumImageParser::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
 
-    let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.delete_medium_by_id(MediumId::from(uuid!("77777777-7777-7777-7777-777777777777"))).await.unwrap();
 
     assert_eq!(actual, DeleteResult::Deleted(1));
@@ -1774,12 +2050,12 @@ async fn delete_medium_by_id_fails() {
         .withf(|id| id == &MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")))
         .returning(|_| Box::pin(err(anyhow!("error deleting the medium"))));
 
+    let mock_objects_repository = MockObjectsRepository::new();
     let mock_replicas_repository = MockReplicasRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
-    let mock_medium_image_parser = MockMediumImageParser::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
 
-    let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.delete_medium_by_id(MediumId::from(uuid!("77777777-7777-7777-7777-777777777777"))).await;
 
     assert!(actual.is_err());
@@ -1788,8 +2064,8 @@ async fn delete_medium_by_id_fails() {
 #[tokio::test]
 async fn delete_replica_by_id_succeeds() {
     let mock_media_repository = MockMediaRepository::new();
+    let mock_objects_repository = MockObjectsRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
-    let mock_medium_image_parser = MockMediumImageParser::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
 
     let mut mock_replicas_repository = MockReplicasRepository::new();
@@ -1799,7 +2075,7 @@ async fn delete_replica_by_id_succeeds() {
         .withf(|id| id == &ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")))
         .returning(|_| Box::pin(ok(DeleteResult::Deleted(1))));
 
-    let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.delete_replica_by_id(ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666"))).await.unwrap();
 
     assert_eq!(actual, DeleteResult::Deleted(1));
@@ -1808,8 +2084,8 @@ async fn delete_replica_by_id_succeeds() {
 #[tokio::test]
 async fn delete_replica_by_id_fails() {
     let mock_media_repository = MockMediaRepository::new();
+    let mock_objects_repository = MockObjectsRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
-    let mock_medium_image_parser = MockMediumImageParser::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
 
     let mut mock_replicas_repository = MockReplicasRepository::new();
@@ -1819,7 +2095,7 @@ async fn delete_replica_by_id_fails() {
         .withf(|id| id == &ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")))
         .returning(|_| Box::pin(err(anyhow!("error deleting the replica"))));
 
-    let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.delete_replica_by_id(ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666"))).await;
 
     assert!(actual.is_err());
@@ -1828,8 +2104,8 @@ async fn delete_replica_by_id_fails() {
 #[tokio::test]
 async fn delete_source_by_id_succeeds() {
     let mock_media_repository = MockMediaRepository::new();
+    let mock_objects_repository = MockObjectsRepository::new();
     let mock_replicas_repository = MockReplicasRepository::new();
-    let mock_medium_image_parser = MockMediumImageParser::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
 
     let mut mock_sources_repository = MockSourcesRepository::new();
@@ -1839,7 +2115,7 @@ async fn delete_source_by_id_succeeds() {
         .withf(|id| id == &SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")))
         .returning(|_| Box::pin(ok(DeleteResult::Deleted(1))));
 
-    let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.delete_source_by_id(SourceId::from(uuid!("11111111-1111-1111-1111-111111111111"))).await.unwrap();
 
     assert_eq!(actual, DeleteResult::Deleted(1));
@@ -1848,8 +2124,8 @@ async fn delete_source_by_id_succeeds() {
 #[tokio::test]
 async fn delete_source_by_id_fails() {
     let mock_media_repository = MockMediaRepository::new();
+    let mock_objects_repository = MockObjectsRepository::new();
     let mock_replicas_repository = MockReplicasRepository::new();
-    let mock_medium_image_parser = MockMediumImageParser::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
 
     let mut mock_sources_repository = MockSourcesRepository::new();
@@ -1859,7 +2135,7 @@ async fn delete_source_by_id_fails() {
         .withf(|id| id == &SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")))
         .returning(|_| Box::pin(err(anyhow!("error deleting the source"))));
 
-    let service = MediaService::new(mock_media_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_parser, mock_medium_image_processor);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.delete_source_by_id(SourceId::from(uuid!("11111111-1111-1111-1111-111111111111"))).await;
 
     assert!(actual.is_err());
