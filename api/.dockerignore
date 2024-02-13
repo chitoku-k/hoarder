@@ -1,8 +1,7 @@
 Dockerfile
-LICENSE
-README.md
+Makefile.toml
+rustfmt.toml
+tarpaulin-report.html
 .dockerignore
-.git
-.github
 .gitignore
 /target
