@@ -331,11 +331,11 @@ where
     let tags =
         if root {
             relations
-                .remove(&TagId::root())
+                .shift_remove(&TagId::root())
                 .map(|relation| extract(relation, depth).children)
                 .unwrap_or_default()
         } else {
-            relations.remove(&TagId::root());
+            relations.shift_remove(&TagId::root());
             relations
                 .values()
                 .map(|relation| extract(relation.clone(), depth))
