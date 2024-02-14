@@ -193,6 +193,16 @@ async fn with_alias_succeeds(ctx: &DatabaseContext) {
 
     assert_eq!(actual, vec![
         Tag {
+            id: TagId::from(uuid!("74303485-40fb-466d-a93f-0cba46f6f43c")),
+            name: "原神".to_string(),
+            kana: "げんしん".to_string(),
+            aliases: AliasSet::default(),
+            parent: None,
+            children: Vec::new(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 12).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 13).unwrap(),
+        },
+        Tag {
             id: TagId::from(uuid!("1157d6d9-54c5-48df-9f6c-3eba9fe38dfc")),
             name: "鈴仙・優曇華院・イナバ".to_string(),
             kana: "れいせん・うどんげいん・いなば".to_string(),
@@ -210,16 +220,6 @@ async fn with_alias_succeeds(ctx: &DatabaseContext) {
             children: Vec::new(),
             created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 9).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
-        },
-        Tag {
-            id: TagId::from(uuid!("74303485-40fb-466d-a93f-0cba46f6f43c")),
-            name: "原神".to_string(),
-            kana: "げんしん".to_string(),
-            aliases: AliasSet::default(),
-            parent: None,
-            children: Vec::new(),
-            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 12).unwrap(),
-            updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 13).unwrap(),
         },
     ]);
 }
@@ -232,25 +232,6 @@ async fn with_name_and_alias_succeeds(ctx: &DatabaseContext) {
     let actual = repository.fetch_by_name_or_alias_like("ん", TagDepth::new(2, 2)).await.unwrap();
 
     assert_eq!(actual, vec![
-        Tag {
-            id: TagId::from(uuid!("1157d6d9-54c5-48df-9f6c-3eba9fe38dfc")),
-            name: "鈴仙・優曇華院・イナバ".to_string(),
-            kana: "れいせん・うどんげいん・いなば".to_string(),
-            aliases: AliasSet::new(BTreeSet::from(["うどんげ".to_string()])),
-            parent: Some(Box::new(Tag {
-                id: TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
-                name: "東方Project".to_string(),
-                kana: "とうほうProject".to_string(),
-                aliases: AliasSet::new(BTreeSet::from(["東方".to_string()])),
-                parent: None,
-                children: Vec::new(),
-                created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 8).unwrap(),
-                updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap(),
-            })),
-            children: Vec::new(),
-            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 9).unwrap(),
-            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
-        },
         Tag {
             id: TagId::from(uuid!("74303485-40fb-466d-a93f-0cba46f6f43c")),
             name: "原神".to_string(),
@@ -279,6 +260,25 @@ async fn with_name_and_alias_succeeds(ctx: &DatabaseContext) {
             children: Vec::new(),
             created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 7).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap(),
+        },
+        Tag {
+            id: TagId::from(uuid!("1157d6d9-54c5-48df-9f6c-3eba9fe38dfc")),
+            name: "鈴仙・優曇華院・イナバ".to_string(),
+            kana: "れいせん・うどんげいん・いなば".to_string(),
+            aliases: AliasSet::new(BTreeSet::from(["うどんげ".to_string()])),
+            parent: Some(Box::new(Tag {
+                id: TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
+                name: "東方Project".to_string(),
+                kana: "とうほうProject".to_string(),
+                aliases: AliasSet::new(BTreeSet::from(["東方".to_string()])),
+                parent: None,
+                children: Vec::new(),
+                created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 8).unwrap(),
+                updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap(),
+            })),
+            children: Vec::new(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 9).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
         },
     ]);
 }
