@@ -128,7 +128,6 @@ checksum = "080e9890a082662b09c1ad45f567faeeb47f22b5fb23895fbe1e651e718e25ca"
 name = "application"
 version = "0.0.0"
 dependencies = [
- "anyhow",
  "axum",
  "axum-server",
  "derive_more",
@@ -557,6 +556,7 @@ dependencies = [
  "android-tzdata",
  "iana-time-zone",
  "num-traits",
+ "serde",
  "windows-targets 0.52.0",
 ]
 
@@ -1275,7 +1275,6 @@ checksum = "d2fabcfbdc87f4758337ca535fb41a6d701b65693ce38287d856d1674551ec9b"
 name = "graphql"
 version = "0.0.0"
 dependencies = [
- "anyhow",
  "application",
  "async-graphql",
  "async-graphql-axum",
@@ -2272,12 +2271,8 @@ dependencies = [
 name = "media"
 version = "0.0.0"
 dependencies = [
- "anyhow",
  "application",
  "derive_more",
- "domain",
- "image",
- "tokio",
 ]
 
 [[package]]
@@ -2735,7 +2730,6 @@ dependencies = [
 name = "postgres"
 version = "0.0.0"
 dependencies = [
- "anyhow",
  "chrono",
  "cow-utils",
  "derive_more",
@@ -2750,7 +2744,6 @@ dependencies = [
  "serde_json",
  "sqlx",
  "test-context",
- "thiserror",
  "tokio",
  "uuid",
 ]
@@ -3472,7 +3465,6 @@ checksum = "d7beae5182595e9a8b683fa98c4317f956c9a2dec3b9716990d20023cc60c766"
 name = "storage"
 version = "0.0.0"
 dependencies = [
- "anyhow",
  "derive_more",
  "domain",
  "futures",
@@ -3630,7 +3622,6 @@ dependencies = [
 name = "thumbnails"
 version = "0.0.0"
 dependencies = [
- "anyhow",
  "application",
  "axum",
  "derive_more",

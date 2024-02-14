@@ -1,9 +1,9 @@
 use std::io::{BufRead, Cursor, Seek};
 
-use anyhow::Context;
 use derive_more::Constructor;
 use domain::{
     entity::replicas::{OriginalImage, Size, ThumbnailImage},
+    error::{Error, ErrorKind, Result},
     processor::media::MediumImageProcessor,
 };
 use image::io::Reader;
@@ -19,7 +19,7 @@ pub struct InMemoryImageProcessor {
 }
 
 impl MediumImageProcessor for InMemoryImageProcessor {
-    async fn generate_thumbnail<R>(&self, read: R) -> anyhow::Result<(OriginalImage, ThumbnailImage)>
+    async fn generate_thumbnail<R>(&self, read: R) -> Result<(OriginalImage, ThumbnailImage)>
     where
         R: BufRead + Seek + Send + 'static,
     {
@@ -28,19 +28,23 @@ impl MediumImageProcessor for InMemoryImageProcessor {
         let thumbnail_format = self.thumbnail_format.clone();
 
         task::spawn_blocking(move || {
-            let reader = Reader::new(read).with_guessed_format().context("failed to detect image format")?;
-            let format = reader.format().context("failed to get image format")?;
-            let image = reader.decode().context("failed to decode image")?;
+            let reader = Reader::new(read)
+                .with_guessed_format()
+                .map_err(|e| Error::new(ErrorKind::MediumReplicaReadFailed, e))?;
+
+            let format = reader.format().ok_or(ErrorKind::MediumReplicaUnsupported)?;
+            let image = reader.decode()
+                .map_err(|e| Error::new(ErrorKind::MediumReplicaDecodeFailed, e))?;
 
             let mut body = Vec::new();
             let thumbnail = image.resize(thumbnail_size.width, thumbnail_size.height, thumbnail_filter);
             thumbnail
                 .write_to(&mut Cursor::new(&mut body), thumbnail_format)
-                .context("failed to generate thumbnail")?;
+                .map_err(|e| Error::new(ErrorKind::MediumReplicaEncodeFailed, e))?;
 
             let original_image = OriginalImage::new(format.to_mime_type(), Size::new(image.width(), image.height()));
             let thumbnail_image = ThumbnailImage::new(body, Size::new(thumbnail.width(), thumbnail.height()));
             Ok((original_image, thumbnail_image))
-        }).await?
+        }).await.map_err(Error::other)?
     }
 }

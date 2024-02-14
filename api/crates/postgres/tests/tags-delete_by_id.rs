@@ -1,9 +1,10 @@
 use domain::{
     entity::tags::TagId,
+    error::ErrorKind,
     repository::{tags::TagsRepository, DeleteResult},
 };
 use postgres::tags::PostgresTagsRepository;
-use pretty_assertions::assert_eq;
+use pretty_assertions::{assert_eq, assert_matches};
 use sqlx::Row;
 use test_context::test_context;
 use uuid::uuid;
@@ -30,7 +31,7 @@ async fn root_with_recursive_fails(ctx: &DatabaseContext) {
         .await
         .unwrap_err();
 
-    assert_eq!(&actual.to_string(), "root tag cannot be deleted");
+    assert_matches!(actual.kind(), ErrorKind::TagDeletingRoot);
 
     let actual: i64 = sqlx::query(r#"SELECT COUNT(*) FROM "tags" WHERE "id" = $1"#)
         .bind(uuid!("00000000-0000-0000-0000-000000000000"))
@@ -61,7 +62,7 @@ async fn root_without_recursive_fails(ctx: &DatabaseContext) {
         .await
         .unwrap_err();
 
-    assert_eq!(&actual.to_string(), "root tag cannot be deleted");
+    assert_matches!(actual.kind(), ErrorKind::TagDeletingRoot);
 
     let actual: i64 = sqlx::query(r#"SELECT COUNT(*) FROM "tags" WHERE "id" = $1"#)
         .bind(uuid!("00000000-0000-0000-0000-000000000000"))
@@ -142,7 +143,13 @@ async fn node_without_recursive_fails(ctx: &DatabaseContext) {
         .await
         .unwrap_err();
 
-    assert_eq!(&actual.to_string(), "2 children exist");
+    assert_matches!(actual.kind(), ErrorKind::TagChildrenExist { id, children } if (id, children) == (
+        &TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
+        &vec![
+            TagId::from(uuid!("d1a302b5-7b49-44be-9019-ac337077786a")),
+            TagId::from(uuid!("e8d32062-0185-43e8-a27d-6ca707d7dd60")),
+        ]),
+    );
 
     let actual: i64 = sqlx::query(r#"SELECT COUNT(*) FROM "tags" WHERE "id" IN ($1, $2, $3, $4, $5, $6, $7)"#)
         .bind(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba"))

@@ -1,10 +1,11 @@
 use chrono::{TimeZone, Utc};
 use domain::{
     entity::replicas::{Replica, ReplicaId, Size, Thumbnail, ThumbnailId},
+    error::ErrorKind,
     repository::replicas::ReplicasRepository,
 };
 use postgres::replicas::PostgresReplicasRepository;
-use pretty_assertions::assert_eq;
+use pretty_assertions::{assert_eq, assert_matches};
 use test_context::test_context;
 use uuid::uuid;
 
@@ -40,7 +41,7 @@ async fn succeeds(ctx: &DatabaseContext) {
 #[cfg_attr(not(feature = "test-postgres"), ignore)]
 async fn fails(ctx: &DatabaseContext) {
     let repository = PostgresReplicasRepository::new(ctx.pool.clone());
-    let actual = repository.fetch_by_original_url("file:///not-found.png").await;
+    let actual = repository.fetch_by_original_url("file:///not-found.png").await.unwrap_err();
 
-    assert!(actual.is_err());
+    assert_matches!(actual.kind(), ErrorKind::ReplicaNotFoundByUrl { original_url } if original_url == "file:///not-found.png");
 }

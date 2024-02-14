@@ -3,7 +3,6 @@ use std::collections::BTreeSet;
 use chrono::{DateTime, Utc};
 use derive_more::{Constructor, Deref, Display, From};
 use serde::Serialize;
-use thiserror::Error;
 use uuid::Uuid;
 
 #[derive(Clone, Copy, Debug, Default, Deref, Display, Eq, From, Hash, Ord, PartialEq, PartialOrd)]
@@ -25,12 +24,6 @@ pub struct Tag {
     pub children: Vec<Self>,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
-}
-
-#[derive(Debug, Error)]
-pub enum TagError {
-    #[error("tag not found: {0}")]
-    NotFound(TagId),
 }
 
 impl TagId {

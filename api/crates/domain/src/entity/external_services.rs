@@ -1,5 +1,4 @@
 use derive_more::{Deref, Display, From};
-use thiserror::Error;
 use uuid::Uuid;
 
 #[derive(Clone, Copy, Debug, Default, Deref, Display, Eq, From, PartialEq)]
@@ -23,12 +22,4 @@ pub enum ExternalMetadata {
     Twitter { id: u64 },
     Website { url: String },
     Custom(String),
-}
-
-#[derive(Debug, Eq, Error, PartialEq)]
-pub enum ExternalServiceError {
-    #[error("external service not found: {0}")]
-    NotFound(ExternalServiceId),
-    #[error("invalid metadata for {0}")]
-    InvalidMetadata(String),
 }

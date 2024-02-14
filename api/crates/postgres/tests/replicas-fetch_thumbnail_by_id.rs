@@ -1,9 +1,10 @@
 use domain::{
     entity::replicas::ThumbnailId,
+    error::ErrorKind,
     repository::replicas::ReplicasRepository,
 };
 use postgres::replicas::PostgresReplicasRepository;
-use pretty_assertions::assert_eq;
+use pretty_assertions::{assert_eq, assert_matches};
 use test_context::test_context;
 use uuid::uuid;
 
@@ -33,7 +34,7 @@ async fn fails(ctx: &DatabaseContext) {
     let repository = PostgresReplicasRepository::new(ctx.pool.clone());
     let actual = repository.fetch_thumbnail_by_id(
         ThumbnailId::from(uuid!("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")),
-    ).await;
+    ).await.unwrap_err();
 
-    assert!(actual.is_err());
+    assert_matches!(actual.kind(), ErrorKind::ThumbnailNotFound { id } if id == &ThumbnailId::from(uuid!("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")));
 }

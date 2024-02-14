@@ -13,9 +13,6 @@ workspace = true
 [dependencies.domain]
 workspace = true
 
-[dependencies.anyhow]
-version = "1.0.79"
-
 [dependencies.async-graphql]
 version = "7.0.1"
 features = ["chrono", "graphiql", "tempfile", "unblock", "uuid"]
@@ -33,7 +30,7 @@ version = "0.21.7"
 
 [dependencies.chrono]
 version = "0.4.33"
-features = ["clock", "std"]
+features = ["clock", "serde", "std"]
 default-features = false
 
 [dependencies.derive_more]

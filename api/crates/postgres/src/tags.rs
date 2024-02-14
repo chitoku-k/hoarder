@@ -4,12 +4,12 @@ use std::{
     rc::{Rc, Weak},
 };
 
-use anyhow::Context;
 use chrono::{DateTime, Utc};
 use cow_utils::CowUtils;
 use derive_more::{Constructor, From, Into};
 use domain::{
-    entity::tags::{Tag, TagDepth, TagError, TagId},
+    entity::tags::{Tag, TagDepth, TagId},
+    error::{Error, ErrorKind, Result},
     repository::{self, tags::TagsRepository, DeleteResult},
 };
 use futures::TryStreamExt;
@@ -17,7 +17,6 @@ use indexmap::{IndexMap, IndexSet};
 use sea_query::{Alias, Asterisk, BinOper, Cond, Expr, Iden, JoinType, LikeExpr, LockType, Order, PostgresQueryBuilder, Query, SelectStatement};
 use sea_query_binder::SqlxBinder;
 use sqlx::{Acquire, FromRow, PgPool, Postgres, Transaction, PgConnection, Row};
-use thiserror::Error;
 
 use crate::{
     expr::array::ArrayExpr,
@@ -114,24 +113,6 @@ enum PostgresTagRelation {
     DescendantAliases,
     DescendantCreatedAt,
     DescendantUpdatedAt,
-}
-
-#[derive(Debug, Eq, Error, PartialEq)]
-pub(crate) enum PostgresTagError {
-    #[error("root tag cannot be updated")]
-    RootUpdated,
-    #[error("root tag cannot be attached")]
-    RootAttached,
-    #[error("root tag cannot be detached")]
-    RootDetached,
-    #[error("root tag cannot be deleted")]
-    RootDeleted,
-    #[error("{0} {}", if .0 == &1 { "child exists" } else { "children exist" })]
-    ChildrenExist(usize),
-    #[error("tag cannot be attached to itself")]
-    TagAttachedToItself,
-    #[error("tag cannot be attached to its descendants")]
-    TagAttachedToDescendant,
 }
 
 sea_query_uuid_value!(PostgresTagId, TagId);
@@ -248,7 +229,7 @@ fn extract(rc: Rc<RefCell<TagRelation>>, depth: TagDepth) -> Tag {
     }
 }
 
-pub async fn fetch_tag_relatives<T>(conn: &mut PgConnection, ids: T, depth: TagDepth, root: bool) -> anyhow::Result<Vec<Tag>>
+pub async fn fetch_tag_relatives<T>(conn: &mut PgConnection, ids: T, depth: TagDepth, root: bool) -> Result<Vec<Tag>>
 where
     T: IntoIterator<Item = TagId>,
 {
@@ -325,7 +306,8 @@ where
     let rows: Vec<_> = sqlx::query_as_with::<_, PostgresTagRelativeRow, _>(&sql, values)
         .fetch(&mut *conn)
         .try_collect()
-        .await?;
+        .await
+        .map_err(Error::other)?;
 
     let mut relations: IndexMap<_, _> = rows.into_iter().collect();
     let tags =
@@ -388,8 +370,8 @@ fn descendant_relations(id: TagId) -> SelectStatement {
         .take()
 }
 
-async fn attach_parent(tx: &mut Transaction<'_, Postgres>, id: TagId, parent_id: TagId) -> anyhow::Result<()> {
-    let mut tx = tx.begin().await?;
+async fn attach_parent(tx: &mut Transaction<'_, Postgres>, id: TagId, parent_id: TagId) -> Result<()> {
+    let mut tx = tx.begin().await.map_err(Error::other)?;
 
     let (sql, values) = Query::insert()
         .into_table(PostgresTagPath::Table)
@@ -408,10 +390,15 @@ async fn attach_parent(tx: &mut Transaction<'_, Postgres>, id: TagId, parent_id:
                 .from(PostgresTagPath::Table)
                 .and_where(Expr::col(PostgresTagPath::DescendantId).eq(PostgresTagId::from(parent_id)))
                 .take()
-        )?
+        )
+        .map_err(Error::other)?
         .build_sqlx(PostgresQueryBuilder);
 
-    sqlx::query_with(&sql, values).execute(&mut *tx).await?;
+    match sqlx::query_with(&sql, values).execute(&mut *tx).await {
+        Ok(_) => (),
+        Err(sqlx::Error::Database(e)) if e.is_foreign_key_violation() => return Err(ErrorKind::TagNotFound { id })?,
+        Err(e) => return Err(Error::other(e)),
+    }
 
     let (sql, values) = Query::insert()
         .into_table(PostgresTagPath::Table)
@@ -420,17 +407,21 @@ async fn attach_parent(tx: &mut Transaction<'_, Postgres>, id: TagId, parent_id:
             PostgresTagPath::DescendantId,
             PostgresTagPath::Distance,
         ])
-        .select_from(descendant_relations(id))?
+        .select_from(descendant_relations(id))
+        .map_err(Error::other)?
         .build_sqlx(PostgresQueryBuilder);
 
-    sqlx::query_with(&sql, values).execute(&mut *tx).await?;
+    sqlx::query_with(&sql, values)
+        .execute(&mut *tx)
+        .await
+        .map_err(Error::other)?;
 
-    tx.commit().await?;
+    tx.commit().await.map_err(Error::other)?;
     Ok(())
 }
 
-async fn detach_parent(tx: &mut Transaction<'_, Postgres>, id: TagId) -> anyhow::Result<()> {
-    let mut tx = tx.begin().await?;
+async fn detach_parent(tx: &mut Transaction<'_, Postgres>, id: TagId) -> Result<()> {
+    let mut tx = tx.begin().await.map_err(Error::other)?;
 
     let (sql, values) = Query::delete()
         .from_table(PostgresTagPath::Table)
@@ -444,7 +435,10 @@ async fn detach_parent(tx: &mut Transaction<'_, Postgres>, id: TagId) -> anyhow:
         )
         .build_sqlx(PostgresQueryBuilder);
 
-    sqlx::query_with(&sql, values).execute(&mut *tx).await?;
+    sqlx::query_with(&sql, values)
+        .execute(&mut *tx)
+        .await
+        .map_err(Error::other)?;
 
     let (sql, values) = Query::delete()
         .from_table(PostgresTagPath::Table)
@@ -458,15 +452,18 @@ async fn detach_parent(tx: &mut Transaction<'_, Postgres>, id: TagId) -> anyhow:
         )
         .build_sqlx(PostgresQueryBuilder);
 
-    sqlx::query_with(&sql, values).execute(&mut *tx).await?;
+    sqlx::query_with(&sql, values)
+        .execute(&mut *tx)
+        .await
+        .map_err(Error::other)?;
 
-    tx.commit().await?;
+    tx.commit().await.map_err(Error::other)?;
     Ok(())
 }
 
 impl TagsRepository for PostgresTagsRepository {
-    async fn create(&self, name: &str, kana: &str, aliases: &[String], parent_id: Option<TagId>, depth: TagDepth) -> anyhow::Result<Tag> {
-        let mut tx = self.pool.begin().await?;
+    async fn create(&self, name: &str, kana: &str, aliases: &[String], parent_id: Option<TagId>, depth: TagDepth) -> Result<Tag> {
+        let mut tx = self.pool.begin().await.map_err(Error::other)?;
 
         let (sql, values) = Query::insert()
             .into_table(PostgresTag::Table)
@@ -479,7 +476,8 @@ impl TagsRepository for PostgresTagsRepository {
                 Expr::val(name).into(),
                 Expr::val(kana).into(),
                 aliases.to_vec().into(),
-            ])?
+            ])
+            .map_err(Error::other)?
             .returning(
                 Query::returning()
                     .columns([
@@ -495,7 +493,8 @@ impl TagsRepository for PostgresTagsRepository {
 
         let tag: Tag = sqlx::query_as_with::<_, PostgresTagRow, _>(&sql, values)
             .fetch_one(&mut *tx)
-            .await?
+            .await
+            .map_err(Error::other)?
             .into();
 
         let (sql, values) = Query::insert()
@@ -509,33 +508,37 @@ impl TagsRepository for PostgresTagsRepository {
                 PostgresTagId::from(tag.id).into(),
                 PostgresTagId::from(tag.id).into(),
                 0.into(),
-            ])?
+            ])
+            .map_err(Error::other)?
             .build_sqlx(PostgresQueryBuilder);
 
-        sqlx::query_with(&sql, values).execute(&mut *tx).await?;
+        sqlx::query_with(&sql, values)
+            .execute(&mut *tx)
+            .await
+            .map_err(Error::other)?;
 
         let parent_id = parent_id.unwrap_or_default();
         attach_parent(&mut tx, tag.id, parent_id).await?;
 
         let mut relatives = fetch_tag_relatives(&mut tx, [tag.id], depth, false).await?;
-        let tag = relatives.pop().context(TagError::NotFound(tag.id))?;
+        let tag = relatives.pop().ok_or(ErrorKind::TagNotFound { id: tag.id })?;
 
-        tx.commit().await?;
+        tx.commit().await.map_err(Error::other)?;
         Ok(tag)
     }
 
-    async fn fetch_by_ids<T>(&self, ids: T, depth: TagDepth) -> anyhow::Result<Vec<Tag>>
+    async fn fetch_by_ids<T>(&self, ids: T, depth: TagDepth) -> Result<Vec<Tag>>
     where
         T: IntoIterator<Item = TagId> + Send + Sync + 'static,
     {
-        let mut conn = self.pool.acquire().await?;
+        let mut conn = self.pool.acquire().await.map_err(Error::other)?;
 
         let tags = fetch_tag_relatives(&mut conn, ids, depth, false).await?;
         Ok(tags)
     }
 
-    async fn fetch_by_name_or_alias_like(&self, name_or_alias_like: &str, depth: TagDepth) -> anyhow::Result<Vec<Tag>> {
-        let mut conn = self.pool.acquire().await?;
+    async fn fetch_by_name_or_alias_like(&self, name_or_alias_like: &str, depth: TagDepth) -> Result<Vec<Tag>> {
+        let mut conn = self.pool.acquire().await.map_err(Error::other)?;
 
         let tags_aliases = Alias::new("tags_aliases");
         let alias = Alias::new("alias");
@@ -580,14 +583,15 @@ impl TagsRepository for PostgresTagsRepository {
             .fetch(&mut *conn)
             .map_ok(|r| TagId::from(r.id))
             .try_collect()
-            .await?;
+            .await
+            .map_err(Error::other)?;
 
         let tags = fetch_tag_relatives(&mut conn, ids, depth, false).await?;
         Ok(tags)
     }
 
-    async fn fetch_all(&self, depth: TagDepth, root: bool, cursor: Option<(String, TagId)>, order: repository::Order, direction: repository::Direction, limit: u64) -> anyhow::Result<Vec<Tag>> {
-        let mut conn = self.pool.acquire().await?;
+    async fn fetch_all(&self, depth: TagDepth, root: bool, cursor: Option<(String, TagId)>, order: repository::Order, direction: repository::Direction, limit: u64) -> Result<Vec<Tag>> {
+        let mut conn = self.pool.acquire().await.map_err(Error::other)?;
 
         let (comparison, order, rev) = match (order, direction) {
             (repository::Order::Ascending, repository::Direction::Forward) => (BinOper::GreaterThan, Order::Asc, false),
@@ -640,7 +644,8 @@ impl TagsRepository for PostgresTagsRepository {
             .fetch(&self.pool)
             .map_ok(|r| TagId::from(r.id))
             .try_collect()
-            .await?;
+            .await
+            .map_err(Error::other)?;
 
         let depth = match root {
             true => TagDepth::new(1, depth.children() + 1),
@@ -662,16 +667,17 @@ impl TagsRepository for PostgresTagsRepository {
         Ok(tags)
     }
 
-    async fn update_by_id<T, U>(&self, id: TagId, name: Option<String>, kana: Option<String>, add_aliases: T, remove_aliases: U, depth: TagDepth) -> anyhow::Result<Tag>
+    async fn update_by_id<T, U>(&self, id: TagId, name: Option<String>, kana: Option<String>, add_aliases: T, remove_aliases: U, depth: TagDepth) -> Result<Tag>
     where
         T: IntoIterator<Item = String> + Send + Sync + 'static,
         U: IntoIterator<Item = String> + Send + Sync + 'static,
     {
         if id.is_root() {
-            return Err(PostgresTagError::RootUpdated)?;
+            return Err(ErrorKind::TagUpdatingRoot)?;
         }
 
-        let mut tx = self.pool.begin().await?;
+        let mut tx = self.pool.begin().await.map_err(Error::other)?;
+
         let (sql, values) = Query::select()
             .columns([
                 PostgresTag::Id,
@@ -686,11 +692,11 @@ impl TagsRepository for PostgresTagsRepository {
             .lock(LockType::Update)
             .build_sqlx(PostgresQueryBuilder);
 
-        let mut tag: Tag = sqlx::query_as_with::<_, PostgresTagRow, _>(&sql, values)
-            .fetch_optional(&mut *tx)
-            .await?
-            .map(Into::into)
-            .context(TagError::NotFound(id))?;
+        let mut tag = match sqlx::query_as_with::<_, PostgresTagRow, _>(&sql, values).fetch_one(&mut *tx).await {
+            Ok(row) => Tag::from(row),
+            Err(sqlx::Error::RowNotFound) => return Err(ErrorKind::TagNotFound { id })?,
+            Err(e) => return Err(Error::other(e)),
+        };
 
         let name = name.unwrap_or(tag.name);
         let kana = kana.unwrap_or(tag.kana);
@@ -709,25 +715,28 @@ impl TagsRepository for PostgresTagsRepository {
             .and_where(Expr::col(PostgresTag::Id).eq(PostgresTagId::from(id)))
             .build_sqlx(PostgresQueryBuilder);
 
-        sqlx::query_with(&sql, values).execute(&mut *tx).await?;
+        sqlx::query_with(&sql, values)
+            .execute(&mut *tx)
+            .await
+            .map_err(Error::other)?;
 
         let mut relatives = fetch_tag_relatives(&mut tx, [tag.id], depth, false).await?;
-        let tag = relatives.pop().context(TagError::NotFound(tag.id))?;
+        let tag = relatives.pop().ok_or(ErrorKind::TagNotFound { id: tag.id })?;
 
-        tx.commit().await?;
+        tx.commit().await.map_err(Error::other)?;
         Ok(tag)
     }
 
-    async fn attach_by_id(&self, id: TagId, parent_id: TagId, depth: TagDepth) -> anyhow::Result<Tag> {
+    async fn attach_by_id(&self, id: TagId, parent_id: TagId, depth: TagDepth) -> Result<Tag> {
         if id.is_root() || parent_id.is_root() {
-            return Err(PostgresTagError::RootAttached)?;
+            return Err(ErrorKind::TagAttachingRoot)?;
         }
 
         if id == parent_id {
-            return Err(PostgresTagError::TagAttachedToItself)?;
+            return Err(ErrorKind::TagAttachingToItself { id })?;
         }
 
-        let mut tx = self.pool.begin().await?;
+        let mut tx = self.pool.begin().await.map_err(Error::other)?;
 
         let (sql, values) = Query::select()
             .expr(Expr::col(Asterisk).count())
@@ -738,45 +747,47 @@ impl TagsRepository for PostgresTagsRepository {
 
         let count: i64 = sqlx::query_with(&sql, values)
             .fetch_one(&mut *tx)
-            .await?
-            .try_get(0)?;
+            .await
+            .and_then(|r| r.try_get(0))
+            .map_err(Error::other)?;
 
         if count > 0 {
-            return Err(PostgresTagError::TagAttachedToDescendant)?;
+            return Err(ErrorKind::TagAttachingToDescendant { id })?;
         }
 
         detach_parent(&mut tx, id).await?;
         attach_parent(&mut tx, id, parent_id).await?;
 
         let mut relatives = fetch_tag_relatives(&mut tx, [id], depth, false).await?;
-        let tag = relatives.pop().context(TagError::NotFound(id))?;
+        let tag = relatives.pop().ok_or(ErrorKind::TagNotFound { id })?;
 
-        tx.commit().await?;
+        tx.commit().await.map_err(Error::other)?;
         Ok(tag)
     }
 
-    async fn detach_by_id(&self, id: TagId, depth: TagDepth) -> anyhow::Result<Tag> {
+    async fn detach_by_id(&self, id: TagId, depth: TagDepth) -> Result<Tag> {
         if id.is_root() {
-            return Err(PostgresTagError::RootDetached)?;
+            return Err(ErrorKind::TagDetachingRoot)?;
         }
 
-        let mut tx = self.pool.begin().await?;
+        let mut tx = self.pool.begin().await.map_err(Error::other)?;
+
         detach_parent(&mut tx, id).await?;
         attach_parent(&mut tx, id, TagId::root()).await?;
 
         let mut relatives = fetch_tag_relatives(&mut tx, [id], depth, false).await?;
-        let tag = relatives.pop().context(TagError::NotFound(id))?;
+        let tag = relatives.pop().ok_or(ErrorKind::TagNotFound { id })?;
 
-        tx.commit().await?;
+        tx.commit().await.map_err(Error::other)?;
         Ok(tag)
     }
 
-    async fn delete_by_id(&self, id: TagId, recursive: bool) -> anyhow::Result<DeleteResult> {
+    async fn delete_by_id(&self, id: TagId, recursive: bool) -> Result<DeleteResult> {
         if id.is_root() {
-            return Err(PostgresTagError::RootDeleted)?;
+            return Err(ErrorKind::TagDeletingRoot)?;
         }
 
-        let mut tx = self.pool.begin().await?;
+        let mut tx = self.pool.begin().await.map_err(Error::other)?;
 
         let (sql, values) = Query::select()
             .columns([
@@ -792,18 +803,18 @@ impl TagsRepository for PostgresTagsRepository {
 
         let (ids, children) = sqlx::query_as_with::<_, PostgresTagDescendantRow, _>(&sql, values)
             .fetch(&mut *tx)
-            .try_fold((Vec::new(), 0), |(mut ids, children), row| async move {
-                ids.push(row.descendant_id);
+            .try_fold((Vec::new(), Vec::new()), |(mut ids, mut children), row| async move {
+                ids.push(row.descendant_id.clone());
                 if row.distance == 1 {
-                    Ok((ids, children + 1))
-                } else {
-                    Ok((ids, children))
+                    children.push(TagId::from(row.descendant_id));
                 }
+                Ok((ids, children))
             })
-            .await?;
+            .await
+            .map_err(Error::other)?;
 
-        if !recursive && children > 0 {
-            return Err(PostgresTagError::ChildrenExist(children))?;
+        if !recursive && !children.is_empty() {
+            return Err(ErrorKind::TagChildrenExist { id, children })?;
         }
 
         let (sql, values) = Query::delete()
@@ -813,10 +824,11 @@ impl TagsRepository for PostgresTagsRepository {
 
         let affected = sqlx::query_with(&sql, values)
             .execute(&mut *tx)
-            .await?
+            .await
+            .map_err(Error::other)?
             .rows_affected();
 
-        tx.commit().await?;
+        tx.commit().await.map_err(Error::other)?;
 
         match affected {
             0 => Ok(DeleteResult::NotFound),

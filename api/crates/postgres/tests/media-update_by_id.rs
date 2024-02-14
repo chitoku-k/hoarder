@@ -10,11 +10,12 @@ use domain::{
         tag_types::{TagType, TagTypeId},
         tags::{AliasSet, Tag, TagDepth, TagId},
     },
+    error::ErrorKind,
     repository::media::MediaRepository,
 };
 use futures::TryStreamExt;
 use postgres::media::PostgresMediaRepository;
-use pretty_assertions::assert_eq;
+use pretty_assertions::{assert_eq, assert_matches};
 use sqlx::Row;
 use test_context::test_context;
 use uuid::{uuid, Uuid};
@@ -1130,9 +1131,20 @@ async fn reorder_too_few_replicas_fails(ctx: &DatabaseContext) {
         None,
         false,
         false,
-    ).await;
+    ).await.unwrap_err();
 
-    assert!(actual.is_err());
+    assert_matches!(actual.kind(), ErrorKind::MediumReplicasNotMatch { medium_id, expected_replicas, actual_replicas } if (medium_id, expected_replicas, actual_replicas) == (
+        &MediumId::from(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1")),
+        &vec![
+            ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be")),
+            ReplicaId::from(uuid!("6fae1497-e987-492e-987a-f9870b7d3c5b")),
+            ReplicaId::from(uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5")),
+        ],
+        &vec![
+            ReplicaId::from(uuid!("6fae1497-e987-492e-987a-f9870b7d3c5b")),
+            ReplicaId::from(uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5")),
+        ],
+    ));
 }
 
 #[test_context(DatabaseContext)]
@@ -1175,9 +1187,22 @@ async fn reorder_too_many_replicas_fails(ctx: &DatabaseContext) {
         None,
         false,
         false,
-    ).await;
+    ).await.unwrap_err();
 
-    assert!(actual.is_err());
+    assert_matches!(actual.kind(), ErrorKind::MediumReplicasNotMatch { medium_id, expected_replicas, actual_replicas } if (medium_id, expected_replicas, actual_replicas) == (
+        &MediumId::from(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1")),
+        &vec![
+            ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be")),
+            ReplicaId::from(uuid!("6fae1497-e987-492e-987a-f9870b7d3c5b")),
+            ReplicaId::from(uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5")),
+        ],
+        &vec![
+            ReplicaId::from(uuid!("6fae1497-e987-492e-987a-f9870b7d3c5b")),
+            ReplicaId::from(uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5")),
+            ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be")),
+            ReplicaId::from(uuid!("790dc278-2c53-4988-883c-43a037664b24")),
+        ],
+    ));
 }
 
 #[test_context(DatabaseContext)]
@@ -1219,7 +1244,19 @@ async fn reorder_replicas_mismatch_fails(ctx: &DatabaseContext) {
         None,
         false,
         false,
-    ).await;
+    ).await.unwrap_err();
 
-    assert!(actual.is_err());
+    assert_matches!(actual.kind(), ErrorKind::MediumReplicasNotMatch { medium_id, expected_replicas, actual_replicas } if (medium_id, expected_replicas, actual_replicas) == (
+        &MediumId::from(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1")),
+        &vec![
+            ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be")),
+            ReplicaId::from(uuid!("6fae1497-e987-492e-987a-f9870b7d3c5b")),
+            ReplicaId::from(uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5")),
+        ],
+        &vec![
+            ReplicaId::from(uuid!("6fae1497-e987-492e-987a-f9870b7d3c5b")),
+            ReplicaId::from(uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5")),
+            ReplicaId::from(uuid!("790dc278-2c53-4988-883c-43a037664b24")),
+        ],
+    ));
 }

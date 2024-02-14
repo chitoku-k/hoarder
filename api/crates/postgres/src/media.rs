@@ -11,6 +11,7 @@ use domain::{
         tag_types::{TagType, TagTypeId},
         tags::{Tag, TagDepth, TagId},
     },
+    error::{Error, ErrorKind, Result},
     repository::{self, media::MediaRepository, DeleteResult},
 };
 use futures::TryStreamExt;
@@ -18,7 +19,6 @@ use indexmap::IndexSet;
 use sea_query::{BinOper, Expr, Iden, JoinType, Keyword, LockType, OnConflict, Order, PostgresQueryBuilder, Query};
 use sea_query_binder::SqlxBinder;
 use sqlx::{types::Json, FromRow, PgConnection, PgPool};
-use thiserror::Error;
 
 use crate::{
     expr::distinct::Distinct,
@@ -98,12 +98,6 @@ enum PostgresMediumTag {
     MediumId,
     TagId,
     TagTypeId,
-}
-
-#[derive(Debug, Error)]
-pub(crate) enum PostgresMediumError {
-    #[error("replicas do not match the actual entries")]
-    ReplicaNotMatch,
 }
 
 sea_query_uuid_value!(PostgresMediumId, MediumId);
@@ -187,7 +181,7 @@ impl FromIterator<PostgresMediumTagTypeRow> for HashMap<MediumId, BTreeMap<TagTy
     }
 }
 
-async fn fetch_tags<T>(conn: &mut PgConnection, ids: T, tag_depth: TagDepth) -> anyhow::Result<HashMap<MediumId, BTreeMap<TagType, Vec<Tag>>>>
+async fn fetch_tags<T>(conn: &mut PgConnection, ids: T, tag_depth: TagDepth) -> Result<HashMap<MediumId, BTreeMap<TagType, Vec<Tag>>>>
 where
     T: IntoIterator<Item = MediumId>,
 {
@@ -213,7 +207,8 @@ where
     let rows: Vec<_> = sqlx::query_as_with::<_, PostgresMediumTagTypeRow, _>(&sql, values)
         .fetch(&mut *conn)
         .try_collect()
-        .await?;
+        .await
+        .map_err(Error::other)?;
 
     let tag_ids = rows.iter().map(|r| TagId::from(r.tag_id.clone()));
     let tag_relatives: HashMap<_, _> = tags::fetch_tag_relatives(&mut *conn, tag_ids, tag_depth, false)
@@ -243,7 +238,7 @@ where
     Ok(tags)
 }
 
-async fn fetch_replicas<T>(conn: &mut PgConnection, ids: T) -> anyhow::Result<HashMap<MediumId, Vec<Replica>>>
+async fn fetch_replicas<T>(conn: &mut PgConnection, ids: T) -> Result<HashMap<MediumId, Vec<Replica>>>
 where
     T: IntoIterator<Item = MediumId>,
 {
@@ -284,12 +279,13 @@ where
                 .push(replica);
             Ok(replicas)
         })
-        .await?;
+        .await
+        .map_err(Error::other)?;
 
     Ok(replicas)
 }
 
-async fn fetch_sources<T>(conn: &mut PgConnection, ids: T) -> anyhow::Result<HashMap<MediumId, Vec<Source>>>
+async fn fetch_sources<T>(conn: &mut PgConnection, ids: T) -> Result<HashMap<MediumId, Vec<Source>>>
 where
     T: IntoIterator<Item = MediumId>,
 {
@@ -330,12 +326,13 @@ where
                 .push(source);
             Ok(sources)
         })
-        .await?;
+        .await
+        .map_err(Error::other)?;
 
     Ok(sources)
 }
 
-async fn eager_load(conn: &mut PgConnection, media: &mut [Medium], tag_depth: Option<TagDepth>, replicas: bool, sources: bool) -> anyhow::Result<()> {
+async fn eager_load(conn: &mut PgConnection, media: &mut [Medium], tag_depth: Option<TagDepth>, replicas: bool, sources: bool) -> Result<()> {
     if let Some(tag_depth) = tag_depth {
         let media_ids = media.iter().map(|m| m.id);
         let mut media_tags = fetch_tags(conn, media_ids, tag_depth).await?;
@@ -367,16 +364,18 @@ async fn eager_load(conn: &mut PgConnection, media: &mut [Medium], tag_depth: Op
 }
 
 impl MediaRepository for PostgresMediaRepository {
-    async fn create<T, U>(&self, source_ids: T, created_at: Option<DateTime<Utc>>, tag_tag_type_ids: U, tag_depth: Option<TagDepth>, sources: bool) -> anyhow::Result<Medium>
+    async fn create<T, U>(&self, source_ids: T, created_at: Option<DateTime<Utc>>, tag_tag_type_ids: U, tag_depth: Option<TagDepth>, sources: bool) -> Result<Medium>
     where
         T: IntoIterator<Item = SourceId> + Send + Sync + 'static,
         U: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'static,
     {
-        let mut tx = self.pool.begin().await?;
+        let mut tx = self.pool.begin().await.map_err(Error::other)?;
 
         let mut query = Query::insert();
         if let Some(created_at) = created_at {
-            query.columns([PostgresMedium::CreatedAt]).values([created_at.into()])?;
+            query.columns([PostgresMedium::CreatedAt])
+                .values([created_at.into()])
+                .map_err(Error::other)?;
         }
 
         let (sql, values) = query
@@ -394,7 +393,8 @@ impl MediaRepository for PostgresMediaRepository {
 
         let medium: Medium = sqlx::query_as_with::<_, PostgresMediumRow, _>(&sql, values)
             .fetch_one(&mut *tx)
-            .await?
+            .await
+            .map_err(Error::other)?
             .into();
 
         let query = {
@@ -409,10 +409,12 @@ impl MediaRepository for PostgresMediaRepository {
                     ]);
 
                 for source_id in source_ids {
-                    query.values([
-                        PostgresMediumId::from(medium.id).into(),
-                        PostgresSourceId::from(source_id).into(),
-                    ])?;
+                    query
+                        .values([
+                            PostgresMediumId::from(medium.id).into(),
+                            PostgresSourceId::from(source_id).into(),
+                        ])
+                        .map_err(Error::other)?;
                 }
 
                 Some(query)
@@ -422,7 +424,11 @@ impl MediaRepository for PostgresMediaRepository {
         };
         if let Some(query) = query {
             let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
-            sqlx::query_with(&sql, values).execute(&mut *tx).await?;
+            match sqlx::query_with(&sql, values).execute(&mut *tx).await {
+                Ok(_) => (),
+                Err(sqlx::Error::Database(e)) if e.is_foreign_key_violation() => return Err(ErrorKind::MediumSourceNotFound { id: medium.id })?,
+                Err(e) => return Err(Error::other(e)),
+            }
         }
 
         let query = {
@@ -438,11 +444,13 @@ impl MediaRepository for PostgresMediaRepository {
                     ]);
 
                 for (tag_id, tag_type_id) in tag_tag_type_ids {
-                    query.values([
-                        PostgresMediumId::from(medium.id).into(),
-                        PostgresTagId::from(tag_id).into(),
-                        PostgresTagTypeId::from(tag_type_id).into(),
-                    ])?;
+                    query
+                        .values([
+                            PostgresMediumId::from(medium.id).into(),
+                            PostgresTagId::from(tag_id).into(),
+                            PostgresTagTypeId::from(tag_type_id).into(),
+                        ])
+                        .map_err(Error::other)?;
                 }
 
                 Some(query)
@@ -452,23 +460,27 @@ impl MediaRepository for PostgresMediaRepository {
         };
         if let Some(query) = query {
             let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
-            sqlx::query_with(&sql, values).execute(&mut *tx).await?;
+            match sqlx::query_with(&sql, values).execute(&mut *tx).await {
+                Ok(_) => (),
+                Err(sqlx::Error::Database(e)) if e.is_foreign_key_violation() => return Err(ErrorKind::MediumTagNotFound { id: medium.id })?,
+                Err(e) => return Err(Error::other(e)),
+            }
         }
 
         let mut media = [medium];
         eager_load(&mut tx, &mut media, tag_depth, false, sources).await?;
 
-        tx.commit().await?;
+        tx.commit().await.map_err(Error::other)?;
 
         let [medium] = media;
         Ok(medium)
     }
 
-    async fn fetch_by_ids<T>(&self, ids: T, tag_depth: Option<TagDepth>, replicas: bool, sources: bool) -> anyhow::Result<Vec<Medium>>
+    async fn fetch_by_ids<T>(&self, ids: T, tag_depth: Option<TagDepth>, replicas: bool, sources: bool) -> Result<Vec<Medium>>
     where
         T: IntoIterator<Item = MediumId> + Send + Sync + 'static,
     {
-        let mut conn = self.pool.acquire().await?;
+        let mut conn = self.pool.acquire().await.map_err(Error::other)?;
 
         let (sql, values) = Query::select()
             .columns([
@@ -485,7 +497,8 @@ impl MediaRepository for PostgresMediaRepository {
             .fetch(&mut *conn)
             .map_ok(Into::into)
             .try_collect()
-            .await?;
+            .await
+            .map_err(Error::other)?;
 
         eager_load(&mut conn, &mut media, tag_depth, replicas, sources).await?;
         Ok(media)
@@ -501,11 +514,11 @@ impl MediaRepository for PostgresMediaRepository {
         order: repository::Order,
         direction: repository::Direction,
         limit: u64,
-    ) -> anyhow::Result<Vec<Medium>>
+    ) -> Result<Vec<Medium>>
     where
         T: IntoIterator<Item = SourceId> + Send + Sync + 'static,
     {
-        let mut conn = self.pool.acquire().await?;
+        let mut conn = self.pool.acquire().await.map_err(Error::other)?;
 
         let (comparison, order, rev) = match (order, direction) {
             (repository::Order::Ascending, repository::Direction::Forward) => (BinOper::GreaterThan, Order::Asc, false),
@@ -549,7 +562,8 @@ impl MediaRepository for PostgresMediaRepository {
             .fetch(&mut *conn)
             .map_ok(Into::into)
             .try_collect()
-            .await?;
+            .await
+            .map_err(Error::other)?;
 
         if rev {
             media.reverse();
@@ -569,7 +583,7 @@ impl MediaRepository for PostgresMediaRepository {
         order: repository::Order,
         direction: repository::Direction,
         limit: u64,
-    ) -> anyhow::Result<Vec<Medium>>
+    ) -> Result<Vec<Medium>>
     where
         T: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'static,
     {
@@ -580,7 +594,7 @@ impl MediaRepository for PostgresMediaRepository {
 
         let tag_tag_type_ids_len = tag_tag_type_ids.len() as i32;
 
-        let mut conn = self.pool.acquire().await?;
+        let mut conn = self.pool.acquire().await.map_err(Error::other)?;
 
         let (comparison, order, rev) = match (order, direction) {
             (repository::Order::Ascending, repository::Direction::Forward) => (BinOper::GreaterThan, Order::Asc, false),
@@ -645,7 +659,8 @@ impl MediaRepository for PostgresMediaRepository {
             .fetch(&mut *conn)
             .map_ok(Into::into)
             .try_collect()
-            .await?;
+            .await
+            .map_err(Error::other)?;
 
         if rev {
             media.reverse();
@@ -664,8 +679,8 @@ impl MediaRepository for PostgresMediaRepository {
         order: repository::Order,
         direction: repository::Direction,
         limit: u64,
-    ) -> anyhow::Result<Vec<Medium>> {
-        let mut conn = self.pool.acquire().await?;
+    ) -> Result<Vec<Medium>> {
+        let mut conn = self.pool.acquire().await.map_err(Error::other)?;
 
         let (comparison, order, rev) = match (order, direction) {
             (repository::Order::Ascending, repository::Direction::Forward) => (BinOper::GreaterThan, Order::Asc, false),
@@ -701,7 +716,8 @@ impl MediaRepository for PostgresMediaRepository {
             .fetch(&mut *conn)
             .map_ok(Into::into)
             .try_collect()
-            .await?;
+            .await
+            .map_err(Error::other)?;
 
         if rev {
             media.reverse();
@@ -723,7 +739,7 @@ impl MediaRepository for PostgresMediaRepository {
         tag_depth: Option<TagDepth>,
         replicas: bool,
         sources: bool,
-    ) -> anyhow::Result<Medium>
+    ) -> Result<Medium>
     where
         T: IntoIterator<Item = SourceId> + Send + Sync + 'static,
         U: IntoIterator<Item = SourceId> + Send + Sync + 'static,
@@ -731,7 +747,7 @@ impl MediaRepository for PostgresMediaRepository {
         W: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'static,
         X: IntoIterator<Item = ReplicaId> + Send + Sync + 'static,
     {
-        let mut tx = self.pool.begin().await?;
+        let mut tx = self.pool.begin().await.map_err(Error::other)?;
 
         let (sql, values) = Query::select()
             .exprs([
@@ -758,12 +774,15 @@ impl MediaRepository for PostgresMediaRepository {
             .map_ok(<(Medium, ReplicaId)>::from)
             .map_ok(|(_, replica_id)| replica_id)
             .try_collect()
-            .await?;
+            .await
+            .map_err(Error::other)?;
 
         let replica_orders: IndexSet<_> = replica_orders.into_iter().collect();
         if !replica_orders.is_empty() {
             if replica_orders != replica_ids {
-                return Err(PostgresMediumError::ReplicaNotMatch)?;
+                let expected_replicas = replica_ids.into_iter().collect();
+                let actual_replicas = replica_orders.into_iter().collect();
+                return Err(ErrorKind::MediumReplicasNotMatch { medium_id: id, expected_replicas, actual_replicas })?;
             }
 
             let (sql, values) = Query::update()
@@ -772,7 +791,10 @@ impl MediaRepository for PostgresMediaRepository {
                 .and_where(Expr::col(PostgresReplica::MediumId).eq(PostgresMediumId::from(id)))
                 .build_sqlx(PostgresQueryBuilder);
 
-            sqlx::query_with(&sql, values).execute(&mut *tx).await?;
+            sqlx::query_with(&sql, values)
+                .execute(&mut *tx)
+                .await
+                .map_err(Error::other)?;
 
             for (order, replica_id) in replica_orders.into_iter().enumerate() {
                 let (sql, values) = Query::update()
@@ -781,7 +803,10 @@ impl MediaRepository for PostgresMediaRepository {
                     .and_where(Expr::col(PostgresReplica::Id).eq(PostgresReplicaId::from(replica_id)))
                     .build_sqlx(PostgresQueryBuilder);
 
-                sqlx::query_with(&sql, values).execute(&mut *tx).await?;
+                sqlx::query_with(&sql, values)
+                    .execute(&mut *tx)
+                    .await
+                    .map_err(Error::other)?;
             }
         }
 
@@ -795,10 +820,12 @@ impl MediaRepository for PostgresMediaRepository {
                     .on_conflict(OnConflict::new().do_nothing().to_owned());
 
                 for source_id in add_source_ids {
-                    query.values([
-                        PostgresMediumId::from(id).into(),
-                        PostgresSourceId::from(source_id).into(),
-                    ])?;
+                    query
+                        .values([
+                            PostgresMediumId::from(id).into(),
+                            PostgresSourceId::from(source_id).into(),
+                        ])
+                        .map_err(Error::other)?;
                 }
 
                 Some(query)
@@ -808,7 +835,11 @@ impl MediaRepository for PostgresMediaRepository {
         };
         if let Some(query) = query {
             let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
-            sqlx::query_with(&sql, values).execute(&mut *tx).await?;
+            match sqlx::query_with(&sql, values).execute(&mut *tx).await {
+                Ok(_) => (),
+                Err(sqlx::Error::Database(e)) if e.is_foreign_key_violation() => return Err(ErrorKind::MediumSourceNotFound { id })?,
+                Err(e) => return Err(Error::other(e)),
+            }
         }
 
         let query = {
@@ -826,7 +857,10 @@ impl MediaRepository for PostgresMediaRepository {
         };
         if let Some(query) = query {
             let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
-            sqlx::query_with(&sql, values).execute(&mut *tx).await?;
+            sqlx::query_with(&sql, values)
+                .execute(&mut *tx)
+                .await
+                .map_err(Error::other)?;
         }
 
         let query = {
@@ -843,11 +877,13 @@ impl MediaRepository for PostgresMediaRepository {
                     .on_conflict(OnConflict::new().do_nothing().to_owned());
 
                 for (tag_id, tag_type_id) in add_tag_tag_type_ids {
-                    query.values([
-                        PostgresMediumId::from(id).into(),
-                        PostgresTagId::from(tag_id).into(),
-                        PostgresTagTypeId::from(tag_type_id).into(),
-                    ])?;
+                    query
+                        .values([
+                            PostgresMediumId::from(id).into(),
+                            PostgresTagId::from(tag_id).into(),
+                            PostgresTagTypeId::from(tag_type_id).into(),
+                        ])
+                        .map_err(Error::other)?;
                 }
 
                 Some(query)
@@ -857,7 +893,11 @@ impl MediaRepository for PostgresMediaRepository {
         };
         if let Some(query) = query {
             let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
-            sqlx::query_with(&sql, values).execute(&mut *tx).await?;
+            match sqlx::query_with(&sql, values).execute(&mut *tx).await {
+                Ok(_) => (),
+                Err(sqlx::Error::Database(e)) if e.is_foreign_key_violation() => return Err(ErrorKind::MediumTagNotFound { id })?,
+                Err(e) => return Err(Error::other(e)),
+            }
         }
 
         let query = {
@@ -885,7 +925,10 @@ impl MediaRepository for PostgresMediaRepository {
         };
         if let Some(query) = query {
             let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
-            sqlx::query_with(&sql, values).execute(&mut *tx).await?;
+            sqlx::query_with(&sql, values)
+                .execute(&mut *tx)
+                .await
+                .map_err(Error::other)?;
         }
 
         let mut query = Query::update();
@@ -909,19 +952,20 @@ impl MediaRepository for PostgresMediaRepository {
         let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
         let medium = sqlx::query_as_with::<_, PostgresMediumRow, _>(&sql, values)
             .fetch_one(&mut *tx)
-            .await?
+            .await
+            .map_err(Error::other)?
             .into();
 
         let mut media = [medium];
         eager_load(&mut tx, &mut media, tag_depth, replicas, sources).await?;
 
-        tx.commit().await?;
+        tx.commit().await.map_err(Error::other)?;
 
         let [medium] = media;
         Ok(medium)
     }
 
-    async fn delete_by_id(&self, id: MediumId) -> anyhow::Result<DeleteResult> {
+    async fn delete_by_id(&self, id: MediumId) -> Result<DeleteResult> {
         let (sql, values) = Query::delete()
             .from_table(PostgresMedium::Table)
             .and_where(Expr::col(PostgresMedium::Id).eq(PostgresMediumId::from(id)))
@@ -929,7 +973,8 @@ impl MediaRepository for PostgresMediaRepository {
 
         let affected = sqlx::query_with(&sql, values)
             .execute(&self.pool)
-            .await?
+            .await
+            .map_err(Error::other)?
             .rows_affected();
 
         match affected {

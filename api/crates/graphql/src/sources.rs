@@ -4,7 +4,10 @@ use domain::entity::{external_services, sources};
 use serde::Serialize;
 use uuid::Uuid;
 
-use crate::external_services::ExternalService;
+use crate::{
+    error::ErrorKind,
+    external_services::ExternalService,
+};
 
 #[derive(SimpleObject)]
 pub(crate) struct Source {
@@ -51,9 +54,9 @@ pub(crate) struct ExternalMetadataUrl {
 }
 
 impl TryFrom<external_services::ExternalMetadata> for ExternalMetadata {
-    type Error = anyhow::Error;
+    type Error = ErrorKind;
 
-    fn try_from(value: external_services::ExternalMetadata) -> anyhow::Result<Self> {
+    fn try_from(value: external_services::ExternalMetadata) -> Result<Self, Self::Error> {
         use external_services::ExternalMetadata::*;
         match value {
             Fantia { id } => Ok(Self::Fantia(ExternalMetadataId { id: id.to_string() })),
@@ -64,24 +67,24 @@ impl TryFrom<external_services::ExternalMetadata> for ExternalMetadata {
             Skeb { id, creator_id } => Ok(Self::Skeb(ExternalMetadataIdCreatorId { id: id.to_string(), creator_id })),
             Twitter { id } => Ok(Self::Twitter(ExternalMetadataId { id: id.to_string() })),
             Website { url } => Ok(Self::Website(ExternalMetadataUrl { url })),
-            Custom(v) => Ok(Self::Custom(serde_json::from_str(&v)?)),
+            Custom(v) => Ok(Self::Custom(serde_json::from_str(&v).map_err(|_| ErrorKind::SourceMetadataInvalid)?)),
         }
     }
 }
 
 impl TryFrom<ExternalMetadata> for external_services::ExternalMetadata {
-    type Error = anyhow::Error;
+    type Error = ErrorKind;
 
-    fn try_from(value: ExternalMetadata) -> anyhow::Result<Self> {
+    fn try_from(value: ExternalMetadata) -> Result<Self, Self::Error> {
         use ExternalMetadata::*;
         match value {
-            Fantia(ExternalMetadataId { id }) => Ok(Self::Fantia { id: id.parse()? }),
-            Nijie(ExternalMetadataId { id }) => Ok(Self::Nijie { id: id.parse()? }),
-            Pixiv(ExternalMetadataId { id }) => Ok(Self::Pixiv { id: id.parse()? }),
-            PixivFanbox(ExternalMetadataIdCreatorId { id, creator_id }) => Ok(Self::PixivFanbox { id: id.parse()?, creator_id }),
-            Seiga(ExternalMetadataId { id }) => Ok(Self::Seiga { id: id.parse()? }),
-            Skeb(ExternalMetadataIdCreatorId { id, creator_id }) => Ok(Self::Skeb { id: id.parse()?, creator_id }),
-            Twitter(ExternalMetadataId { id }) => Ok(Self::Twitter { id: id.parse()? }),
+            Fantia(ExternalMetadataId { id }) => Ok(Self::Fantia { id: id.parse().map_err(|_| ErrorKind::SourceMetadataInvalid)? }),
+            Nijie(ExternalMetadataId { id }) => Ok(Self::Nijie { id: id.parse().map_err(|_| ErrorKind::SourceMetadataInvalid)? }),
+            Pixiv(ExternalMetadataId { id }) => Ok(Self::Pixiv { id: id.parse().map_err(|_| ErrorKind::SourceMetadataInvalid)? }),
+            PixivFanbox(ExternalMetadataIdCreatorId { id, creator_id }) => Ok(Self::PixivFanbox { id: id.parse().map_err(|_| ErrorKind::SourceMetadataInvalid)?, creator_id }),
+            Seiga(ExternalMetadataId { id }) => Ok(Self::Seiga { id: id.parse().map_err(|_| ErrorKind::SourceMetadataInvalid)? }),
+            Skeb(ExternalMetadataIdCreatorId { id, creator_id }) => Ok(Self::Skeb { id: id.parse().map_err(|_| ErrorKind::SourceMetadataInvalid)?, creator_id }),
+            Twitter(ExternalMetadataId { id }) => Ok(Self::Twitter { id: id.parse().map_err(|_| ErrorKind::SourceMetadataInvalid)? }),
             Website(ExternalMetadataUrl { url }) => Ok(Self::Website { url }),
             Custom(v) => Ok(Self::Custom(v.to_string())),
         }
@@ -89,15 +92,15 @@ impl TryFrom<ExternalMetadata> for external_services::ExternalMetadata {
 }
 
 impl TryFrom<sources::Source> for Source {
-    type Error = anyhow::Error;
+    type Error = ErrorKind;
 
-    fn try_from(source: sources::Source) -> anyhow::Result<Self> {
+    fn try_from(source: sources::Source) -> Result<Self, Self::Error> {
         let external_metadata = ExternalMetadata::try_from(source.external_metadata)?;
 
         Ok(Self {
             id: *source.id,
             external_service: source.external_service.into(),
-            external_metadata: serde_json::to_value(external_metadata)?,
+            external_metadata: serde_json::to_value(external_metadata).map_err(|_| ErrorKind::SourceMetadataInvalid)?,
             created_at: source.created_at,
             updated_at: source.updated_at,
         })

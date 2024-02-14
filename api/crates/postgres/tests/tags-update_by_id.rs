@@ -2,11 +2,12 @@ use std::collections::BTreeSet;
 
 use domain::{
     entity::tags::{AliasSet, Tag, TagDepth, TagId},
+    error::ErrorKind,
     repository::tags::TagsRepository,
 };
 use chrono::{TimeZone, Utc};
 use postgres::tags::PostgresTagsRepository;
-use pretty_assertions::assert_eq;
+use pretty_assertions::{assert_eq, assert_matches};
 use sqlx::Row;
 use test_context::test_context;
 use uuid::uuid;
@@ -133,23 +134,6 @@ async fn without_depth_succeeds(ctx: &DatabaseContext) {
 #[test_context(DatabaseContext)]
 #[tokio::test]
 #[cfg_attr(not(feature = "test-postgres"), ignore)]
-async fn fails(ctx: &DatabaseContext) {
-    let repository = PostgresTagsRepository::new(ctx.pool.clone());
-    let actual = repository.update_by_id(
-        TagId::from(uuid!("11111111-1111-1111-1111-111111111111")),
-        None,
-        None,
-        [],
-        [],
-        TagDepth::new(0, 0),
-    ).await;
-
-    assert!(actual.is_err());
-}
-
-#[test_context(DatabaseContext)]
-#[tokio::test]
-#[cfg_attr(not(feature = "test-postgres"), ignore)]
 async fn root_fails(ctx: &DatabaseContext) {
     let repository = PostgresTagsRepository::new(ctx.pool.clone());
     let actual = repository.update_by_id(
@@ -159,7 +143,24 @@ async fn root_fails(ctx: &DatabaseContext) {
         [],
         [],
         TagDepth::new(0, 0),
-    ).await;
+    ).await.unwrap_err();
 
-    assert!(actual.is_err());
+assert_matches!(actual.kind(), ErrorKind::TagUpdatingRoot);
+}
+
+#[test_context(DatabaseContext)]
+#[tokio::test]
+#[cfg_attr(not(feature = "test-postgres"), ignore)]
+async fn fails(ctx: &DatabaseContext) {
+    let repository = PostgresTagsRepository::new(ctx.pool.clone());
+    let actual = repository.update_by_id(
+        TagId::from(uuid!("11111111-1111-1111-1111-111111111111")),
+        None,
+        None,
+        [],
+        [],
+        TagDepth::new(0, 0),
+    ).await.unwrap_err();
+
+    assert_matches!(actual.kind(), ErrorKind::TagNotFound { id } if id == &TagId::from(uuid!("11111111-1111-1111-1111-111111111111")));
 }

@@ -1,6 +1,9 @@
-use domain::repository::external_services::ExternalServicesRepository;
+use domain::{
+    error::ErrorKind,
+    repository::external_services::ExternalServicesRepository,
+};
 use postgres::external_services::PostgresExternalServicesRepository;
-use pretty_assertions::assert_eq;
+use pretty_assertions::{assert_eq, assert_matches};
 use sqlx::Row;
 use test_context::test_context;
 
@@ -32,7 +35,7 @@ async fn succeeds(ctx: &DatabaseContext) {
 #[cfg_attr(not(feature = "test-postgres"), ignore)]
 async fn fails(ctx: &DatabaseContext) {
     let repository = PostgresExternalServicesRepository::new(ctx.pool.clone());
-    let actual = repository.create("twitter", "Twitter").await;
+    let actual = repository.create("twitter", "Twitter").await.unwrap_err();
 
-    assert!(actual.is_err());
+    assert_matches!(actual.kind(), ErrorKind::ExternalServiceDuplicateSlug { slug } if slug == "twitter");
 }

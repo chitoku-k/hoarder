@@ -1,12 +1,10 @@
 use std::{net::Ipv6Addr, sync::Arc};
 
-use anyhow::Context;
 use axum::{
     routing::{get, post},
     Router,
 };
 use axum_server::Handle;
-use thiserror::Error;
 use tokio::{
     signal::unix::{self, SignalKind},
     task::JoinHandle,
@@ -19,22 +17,16 @@ use axum_server::tls_openssl::OpenSSLConfig;
 #[cfg(feature = "tls")]
 use notify::Watcher;
 
-use crate::service::{
-    graphql::{self, GraphQLServiceInterface},
-    thumbnails::{self, ThumbnailsServiceInterface},
+use crate::{
+    error::{Error, ErrorKind, Result},
+    service::{
+        graphql::{self, GraphQLServiceInterface},
+        thumbnails::{self, ThumbnailsServiceInterface},
+    },
 };
 
 pub struct Engine {
     app: Router,
-}
-
-#[derive(Debug, Error)]
-pub(crate) enum EngineError {
-    #[error("error starting server")]
-    Serve,
-    #[cfg(feature = "tls")]
-    #[error("error loading certificate")]
-    Certificate,
 }
 
 impl Engine {
@@ -71,7 +63,7 @@ impl Engine {
         self.app
     }
 
-    pub async fn start(self, port: u16, tls: Option<(String, String)>) -> anyhow::Result<()> {
+    pub async fn start(self, port: u16, tls: Option<(String, String)>) -> Result<()> {
         let addr = (Ipv6Addr::UNSPECIFIED, port).into();
 
         let handle = Handle::new();
@@ -84,52 +76,61 @@ impl Engine {
             },
             #[cfg(feature = "tls")]
             Some((tls_cert, tls_key)) => {
-                let config = OpenSSLConfig::from_pem_file(&tls_cert, &tls_key).context(EngineError::Certificate)?;
-                enable_auto_reload(config.clone(), tls_cert, tls_key);
-
+                let config = match OpenSSLConfig::from_pem_file(&tls_cert, &tls_key) {
+                    Ok(config) => {
+                        enable_auto_reload(config.clone(), tls_cert, tls_key);
+                        config
+                    },
+                    Err(e) => return Err(Error::new(ErrorKind::ServerCertificateInvalid { cert: tls_cert, key: tls_key }, e)),
+                };
                 axum_server::bind_openssl(addr, config)
                     .handle(handle)
                     .serve(self.app.into_make_service())
                     .await
-                    .context(EngineError::Serve)
+                    .map_err(|e| Error::new(ErrorKind::ServerStartFailed, e))
             },
             None => {
                 axum_server::bind(addr)
                     .handle(handle)
                     .serve(self.app.into_make_service())
                     .await
-                    .context(EngineError::Serve)
+                    .map_err(|e| Error::new(ErrorKind::ServerStartFailed, e))
             },
         }
     }
 }
 
 #[cfg(feature = "tls")]
-fn enable_auto_reload(config: OpenSSLConfig, tls_cert: String, tls_key: String) -> JoinHandle<anyhow::Result<()>> {
+fn enable_auto_reload(config: OpenSSLConfig, tls_cert: String, tls_key: String) -> JoinHandle<Result<()>> {
     let (tx, rx) = channel();
 
     tokio::spawn(async move {
-        let mut watcher = notify::recommended_watcher(tx)?;
-        watcher.watch(tls_cert.as_ref(), notify::RecursiveMode::NonRecursive)?;
+        let mut watcher = notify::recommended_watcher(tx).map_err(Error::other)?;
+        watcher.watch(tls_cert.as_ref(), notify::RecursiveMode::NonRecursive).map_err(Error::other)?;
 
         for event in rx {
-            if event?.kind.is_modify() {
-                config.reload_from_pem_file(&tls_cert, &tls_key)?;
+            let event = event.map_err(Error::other)?;
+            if event.kind.is_modify() {
+                if let Err(e) = config.reload_from_pem_file(&tls_cert, &tls_key) {
+                    return Err(Error::new(ErrorKind::ServerCertificateInvalid { cert: tls_cert, key: tls_key }, e));
+                }
             }
         }
         Ok(())
     })
 }
 
-fn enable_graceful_shutdown(handle: Handle, tls: bool) -> JoinHandle<anyhow::Result<()>> {
+fn enable_graceful_shutdown(handle: Handle, tls: bool) -> JoinHandle<Result<()>> {
     tokio::spawn(async move {
-        let address = handle.listening().await.context("failed to bind")?;
+        let address = handle.listening().await.ok_or(ErrorKind::ServerBindFailed)?;
         let scheme = if tls { "https" } else { "http" };
 
         log::info!("listening on {scheme}://{address}/");
 
-        let mut stream = unix::signal(SignalKind::terminate())?;
-        stream.recv().await;
+        unix::signal(SignalKind::terminate())
+            .map_err(Error::other)?
+            .recv()
+            .await;
 
         handle.graceful_shutdown(None);
         Ok(())

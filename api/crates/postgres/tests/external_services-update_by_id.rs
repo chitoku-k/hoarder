@@ -1,9 +1,10 @@
 use domain::{
     entity::external_services::ExternalServiceId,
+    error::ErrorKind,
     repository::external_services::ExternalServicesRepository,
 };
 use postgres::external_services::PostgresExternalServicesRepository;
-use pretty_assertions::assert_eq;
+use pretty_assertions::{assert_eq, assert_matches};
 use sqlx::Row;
 use test_context::test_context;
 use uuid::uuid;
@@ -67,7 +68,7 @@ async fn fails(ctx: &DatabaseContext) {
     let actual = repository.update_by_id(
         ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
         Some("PIXIV"),
-    ).await;
+    ).await.unwrap_err();
 
-    assert!(actual.is_err());
+    assert_matches!(actual.kind(), ErrorKind::ExternalServiceNotFound { id } if id == &ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")));
 }

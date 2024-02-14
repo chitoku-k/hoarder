@@ -4,10 +4,11 @@ use domain::{
         external_services::{ExternalService, ExternalServiceId, ExternalMetadata},
         sources::SourceId,
     },
+    error::ErrorKind,
     repository::sources::SourcesRepository,
 };
 use postgres::sources::PostgresSourcesRepository;
-use pretty_assertions::assert_eq;
+use pretty_assertions::{assert_eq, assert_matches};
 use serde_json::json;
 use sqlx::Row;
 use test_context::test_context;
@@ -109,7 +110,7 @@ async fn fails(ctx: &DatabaseContext) {
         SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
         None,
         None,
-    ).await;
+    ).await.unwrap_err();
 
-    assert!(actual.is_err());
+    assert_matches!(actual.kind(), ErrorKind::SourceNotFound { id } if id == &SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")));
 }

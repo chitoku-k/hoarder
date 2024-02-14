@@ -20,8 +20,14 @@ use domain::{
 };
 use futures::AsyncReadExt;
 
-use crate::{mutation::Mutation, query::Query, subscription::Subscription};
+use crate::{
+    error::{Error, ErrorKind, Result},
+    mutation::Mutation,
+    query::Query,
+    subscription::Subscription,
+};
 
+pub mod error;
 pub mod mutation;
 pub mod query;
 pub mod subscription;
@@ -78,9 +84,9 @@ where
     }
 }
 
-pub(crate) async fn process_upload(value: UploadValue) -> anyhow::Result<Vec<u8>> {
+pub(crate) async fn process_upload(value: UploadValue) -> Result<Vec<u8>> {
     let mut buf = Vec::with_capacity(value.size().unwrap_or_default() as usize);
-    value.into_async_read().read_to_end(&mut buf).await?;
+    value.into_async_read().read_to_end(&mut buf).await.map_err(|_| Error::new(ErrorKind::InternalServerError))?;
 
     Ok(buf)
 }

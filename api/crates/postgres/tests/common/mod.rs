@@ -1,6 +1,5 @@
-use std::{future::Future, pin::Pin};
+use std::{error::Error, future::Future, pin::Pin};
 
-use anyhow::Context;
 use include_dir::{include_dir, Dir};
 use sqlx::{
     postgres::{PgConnectOptions, PgPoolOptions},
@@ -11,20 +10,22 @@ use uuid::Uuid;
 
 static FIXTURES: Dir = include_dir!("../database");
 
+type BoxDynError = Box<dyn Error + Send + Sync + 'static>;
+
 pub(crate) struct DatabaseContext {
     pub conn: PgConnection,
     pub pool: PgPool,
     pub name: String,
 }
 
-async fn create_database(name: &str) -> anyhow::Result<PgConnection> {
+async fn create_database(name: &str) -> Result<PgConnection, BoxDynError> {
     let mut conn = PgConnection::connect_with(&PgConnectOptions::new()).await?;
     conn.execute(&*format!(r#"CREATE DATABASE "{}""#, &name)).await?;
 
     Ok(conn)
 }
 
-async fn connect_database(name: &str) -> anyhow::Result<PgPool> {
+async fn connect_database(name: &str) -> Result<PgPool, BoxDynError> {
     let connect_options = PgConnectOptions::new().database(name);
     let pool = PgPoolOptions::new()
         .connect_with(connect_options)
@@ -33,27 +34,27 @@ async fn connect_database(name: &str) -> anyhow::Result<PgPool> {
     Ok(pool)
 }
 
-async fn setup_database(pool: &PgPool) -> anyhow::Result<()> {
+async fn setup_database(pool: &PgPool) -> Result<(), BoxDynError> {
     let fixtures = FIXTURES.files()
         .chain(
             FIXTURES
                 .get_dir("fixtures")
-                .context("fixtures not found")?
+                .ok_or("fixtures not found")?
                 .files()
         );
 
     for file in fixtures {
-        let sql = file.contents_utf8().context("invalid fixture")?;
+        let sql = file.contents_utf8().ok_or("invalid fixture")?;
         pool
             .execute(sql)
             .await
-            .context(format!("error initializing test database in {:?}", file.path()))?;
+            .map_err(|e| format!("initializing test database failed in {:?}: {e}", file.path()))?;
     }
 
     Ok(())
 }
 
-async fn drop_database(conn: &mut PgConnection, name: &str) -> anyhow::Result<()> {
+async fn drop_database(conn: &mut PgConnection, name: &str) -> Result<(), BoxDynError> {
     conn.execute(&*format!(r#"DROP DATABASE "{}" WITH (FORCE)"#, name)).await?;
 
     Ok(())

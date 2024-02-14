@@ -3,7 +3,7 @@ use derive_more::{Deref, Display, From};
 use thiserror::Error;
 use uuid::Uuid;
 
-use crate::entity::external_services::{ExternalMetadata, ExternalService, ExternalServiceError};
+use crate::{entity::external_services::{ExternalMetadata, ExternalService}, error::{ErrorKind, Result}};
 
 #[derive(Clone, Copy, Debug, Default, Deref, Display, Eq, From, PartialEq)]
 pub struct SourceId(Uuid);
@@ -24,7 +24,7 @@ pub enum SourceError {
 }
 
 impl Source {
-    pub fn validate(&self) -> anyhow::Result<()> {
+    pub fn validate(&self) -> Result<()> {
         match (self.external_service.slug.as_str(), &self.external_metadata) {
             ("fantia", &ExternalMetadata::Fantia { .. }) => Ok(()),
             ("nijie", &ExternalMetadata::Nijie { .. }) => Ok(()),
@@ -35,7 +35,7 @@ impl Source {
             ("twitter", &ExternalMetadata::Twitter { .. }) => Ok(()),
             ("website", &ExternalMetadata::Website { .. }) => Ok(()),
             (_, &ExternalMetadata::Custom(_)) => Ok(()),
-            (slug, _) => Err(ExternalServiceError::InvalidMetadata(slug.to_string()))?,
+            (slug, _) => Err(ErrorKind::SourceMetadataNotMatch { slug: slug.to_string() })?,
         }
     }
 }
@@ -45,7 +45,7 @@ mod tests {
     use crate::entity::external_services::ExternalServiceId;
 
     use chrono::TimeZone;
-    use pretty_assertions::assert_eq;
+    use pretty_assertions::assert_matches;
     use uuid::uuid;
 
     use super::*;
@@ -226,8 +226,7 @@ mod tests {
             updated_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 0).unwrap(),
         };
 
-        let error = source.validate().unwrap_err();
-        let actual: ExternalServiceError = error.downcast().unwrap();
-        assert_eq!(actual, ExternalServiceError::InvalidMetadata("website".to_string()));
+        let actual = source.validate().unwrap_err();
+        assert_matches!(actual.kind(), ErrorKind::SourceMetadataNotMatch { slug } if slug == "website");
     }
 }

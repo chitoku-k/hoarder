@@ -1,6 +1,5 @@
 use std::{future::Future, io::{BufRead, Cursor, Seek}};
 
-use anyhow::Context;
 use chrono::{DateTime, Utc};
 use derive_more::Constructor;
 use tokio::io::{AsyncRead, BufReader};
@@ -10,20 +9,21 @@ use crate::{
     entity::{
         external_services::{ExternalMetadata, ExternalServiceId},
         media::{Medium, MediumId},
-        objects::{Entry, Kind},
+        objects::{Entry, EntryKind, EntryPath, EntryUrl},
         replicas::{OriginalImage, Replica, ReplicaId, ThumbnailId, ThumbnailImage},
         sources::{Source, SourceId},
         tag_types::TagTypeId,
         tags::{TagDepth, TagId},
     },
+    error::Result,
     processor,
     repository::{media, objects, replicas, sources, DeleteResult, Direction, Order},
 };
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum MediumSource {
-    Url(String),
-    Content(String, Vec<u8>, MediumOverwriteBehavior),
+    Url(EntryUrl),
+    Content(EntryPath, Vec<u8>, MediumOverwriteBehavior),
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -44,16 +44,16 @@ impl From<MediumOverwriteBehavior> for objects::ObjectOverwriteBehavior {
 #[cfg_attr(feature = "test-mock", mockall::automock)]
 pub trait MediaServiceInterface: Send + Sync + 'static {
     /// Creates a medium.
-    fn create_medium<T, U>(&self, source_ids: T, created_at: Option<DateTime<Utc>>, tag_tag_type_ids: U, tag_depth: Option<TagDepth>, sources: bool) -> impl Future<Output = anyhow::Result<Medium>> + Send
+    fn create_medium<T, U>(&self, source_ids: T, created_at: Option<DateTime<Utc>>, tag_tag_type_ids: U, tag_depth: Option<TagDepth>, sources: bool) -> impl Future<Output = Result<Medium>> + Send
     where
         T: IntoIterator<Item = SourceId> + Send + Sync + 'static,
         U: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'static;
 
     /// Creates a replica.
-    fn create_replica(&self, medium_id: MediumId, medium_source: MediumSource) -> impl Future<Output = anyhow::Result<Replica>> + Send;
+    fn create_replica(&self, medium_id: MediumId, medium_source: MediumSource) -> impl Future<Output = Result<Replica>> + Send;
 
     /// Creates a source.
-    fn create_source(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> impl Future<Output = anyhow::Result<Source>> + Send;
+    fn create_source(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> impl Future<Output = Result<Source>> + Send;
 
     /// Gets media.
     fn get_media(
@@ -65,10 +65,10 @@ pub trait MediaServiceInterface: Send + Sync + 'static {
         order: Order,
         direction: Direction,
         limit: u64,
-    ) -> impl Future<Output = anyhow::Result<Vec<Medium>>> + Send;
+    ) -> impl Future<Output = Result<Vec<Medium>>> + Send;
 
     /// Gets the media by their IDs.
-    fn get_media_by_ids<T>(&self, ids: T, tag_depth: Option<TagDepth>, replicas: bool, sources: bool) -> impl Future<Output = anyhow::Result<Vec<Medium>>> + Send
+    fn get_media_by_ids<T>(&self, ids: T, tag_depth: Option<TagDepth>, replicas: bool, sources: bool) -> impl Future<Output = Result<Vec<Medium>>> + Send
     where
         T: IntoIterator<Item = MediumId> + Send + Sync + 'static;
 
@@ -83,7 +83,7 @@ pub trait MediaServiceInterface: Send + Sync + 'static {
         order: Order,
         direction: Direction,
         limit: u64,
-    ) -> impl Future<Output = anyhow::Result<Vec<Medium>>> + Send
+    ) -> impl Future<Output = Result<Vec<Medium>>> + Send
     where
         T: IntoIterator<Item = SourceId> + Send + Sync + 'static;
 
@@ -98,26 +98,26 @@ pub trait MediaServiceInterface: Send + Sync + 'static {
         order: Order,
         direction: Direction,
         limit: u64,
-    ) -> impl Future<Output = anyhow::Result<Vec<Medium>>> + Send
+    ) -> impl Future<Output = Result<Vec<Medium>>> + Send
     where
         T: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'static;
 
     /// Gets the replicas by their IDs.
-    fn get_replicas_by_ids<T>(&self, ids: T) -> impl Future<Output = anyhow::Result<Vec<Replica>>> + Send
+    fn get_replicas_by_ids<T>(&self, ids: T) -> impl Future<Output = Result<Vec<Replica>>> + Send
     where
         T: IntoIterator<Item = ReplicaId> + Send + Sync + 'static;
 
     /// Gets the replica by original URL.
-    fn get_replica_by_original_url(&self, original_url: &str) -> impl Future<Output = anyhow::Result<Replica>> + Send;
+    fn get_replica_by_original_url(&self, original_url: &str) -> impl Future<Output = Result<Replica>> + Send;
 
     /// Gets the source by its external metadata.
-    fn get_source_by_external_metadata(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> impl Future<Output = anyhow::Result<Option<Source>>> + Send;
+    fn get_source_by_external_metadata(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> impl Future<Output = Result<Option<Source>>> + Send;
 
     /// Gets the by ID.
-    fn get_thumbnail_by_id(&self, id: ThumbnailId) -> impl Future<Output = anyhow::Result<Vec<u8>>> + Send;
+    fn get_thumbnail_by_id(&self, id: ThumbnailId) -> impl Future<Output = Result<Vec<u8>>> + Send;
 
     /// Gets objects.
-    fn get_objects(&self, prefix: &str, kind: Option<Kind>) -> impl Future<Output = anyhow::Result<Vec<Entry>>> + Send;
+    fn get_objects(&self, prefix: &EntryPath, kind: Option<EntryKind>) -> impl Future<Output = Result<Vec<Entry>>> + Send;
 
     /// Updates the medium by ID.
     fn update_medium_by_id<T, U, V, W, X>(
@@ -132,7 +132,7 @@ pub trait MediaServiceInterface: Send + Sync + 'static {
         tag_depth: Option<TagDepth>,
         replicas: bool,
         sources: bool,
-    ) -> impl Future<Output = anyhow::Result<Medium>> + Send
+    ) -> impl Future<Output = Result<Medium>> + Send
     where
         T: IntoIterator<Item = SourceId> + Send + Sync + 'static,
         U: IntoIterator<Item = SourceId> + Send + Sync + 'static,
@@ -141,19 +141,19 @@ pub trait MediaServiceInterface: Send + Sync + 'static {
         X: IntoIterator<Item = ReplicaId> + Send + Sync + 'static;
 
     /// Updates the replica by ID.
-    fn update_replica_by_id(&self, id: ReplicaId, medium_source: MediumSource) -> impl Future<Output = anyhow::Result<Replica>> + Send;
+    fn update_replica_by_id(&self, id: ReplicaId, medium_source: MediumSource) -> impl Future<Output = Result<Replica>> + Send;
 
     /// Updates the source by ID.
-    fn update_source_by_id(&self, id: SourceId, external_service_id: Option<ExternalServiceId>, external_metadata: Option<ExternalMetadata>) -> impl Future<Output = anyhow::Result<Source>> + Send;
+    fn update_source_by_id(&self, id: SourceId, external_service_id: Option<ExternalServiceId>, external_metadata: Option<ExternalMetadata>) -> impl Future<Output = Result<Source>> + Send;
 
     /// Deletes the medium by ID.
-    fn delete_medium_by_id(&self, id: MediumId) -> impl Future<Output = anyhow::Result<DeleteResult>> + Send;
+    fn delete_medium_by_id(&self, id: MediumId) -> impl Future<Output = Result<DeleteResult>> + Send;
 
     /// Deletes the replica by ID.
-    fn delete_replica_by_id(&self, id: ReplicaId) -> impl Future<Output = anyhow::Result<DeleteResult>> + Send;
+    fn delete_replica_by_id(&self, id: ReplicaId) -> impl Future<Output = Result<DeleteResult>> + Send;
 
     /// Deletes the source by ID.
-    fn delete_source_by_id(&self, id: SourceId) -> impl Future<Output = anyhow::Result<DeleteResult>> + Send;
+    fn delete_source_by_id(&self, id: SourceId) -> impl Future<Output = Result<DeleteResult>> + Send;
 }
 
 #[derive(Clone, Constructor)]
@@ -169,10 +169,9 @@ impl<MediaRepository, ObjectsRepository, ReplicasRepository, SourcesRepository, 
 where
     ObjectsRepository: objects::ObjectsRepository,
 {
-    async fn get_image(&self, url: &str) -> anyhow::Result<ObjectsRepository::Read> {
-        let path = url.strip_prefix("file://").context("unsupported scheme")?;
-        match self.objects_repository.get(path).await {
-            Ok(read) => Ok(read),
+    async fn get_image(&self, url: &EntryUrl) -> Result<(EntryUrl, ObjectsRepository::Read)> {
+        match self.objects_repository.get(url).await {
+            Ok((entry, read)) => Ok((entry.url, read)),
             Err(e) => {
                 log::error!("failed to get an image\nError: {e:?}");
                 Err(e)
@@ -180,13 +179,12 @@ where
         }
     }
 
-    async fn put_image<R>(&self, url: &str, read: R, overwrite: MediumOverwriteBehavior) -> anyhow::Result<()>
+    async fn put_image<R>(&self, path: &EntryPath, read: R, overwrite: MediumOverwriteBehavior) -> Result<EntryUrl>
     where
         R: AsyncRead + Send + Unpin,
     {
-        let path = url.strip_prefix("file://").context("unsupported scheme")?;
         match self.objects_repository.put(path, read, overwrite.into()).await {
-            Ok(()) => Ok(()),
+            Ok(entry) => Ok(entry.url),
             Err(e) => {
                 log::error!("failed to put an image\nError: {e:?}");
                 Err(e)
@@ -199,7 +197,7 @@ impl<MediaRepository, ObjectsRepository, ReplicasRepository, SourcesRepository, 
 where
     MediumImageProcessor: processor::media::MediumImageProcessor,
 {
-    async fn generate_thumbnail_image<R>(&self, read: R) -> anyhow::Result<(OriginalImage, ThumbnailImage)>
+    async fn generate_thumbnail_image<R>(&self, read: R) -> Result<(OriginalImage, ThumbnailImage)>
     where
         R: BufRead + Seek + Send + 'static,
     {
@@ -218,18 +216,18 @@ where
     MediumImageProcessor: processor::media::MediumImageProcessor,
     ObjectsRepository: objects::ObjectsRepository,
 {
-    async fn extract_medium_source(&self, medium_source: MediumSource) -> anyhow::Result<(String, OriginalImage, ThumbnailImage)> {
+    async fn extract_medium_source(&self, medium_source: MediumSource) -> Result<(EntryUrl, OriginalImage, ThumbnailImage)> {
         match medium_source {
             MediumSource::Url(url) => {
-                let read = self.get_image(&url).await?;
+                let (url, read) = self.get_image(&url).await?;
                 let read = SyncIoBridge::new(BufReader::new(read));
 
                 let (original_image, thumbnail_image) = self.generate_thumbnail_image(read).await?;
                 Ok((url, original_image, thumbnail_image))
             },
-            MediumSource::Content(url, content, overwrite) => {
+            MediumSource::Content(path, content, overwrite) => {
                 let read = Cursor::new(&*content);
-                self.put_image(&url, read, overwrite).await?;
+                let url = self.put_image(&path, read, overwrite).await?;
 
                 let read = Cursor::new(content);
                 let (original_image, thumbnail_image) = self.generate_thumbnail_image(read).await?;
@@ -247,7 +245,7 @@ where
     SourcesRepository: sources::SourcesRepository,
     MediumImageProcessor: processor::media::MediumImageProcessor,
 {
-    async fn create_medium<T, U>(&self, source_ids: T, created_at: Option<DateTime<Utc>>, tag_tag_type_ids: U, tag_depth: Option<TagDepth>, sources: bool) -> anyhow::Result<Medium>
+    async fn create_medium<T, U>(&self, source_ids: T, created_at: Option<DateTime<Utc>>, tag_tag_type_ids: U, tag_depth: Option<TagDepth>, sources: bool) -> Result<Medium>
     where
         T: IntoIterator<Item = SourceId> + Send + Sync + 'static,
         U: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'static,
@@ -261,7 +259,7 @@ where
         }
     }
 
-    async fn create_replica(&self, medium_id: MediumId, medium_source: MediumSource) -> anyhow::Result<Replica> {
+    async fn create_replica(&self, medium_id: MediumId, medium_source: MediumSource) -> Result<Replica> {
         let (url, original_image, thumbnail_image) = self.extract_medium_source(medium_source).await?;
         match self.replicas_repository.create(medium_id, Some(thumbnail_image), &url, original_image).await {
             Ok(replica) => Ok(replica),
@@ -272,7 +270,7 @@ where
         }
     }
 
-    async fn create_source(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> anyhow::Result<Source> {
+    async fn create_source(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> Result<Source> {
         match self.sources_repository.create(external_service_id, external_metadata).await {
             Ok(source) => Ok(source),
             Err(e) => {
@@ -291,7 +289,7 @@ where
         order: Order,
         direction: Direction,
         limit: u64,
-    ) -> anyhow::Result<Vec<Medium>> {
+    ) -> Result<Vec<Medium>> {
         match self.media_repository.fetch_all(tag_depth, replicas, sources, cursor, order, direction, limit).await {
             Ok(media) => Ok(media),
             Err(e) => {
@@ -301,7 +299,7 @@ where
         }
     }
 
-    async fn get_media_by_ids<T>(&self, ids: T, tag_depth: Option<TagDepth>, replicas: bool, sources: bool) -> anyhow::Result<Vec<Medium>>
+    async fn get_media_by_ids<T>(&self, ids: T, tag_depth: Option<TagDepth>, replicas: bool, sources: bool) -> Result<Vec<Medium>>
     where
         T: IntoIterator<Item = MediumId> + Send + Sync + 'static,
     {
@@ -324,7 +322,7 @@ where
         order: Order,
         direction: Direction,
         limit: u64,
-    ) -> anyhow::Result<Vec<Medium>>
+    ) -> Result<Vec<Medium>>
     where
         T: IntoIterator<Item = SourceId> + Send + Sync + 'static,
     {
@@ -347,7 +345,7 @@ where
         order: Order,
         direction: Direction,
         limit: u64,
-    ) -> anyhow::Result<Vec<Medium>>
+    ) -> Result<Vec<Medium>>
     where
         T: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'static,
     {
@@ -360,7 +358,7 @@ where
         }
     }
 
-    async fn get_replicas_by_ids<T>(&self, ids: T) -> anyhow::Result<Vec<Replica>>
+    async fn get_replicas_by_ids<T>(&self, ids: T) -> Result<Vec<Replica>>
     where
         T: IntoIterator<Item = ReplicaId> + Send + Sync + 'static,
     {
@@ -373,7 +371,7 @@ where
         }
     }
 
-    async fn get_replica_by_original_url(&self, original_url: &str) -> anyhow::Result<Replica> {
+    async fn get_replica_by_original_url(&self, original_url: &str) -> Result<Replica> {
         match self.replicas_repository.fetch_by_original_url(original_url).await {
             Ok(replica) => Ok(replica),
             Err(e) => {
@@ -383,7 +381,7 @@ where
         }
     }
 
-    async fn get_source_by_external_metadata(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> anyhow::Result<Option<Source>> {
+    async fn get_source_by_external_metadata(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> Result<Option<Source>> {
         match self.sources_repository.fetch_by_external_metadata(external_service_id, external_metadata).await {
             Ok(source) => Ok(source),
             Err(e) => {
@@ -393,7 +391,7 @@ where
         }
     }
 
-    async fn get_thumbnail_by_id(&self, id: ThumbnailId) -> anyhow::Result<Vec<u8>> {
+    async fn get_thumbnail_by_id(&self, id: ThumbnailId) -> Result<Vec<u8>> {
         match self.replicas_repository.fetch_thumbnail_by_id(id).await {
             Ok(replica) => Ok(replica),
             Err(e) => {
@@ -403,7 +401,7 @@ where
         }
     }
 
-    async fn get_objects(&self, prefix: &str, kind: Option<Kind>) -> anyhow::Result<Vec<Entry>> {
+    async fn get_objects(&self, prefix: &EntryPath, kind: Option<EntryKind>) -> Result<Vec<Entry>> {
         match self.objects_repository.list(prefix).await {
             Ok(mut entries) => {
                 if let Some(kind) = kind {
@@ -430,7 +428,7 @@ where
         tag_depth: Option<TagDepth>,
         replicas: bool,
         sources: bool,
-    ) -> anyhow::Result<Medium>
+    ) -> Result<Medium>
     where
         T: IntoIterator<Item = SourceId> + Send + Sync + 'static,
         U: IntoIterator<Item = SourceId> + Send + Sync + 'static,
@@ -447,7 +445,7 @@ where
         }
     }
 
-    async fn update_replica_by_id(&self, id: ReplicaId, medium_source: MediumSource) -> anyhow::Result<Replica> {
+    async fn update_replica_by_id(&self, id: ReplicaId, medium_source: MediumSource) -> Result<Replica> {
         let (url, original_image, thumbnail_image) = self.extract_medium_source(medium_source).await?;
         match self.replicas_repository.update_by_id(id, Some(thumbnail_image), Some(&url), Some(original_image)).await {
             Ok(replica) => Ok(replica),
@@ -458,7 +456,7 @@ where
         }
     }
 
-    async fn update_source_by_id(&self, id: SourceId, external_service_id: Option<ExternalServiceId>, external_metadata: Option<ExternalMetadata>) -> anyhow::Result<Source> {
+    async fn update_source_by_id(&self, id: SourceId, external_service_id: Option<ExternalServiceId>, external_metadata: Option<ExternalMetadata>) -> Result<Source> {
         match self.sources_repository.update_by_id(id, external_service_id, external_metadata).await {
             Ok(source) => Ok(source),
             Err(e) => {
@@ -468,7 +466,7 @@ where
         }
     }
 
-    async fn delete_medium_by_id(&self, id: MediumId) -> anyhow::Result<DeleteResult> {
+    async fn delete_medium_by_id(&self, id: MediumId) -> Result<DeleteResult> {
         match self.media_repository.delete_by_id(id).await {
             Ok(result) => Ok(result),
             Err(e) => {
@@ -478,7 +476,7 @@ where
         }
     }
 
-    async fn delete_replica_by_id(&self, id: ReplicaId) -> anyhow::Result<DeleteResult> {
+    async fn delete_replica_by_id(&self, id: ReplicaId) -> Result<DeleteResult> {
         match self.replicas_repository.delete_by_id(id).await {
             Ok(result) => Ok(result),
             Err(e) => {
@@ -488,7 +486,7 @@ where
         }
     }
 
-    async fn delete_source_by_id(&self, id: SourceId) -> anyhow::Result<DeleteResult> {
+    async fn delete_source_by_id(&self, id: SourceId) -> Result<DeleteResult> {
         match self.sources_repository.delete_by_id(id).await {
             Ok(result) => Ok(result),
             Err(e) => {

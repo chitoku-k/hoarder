@@ -1,7 +1,6 @@
 use chrono::{DateTime, Utc};
 use derive_more::{Constructor, Deref, Display, From};
 use serde::Deserialize;
-use thiserror::Error;
 use uuid::Uuid;
 
 #[derive(Clone, Copy, Debug, Default, Deref, Deserialize, Display, Eq, From, Hash, PartialEq)]
@@ -46,18 +45,4 @@ pub struct OriginalImage {
 pub struct Size {
     pub width: u32,
     pub height: u32,
-}
-
-#[derive(Debug, Error)]
-pub enum ReplicaError {
-    #[error("replica not found: {0}")]
-    NotFoundById(ReplicaId),
-    #[error("replica not found by URL: {0}")]
-    NotFoundByURL(String),
-}
-
-#[derive(Debug, Error)]
-pub enum ThumbnailError {
-    #[error("thumbnail not found: {0}")]
-    NotFoundById(ThumbnailId),
 }

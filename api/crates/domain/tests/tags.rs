@@ -7,6 +7,7 @@ use domain::{
         tag_types::{TagType, TagTypeId},
         tags::{AliasSet, Tag, TagDepth, TagId},
     },
+    error::{Error, ErrorKind},
     repository::{
         tag_types::MockTagTypesRepository,
         tags::MockTagsRepository,
@@ -15,7 +16,7 @@ use domain::{
     service::tags::{TagsService, TagsServiceInterface},
 };
 use futures::future::{err, ok};
-use pretty_assertions::assert_eq;
+use pretty_assertions::{assert_eq, assert_matches};
 use uuid::uuid;
 
 #[tokio::test]
@@ -102,7 +103,7 @@ async fn create_tag_fails() {
                 &TagDepth::new(1, 1),
             )
         })
-        .returning(|_, _, _, _, _| Box::pin(err(anyhow!("error creating a tag"))));
+        .returning(|_, _, _, _, _| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
 
     let mock_tag_types_repository = MockTagTypesRepository::new();
 
@@ -113,9 +114,9 @@ async fn create_tag_fails() {
         &["アッカリーン".to_string()],
         Some(TagId::from(uuid!("22222222-2222-2222-2222-222222222222"))),
         TagDepth::new(1, 1),
-    ).await;
+    ).await.unwrap_err();
 
-    assert!(actual.is_err());
+    assert_matches!(actual.kind(), ErrorKind::Other);
 }
 
 #[tokio::test]
@@ -152,12 +153,12 @@ async fn create_tag_type_fails() {
         .expect_create()
         .times(1)
         .withf(|slug, name| (slug, name) == ("character", "キャラクター"))
-        .returning(|_, _| Box::pin(err(anyhow!("error creating a tag type"))));
+        .returning(|_, _| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
 
     let service = TagsService::new(mock_tags_repository, mock_tag_types_repository);
-    let actual = service.create_tag_type("character", "キャラクター").await;
+    let actual = service.create_tag_type("character", "キャラクター").await.unwrap_err();
 
-    assert!(actual.is_err());
+    assert_matches!(actual.kind(), ErrorKind::Other);
 }
 
 #[tokio::test]
@@ -308,14 +309,14 @@ async fn get_tags_fails() {
                 &10,
             )
         })
-        .returning(|_, _, _, _, _, _| Box::pin(err(anyhow!("error fetching tags"))));
+        .returning(|_, _, _, _, _, _| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
 
     let mock_tag_types_repository = MockTagTypesRepository::new();
 
     let service = TagsService::new(mock_tags_repository, mock_tag_types_repository);
-    let actual = service.get_tags(TagDepth::new(0, 1), false, None, Order::Ascending, Direction::Forward, 10).await;
+    let actual = service.get_tags(TagDepth::new(0, 1), false, None, Order::Ascending, Direction::Forward, 10).await.unwrap_err();
 
-    assert!(actual.is_err());
+    assert_matches!(actual.kind(), ErrorKind::Other);
 }
 
 #[tokio::test]
@@ -450,7 +451,7 @@ async fn get_tags_by_ids_fails() {
                 &TagDepth::new(0, 1),
             )
         })
-        .returning(|_, _| Box::pin(err(anyhow!("error fetching the tags"))));
+        .returning(|_, _| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
 
     let mock_tag_types_repository = MockTagTypesRepository::new();
 
@@ -461,9 +462,9 @@ async fn get_tags_by_ids_fails() {
             TagId::from(uuid!("55555555-5555-5555-5555-555555555555")),
         ],
         TagDepth::new(0, 1),
-    ).await;
+    ).await.unwrap_err();
 
-    assert!(actual.is_err());
+    assert_matches!(actual.kind(), ErrorKind::Other);
 }
 
 #[tokio::test]
@@ -576,14 +577,14 @@ async fn get_tags_by_name_or_alias_like_fails() {
         .expect_fetch_by_name_or_alias_like()
         .times(1)
         .withf(|name_or_alias_like, depth| (name_or_alias_like, depth) == ("り", &TagDepth::new(0, 1)))
-        .returning(|_, _| Box::pin(err(anyhow!("error fetching the tags"))));
+        .returning(|_, _| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
 
     let mock_tag_types_repository = MockTagTypesRepository::new();
 
     let service = TagsService::new(mock_tags_repository, mock_tag_types_repository);
-    let actual = service.get_tags_by_name_or_alias_like("り", TagDepth::new(0, 1)).await;
+    let actual = service.get_tags_by_name_or_alias_like("り", TagDepth::new(0, 1)).await.unwrap_err();
 
-    assert!(actual.is_err());
+    assert_matches!(actual.kind(), ErrorKind::Other);
 }
 
 #[tokio::test]
@@ -632,12 +633,12 @@ async fn get_tag_types_fails() {
     mock_tag_types_repository
         .expect_fetch_all()
         .times(1)
-        .returning(|| Box::pin(err(anyhow!("error fetching the tag types"))));
+        .returning(|| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
 
     let service = TagsService::new(mock_tags_repository, mock_tag_types_repository);
-    let actual = service.get_tag_types().await;
+    let actual = service.get_tag_types().await.unwrap_err();
 
-    assert!(actual.is_err());
+    assert_matches!(actual.kind(), ErrorKind::Other);
 }
 
 #[tokio::test]
@@ -727,7 +728,7 @@ async fn update_tag_by_id_fails() {
                 &TagDepth::new(0, 1),
             )
         })
-        .returning(|_, _, _, _, _, _| Box::pin(err(anyhow!("error updating the tag"))));
+        .returning(|_, _, _, _, _, _| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
 
     let mock_tag_types_repository = MockTagTypesRepository::new();
 
@@ -739,9 +740,9 @@ async fn update_tag_by_id_fails() {
         vec!["アッカリーン".to_string()],
         vec![],
         TagDepth::new(0, 1),
-    ).await;
+    ).await.unwrap_err();
 
-    assert!(actual.is_err());
+    assert_matches!(actual.kind(), ErrorKind::Other);
 }
 
 #[tokio::test]
@@ -794,16 +795,16 @@ async fn update_tag_type_by_id_fails() {
                 &None,
             )
         })
-        .returning(|_, _, _| Box::pin(err(anyhow!("error updating the tag type"))));
+        .returning(|_, _, _| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
 
     let service = TagsService::new(mock_tags_repository, mock_tag_types_repository);
     let actual = service.update_tag_type_by_id(
         TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
         Some("characters"),
         None,
-    ).await;
+    ).await.unwrap_err();
 
-    assert!(actual.is_err());
+    assert_matches!(actual.kind(), ErrorKind::Other);
 }
 
 #[tokio::test]
@@ -884,7 +885,7 @@ async fn attach_tag_by_id_fails() {
                 &TagDepth::new(1, 1),
             )
         })
-        .returning(|_, _, _| Box::pin(err(anyhow!("error attaching the tag"))));
+        .returning(|_, _, _| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
 
     let mock_tag_types_repository = MockTagTypesRepository::new();
 
@@ -893,9 +894,9 @@ async fn attach_tag_by_id_fails() {
         TagId::from(uuid!("33333333-3333-3333-3333-333333333333")),
         TagId::from(uuid!("22222222-2222-2222-2222-222222222222")),
         TagDepth::new(1, 1),
-    ).await;
+    ).await.unwrap_err();
 
-    assert!(actual.is_err());
+    assert_matches!(actual.kind(), ErrorKind::Other);
 }
 
 #[tokio::test]
@@ -955,7 +956,7 @@ async fn detach_tag_by_id_fails() {
                 &TagDepth::new(1, 1),
             )
         })
-        .returning(|_, _| Box::pin(err(anyhow!("error detaching the tag"))));
+        .returning(|_, _| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
 
     let mock_tag_types_repository = MockTagTypesRepository::new();
 
@@ -963,9 +964,9 @@ async fn detach_tag_by_id_fails() {
     let actual = service.detach_tag_by_id(
         TagId::from(uuid!("33333333-3333-3333-3333-333333333333")),
         TagDepth::new(1, 1),
-    ).await;
+    ).await.unwrap_err();
 
-    assert!(actual.is_err());
+    assert_matches!(actual.kind(), ErrorKind::Other);
 }
 
 #[tokio::test]
@@ -992,14 +993,14 @@ async fn delete_tag_by_id_fails() {
         .expect_delete_by_id()
         .times(1)
         .withf(|id, recursive| id == &TagId::from(uuid!("33333333-3333-3333-3333-333333333333")) && *recursive)
-        .returning(|_, _| Box::pin(err(anyhow!("error deleting the tag"))));
+        .returning(|_, _| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
 
     let mock_tag_types_repository = MockTagTypesRepository::new();
 
     let service = TagsService::new(mock_tags_repository, mock_tag_types_repository);
-    let actual = service.delete_tag_by_id(TagId::from(uuid!("33333333-3333-3333-3333-333333333333")), true).await;
+    let actual = service.delete_tag_by_id(TagId::from(uuid!("33333333-3333-3333-3333-333333333333")), true).await.unwrap_err();
 
-    assert!(actual.is_err());
+    assert_matches!(actual.kind(), ErrorKind::Other);
 }
 
 #[tokio::test]
@@ -1026,10 +1027,10 @@ async fn delete_tag_type_by_id_fails() {
         .expect_delete_by_id()
         .times(1)
         .withf(|id| id == &TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")))
-        .returning(|_| Box::pin(err(anyhow!("error deleting the tag type"))));
+        .returning(|_| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
 
     let service = TagsService::new(mock_tags_repository, mock_tag_types_repository);
-    let actual = service.delete_tag_type_by_id(TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444"))).await;
+    let actual = service.delete_tag_type_by_id(TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444"))).await.unwrap_err();
 
-    assert!(actual.is_err());
+    assert_matches!(actual.kind(), ErrorKind::Other);
 }

@@ -17,6 +17,8 @@ pub use sqlx::{
 macro_rules! sea_query_uuid_value {
     ($newtype:ty, $innertype:ty) => {
         const _: () = {
+            use ::std::result::Result;
+
             use ::sea_query::{ArrayType, ColumnType, Nullable, Value, ValueType, ValueTypeErr};
             use ::sqlx::{
                 decode::Decode,

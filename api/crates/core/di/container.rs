@@ -195,6 +195,8 @@ impl Application {
         let tls = Option::zip(config.tls_cert, config.tls_key);
         Engine::new(graphql_service, thumbnails_service)
             .start(config.port, tls)
-            .await
+            .await?;
+
+        Ok(())
     }
 }
