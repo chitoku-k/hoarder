@@ -3,7 +3,8 @@ use std::future::Future;
 use tokio::io::{AsyncRead, AsyncSeek};
 
 use crate::{
-    entity::objects::Entry,
+    entity::objects::{Entry, EntryPath, EntryUrl},
+    error::Result,
     repository::DeleteResult,
 };
 
@@ -28,13 +29,13 @@ pub trait ObjectsRepository: Send + Sync + 'static {
     type Read: AsyncRead + AsyncSeek + Send + Unpin + 'static;
 
     #[cfg_attr(feature = "test-mock", mockall::concretize)]
-    fn put<T>(&self, path: &str, content: T, overwrite: ObjectOverwriteBehavior) -> impl Future<Output = anyhow::Result<()>> + Send
+    fn put<T>(&self, path: &EntryPath, content: T, overwrite: ObjectOverwriteBehavior) -> impl Future<Output = Result<Entry>> + Send
     where
         T: AsyncRead + Send + Unpin;
 
-    fn get(&self, path: &str) -> impl Future<Output = anyhow::Result<Self::Read>> + Send;
+    fn get(&self, url: &EntryUrl) -> impl Future<Output = Result<(Entry, Self::Read)>> + Send;
 
-    fn list(&self, prefix: &str) -> impl Future<Output = anyhow::Result<Vec<Entry>>> + Send;
+    fn list(&self, prefix: &EntryPath) -> impl Future<Output = Result<Vec<Entry>>> + Send;
 
-    fn delete(&self, path: &str) -> impl Future<Output = anyhow::Result<DeleteResult>> + Send;
+    fn delete(&self, url: &EntryUrl) -> impl Future<Output = Result<DeleteResult>> + Send;
 }

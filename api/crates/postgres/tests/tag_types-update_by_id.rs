@@ -1,9 +1,10 @@
 use domain::{
     entity::tag_types::TagTypeId,
+    error::ErrorKind,
     repository::tag_types::TagTypesRepository,
 };
 use postgres::tag_types::PostgresTagTypesRepository;
-use pretty_assertions::assert_eq;
+use pretty_assertions::{assert_eq, assert_matches};
 use sqlx::Row;
 use test_context::test_context;
 use uuid::uuid;
@@ -68,7 +69,7 @@ async fn fails(ctx: &DatabaseContext) {
         TagTypeId::from(uuid!("11111111-1111-1111-1111-111111111111")),
         Some("illustrators"),
         Some("絵師"),
-    ).await;
+    ).await.unwrap_err();
 
-    assert!(actual.is_err());
+    assert_matches!(actual.kind(), ErrorKind::TagTypeNotFound { id } if id == &TagTypeId::from(uuid!("11111111-1111-1111-1111-111111111111")));
 }

@@ -1,12 +1,12 @@
-use anyhow::Context;
 use chrono::{DateTime, Utc};
 use derive_more::{Constructor, From, Into};
-use futures::{future::ready, TryStreamExt};
+use futures::{future::ready, TryFutureExt, TryStreamExt};
 use domain::{
     entity::{
         media::MediumId,
-        replicas::{OriginalImage, Replica, ReplicaError, ReplicaId, Size, Thumbnail, ThumbnailError, ThumbnailId, ThumbnailImage},
+        replicas::{OriginalImage, Replica, ReplicaId, Size, Thumbnail, ThumbnailId, ThumbnailImage},
     },
+    error::{Error, ErrorKind, Result},
     repository::{replicas::ReplicasRepository, DeleteResult},
 };
 use sea_query::{Alias, Asterisk, Expr, Iden, JoinType, Keyword, LockType, OnConflict, Order, PostgresQueryBuilder, Query};
@@ -203,8 +203,8 @@ impl From<PostgresThumbnailDataRow> for Vec<u8> {
 }
 
 impl ReplicasRepository for PostgresReplicasRepository {
-    async fn create(&self, medium_id: MediumId, thumbnail_image: Option<ThumbnailImage>, original_url: &str, original_image: OriginalImage) -> anyhow::Result<Replica> {
-        let mut tx = self.pool.begin().await?;
+    async fn create(&self, medium_id: MediumId, thumbnail_image: Option<ThumbnailImage>, original_url: &str, original_image: OriginalImage) -> Result<Replica> {
+        let mut tx = self.pool.begin().map_err(Error::other).await?;
 
         let (sql, values) = Query::select()
             .columns([
@@ -218,7 +218,8 @@ impl ReplicasRepository for PostgresReplicasRepository {
 
         sqlx::query_with(&sql, values)
             .fetch_all(&mut *tx)
-            .await?;
+            .await
+            .map_err(Error::other)?;
 
         let (sql, values) = Query::select()
             .expr(
@@ -232,8 +233,9 @@ impl ReplicasRepository for PostgresReplicasRepository {
 
         let order: i64 = sqlx::query_with(&sql, values)
             .fetch_one(&mut *tx)
-            .await?
-            .try_get(0)?;
+            .await
+            .and_then(|r| r.try_get(0))
+            .map_err(Error::other)?;
 
         let (sql, values) = Query::insert()
             .into_table(PostgresReplica::Table)
@@ -252,7 +254,8 @@ impl ReplicasRepository for PostgresReplicasRepository {
                 original_image.mime_type.into(),
                 original_image.size.width.into(),
                 original_image.size.height.into(),
-            ])?
+            ])
+            .map_err(Error::other)?
             .returning(
                 Query::returning()
                     .exprs([
@@ -269,10 +272,12 @@ impl ReplicasRepository for PostgresReplicasRepository {
             )
             .build_sqlx(PostgresQueryBuilder);
 
-        let mut replica: Replica = sqlx::query_as_with::<_, PostgresReplicaRow, _>(&sql, values)
-            .fetch_one(&mut *tx)
-            .await?
-            .into();
+        let mut replica = match sqlx::query_as_with::<_, PostgresReplicaRow, _>(&sql, values).fetch_one(&mut *tx).await {
+            Ok(row) => Replica::from(row),
+            Err(sqlx::Error::Database(e)) if e.is_foreign_key_violation() => return Err(ErrorKind::MediumNotFound { id: medium_id })?,
+            Err(sqlx::Error::Database(e)) if e.is_unique_violation() => return Err(ErrorKind::ReplicaDuplicateOriginalUrl { original_url: original_url.to_string() })?,
+            Err(e) => return Err(Error::other(e)),
+        };
 
         if let Some(thumbnail_image) = thumbnail_image {
             let (sql, values) = Query::insert()
@@ -288,7 +293,8 @@ impl ReplicasRepository for PostgresReplicasRepository {
                     thumbnail_image.body.into(),
                     thumbnail_image.size.width.into(),
                     thumbnail_image.size.height.into(),
-                ])?
+                ])
+                .map_err(Error::other)?
                 .returning(
                     Query::returning()
                         .exprs([
@@ -303,17 +309,18 @@ impl ReplicasRepository for PostgresReplicasRepository {
 
             let thumbnail = sqlx::query_as_with::<_, PostgresThumbnailRow, _>(&sql, values)
                 .fetch_one(&mut *tx)
-                .await?
+                .await
+                .map_err(Error::other)?
                 .into();
 
             replica.thumbnail = Some(thumbnail);
         }
 
-        tx.commit().await?;
+        tx.commit().await.map_err(Error::other)?;
         Ok(replica)
     }
 
-    async fn fetch_by_ids<T>(&self, ids: T) -> anyhow::Result<Vec<Replica>>
+    async fn fetch_by_ids<T>(&self, ids: T) -> Result<Vec<Replica>>
     where
         T: IntoIterator<Item = ReplicaId> + Send + Sync + 'static,
     {
@@ -349,12 +356,13 @@ impl ReplicasRepository for PostgresReplicasRepository {
             .map_ok(Into::into)
             .map_ok(|(_, replica)| replica)
             .try_collect()
-            .await?;
+            .await
+            .map_err(Error::other)?;
 
         Ok(replicas)
     }
 
-    async fn fetch_by_original_url(&self, original_url: &str) -> anyhow::Result<Replica> {
+    async fn fetch_by_original_url(&self, original_url: &str) -> Result<Replica> {
         let (sql, values) = Query::select()
             .expr_as(Expr::col((PostgresReplica::Table, PostgresReplica::Id)), PostgresReplicaThumbnail::ReplicaId)
             .expr_as(Expr::col((PostgresReplica::Table, PostgresReplica::MediumId)), PostgresReplicaThumbnail::ReplicaMediumId)
@@ -380,16 +388,16 @@ impl ReplicasRepository for PostgresReplicasRepository {
             .and_where(Expr::col(PostgresReplica::OriginalUrl).eq(original_url))
             .build_sqlx(PostgresQueryBuilder);
 
-        let (_, replica) = sqlx::query_as_with::<_, PostgresReplicaThumbnailRow, _>(&sql, values)
-            .fetch_optional(&self.pool)
-            .await?
-            .context(ReplicaError::NotFoundByURL(original_url.to_string()))?
-            .into();
+        let (_, replica) = match sqlx::query_as_with::<_, PostgresReplicaThumbnailRow, _>(&sql, values).fetch_one(&self.pool).await {
+            Ok(row) => row.into(),
+            Err(sqlx::Error::RowNotFound) => return Err(ErrorKind::ReplicaNotFoundByUrl { original_url: original_url.to_string() })?,
+            Err(e) => return Err(Error::other(e)),
+        };
 
         Ok(replica)
     }
 
-    async fn fetch_thumbnail_by_id(&self, id: ThumbnailId) -> anyhow::Result<Vec<u8>> {
+    async fn fetch_thumbnail_by_id(&self, id: ThumbnailId) -> Result<Vec<u8>> {
         let (sql, values) = Query::select()
             .columns([
                 PostgresThumbnail::Data,
@@ -398,17 +406,17 @@ impl ReplicasRepository for PostgresReplicasRepository {
             .and_where(Expr::col(PostgresThumbnail::Id).eq(PostgresThumbnailId::from(id)))
             .build_sqlx(PostgresQueryBuilder);
 
-        let thumbnail = sqlx::query_as_with::<_, PostgresThumbnailDataRow, _>(&sql, values)
-            .fetch_optional(&self.pool)
-            .await?
-            .context(ThumbnailError::NotFoundById(id))?
-            .into();
+        let thumbnail = match sqlx::query_as_with::<_, PostgresThumbnailDataRow, _>(&sql, values).fetch_one(&self.pool).await {
+            Ok(row) => row.into(),
+            Err(sqlx::Error::RowNotFound) => return Err(ErrorKind::ThumbnailNotFound { id })?,
+            Err(e) => return Err(Error::other(e)),
+        };
 
         Ok(thumbnail)
     }
 
-    async fn update_by_id<'a>(&self, id: ReplicaId, thumbnail_image: Option<ThumbnailImage>, original_url: Option<&'a str>, original_image: Option<OriginalImage>) -> anyhow::Result<Replica> {
-        let mut tx = self.pool.begin().await?;
+    async fn update_by_id<'a>(&self, id: ReplicaId, thumbnail_image: Option<ThumbnailImage>, original_url: Option<&'a str>, original_image: Option<OriginalImage>) -> Result<Replica> {
+        let mut tx = self.pool.begin().await.map_err(Error::other)?;
 
         let (sql, values) = Query::select()
             .columns([
@@ -426,10 +434,11 @@ impl ReplicasRepository for PostgresReplicasRepository {
             .lock(LockType::Update)
             .build_sqlx(PostgresQueryBuilder);
 
-        sqlx::query_as_with::<_, PostgresReplicaRow, _>(&sql, values)
-            .fetch_optional(&mut *tx)
-            .await?
-            .context(ReplicaError::NotFoundById(id))?;
+        match sqlx::query_as_with::<_, PostgresReplicaRow, _>(&sql, values).fetch_one(&mut *tx).await {
+            Ok(_) => (),
+            Err(sqlx::Error::RowNotFound) => return Err(ErrorKind::ReplicaNotFound { id })?,
+            Err(e) => return Err(Error::other(e)),
+        }
 
         let mut query = Query::update();
         query
@@ -460,10 +469,16 @@ impl ReplicasRepository for PostgresReplicasRepository {
         }
 
         let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
-        let mut replica: Replica = sqlx::query_as_with::<_, PostgresReplicaRow, _>(&sql, values)
-            .fetch_one(&mut *tx)
-            .await?
-            .into();
+        let mut replica = match sqlx::query_as_with::<_, PostgresReplicaRow, _>(&sql, values).fetch_one(&mut *tx).await {
+            Ok(row) => Replica::from(row),
+            Err(sqlx::Error::Database(e)) if e.is_unique_violation() => {
+                if let Some(original_url) = original_url {
+                    return Err(ErrorKind::ReplicaDuplicateOriginalUrl { original_url: original_url.to_string() })?;
+                }
+                return Err(Error::other(e));
+            },
+            Err(e) => return Err(Error::other(e)),
+        };
 
         if let Some(thumbnail_image) = thumbnail_image {
             let (sql, values) = Query::insert()
@@ -479,7 +494,8 @@ impl ReplicasRepository for PostgresReplicasRepository {
                     thumbnail_image.body.into(),
                     thumbnail_image.size.width.into(),
                     thumbnail_image.size.height.into(),
-                ])?
+                ])
+                .map_err(Error::other)?
                 .on_conflict(
                     OnConflict::column(PostgresThumbnail::ReplicaId)
                         .update_columns([
@@ -502,20 +518,21 @@ impl ReplicasRepository for PostgresReplicasRepository {
                 )
                 .build_sqlx(PostgresQueryBuilder);
 
-            let thumbnail = sqlx::query_as_with::<_, PostgresThumbnailRow, _>(&sql, values)
-                .fetch_one(&mut *tx)
-                .await?
-                .into();
+            let thumbnail = match sqlx::query_as_with::<_, PostgresThumbnailRow, _>(&sql, values).fetch_one(&mut *tx).await {
+                Ok(row) => row.into(),
+                Err(sqlx::Error::Database(e)) if e.is_foreign_key_violation() => return Err(ErrorKind::ReplicaNotFound { id })?,
+                Err(e) => return Err(Error::other(e)),
+            };
 
             replica.thumbnail = Some(thumbnail);
         }
 
-        tx.commit().await?;
+        tx.commit().await.map_err(Error::other)?;
         Ok(replica)
     }
 
-    async fn delete_by_id(&self, id: ReplicaId) -> anyhow::Result<DeleteResult> {
-        let mut tx = self.pool.begin().await?;
+    async fn delete_by_id(&self, id: ReplicaId) -> Result<DeleteResult> {
+        let mut tx = self.pool.begin().await.map_err(Error::other)?;
 
         let siblings = Alias::new("siblings");
         let (sql, values) = Query::select()
@@ -548,7 +565,8 @@ impl ReplicasRepository for PostgresReplicasRepository {
             .map_ok(Replica::from)
             .try_filter(|r| ready(r.id != id))
             .try_collect()
-            .await?;
+            .await
+            .map_err(Error::other)?;
 
         let (sql, values) = Query::delete()
             .from_table(PostgresReplica::Table)
@@ -557,7 +575,8 @@ impl ReplicasRepository for PostgresReplicasRepository {
 
         let affected = sqlx::query_with(&sql, values)
             .execute(&mut *tx)
-            .await?
+            .await
+            .map_err(Error::other)?
             .rows_affected();
 
         let result = match affected {
@@ -571,7 +590,10 @@ impl ReplicasRepository for PostgresReplicasRepository {
             .and_where(Expr::col(PostgresReplica::Id).is_in(siblings.iter().map(|s| *s.id)))
             .build_sqlx(PostgresQueryBuilder);
 
-        sqlx::query_with(&sql, values).execute(&mut *tx).await?;
+        sqlx::query_with(&sql, values)
+            .execute(&mut *tx)
+            .await
+            .map_err(Error::other)?;
 
         for (order, sibling) in siblings.into_iter().enumerate() {
             let (sql, values) = Query::update()
@@ -581,10 +603,13 @@ impl ReplicasRepository for PostgresReplicasRepository {
                 .and_where(Expr::col(PostgresReplica::Id).eq(PostgresReplicaId::from(sibling.id)))
                 .build_sqlx(PostgresQueryBuilder);
 
-            sqlx::query_with(&sql, values).execute(&mut *tx).await?;
+            sqlx::query_with(&sql, values)
+                .execute(&mut *tx)
+                .await
+                .map_err(Error::other)?;
         }
 
-        tx.commit().await?;
+        tx.commit().await.map_err(Error::other)?;
         Ok(result)
     }
 }

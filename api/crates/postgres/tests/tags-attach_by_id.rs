@@ -2,12 +2,13 @@ use std::collections::BTreeSet;
 
 use domain::{
     entity::tags::{AliasSet, Tag, TagDepth, TagId},
+    error::ErrorKind,
     repository::tags::TagsRepository,
 };
 use chrono::{TimeZone, Utc};
 use futures::TryStreamExt;
 use postgres::tags::PostgresTagsRepository;
-use pretty_assertions::assert_eq;
+use pretty_assertions::{assert_eq, assert_matches};
 use sqlx::Row;
 use test_context::test_context;
 use uuid::{uuid, Uuid};
@@ -330,7 +331,7 @@ async fn root_fails(ctx: &DatabaseContext) {
         TagDepth::new(0, 0),
     ).await.unwrap_err();
 
-    assert_eq!(actual.to_string(), "root tag cannot be attached");
+    assert_matches!(actual.kind(), ErrorKind::TagAttachingRoot);
 }
 
 #[test_context(DatabaseContext)]
@@ -344,7 +345,7 @@ async fn root_parent_fails(ctx: &DatabaseContext) {
         TagDepth::new(0, 0),
     ).await.unwrap_err();
 
-    assert_eq!(actual.to_string(), "root tag cannot be attached");
+    assert_matches!(actual.kind(), ErrorKind::TagAttachingRoot);
 }
 
 #[test_context(DatabaseContext)]
@@ -358,7 +359,7 @@ async fn self_fails(ctx: &DatabaseContext) {
         TagDepth::new(0, 0),
     ).await.unwrap_err();
 
-    assert_eq!(actual.to_string(), "tag cannot be attached to itself");
+    assert_matches!(actual.kind(), ErrorKind::TagAttachingToItself { id } if id == &TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")));
 }
 
 #[test_context(DatabaseContext)]
@@ -372,7 +373,7 @@ async fn descendant_fails(ctx: &DatabaseContext) {
         TagDepth::new(0, 0),
     ).await.unwrap_err();
 
-    assert_eq!(actual.to_string(), "tag cannot be attached to its descendants");
+    assert_matches!(actual.kind(), ErrorKind::TagAttachingToDescendant { id } if id == &TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")));
 }
 
 #[test_context(DatabaseContext)]
@@ -384,7 +385,7 @@ async fn non_existing_fails(ctx: &DatabaseContext) {
         TagId::from(uuid!("11111111-1111-1111-1111-111111111111")),
         TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
         TagDepth::new(0, 0),
-    ).await;
+    ).await.unwrap_err();
 
-    assert!(actual.is_err());
+    assert_matches!(actual.kind(), ErrorKind::TagNotFound { id } if id == &TagId::from(uuid!("11111111-1111-1111-1111-111111111111")));
 }

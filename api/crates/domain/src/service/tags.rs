@@ -7,16 +7,17 @@ use crate::{
         tag_types::{TagType, TagTypeId},
         tags::{Tag, TagDepth, TagId},
     },
+    error::Result,
     repository::{tag_types, tags, DeleteResult, Direction, Order},
 };
 
 #[cfg_attr(feature = "test-mock", mockall::automock)]
 pub trait TagsServiceInterface: Send + Sync + 'static {
     /// Creates a tag.
-    fn create_tag(&self, name: &str, kana: &str, aliases: &[String], parent_id: Option<TagId>, depth: TagDepth) -> impl Future<Output = anyhow::Result<Tag>> + Send;
+    fn create_tag(&self, name: &str, kana: &str, aliases: &[String], parent_id: Option<TagId>, depth: TagDepth) -> impl Future<Output = Result<Tag>> + Send;
 
     /// Creates a tag type.
-    fn create_tag_type(&self, slug: &str, name: &str) -> impl Future<Output = anyhow::Result<TagType>> + Send;
+    fn create_tag_type(&self, slug: &str, name: &str) -> impl Future<Output = Result<TagType>> + Send;
 
     /// Gets tags.
     fn get_tags(
@@ -27,39 +28,39 @@ pub trait TagsServiceInterface: Send + Sync + 'static {
         order: Order,
         direction: Direction,
         limit: u64,
-    ) -> impl Future<Output = anyhow::Result<Vec<Tag>>> + Send;
+    ) -> impl Future<Output = Result<Vec<Tag>>> + Send;
 
     /// Gets the tags by their IDs.
-    fn get_tags_by_ids<T>(&self, ids: T, depth: TagDepth) -> impl Future<Output = anyhow::Result<Vec<Tag>>> + Send
+    fn get_tags_by_ids<T>(&self, ids: T, depth: TagDepth) -> impl Future<Output = Result<Vec<Tag>>> + Send
     where
         T: IntoIterator<Item = TagId> + Send + Sync + 'static;
 
     /// Gets the tags by their name or alias.
-    fn get_tags_by_name_or_alias_like(&self, name_or_alias_like: &str, depth: TagDepth) -> impl Future<Output = anyhow::Result<Vec<Tag>>> + Send;
+    fn get_tags_by_name_or_alias_like(&self, name_or_alias_like: &str, depth: TagDepth) -> impl Future<Output = Result<Vec<Tag>>> + Send;
 
     /// Gets tag types.
-    fn get_tag_types(&self) -> impl Future<Output = anyhow::Result<Vec<TagType>>> + Send;
+    fn get_tag_types(&self) -> impl Future<Output = Result<Vec<TagType>>> + Send;
 
     /// Updates the tag by ID.
-    fn update_tag_by_id<T, U>(&self, id: TagId, name: Option<String>, kana: Option<String>, add_aliases: T, remove_aliases: U, depth: TagDepth) -> impl Future<Output = anyhow::Result<Tag>> + Send
+    fn update_tag_by_id<T, U>(&self, id: TagId, name: Option<String>, kana: Option<String>, add_aliases: T, remove_aliases: U, depth: TagDepth) -> impl Future<Output = Result<Tag>> + Send
     where
         T: IntoIterator<Item = String> + Send + Sync + 'static,
         U: IntoIterator<Item = String> + Send + Sync + 'static;
 
     /// Updates the tag type by ID.
-    fn update_tag_type_by_id<'a, 'b>(&self, id: TagTypeId, slug: Option<&'a str>, name: Option<&'b str>) -> impl Future<Output = anyhow::Result<TagType>> + Send;
+    fn update_tag_type_by_id<'a, 'b>(&self, id: TagTypeId, slug: Option<&'a str>, name: Option<&'b str>) -> impl Future<Output = Result<TagType>> + Send;
 
     /// Attaches the tag by ID.
-    fn attach_tag_by_id(&self, id: TagId, parent_id: TagId, depth: TagDepth) -> impl Future<Output = anyhow::Result<Tag>> + Send;
+    fn attach_tag_by_id(&self, id: TagId, parent_id: TagId, depth: TagDepth) -> impl Future<Output = Result<Tag>> + Send;
 
     /// Detaches the tag by ID.
-    fn detach_tag_by_id(&self, id: TagId, depth: TagDepth) -> impl Future<Output = anyhow::Result<Tag>> + Send;
+    fn detach_tag_by_id(&self, id: TagId, depth: TagDepth) -> impl Future<Output = Result<Tag>> + Send;
 
     /// Delete the tag by ID.
-    fn delete_tag_by_id(&self, id: TagId, recursive: bool) -> impl Future<Output = anyhow::Result<DeleteResult>> + Send;
+    fn delete_tag_by_id(&self, id: TagId, recursive: bool) -> impl Future<Output = Result<DeleteResult>> + Send;
 
     /// Delete the tag type by ID.
-    fn delete_tag_type_by_id(&self, id: TagTypeId) -> impl Future<Output = anyhow::Result<DeleteResult>> + Send;
+    fn delete_tag_type_by_id(&self, id: TagTypeId) -> impl Future<Output = Result<DeleteResult>> + Send;
 }
 
 #[derive(Clone, Constructor)]
@@ -73,7 +74,7 @@ where
     TagsRepository: tags::TagsRepository,
     TagTypesRepository: tag_types::TagTypesRepository,
 {
-    async fn create_tag(&self, name: &str, kana: &str, aliases: &[String], parent_id: Option<TagId>, depth: TagDepth) -> anyhow::Result<Tag> {
+    async fn create_tag(&self, name: &str, kana: &str, aliases: &[String], parent_id: Option<TagId>, depth: TagDepth) -> Result<Tag> {
         match self.tags_repository.create(name, kana, aliases, parent_id, depth).await {
             Ok(tag) => Ok(tag),
             Err(e) => {
@@ -83,7 +84,7 @@ where
         }
     }
 
-    async fn create_tag_type(&self, slug: &str, name: &str) -> anyhow::Result<TagType> {
+    async fn create_tag_type(&self, slug: &str, name: &str) -> Result<TagType> {
         match self.tag_types_repository.create(slug, name).await {
             Ok(tag_type) => Ok(tag_type),
             Err(e) => {
@@ -101,7 +102,7 @@ where
         order: Order,
         direction: Direction,
         limit: u64,
-    ) -> anyhow::Result<Vec<Tag>> {
+    ) -> Result<Vec<Tag>> {
         match self.tags_repository.fetch_all(depth, root, cursor, order, direction, limit).await {
             Ok(tags) => Ok(tags),
             Err(e) => {
@@ -111,7 +112,7 @@ where
         }
     }
 
-    async fn get_tags_by_ids<T>(&self, ids: T, depth: TagDepth) -> anyhow::Result<Vec<Tag>>
+    async fn get_tags_by_ids<T>(&self, ids: T, depth: TagDepth) -> Result<Vec<Tag>>
     where
         T: IntoIterator<Item = TagId> + Send + Sync + 'static,
     {
@@ -124,7 +125,7 @@ where
         }
     }
 
-    async fn get_tags_by_name_or_alias_like(&self, name_or_alias_like: &str, depth: TagDepth) -> anyhow::Result<Vec<Tag>> {
+    async fn get_tags_by_name_or_alias_like(&self, name_or_alias_like: &str, depth: TagDepth) -> Result<Vec<Tag>> {
         match self.tags_repository.fetch_by_name_or_alias_like(name_or_alias_like, depth).await {
             Ok(tags) => Ok(tags),
             Err(e) => {
@@ -134,7 +135,7 @@ where
         }
     }
 
-    async fn get_tag_types(&self) -> anyhow::Result<Vec<TagType>> {
+    async fn get_tag_types(&self) -> Result<Vec<TagType>> {
         match self.tag_types_repository.fetch_all().await {
             Ok(tag_types) => Ok(tag_types),
             Err(e) => {
@@ -144,7 +145,7 @@ where
         }
     }
 
-    async fn update_tag_by_id<T, U>(&self, id: TagId, name: Option<String>, kana: Option<String>, add_aliases: T, remove_aliases: U, depth: TagDepth) -> anyhow::Result<Tag>
+    async fn update_tag_by_id<T, U>(&self, id: TagId, name: Option<String>, kana: Option<String>, add_aliases: T, remove_aliases: U, depth: TagDepth) -> Result<Tag>
     where
         T: IntoIterator<Item = String> + Send + Sync + 'static,
         U: IntoIterator<Item = String> + Send + Sync + 'static,
@@ -158,7 +159,7 @@ where
         }
     }
 
-    async fn update_tag_type_by_id<'a, 'b>(&self, id: TagTypeId, slug: Option<&'a str>, name: Option<&'b str>) -> anyhow::Result<TagType> {
+    async fn update_tag_type_by_id<'a, 'b>(&self, id: TagTypeId, slug: Option<&'a str>, name: Option<&'b str>) -> Result<TagType> {
         match self.tag_types_repository.update_by_id(id, slug, name).await {
             Ok(tag_type) => Ok(tag_type),
             Err(e) => {
@@ -168,7 +169,7 @@ where
         }
     }
 
-    async fn attach_tag_by_id(&self, id: TagId, parent_id: TagId, depth: TagDepth) -> anyhow::Result<Tag> {
+    async fn attach_tag_by_id(&self, id: TagId, parent_id: TagId, depth: TagDepth) -> Result<Tag> {
         match self.tags_repository.attach_by_id(id, parent_id, depth).await {
             Ok(tag) => Ok(tag),
             Err(e) => {
@@ -178,7 +179,7 @@ where
         }
     }
 
-    async fn detach_tag_by_id(&self, id: TagId, depth: TagDepth) -> anyhow::Result<Tag> {
+    async fn detach_tag_by_id(&self, id: TagId, depth: TagDepth) -> Result<Tag> {
         match self.tags_repository.detach_by_id(id, depth).await {
             Ok(tag) => Ok(tag),
             Err(e) => {
@@ -188,7 +189,7 @@ where
         }
     }
 
-    async fn delete_tag_by_id(&self, id: TagId, recursive: bool) -> anyhow::Result<DeleteResult> {
+    async fn delete_tag_by_id(&self, id: TagId, recursive: bool) -> Result<DeleteResult> {
         match self.tags_repository.delete_by_id(id, recursive).await {
             Ok(result) => Ok(result),
             Err(e) => {
@@ -198,7 +199,7 @@ where
         }
     }
 
-    async fn delete_tag_type_by_id(&self, id: TagTypeId) -> anyhow::Result<DeleteResult> {
+    async fn delete_tag_type_by_id(&self, id: TagTypeId) -> Result<DeleteResult> {
         match self.tag_types_repository.delete_by_id(id).await {
             Ok(result) => Ok(result),
             Err(e) => {

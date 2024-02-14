@@ -1,10 +1,11 @@
 use chrono::{TimeZone, Utc};
 use domain::{
     entity::replicas::{OriginalImage, ReplicaId, Size, ThumbnailImage},
+    error::ErrorKind,
     repository::replicas::ReplicasRepository,
 };
 use postgres::replicas::PostgresReplicasRepository;
-use pretty_assertions::assert_eq;
+use pretty_assertions::{assert_eq, assert_matches};
 use sqlx::Row;
 use test_context::test_context;
 use uuid::{uuid, Uuid};
@@ -69,7 +70,7 @@ async fn fails(ctx: &DatabaseContext) {
         None,
         None,
         None,
-    ).await;
+    ).await.unwrap_err();
 
-    assert!(actual.is_err());
+    assert_matches!(actual.kind(), ErrorKind::ReplicaNotFound { id } if id == &ReplicaId::from(uuid!("11111111-1111-1111-1111-111111111111")));
 }

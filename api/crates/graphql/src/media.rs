@@ -1,4 +1,3 @@
-use anyhow::Context;
 use async_graphql::{
     connection::{CursorType, DefaultEdgeName, Edge, EmptyFields},
     SimpleObject,
@@ -10,7 +9,7 @@ use domain::entity::media::{self, MediumId};
 use uuid::Uuid;
 
 use crate::{
-    query::QueryError,
+    error::ErrorKind,
     replicas::Replica,
     sources::Source,
     tags::TagTagType,
@@ -30,10 +29,10 @@ pub(crate) struct Medium {
 pub(crate) struct MediumCursor(DateTime<Utc>, Uuid);
 
 impl TryFrom<media::Medium> for Medium {
-    type Error = anyhow::Error;
+    type Error = ErrorKind;
 
-    fn try_from(medium: media::Medium) -> anyhow::Result<Self> {
-        let sources: anyhow::Result<_> = medium.sources
+    fn try_from(medium: media::Medium) -> Result<Self, Self::Error> {
+        let sources: Result<_, _> = medium.sources
             .into_iter()
             .map(TryInto::try_into)
             .collect();
@@ -72,15 +71,15 @@ impl MediumCursor {
 }
 
 impl CursorType for MediumCursor {
-    type Error = anyhow::Error;
+    type Error = ErrorKind;
 
-    fn decode_cursor(s: &str) -> anyhow::Result<Self> {
-        let bin = BASE64_STANDARD.decode(s)?;
-        let str = String::from_utf8(bin)?;
+    fn decode_cursor(s: &str) -> Result<Self, Self::Error> {
+        let bin = BASE64_STANDARD.decode(s).map_err(|_| ErrorKind::CursorInvalid)?;
+        let str = String::from_utf8(bin).map_err(|_| ErrorKind::CursorInvalid)?;
 
-        let (datetime, uuid) = str.split_once(Self::DELIMITER).context(QueryError::InvalidCursor)?;
-        let datetime = DateTime::parse_from_rfc3339(datetime)?.into();
-        let uuid = Uuid::parse_str(uuid)?;
+        let (datetime, uuid) = str.split_once(Self::DELIMITER).ok_or(ErrorKind::CursorInvalid)?;
+        let datetime = DateTime::parse_from_rfc3339(datetime).map_err(|_| ErrorKind::CursorInvalid)?.into();
+        let uuid = Uuid::parse_str(uuid).map_err(|_| ErrorKind::CursorInvalid)?;
 
         Ok(MediumCursor::new(datetime, uuid))
     }

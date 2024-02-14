@@ -1,6 +1,9 @@
-use domain::repository::tag_types::TagTypesRepository;
+use domain::{
+    error::ErrorKind,
+    repository::tag_types::TagTypesRepository,
+};
 use postgres::tag_types::PostgresTagTypesRepository;
-use pretty_assertions::assert_eq;
+use pretty_assertions::{assert_eq, assert_matches};
 use sqlx::Row;
 use test_context::test_context;
 
@@ -32,7 +35,7 @@ async fn succeeds(ctx: &DatabaseContext) {
 #[cfg_attr(not(feature = "test-postgres"), ignore)]
 async fn fails(ctx: &DatabaseContext) {
     let repository = PostgresTagTypesRepository::new(ctx.pool.clone());
-    let actual = repository.create("character", "キャラクター").await;
+    let actual = repository.create("character", "キャラクター").await.unwrap_err();
 
-    assert!(actual.is_err());
+    assert_matches!(actual.kind(), ErrorKind::TagTypeDuplicateSlug { slug } if slug == "character");
 }

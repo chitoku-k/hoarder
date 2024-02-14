@@ -1,6 +1,5 @@
 use std::collections::BTreeSet;
 
-use anyhow::Context;
 use async_graphql::{
     connection::{CursorType, DefaultEdgeName, Edge, EmptyFields},
     InputObject, Lookahead, SimpleObject,
@@ -14,7 +13,7 @@ use domain::entity::{
 };
 use uuid::Uuid;
 
-use crate::query::QueryError;
+use crate::error::ErrorKind;
 
 #[derive(SimpleObject)]
 pub struct Tag {
@@ -84,15 +83,15 @@ impl TagCursor {
 }
 
 impl CursorType for TagCursor {
-    type Error = anyhow::Error;
+    type Error = ErrorKind;
 
-    fn decode_cursor(s: &str) -> anyhow::Result<Self> {
-        let bin = BASE64_STANDARD.decode(s)?;
-        let str = String::from_utf8(bin)?;
+    fn decode_cursor(s: &str) -> Result<Self, Self::Error> {
+        let bin = BASE64_STANDARD.decode(s).map_err(|_| ErrorKind::CursorInvalid)?;
+        let str = String::from_utf8(bin).map_err(|_| ErrorKind::CursorInvalid)?;
 
-        let (kana, uuid) = str.split_once(Self::DELIMITER).context(QueryError::InvalidCursor)?;
+        let (kana, uuid) = str.split_once(Self::DELIMITER).ok_or(ErrorKind::CursorInvalid)?;
         let kana = kana.to_string();
-        let uuid = Uuid::parse_str(uuid)?;
+        let uuid = Uuid::parse_str(uuid).map_err(|_| ErrorKind::CursorInvalid)?;
 
         Ok(TagCursor::new(kana, uuid))
     }

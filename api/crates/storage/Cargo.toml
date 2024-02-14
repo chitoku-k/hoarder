@@ -10,9 +10,6 @@ doctest = false
 [dependencies.domain]
 workspace = true
 
-[dependencies.anyhow]
-version = "1.0.79"
-
 [dependencies.derive_more]
 version = "0.99.17"
 

@@ -9,10 +9,14 @@ pub struct FileMediaURLFactory {
 #[derive(Constructor)]
 pub struct NoopMediaURLFactory;
 
+impl FileMediaURLFactory {
+    const URL_PREFIX: &'static str = "file://";
+}
+
 impl MediaURLFactoryInterface for FileMediaURLFactory {
     fn public_url(&self, original_url: &str) -> Option<String> {
         original_url
-            .strip_prefix("file://")
+            .strip_prefix(Self::URL_PREFIX)
             .map(|s| format!("{}{}", &self.root_url, s))
     }
 }

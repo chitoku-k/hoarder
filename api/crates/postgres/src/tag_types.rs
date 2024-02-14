@@ -1,7 +1,7 @@
-use anyhow::Context;
 use derive_more::{Constructor, From, Into};
 use domain::{
-    entity::tag_types::{TagType, TagTypeError, TagTypeId},
+    entity::tag_types::{TagType, TagTypeId},
+    error::{Error, ErrorKind, Result},
     repository::{tag_types::TagTypesRepository, DeleteResult},
 };
 use futures::TryStreamExt;
@@ -55,11 +55,12 @@ impl From<PostgresTagTypeRow> for TagType {
 }
 
 impl TagTypesRepository for PostgresTagTypesRepository {
-    async fn create(&self, slug: &str, name: &str) -> anyhow::Result<TagType> {
+    async fn create(&self, slug: &str, name: &str) -> Result<TagType> {
         let (sql, values) = Query::insert()
             .into_table(PostgresTagType::Table)
             .columns([PostgresTagType::Slug, PostgresTagType::Name])
-            .values([Expr::val(slug).into(), Expr::val(name).into()])?
+            .values([Expr::val(slug).into(), Expr::val(name).into()])
+            .map_err(Error::other)?
             .returning(
                 Query::returning()
                     .columns([
@@ -70,15 +71,16 @@ impl TagTypesRepository for PostgresTagTypesRepository {
             )
             .build_sqlx(PostgresQueryBuilder);
 
-        let tag_type = sqlx::query_as_with::<_, PostgresTagTypeRow, _>(&sql, values)
-            .fetch_one(&self.pool)
-            .await?
-            .into();
+        let tag_type = match sqlx::query_as_with::<_, PostgresTagTypeRow, _>(&sql, values).fetch_one(&self.pool).await {
+            Ok(row) => row.into(),
+            Err(sqlx::Error::Database(e)) if e.is_unique_violation() => return Err(ErrorKind::TagTypeDuplicateSlug { slug: slug.to_string() })?,
+            Err(e) => return Err(Error::other(e)),
+        };
 
         Ok(tag_type)
     }
 
-    async fn fetch_all(&self) -> anyhow::Result<Vec<TagType>> {
+    async fn fetch_all(&self) -> Result<Vec<TagType>> {
         let (sql, values) = Query::select()
             .columns([
                 PostgresTagType::Id,
@@ -93,13 +95,14 @@ impl TagTypesRepository for PostgresTagTypesRepository {
             .fetch(&self.pool)
             .map_ok(Into::into)
             .try_collect()
-            .await?;
+            .await
+            .map_err(Error::other)?;
 
         Ok(tag_types)
     }
 
-    async fn update_by_id<'a>(&self, id: TagTypeId, slug: Option<&'a str>, name: Option<&'a str>) -> anyhow::Result<TagType> {
-        let mut tx = self.pool.begin().await?;
+    async fn update_by_id<'a>(&self, id: TagTypeId, slug: Option<&'a str>, name: Option<&'a str>) -> Result<TagType> {
+        let mut tx = self.pool.begin().await.map_err(Error::other)?;
 
         let (sql, values) = Query::select()
             .columns([
@@ -112,11 +115,11 @@ impl TagTypesRepository for PostgresTagTypesRepository {
             .lock(LockType::Update)
             .build_sqlx(PostgresQueryBuilder);
 
-        let tag_type: TagType = sqlx::query_as_with::<_, PostgresTagTypeRow, _>(&sql, values)
-            .fetch_optional(&mut *tx)
-            .await?
-            .map(Into::into)
-            .context(TagTypeError::NotFound(id))?;
+        let tag_type = match sqlx::query_as_with::<_, PostgresTagTypeRow, _>(&sql, values).fetch_one(&mut *tx).await {
+            Ok(row) => TagType::from(row),
+            Err(sqlx::Error::RowNotFound) => return Err(ErrorKind::TagTypeNotFound { id })?,
+            Err(e) => return Err(Error::other(e)),
+        };
 
         let slug = slug.unwrap_or(&tag_type.slug);
         let name = name.unwrap_or(&tag_type.name);
@@ -138,14 +141,15 @@ impl TagTypesRepository for PostgresTagTypesRepository {
 
         let tag_type = sqlx::query_as_with::<_, PostgresTagTypeRow, _>(&sql, values)
             .fetch_one(&mut *tx)
-            .await?
+            .await
+            .map_err(Error::other)?
             .into();
 
-        tx.commit().await?;
+        tx.commit().await.map_err(Error::other)?;
         Ok(tag_type)
     }
 
-    async fn delete_by_id(&self, id: TagTypeId) -> anyhow::Result<DeleteResult> {
+    async fn delete_by_id(&self, id: TagTypeId) -> Result<DeleteResult> {
         let (sql, values) = Query::delete()
             .from_table(PostgresTagType::Table)
             .and_where(Expr::col(PostgresTagType::Id).eq(PostgresTagTypeId::from(id)))
@@ -153,7 +157,8 @@ impl TagTypesRepository for PostgresTagTypesRepository {
 
         let affected = sqlx::query_with(&sql, values)
             .execute(&self.pool)
-            .await?
+            .await
+            .map_err(Error::other)?
             .rows_affected();
 
         match affected {

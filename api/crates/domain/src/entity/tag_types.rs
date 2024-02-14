@@ -1,7 +1,6 @@
 use std::hash::{Hash, Hasher};
 
 use derive_more::{Deref, Display, From};
-use thiserror::Error;
 use uuid::Uuid;
 
 #[derive(Clone, Copy, Debug, Default, Deref, Display, Eq, From, Ord, PartialEq, PartialOrd)]
@@ -12,12 +11,6 @@ pub struct TagType {
     pub id: TagTypeId,
     pub slug: String,
     pub name: String,
-}
-
-#[derive(Debug, Error)]
-pub enum TagTypeError {
-    #[error("tag type not found: {0}")]
-    NotFound(TagTypeId),
 }
 
 impl Hash for TagType {
