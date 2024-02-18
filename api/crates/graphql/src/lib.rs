@@ -57,7 +57,7 @@ where
     MediaService: MediaServiceInterface,
     TagsService: TagsServiceInterface,
 {
-    async fn execute(&self, req: Request<Body>) -> Response<Body> {
+    async fn execute(&self, req: Request<Body>) -> Response {
         let req: GraphQLRequest = match GraphQLRequest::from_request(req, &()).await {
             Ok(req) => req,
             Err(rejection) => return rejection.into_response(),
@@ -73,7 +73,7 @@ where
         self.endpoint
     }
 
-    fn graphiql(&self) -> Response<Body> {
+    fn graphiql(&self) -> Response {
         let res = GraphiQLSource::build().endpoint(self.endpoint).finish();
         let res = Html(res);
         res.into_response()
