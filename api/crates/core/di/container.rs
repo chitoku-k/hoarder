@@ -22,6 +22,7 @@ use icu::collator::{Collator, CollatorOptions};
 use icu_provider::DataLocale;
 use log::LevelFilter;
 use media::{FileMediaURLFactory, NoopMediaURLFactory};
+use objects::ObjectsService;
 use postgres::{
     external_services::PostgresExternalServicesRepository,
     media::PostgresMediaRepository,
@@ -125,6 +126,13 @@ fn noop_media_url_factory() -> NoopMediaURLFactory {
     NoopMediaURLFactory::new()
 }
 
+fn objects_service<T>(media_service: T, media_url_factory: Arc<dyn MediaURLFactoryInterface>) -> ObjectsService<T>
+where
+    T: MediaServiceInterface,
+{
+    ObjectsService::new(media_service, media_url_factory)
+}
+
 fn thumbnail_url_factory() -> ThumbnailURLFactory {
     ThumbnailURLFactory::new("/thumbnails")
 }
@@ -179,6 +187,8 @@ impl Application {
             None => Arc::new(noop_media_url_factory()),
         };
 
+        let objects_service = objects_service(media_service.clone(), media_url_factory.clone());
+
         let thumbnail_url_factory = Arc::new(thumbnail_url_factory());
         let thumbnails_service = thumbnails_service(media_service.clone());
 
@@ -193,7 +203,7 @@ impl Application {
         }
 
         let tls = Option::zip(config.tls_cert, config.tls_key);
-        Engine::new(graphql_service, thumbnails_service)
+        Engine::new(graphql_service, objects_service, thumbnails_service)
             .start(config.port, tls)
             .await?;
 

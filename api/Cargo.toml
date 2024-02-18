@@ -15,6 +15,7 @@ members = [
     "crates/domain",
     "crates/graphql",
     "crates/media",
+    "crates/objects",
     "crates/postgres",
     "crates/storage",
     "crates/thumbnails",
@@ -36,6 +37,9 @@ path = "crates/graphql"
 
 [workspace.dependencies.media]
 path = "crates/media"
+
+[workspace.dependencies.objects]
+path = "crates/objects"
 
 [workspace.dependencies.postgres]
 path = "crates/postgres"
@@ -69,6 +73,9 @@ workspace = true
 workspace = true
 
 [dependencies.media]
+workspace = true
+
+[dependencies.objects]
 workspace = true
 
 [dependencies.postgres]
