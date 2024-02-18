@@ -2,6 +2,7 @@ use application::{
     server::Engine,
     service::{
         graphql::MockGraphQLServiceInterface,
+        objects::MockObjectsServiceInterface,
         thumbnails::MockThumbnailsServiceInterface,
     },
 };
@@ -68,9 +69,10 @@ async fn graphql() {
                     .into_response()))
         });
 
+    let mock_objects_service = MockObjectsServiceInterface::new();
     let mock_thumbnails_service = MockThumbnailsServiceInterface::new();
 
-    let app = Engine::new(mock_graphql_service, mock_thumbnails_service).into_inner();
+    let app = Engine::new(mock_graphql_service, mock_objects_service, mock_thumbnails_service).into_inner();
     let actual = app
         .oneshot(
             Request::builder()
@@ -134,9 +136,10 @@ async fn graphiql() {
                 .into_response()
         });
 
+    let mock_objects_service = MockObjectsServiceInterface::new();
     let mock_thumbnails_service = MockThumbnailsServiceInterface::new();
 
-    let app = Engine::new(mock_graphql_service, mock_thumbnails_service).into_inner();
+    let app = Engine::new(mock_graphql_service, mock_objects_service, mock_thumbnails_service).into_inner();
     let actual = app
         .oneshot(
             Request::builder()
@@ -186,7 +189,9 @@ async fn thumbnail_show() {
                     .into_response()))
         });
 
-    let app = Engine::new(mock_graphql_service, mock_thumbnails_service).into_inner();
+    let mock_objects_service = MockObjectsServiceInterface::new();
+
+    let app = Engine::new(mock_graphql_service, mock_objects_service, mock_thumbnails_service).into_inner();
     let actual = app
         .oneshot(
             Request::builder()

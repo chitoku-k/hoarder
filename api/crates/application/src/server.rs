@@ -21,6 +21,7 @@ use crate::{
     error::{Error, ErrorKind, Result},
     service::{
         graphql::{self, GraphQLServiceInterface},
+        objects::{self, ObjectsServiceInterface},
         thumbnails::{self, ThumbnailsServiceInterface},
     },
 };
@@ -30,12 +31,14 @@ pub struct Engine {
 }
 
 impl Engine {
-    pub fn new<GraphQLService, ThumbnailsService>(
+    pub fn new<GraphQLService, ObjectsService, ThumbnailsService>(
         graphql_service: GraphQLService,
+        objects_service: ObjectsService,
         thumbnails_service: ThumbnailsService,
     ) -> Self
     where
         GraphQLService: GraphQLServiceInterface,
+        ObjectsService: ObjectsServiceInterface,
         ThumbnailsService: ThumbnailsServiceInterface,
     {
         let health = Router::new()
@@ -47,12 +50,17 @@ impl Engine {
             .route("/", get(graphql::graphiql::<GraphQLService>))
             .with_state(Arc::new(graphql_service));
 
+        let objects = Router::new()
+            .route("/", get(objects::redirect::<ObjectsService>))
+            .with_state(Arc::new(objects_service));
+
         let thumbnails = Router::new()
             .route("/:id", get(thumbnails::show::<ThumbnailsService>))
             .with_state(Arc::new(thumbnails_service));
 
         let app = Router::new()
             .nest("/", graphql)
+            .nest("/objects", objects)
             .nest("/thumbnails", thumbnails)
             .nest("/healthz", health);
 

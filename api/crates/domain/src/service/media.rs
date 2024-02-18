@@ -116,6 +116,9 @@ pub trait MediaServiceInterface: Send + Sync + 'static {
     /// Gets the by ID.
     fn get_thumbnail_by_id(&self, id: ThumbnailId) -> impl Future<Output = Result<Vec<u8>>> + Send;
 
+    /// Gets the object by its URL.
+    fn get_object(&self, url: &EntryUrl) -> impl Future<Output = Result<Entry>> + Send;
+
     /// Gets objects.
     fn get_objects(&self, prefix: &EntryPath, kind: Option<EntryKind>) -> impl Future<Output = Result<Vec<Entry>>> + Send;
 
@@ -396,6 +399,16 @@ where
             Ok(replica) => Ok(replica),
             Err(e) => {
                 log::error!("failed to get the replica\nError: {e:?}");
+                Err(e)
+            },
+        }
+    }
+
+    async fn get_object(&self, url: &EntryUrl) -> Result<Entry> {
+        match self.objects_repository.get(url).await {
+            Ok((entry, ..)) => Ok(entry),
+            Err(e) => {
+                log::error!("failed to get the object\nError: {e:?}");
                 Err(e)
             },
         }
