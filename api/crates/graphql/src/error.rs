@@ -11,7 +11,7 @@ pub(crate) struct Error {
 }
 
 #[derive(Debug, Serialize, thiserror::Error)]
-#[serde(tag = "code", content = "data", rename_all = "SCREAMING_SNAKE_CASE")]
+#[serde(tag = "code", content = "data", rename_all = "SCREAMING_SNAKE_CASE", rename_all_fields = "camelCase")]
 #[allow(clippy::enum_variant_names)]
 pub(crate) enum ErrorKind {
     #[error("the argument is required")]

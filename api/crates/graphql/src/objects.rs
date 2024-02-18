@@ -13,6 +13,7 @@ pub(crate) struct ObjectEntry {
 }
 
 #[derive(Debug, Serialize, SimpleObject)]
+#[serde(rename_all = "camelCase")]
 pub(crate) struct ObjectEntryMetadata {
     size: u64,
     created_at: DateTime<Utc>,
