@@ -2,14 +2,16 @@ use application::service::thumbnails::{ThumbnailsServiceInterface, ThumbnailURLF
 use axum::{
     body::Body,
     http::{
+        header::CONTENT_TYPE,
         Response as HttpResponse,
         StatusCode,
     },
-    response::{Response, IntoResponse},
+    response::{IntoResponse, Response},
 };
 use derive_more::Constructor;
 use domain::{
     entity::replicas::ThumbnailId,
+    error::ErrorKind,
     service::media::MediaServiceInterface,
 };
 
@@ -35,21 +37,29 @@ impl<MediaService> ThumbnailsServiceInterface for ThumbnailsService<MediaService
 where
     MediaService: MediaServiceInterface,
 {
-    async fn show(&self, id: ThumbnailId) -> Response<Body> {
+    async fn show(&self, id: ThumbnailId) -> Response {
         match self.media_service.get_thumbnail_by_id(id).await {
             Ok(thumbnail) => {
                 HttpResponse::builder()
                     .status(StatusCode::OK)
-                    .header("Content-Type", "image/webp")
+                    .header(CONTENT_TYPE, "image/webp")
                     .body(Body::from(thumbnail))
+                    .unwrap()
+                    .into_response()
+            },
+            Err(e) if matches!(e.kind(), ErrorKind::ThumbnailNotFound { .. }) => {
+                HttpResponse::builder()
+                    .status(StatusCode::NOT_FOUND)
+                    .header(CONTENT_TYPE, "text/plain; charset=utf-8")
+                    .body(Body::from("Not Found\n"))
                     .unwrap()
                     .into_response()
             },
             Err(_) => {
                 HttpResponse::builder()
-                    .status(StatusCode::NOT_FOUND)
-                    .header("Content-Type", "text/plain; charset=utf-8")
-                    .body(Body::from("Not Found\n"))
+                    .status(StatusCode::INTERNAL_SERVER_ERROR)
+                    .header(CONTENT_TYPE, "text/plain; charset=utf-8")
+                    .body(Body::from("Internal Server Error\n"))
                     .unwrap()
                     .into_response()
             },
