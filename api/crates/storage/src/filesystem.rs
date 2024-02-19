@@ -131,11 +131,18 @@ impl ObjectsRepository for FilesystemObjectsRepository {
                         }
                     })
                     .await
-                    .ok();
+                    .ok()
+                    .filter(|entry| entry.kind == EntryKind::Object);
 
                 return Err(ErrorKind::ObjectAlreadyExists { path: path.to_string_lossy().into_owned(), entry })?;
             },
-            Err(e) => return Err(Error::new(ErrorKind::ObjectPutFailed { path: path.to_string_lossy().into_owned() }, e))?,
+            #[cfg(unix)]
+            Err(e) if e.raw_os_error().is_some_and(|errno| errno == libc::EISDIR) => {
+                return Err(ErrorKind::ObjectAlreadyExists { path: path.to_string_lossy().into_owned(), entry: None })?
+            },
+            Err(e) => {
+                return Err(Error::new(ErrorKind::ObjectPutFailed { path: path.to_string_lossy().into_owned() }, e))?
+            },
         };
 
         copy(&mut content, &mut file).await.map_err(Error::other)?;
