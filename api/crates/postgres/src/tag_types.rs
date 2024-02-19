@@ -139,11 +139,11 @@ impl TagTypesRepository for PostgresTagTypesRepository {
             )
             .build_sqlx(PostgresQueryBuilder);
 
-        let tag_type = sqlx::query_as_with::<_, PostgresTagTypeRow, _>(&sql, values)
-            .fetch_one(&mut *tx)
-            .await
-            .map_err(Error::other)?
-            .into();
+        let tag_type = match sqlx::query_as_with::<_, PostgresTagTypeRow, _>(&sql, values).fetch_one(&mut *tx).await {
+            Ok(row) => TagType::from(row),
+            Err(sqlx::Error::Database(e)) if e.is_unique_violation() => return Err(ErrorKind::TagTypeDuplicateSlug { slug: slug.to_string() })?,
+            Err(e) => return Err(Error::other(e)),
+        };
 
         tx.commit().await.map_err(Error::other)?;
         Ok(tag_type)
