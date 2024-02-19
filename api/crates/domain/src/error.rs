@@ -124,6 +124,8 @@ pub enum ErrorKind {
     #[error("the replica with the original_url was not found")]
     ReplicaNotFoundByUrl { original_url: String },
 
+    #[error("the source with the same metadata is already registered")]
+    SourceDuplicateMetadata { id: Option<SourceId> },
 
     #[error("the source metadata is invalid")]
     SourceMetadataInvalid,
