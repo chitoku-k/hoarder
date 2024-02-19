@@ -77,14 +77,15 @@ pub(crate) enum ErrorKind {
     #[error("the object URL is unsupported")]
     ObjectUrlUnsupported { url: String },
 
+    #[error("the replica with the same original_url is already registered")]
+    ReplicaDuplicateOriginalUrl { original_url: String },
+
     #[error("the replica was not found")]
     ReplicaNotFound { id: Uuid },
 
     #[error("the replica with the original_url was not found")]
     ReplicaNotFoundByUrl { original_url: String },
 
-    #[error("the replica with the same original_url is already registered")]
-    ReplicaDuplicateOriginalUrl { original_url: String },
 
     #[error("the source metadata is invalid")]
     SourceMetadataInvalid,
@@ -95,11 +96,11 @@ pub(crate) enum ErrorKind {
     #[error("the source was not found")]
     SourceNotFound { id: Uuid },
 
-    #[error("the tag cannot be attached to itself")]
-    TagAttachingToItself { id: Uuid },
-
     #[error("the tag cannot be attached to its descendants")]
     TagAttachingToDescendant { id: Uuid },
+
+    #[error("the tag cannot be attached to itself")]
+    TagAttachingToItself { id: Uuid },
 
     #[error("the tag has one or more children")]
     TagChildrenExist { id: Uuid, children: Vec<Uuid> },
@@ -179,15 +180,15 @@ impl From<domain::error::ErrorKind> for ErrorKind {
             ObjectPathInvalid { path } => ErrorKind::ObjectPathInvalid { path },
             ObjectPutFailed { path, .. } => ErrorKind::ObjectPutFailed { path },
             ObjectUrlUnsupported { url } => ErrorKind::ObjectUrlUnsupported { url },
+            ReplicaDuplicateOriginalUrl { original_url } => ErrorKind::ReplicaDuplicateOriginalUrl { original_url },
             ReplicaNotFound { id } => ErrorKind::ReplicaNotFound { id: *id },
             ReplicaNotFoundByUrl { original_url } => ErrorKind::ReplicaNotFoundByUrl { original_url },
-            ReplicaDuplicateOriginalUrl { original_url } => ErrorKind::ReplicaDuplicateOriginalUrl { original_url },
             SourceMetadataInvalid => ErrorKind::SourceMetadataInvalid,
             SourceMetadataNotMatch { slug } => ErrorKind::SourceMetadataNotMatch { slug },
             SourceNotFound { id } => ErrorKind::SourceNotFound { id: *id },
             TagAttachingRoot | TagDeletingRoot | TagDetachingRoot | TagUpdatingRoot => ErrorKind::TagNotFound { id: Uuid::nil() },
-            TagAttachingToItself { id } => ErrorKind::TagAttachingToItself { id: *id },
             TagAttachingToDescendant { id } => ErrorKind::TagAttachingToDescendant { id: *id },
+            TagAttachingToItself { id } => ErrorKind::TagAttachingToItself { id: *id },
             TagChildrenExist { id, children } => ErrorKind::TagChildrenExist {
                 id: *id,
                 children: children.into_iter().map(|c| *c).collect(),

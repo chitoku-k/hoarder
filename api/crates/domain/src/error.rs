@@ -115,14 +115,15 @@ pub enum ErrorKind {
     #[error("the object URL is unsupported")]
     ObjectUrlUnsupported { url: String },
 
+    #[error("the replica with the same original_url is already registered")]
+    ReplicaDuplicateOriginalUrl { original_url: String },
+
     #[error("the replica was not found")]
     ReplicaNotFound { id: ReplicaId },
 
     #[error("the replica with the original_url was not found")]
     ReplicaNotFoundByUrl { original_url: String },
 
-    #[error("the replica with the same original_url is already registered")]
-    ReplicaDuplicateOriginalUrl { original_url: String },
 
     #[error("the source metadata is invalid")]
     SourceMetadataInvalid,
@@ -136,11 +137,11 @@ pub enum ErrorKind {
     #[error("the tag root cannot be attached")]
     TagAttachingRoot,
 
-    #[error("the tag cannot be attached to itself")]
-    TagAttachingToItself { id: TagId },
-
     #[error("the tag cannot be attached to its descendants")]
     TagAttachingToDescendant { id: TagId },
+
+    #[error("the tag cannot be attached to itself")]
+    TagAttachingToItself { id: TagId },
 
     #[error("the tag has {}", if .children.len() == 1 { "a child" } else { "children" })]
     TagChildrenExist { id: TagId, children: Vec<TagId> },
@@ -154,14 +155,14 @@ pub enum ErrorKind {
     #[error("the tag was not found")]
     TagNotFound { id: TagId },
 
-    #[error("the tag root cannot be updated")]
-    TagUpdatingRoot,
-
     #[error("the tag type with the same slug is already registered")]
     TagTypeDuplicateSlug { slug: String },
 
     #[error("the tag type was not found")]
     TagTypeNotFound { id: TagTypeId },
+
+    #[error("the tag root cannot be updated")]
+    TagUpdatingRoot,
 
     #[error("the thumbnail was not found")]
     ThumbnailNotFound { id: ThumbnailId },
