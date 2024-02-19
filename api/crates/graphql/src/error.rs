@@ -86,6 +86,8 @@ pub(crate) enum ErrorKind {
     #[error("the replica with the original_url was not found")]
     ReplicaNotFoundByUrl { original_url: String },
 
+    #[error("the source with the same metadata is already registered")]
+    SourceDuplicateMetadata { id: Option<Uuid> },
 
     #[error("the source metadata is invalid")]
     SourceMetadataInvalid,
@@ -183,6 +185,7 @@ impl From<domain::error::ErrorKind> for ErrorKind {
             ReplicaDuplicateOriginalUrl { original_url } => ErrorKind::ReplicaDuplicateOriginalUrl { original_url },
             ReplicaNotFound { id } => ErrorKind::ReplicaNotFound { id: *id },
             ReplicaNotFoundByUrl { original_url } => ErrorKind::ReplicaNotFoundByUrl { original_url },
+            SourceDuplicateMetadata { id } => ErrorKind::SourceDuplicateMetadata { id: id.map(|id| *id) },
             SourceMetadataInvalid => ErrorKind::SourceMetadataInvalid,
             SourceMetadataNotMatch { slug } => ErrorKind::SourceMetadataNotMatch { slug },
             SourceNotFound { id } => ErrorKind::SourceNotFound { id: *id },

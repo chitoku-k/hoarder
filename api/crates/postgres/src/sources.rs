@@ -180,7 +180,7 @@ impl SourcesRepository for PostgresSourcesRepository {
             Err(e) => return Err(Error::other(e)),
         };
 
-        let external_metadata = PostgresExternalServiceMetadata::try_from(external_metadata)
+        let external_metadata_value = PostgresExternalServiceMetadata::try_from(external_metadata.clone())
             .and_then(serde_json::to_value)
             .map(Some)
             .map_err(|e| Error::new(ErrorKind::SourceMetadataInvalid, e))?;
@@ -190,7 +190,7 @@ impl SourcesRepository for PostgresSourcesRepository {
             .columns([PostgresSource::ExternalServiceId, PostgresSource::ExternalMetadata])
             .values([
                 PostgresExternalServiceId::from(external_service_id).into(),
-                external_metadata.into(),
+                external_metadata_value.into(),
             ])
             .map_err(Error::other)?
             .returning(
@@ -208,6 +208,10 @@ impl SourcesRepository for PostgresSourcesRepository {
         let row = match sqlx::query_as_with::<_, PostgresSourceRow, _>(&sql, values).fetch_one(&mut *tx).await {
             Ok(row) => row,
             Err(sqlx::Error::Database(e)) if e.is_foreign_key_violation() => return Err(ErrorKind::ExternalServiceNotFound { id: external_service_id })?,
+            Err(sqlx::Error::Database(e)) if e.is_unique_violation() => {
+                let id = self.fetch_by_external_metadata(external_service_id, external_metadata).await.unwrap_or_default().map(|s| s.id);
+                return Err(ErrorKind::SourceDuplicateMetadata { id })?
+            },
             Err(e) => return Err(Error::other(e)),
         };
 
@@ -219,7 +223,7 @@ impl SourcesRepository for PostgresSourcesRepository {
     }
 
     async fn fetch_by_external_metadata(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> Result<Option<Source>> {
-        let external_metadata = PostgresExternalServiceMetadata::try_from(external_metadata)
+        let external_metadata_value = PostgresExternalServiceMetadata::try_from(external_metadata)
             .and_then(serde_json::to_value)
             .map_err(|e| Error::new(ErrorKind::SourceMetadataInvalid, e))?;
 
@@ -239,7 +243,7 @@ impl SourcesRepository for PostgresSourcesRepository {
                     .equals((PostgresSource::Table, PostgresSource::ExternalServiceId)),
             )
             .and_where(Expr::col(PostgresSource::ExternalServiceId).eq(PostgresExternalServiceId::from(external_service_id)))
-            .and_where(Expr::col(PostgresSource::ExternalMetadata).contains(Expr::val(external_metadata)))
+            .and_where(Expr::col(PostgresSource::ExternalMetadata).contains(Expr::val(external_metadata_value)))
             .build_sqlx(PostgresQueryBuilder);
 
         let source = sqlx::query_as_with::<_, PostgresSourceExternalServiceRow, _>(&sql, values)
@@ -274,7 +278,7 @@ impl SourcesRepository for PostgresSourcesRepository {
         };
 
         let external_service_id = external_service_id.unwrap_or_else(|| row.external_service_id.into());
-        let external_metadata = external_metadata
+        let external_metadata_value = external_metadata
             .map(PostgresExternalServiceMetadata::try_from)
             .unwrap_or(Ok(row.external_metadata.0))
             .and_then(serde_json::to_value)
@@ -284,7 +288,7 @@ impl SourcesRepository for PostgresSourcesRepository {
         let (sql, values) = Query::update()
             .table(PostgresSource::Table)
             .value(PostgresSource::ExternalServiceId, Expr::val(PostgresExternalServiceId::from(external_service_id)))
-            .value(PostgresSource::ExternalMetadata, Expr::val(external_metadata))
+            .value(PostgresSource::ExternalMetadata, Expr::val(external_metadata_value))
             .value(PostgresSource::UpdatedAt, Expr::current_timestamp())
             .and_where(Expr::col(PostgresSource::Id).eq(PostgresSourceId::from(id)))
             .returning(
