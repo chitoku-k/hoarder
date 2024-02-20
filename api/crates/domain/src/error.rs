@@ -61,11 +61,11 @@ impl From<ErrorKind> for Error {
 #[derive(Debug, thiserror::Error)]
 #[non_exhaustive]
 pub enum ErrorKind {
-    #[error("the external service with the same slug is already registered")]
-    ExternalServiceDuplicateSlug { slug: String },
-
     #[error("the external service was not found")]
     ExternalServiceNotFound { id: ExternalServiceId },
+
+    #[error("the external service with the same slug is already registered")]
+    ExternalServiceSlugDuplicate { slug: String },
 
     #[error("the medium was not found")]
     MediumNotFound { id: MediumId },
@@ -115,17 +115,17 @@ pub enum ErrorKind {
     #[error("the object URL is unsupported")]
     ObjectUrlUnsupported { url: String },
 
-    #[error("the replica with the same original_url is already registered")]
-    ReplicaDuplicateOriginalUrl { original_url: String },
-
     #[error("the replica was not found")]
     ReplicaNotFound { id: ReplicaId },
 
     #[error("the replica with the original_url was not found")]
     ReplicaNotFoundByUrl { original_url: String },
 
+    #[error("the replica with the same original_url is already registered")]
+    ReplicaOriginalUrlDuplicate { original_url: String },
+
     #[error("the source with the same metadata is already registered")]
-    SourceDuplicateMetadata { id: Option<SourceId> },
+    SourceMetadataDuplicate { id: Option<SourceId> },
 
     #[error("the source metadata is invalid")]
     SourceMetadataInvalid,
@@ -158,7 +158,7 @@ pub enum ErrorKind {
     TagNotFound { id: TagId },
 
     #[error("the tag type with the same slug is already registered")]
-    TagTypeDuplicateSlug { slug: String },
+    TagTypeSlugDuplicate { slug: String },
 
     #[error("the tag type was not found")]
     TagTypeNotFound { id: TagTypeId },

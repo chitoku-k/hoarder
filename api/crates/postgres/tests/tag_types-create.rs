@@ -37,5 +37,5 @@ async fn fails(ctx: &DatabaseContext) {
     let repository = PostgresTagTypesRepository::new(ctx.pool.clone());
     let actual = repository.create("character", "キャラクター").await.unwrap_err();
 
-    assert_matches!(actual.kind(), ErrorKind::TagTypeDuplicateSlug { slug } if slug == "character");
+    assert_matches!(actual.kind(), ErrorKind::TagTypeSlugDuplicate { slug } if slug == "character");
 }

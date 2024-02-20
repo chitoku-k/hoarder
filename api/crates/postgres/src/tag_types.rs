@@ -73,7 +73,7 @@ impl TagTypesRepository for PostgresTagTypesRepository {
 
         let tag_type = match sqlx::query_as_with::<_, PostgresTagTypeRow, _>(&sql, values).fetch_one(&self.pool).await {
             Ok(row) => row.into(),
-            Err(sqlx::Error::Database(e)) if e.is_unique_violation() => return Err(ErrorKind::TagTypeDuplicateSlug { slug: slug.to_string() })?,
+            Err(sqlx::Error::Database(e)) if e.is_unique_violation() => return Err(ErrorKind::TagTypeSlugDuplicate { slug: slug.to_string() })?,
             Err(e) => return Err(Error::other(e)),
         };
 
@@ -141,7 +141,7 @@ impl TagTypesRepository for PostgresTagTypesRepository {
 
         let tag_type = match sqlx::query_as_with::<_, PostgresTagTypeRow, _>(&sql, values).fetch_one(&mut *tx).await {
             Ok(row) => TagType::from(row),
-            Err(sqlx::Error::Database(e)) if e.is_unique_violation() => return Err(ErrorKind::TagTypeDuplicateSlug { slug: slug.to_string() })?,
+            Err(sqlx::Error::Database(e)) if e.is_unique_violation() => return Err(ErrorKind::TagTypeSlugDuplicate { slug: slug.to_string() })?,
             Err(e) => return Err(Error::other(e)),
         };
 

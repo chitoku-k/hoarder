@@ -37,5 +37,5 @@ async fn fails(ctx: &DatabaseContext) {
     let repository = PostgresExternalServicesRepository::new(ctx.pool.clone());
     let actual = repository.create("twitter", "Twitter").await.unwrap_err();
 
-    assert_matches!(actual.kind(), ErrorKind::ExternalServiceDuplicateSlug { slug } if slug == "twitter");
+    assert_matches!(actual.kind(), ErrorKind::ExternalServiceSlugDuplicate { slug } if slug == "twitter");
 }

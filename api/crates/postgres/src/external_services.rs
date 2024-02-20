@@ -72,7 +72,7 @@ impl ExternalServicesRepository for PostgresExternalServicesRepository {
 
         match sqlx::query_as_with::<_, PostgresExternalServiceRow, _>(&sql, values).fetch_one(&self.pool).await {
             Ok(external_service) => Ok(external_service.into()),
-            Err(sqlx::Error::Database(e)) if e.is_unique_violation() => Err(ErrorKind::ExternalServiceDuplicateSlug { slug: slug.to_string() })?,
+            Err(sqlx::Error::Database(e)) if e.is_unique_violation() => Err(ErrorKind::ExternalServiceSlugDuplicate { slug: slug.to_string() })?,
             Err(e) => Err(Error::other(e)),
         }
     }
