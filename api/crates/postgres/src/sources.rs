@@ -210,7 +210,7 @@ impl SourcesRepository for PostgresSourcesRepository {
             Err(sqlx::Error::Database(e)) if e.is_foreign_key_violation() => return Err(ErrorKind::ExternalServiceNotFound { id: external_service_id })?,
             Err(sqlx::Error::Database(e)) if e.is_unique_violation() => {
                 let id = self.fetch_by_external_metadata(external_service_id, external_metadata).await.unwrap_or_default().map(|s| s.id);
-                return Err(ErrorKind::SourceDuplicateMetadata { id })?
+                return Err(ErrorKind::SourceMetadataDuplicate { id })?
             },
             Err(e) => return Err(Error::other(e)),
         };

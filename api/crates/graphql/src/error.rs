@@ -23,11 +23,11 @@ pub(crate) enum ErrorKind {
     #[error("the cursor is invalid")]
     CursorInvalid,
 
-    #[error("the external service with the same slug is already registered")]
-    ExternalServiceDuplicateSlug { slug: String },
-
     #[error("the external service was not found")]
     ExternalServiceNotFound { id: Uuid },
+
+    #[error("the external service with the same slug is already registered")]
+    ExternalServiceSlugDuplicate { slug: String },
 
     #[error("the medium was not found")]
     MediumNotFound { id: Uuid },
@@ -77,17 +77,17 @@ pub(crate) enum ErrorKind {
     #[error("the object URL is unsupported")]
     ObjectUrlUnsupported { url: String },
 
-    #[error("the replica with the same original_url is already registered")]
-    ReplicaDuplicateOriginalUrl { original_url: String },
-
     #[error("the replica was not found")]
     ReplicaNotFound { id: Uuid },
 
     #[error("the replica with the original_url was not found")]
     ReplicaNotFoundByUrl { original_url: String },
 
+    #[error("the replica with the same original_url is already registered")]
+    ReplicaOriginalUrlDuplicate { original_url: String },
+
     #[error("the source with the same metadata is already registered")]
-    SourceDuplicateMetadata { id: Option<Uuid> },
+    SourceMetadataDuplicate { id: Option<Uuid> },
 
     #[error("the source metadata is invalid")]
     SourceMetadataInvalid,
@@ -110,11 +110,11 @@ pub(crate) enum ErrorKind {
     #[error("the tag was not found")]
     TagNotFound { id: Uuid },
 
-    #[error("the tag type with the same slug is already registered")]
-    TagTypeDuplicateSlug { slug: String },
-
     #[error("the tag type was not found")]
     TagTypeNotFound { id: Uuid },
+
+    #[error("the tag type with the same slug is already registered")]
+    TagTypeSlugDuplicate { slug: String },
 
     #[error("the thumbnail was not found")]
     ThumbnailNotFound { id: Uuid },
@@ -157,8 +157,8 @@ impl From<domain::error::ErrorKind> for ErrorKind {
     fn from(kind: domain::error::ErrorKind) -> Self {
         use domain::error::ErrorKind::*;
         match kind {
-            ExternalServiceDuplicateSlug { slug } => ErrorKind::ExternalServiceDuplicateSlug { slug },
             ExternalServiceNotFound { id } => ErrorKind::ExternalServiceNotFound { id: *id },
+            ExternalServiceSlugDuplicate { slug } => ErrorKind::ExternalServiceSlugDuplicate { slug },
             MediumNotFound { id } => ErrorKind::MediumNotFound { id: *id },
             MediumReplicaDecodeFailed => ErrorKind::MediumReplicaDecodeFailed,
             MediumReplicaEncodeFailed => ErrorKind::MediumReplicaEncodeFailed,
@@ -182,10 +182,10 @@ impl From<domain::error::ErrorKind> for ErrorKind {
             ObjectPathInvalid { path } => ErrorKind::ObjectPathInvalid { path },
             ObjectPutFailed { path, .. } => ErrorKind::ObjectPutFailed { path },
             ObjectUrlUnsupported { url } => ErrorKind::ObjectUrlUnsupported { url },
-            ReplicaDuplicateOriginalUrl { original_url } => ErrorKind::ReplicaDuplicateOriginalUrl { original_url },
             ReplicaNotFound { id } => ErrorKind::ReplicaNotFound { id: *id },
             ReplicaNotFoundByUrl { original_url } => ErrorKind::ReplicaNotFoundByUrl { original_url },
-            SourceDuplicateMetadata { id } => ErrorKind::SourceDuplicateMetadata { id: id.map(|id| *id) },
+            ReplicaOriginalUrlDuplicate { original_url } => ErrorKind::ReplicaOriginalUrlDuplicate { original_url },
+            SourceMetadataDuplicate { id } => ErrorKind::SourceMetadataDuplicate { id: id.map(|id| *id) },
             SourceMetadataInvalid => ErrorKind::SourceMetadataInvalid,
             SourceMetadataNotMatch { slug } => ErrorKind::SourceMetadataNotMatch { slug },
             SourceNotFound { id } => ErrorKind::SourceNotFound { id: *id },
@@ -197,7 +197,7 @@ impl From<domain::error::ErrorKind> for ErrorKind {
                 children: children.into_iter().map(|c| *c).collect(),
             },
             TagNotFound { id } => ErrorKind::TagNotFound { id: *id },
-            TagTypeDuplicateSlug { slug } => ErrorKind::TagTypeDuplicateSlug { slug },
+            TagTypeSlugDuplicate { slug } => ErrorKind::TagTypeSlugDuplicate { slug },
             TagTypeNotFound { id } => ErrorKind::TagTypeNotFound { id: *id },
             ThumbnailNotFound { id } => ErrorKind::ThumbnailNotFound { id: *id },
             _ => ErrorKind::InternalServerError,
