@@ -182,7 +182,6 @@ impl SourcesRepository for PostgresSourcesRepository {
 
         let external_metadata_value = PostgresExternalServiceMetadata::try_from(external_metadata.clone())
             .and_then(serde_json::to_value)
-            .map(Some)
             .map_err(|e| Error::new(ErrorKind::SourceMetadataInvalid, e))?;
 
         let (sql, values) = Query::insert()
@@ -278,11 +277,9 @@ impl SourcesRepository for PostgresSourcesRepository {
         };
 
         let external_service_id = external_service_id.unwrap_or_else(|| row.external_service_id.into());
-        let external_metadata_value = external_metadata
-            .map(PostgresExternalServiceMetadata::try_from)
-            .unwrap_or(Ok(row.external_metadata.0))
+        let external_metadata = external_metadata.unwrap_or_else(|| row.external_metadata.0.into());
+        let external_metadata_value = PostgresExternalServiceMetadata::try_from(external_metadata.clone())
             .and_then(serde_json::to_value)
-            .map(Some)
             .map_err(|e| Error::new(ErrorKind::SourceMetadataInvalid, e))?;
 
         let (sql, values) = Query::update()
@@ -306,6 +303,10 @@ impl SourcesRepository for PostgresSourcesRepository {
         let row = match sqlx::query_as_with::<_, PostgresSourceRow, _>(&sql, values).fetch_one(&mut *tx).await {
             Ok(row) => row,
             Err(sqlx::Error::Database(e)) if e.is_foreign_key_violation() => return Err(ErrorKind::ExternalServiceNotFound { id: external_service_id })?,
+            Err(sqlx::Error::Database(e)) if e.is_unique_violation() => {
+                let id = self.fetch_by_external_metadata(external_service_id, external_metadata).await.unwrap_or_default().map(|s| s.id);
+                return Err(ErrorKind::SourceMetadataDuplicate { id })?
+            },
             Err(e) => return Err(Error::other(e)),
         };
 
