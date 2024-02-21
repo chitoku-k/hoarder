@@ -1,12 +1,12 @@
 use chrono::{DateTime, Utc};
 use derive_more::{Constructor, Deref, Display, From};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-#[derive(Clone, Copy, Debug, Default, Deref, Deserialize, Display, Eq, From, Hash, PartialEq)]
+#[derive(Clone, Copy, Debug, Default, Deref, Deserialize, Display, Eq, From, Hash, Ord, PartialEq, PartialOrd, Serialize)]
 pub struct ReplicaId(Uuid);
 
-#[derive(Clone, Copy, Debug, Default, Deref, Deserialize, Display, Eq, From, Hash, PartialEq)]
+#[derive(Clone, Copy, Debug, Default, Deref, Deserialize, Display, Eq, From, Hash, Ord, PartialEq, PartialOrd, Serialize)]
 pub struct ThumbnailId(Uuid);
 
 #[derive(Clone, Debug, Eq, PartialEq)]

@@ -2,10 +2,10 @@ use std::collections::BTreeSet;
 
 use chrono::{DateTime, Utc};
 use derive_more::{Constructor, Deref, Display, From};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-#[derive(Clone, Copy, Debug, Default, Deref, Display, Eq, From, Hash, Ord, PartialEq, PartialOrd)]
+#[derive(Clone, Copy, Debug, Default, Deref, Deserialize, Display, Eq, From, Hash, Ord, PartialEq, PartialOrd, Serialize)]
 pub struct TagId(Uuid);
 
 #[derive(Clone, Constructor, Copy, Debug, Eq, From, PartialEq)]
@@ -54,7 +54,7 @@ impl TagDepth {
     }
 }
 
-#[derive(Clone, Constructor, Debug, Default, Deref, Eq, PartialEq, Serialize)]
+#[derive(Clone, Constructor, Debug, Default, Deref, Eq, PartialEq)]
 pub struct AliasSet(BTreeSet<String>);
 
 impl AliasSet {

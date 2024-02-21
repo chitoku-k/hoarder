@@ -2,6 +2,7 @@ use std::collections::BTreeMap;
 
 use chrono::{DateTime, Utc};
 use derive_more::{Deref, Display, From};
+use serde::{Deserialize, Serialize};
 use thiserror::Error;
 use uuid::Uuid;
 
@@ -12,7 +13,7 @@ use crate::entity::{
     tags::Tag,
 };
 
-#[derive(Clone, Copy, Debug, Default, Deref, Display, Eq, From, Hash, Ord, PartialEq, PartialOrd)]
+#[derive(Clone, Copy, Debug, Default, Deref, Deserialize, Display, Eq, From, Hash, Ord, PartialEq, PartialOrd, Serialize)]
 pub struct MediumId(Uuid);
 
 #[derive(Clone, Debug, Default, Eq, PartialEq)]

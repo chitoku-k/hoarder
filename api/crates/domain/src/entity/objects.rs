@@ -1,11 +1,11 @@
 use chrono::{DateTime, Utc};
 use derive_more::{Constructor, Deref, Display, From};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Default, Deref, Deserialize, Display, Eq, From, Hash, PartialEq)]
+#[derive(Clone, Debug, Default, Deref, Deserialize, Display, Eq, From, Hash, PartialEq, Serialize)]
 pub struct EntryPath(String);
 
-#[derive(Clone, Debug, Default, Deref, Deserialize, Display, Eq, From, Hash, PartialEq)]
+#[derive(Clone, Debug, Default, Deref, Deserialize, Display, Eq, From, Hash, PartialEq, Serialize)]
 pub struct EntryUrl(String);
 
 #[derive(Clone, Constructor, Debug, Eq, PartialEq)]

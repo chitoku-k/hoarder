@@ -1,9 +1,10 @@
 use std::hash::{Hash, Hasher};
 
 use derive_more::{Deref, Display, From};
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-#[derive(Clone, Copy, Debug, Default, Deref, Display, Eq, From, Ord, PartialEq, PartialOrd)]
+#[derive(Clone, Copy, Debug, Default, Deref, Deserialize, Display, Eq, From, Hash, Ord, PartialEq, PartialOrd, Serialize)]
 pub struct TagTypeId(Uuid);
 
 #[derive(Clone, Debug, Eq, Ord, PartialOrd)]
