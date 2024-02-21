@@ -1,11 +1,12 @@
 use chrono::{DateTime, Utc};
 use derive_more::{Deref, Display, From};
+use serde::{Deserialize, Serialize};
 use thiserror::Error;
 use uuid::Uuid;
 
 use crate::{entity::external_services::{ExternalMetadata, ExternalService}, error::{ErrorKind, Result}};
 
-#[derive(Clone, Copy, Debug, Default, Deref, Display, Eq, From, PartialEq)]
+#[derive(Clone, Copy, Debug, Default, Deref, Deserialize, Display, Eq, From, Hash, Ord, PartialEq, PartialOrd, Serialize)]
 pub struct SourceId(Uuid);
 
 #[derive(Clone, Debug, Eq, PartialEq)]

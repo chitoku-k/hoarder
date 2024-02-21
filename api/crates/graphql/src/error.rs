@@ -1,6 +1,13 @@
 use async_graphql::{value, ErrorExtensions};
+use domain::entity::{
+    external_services::ExternalServiceId,
+    media::MediumId,
+    replicas::{ReplicaId, ThumbnailId},
+    sources::SourceId,
+    tag_types::TagTypeId,
+    tags::TagId,
+};
 use serde::Serialize;
-use uuid::Uuid;
 
 use crate::objects::ObjectEntry;
 
@@ -24,13 +31,13 @@ pub(crate) enum ErrorKind {
     CursorInvalid,
 
     #[error("the external service was not found")]
-    ExternalServiceNotFound { id: Uuid },
+    ExternalServiceNotFound { id: ExternalServiceId },
 
     #[error("the external service with the same slug is already registered")]
     ExternalServiceSlugDuplicate { slug: String },
 
     #[error("the medium was not found")]
-    MediumNotFound { id: Uuid },
+    MediumNotFound { id: MediumId },
 
     #[error("the medium replica was unable to be decoded")]
     MediumReplicaDecodeFailed,
@@ -45,13 +52,13 @@ pub(crate) enum ErrorKind {
     MediumReplicaUnsupported,
 
     #[error("the medium replicas do not match")]
-    MediumReplicasNotMatch { medium_id: Uuid, expected_replicas: Vec<Uuid>, actual_replicas: Vec<Uuid> },
+    MediumReplicasNotMatch { medium_id: MediumId, expected_replicas: Vec<ReplicaId>, actual_replicas: Vec<ReplicaId> },
 
     #[error("the medium source was not found")]
-    MediumSourceNotFound { id: Uuid },
+    MediumSourceNotFound { id: MediumId },
 
     #[error("the medium tag was not found")]
-    MediumTagNotFound { id: Uuid },
+    MediumTagNotFound { id: MediumId },
 
     #[error("the object with the same path already exists")]
     ObjectAlreadyExists { path: String, entry: Option<Box<ObjectEntry>> },
@@ -78,7 +85,7 @@ pub(crate) enum ErrorKind {
     ObjectUrlUnsupported { url: String },
 
     #[error("the replica was not found")]
-    ReplicaNotFound { id: Uuid },
+    ReplicaNotFound { id: ReplicaId },
 
     #[error("the replica with the original_url was not found")]
     ReplicaNotFoundByUrl { original_url: String },
@@ -87,7 +94,7 @@ pub(crate) enum ErrorKind {
     ReplicaOriginalUrlDuplicate { original_url: String },
 
     #[error("the source with the same metadata is already registered")]
-    SourceMetadataDuplicate { id: Option<Uuid> },
+    SourceMetadataDuplicate { id: Option<SourceId> },
 
     #[error("the source metadata is invalid")]
     SourceMetadataInvalid,
@@ -96,28 +103,28 @@ pub(crate) enum ErrorKind {
     SourceMetadataNotMatch { slug: String },
 
     #[error("the source was not found")]
-    SourceNotFound { id: Uuid },
+    SourceNotFound { id: SourceId },
 
     #[error("the tag cannot be attached to its descendants")]
-    TagAttachingToDescendant { id: Uuid },
+    TagAttachingToDescendant { id: TagId },
 
     #[error("the tag cannot be attached to itself")]
-    TagAttachingToItself { id: Uuid },
+    TagAttachingToItself { id: TagId },
 
     #[error("the tag has one or more children")]
-    TagChildrenExist { id: Uuid, children: Vec<Uuid> },
+    TagChildrenExist { id: TagId, children: Vec<TagId> },
 
     #[error("the tag was not found")]
-    TagNotFound { id: Uuid },
+    TagNotFound { id: TagId },
 
     #[error("the tag type was not found")]
-    TagTypeNotFound { id: Uuid },
+    TagTypeNotFound { id: TagTypeId },
 
     #[error("the tag type with the same slug is already registered")]
     TagTypeSlugDuplicate { slug: String },
 
     #[error("the thumbnail was not found")]
-    ThumbnailNotFound { id: Uuid },
+    ThumbnailNotFound { id: ThumbnailId },
 
     #[error("internal server error")]
     InternalServerError,
@@ -157,20 +164,16 @@ impl From<domain::error::ErrorKind> for ErrorKind {
     fn from(kind: domain::error::ErrorKind) -> Self {
         use domain::error::ErrorKind::*;
         match kind {
-            ExternalServiceNotFound { id } => ErrorKind::ExternalServiceNotFound { id: *id },
+            ExternalServiceNotFound { id } => ErrorKind::ExternalServiceNotFound { id },
             ExternalServiceSlugDuplicate { slug } => ErrorKind::ExternalServiceSlugDuplicate { slug },
-            MediumNotFound { id } => ErrorKind::MediumNotFound { id: *id },
+            MediumNotFound { id } => ErrorKind::MediumNotFound { id },
             MediumReplicaDecodeFailed => ErrorKind::MediumReplicaDecodeFailed,
             MediumReplicaEncodeFailed => ErrorKind::MediumReplicaEncodeFailed,
             MediumReplicaReadFailed => ErrorKind::MediumReplicaReadFailed,
             MediumReplicaUnsupported => ErrorKind::MediumReplicaUnsupported,
-            MediumReplicasNotMatch { medium_id, expected_replicas, actual_replicas } => ErrorKind::MediumReplicasNotMatch {
-                medium_id: *medium_id,
-                expected_replicas: expected_replicas.into_iter().map(|r| *r).collect(),
-                actual_replicas: actual_replicas.into_iter().map(|r| *r).collect(),
-            },
-            MediumSourceNotFound { id } => ErrorKind::MediumSourceNotFound { id: *id },
-            MediumTagNotFound { id } => ErrorKind::MediumTagNotFound { id: *id },
+            MediumReplicasNotMatch { medium_id, expected_replicas, actual_replicas } => ErrorKind::MediumReplicasNotMatch { medium_id, expected_replicas, actual_replicas },
+            MediumSourceNotFound { id } => ErrorKind::MediumSourceNotFound { id },
+            MediumTagNotFound { id } => ErrorKind::MediumTagNotFound { id },
             ObjectAlreadyExists { path, entry } => ErrorKind::ObjectAlreadyExists {
                 path,
                 entry: entry.map(|e| Box::new(ObjectEntry::from(*e))),
@@ -182,24 +185,21 @@ impl From<domain::error::ErrorKind> for ErrorKind {
             ObjectPathInvalid { path } => ErrorKind::ObjectPathInvalid { path },
             ObjectPutFailed { path, .. } => ErrorKind::ObjectPutFailed { path },
             ObjectUrlUnsupported { url } => ErrorKind::ObjectUrlUnsupported { url },
-            ReplicaNotFound { id } => ErrorKind::ReplicaNotFound { id: *id },
+            ReplicaNotFound { id } => ErrorKind::ReplicaNotFound { id },
             ReplicaNotFoundByUrl { original_url } => ErrorKind::ReplicaNotFoundByUrl { original_url },
             ReplicaOriginalUrlDuplicate { original_url } => ErrorKind::ReplicaOriginalUrlDuplicate { original_url },
-            SourceMetadataDuplicate { id } => ErrorKind::SourceMetadataDuplicate { id: id.map(|id| *id) },
+            SourceMetadataDuplicate { id } => ErrorKind::SourceMetadataDuplicate { id },
             SourceMetadataInvalid => ErrorKind::SourceMetadataInvalid,
             SourceMetadataNotMatch { slug } => ErrorKind::SourceMetadataNotMatch { slug },
-            SourceNotFound { id } => ErrorKind::SourceNotFound { id: *id },
-            TagAttachingRoot | TagDeletingRoot | TagDetachingRoot | TagUpdatingRoot => ErrorKind::TagNotFound { id: Uuid::nil() },
-            TagAttachingToDescendant { id } => ErrorKind::TagAttachingToDescendant { id: *id },
-            TagAttachingToItself { id } => ErrorKind::TagAttachingToItself { id: *id },
-            TagChildrenExist { id, children } => ErrorKind::TagChildrenExist {
-                id: *id,
-                children: children.into_iter().map(|c| *c).collect(),
-            },
-            TagNotFound { id } => ErrorKind::TagNotFound { id: *id },
+            SourceNotFound { id } => ErrorKind::SourceNotFound { id },
+            TagAttachingRoot | TagDeletingRoot | TagDetachingRoot | TagUpdatingRoot => ErrorKind::TagNotFound { id: TagId::default() },
+            TagAttachingToDescendant { id } => ErrorKind::TagAttachingToDescendant { id },
+            TagAttachingToItself { id } => ErrorKind::TagAttachingToItself { id },
+            TagChildrenExist { id, children } => ErrorKind::TagChildrenExist { id, children },
+            TagNotFound { id } => ErrorKind::TagNotFound { id },
             TagTypeSlugDuplicate { slug } => ErrorKind::TagTypeSlugDuplicate { slug },
-            TagTypeNotFound { id } => ErrorKind::TagTypeNotFound { id: *id },
-            ThumbnailNotFound { id } => ErrorKind::ThumbnailNotFound { id: *id },
+            TagTypeNotFound { id } => ErrorKind::TagTypeNotFound { id },
+            ThumbnailNotFound { id } => ErrorKind::ThumbnailNotFound { id },
             _ => ErrorKind::InternalServerError,
         }
     }
