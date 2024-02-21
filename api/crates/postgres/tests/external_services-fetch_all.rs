@@ -33,5 +33,10 @@ async fn succeeds(ctx: &DatabaseContext) {
             slug: "twitter".to_string(),
             name: "Twitter".to_string(),
         },
+        ExternalService {
+            id: ExternalServiceId::from(uuid!("6c07eb4d-93a1-4efd-afce-e13f8f2c0e14")),
+            slug: "whatever".to_string(),
+            name: "Custom".to_string(),
+        },
     ]);
 }
