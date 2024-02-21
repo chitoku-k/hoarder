@@ -63,6 +63,7 @@ pub(crate) enum PostgresExternalServiceMetadata {
     Skeb { id: u64, creator_id: String },
     Twitter { id: u64 },
     Website { url: String },
+    #[serde(untagged)]
     Custom(serde_json::Value),
 }
 
