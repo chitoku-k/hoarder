@@ -14,7 +14,7 @@ use sea_query_binder::SqlxBinder;
 use sqlx::{FromRow, PgPool, Row};
 
 use crate::{
-    media::PostgresMediumId,
+    media::{PostgresMedium, PostgresMediumId},
     sea_query_uuid_value,
 };
 
@@ -208,11 +208,12 @@ impl ReplicasRepository for PostgresReplicasRepository {
 
         let (sql, values) = Query::select()
             .columns([
-                PostgresReplica::Id,
+                PostgresMedium::Id,
+                PostgresMedium::CreatedAt,
+                PostgresMedium::UpdatedAt,
             ])
-            .from(PostgresReplica::Table)
-            .and_where(Expr::col(PostgresReplica::MediumId).eq(PostgresMediumId::from(medium_id)))
-            .order_by(PostgresReplica::Id, Order::Asc)
+            .from(PostgresMedium::Table)
+            .and_where(Expr::col(PostgresMedium::Id).eq(PostgresMediumId::from(medium_id)))
             .lock(LockType::Update)
             .build_sqlx(PostgresQueryBuilder);
 
