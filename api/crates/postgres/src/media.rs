@@ -75,7 +75,7 @@ struct PostgresMediumTagTypeRow {
 }
 
 #[derive(Iden)]
-enum PostgresMedium {
+pub(crate) enum PostgresMedium {
     #[iden = "media"]
     Table,
     Id,
