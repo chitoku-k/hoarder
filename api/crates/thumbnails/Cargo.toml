@@ -20,9 +20,8 @@ version = "0.7.4"
 version = "0.99.17"
 
 [dependencies.image]
-version = "0.24.8"
-features = ["webp-encoder"]
+version = "0.25.0"
 
 [dependencies.tokio]
-version = "1.35.1"
+version = "1.36.0"
 features = ["rt-multi-thread"]

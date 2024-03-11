@@ -1,4 +1,4 @@
-use std::{error::Error, future::Future, pin::Pin};
+use std::error::Error;
 
 use include_dir::{include_dir, Dir};
 use sqlx::{
@@ -61,34 +61,30 @@ async fn drop_database(conn: &mut PgConnection, name: &str) -> Result<(), BoxDyn
 }
 
 impl AsyncTestContext for DatabaseContext {
-    fn setup<'a>() -> Pin<Box<dyn Future<Output = Self> + Send + 'a>> {
-        Box::pin(async move {
-            let name = format!("hoarder_{}", Uuid::new_v4());
-            let mut conn = create_database(&name).await.unwrap();
+    async fn setup() -> Self {
+        let name = format!("hoarder_{}", Uuid::new_v4());
+        let mut conn = create_database(&name).await.unwrap();
 
-            let pool = match connect_database(&name).await {
-                Ok(pool) => pool,
-                Err(e) => {
-                    drop_database(&mut conn, &name).await.unwrap();
-                    panic!("{e:?}");
-                },
-            };
+        let pool = match connect_database(&name).await {
+            Ok(pool) => pool,
+            Err(e) => {
+                drop_database(&mut conn, &name).await.unwrap();
+                panic!("{e:?}");
+            },
+        };
 
-            match setup_database(&pool).await {
-                Ok(()) => Self { conn, pool, name },
-                Err(e) => {
-                    pool.close().await;
-                    drop_database(&mut conn, &name).await.unwrap();
-                    panic!("{e:?}");
-                },
-            }
-        })
+        match setup_database(&pool).await {
+            Ok(()) => Self { conn, pool, name },
+            Err(e) => {
+                pool.close().await;
+                drop_database(&mut conn, &name).await.unwrap();
+                panic!("{e:?}");
+            },
+        }
     }
 
-    fn teardown<'a>(mut self) -> Pin<Box<dyn Future<Output = ()> + Send + 'a>> {
-        Box::pin(async move {
-            self.pool.close().await;
-            drop_database(&mut self.conn, &self.name).await.unwrap();
-        })
+    async fn teardown(mut self) {
+        self.pool.close().await;
+        drop_database(&mut self.conn, &self.name).await.unwrap();
     }
 }
