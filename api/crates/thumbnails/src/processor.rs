@@ -9,12 +9,12 @@ use domain::{
 use image::io::Reader;
 use tokio::task;
 
-pub use image::{imageops::FilterType, ImageOutputFormat};
+pub use image::{imageops::FilterType, ImageFormat};
 
 #[derive(Clone, Constructor)]
 pub struct InMemoryImageProcessor {
     thumbnail_size: Size,
-    thumbnail_format: ImageOutputFormat,
+    thumbnail_format: ImageFormat,
     thumbnail_filter: FilterType,
 }
 
@@ -25,7 +25,7 @@ impl MediumImageProcessor for InMemoryImageProcessor {
     {
         let thumbnail_size = self.thumbnail_size;
         let thumbnail_filter = self.thumbnail_filter;
-        let thumbnail_format = self.thumbnail_format.clone();
+        let thumbnail_format = self.thumbnail_format;
 
         task::spawn_blocking(move || {
             let reader = Reader::new(read)

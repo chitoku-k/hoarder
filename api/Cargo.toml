@@ -88,15 +88,15 @@ workspace = true
 workspace = true
 
 [dependencies.anyhow]
-version = "1.0.79"
+version = "1.0.80"
 
 [dependencies.clap]
-version = "4.4.18"
+version = "4.5.2"
 features = ["cargo", "derive", "env", "help", "std", "string", "suggestions", "usage"]
 default-features = false
 
 [dependencies.env_logger]
-version = "0.11.1"
+version = "0.11.3"
 
 [dependencies.icu]
 version = "1.4.0"
@@ -106,7 +106,11 @@ features = ["std", "sync"]
 version = "1.4.0"
 
 [dependencies.log]
-version = "0.4.20"
+version = "0.4.21"
 
 [dependencies.tokio]
-version = "1.35.1"
+version = "1.36.0"
+
+[patch.crates-io.image-webp]
+git = "https://github.com/image-rs/image-webp.git"
+rev = "c1a1e85584e57f067210b1c052a4ae05a5f560d3"

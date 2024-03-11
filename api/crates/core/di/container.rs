@@ -34,7 +34,7 @@ use postgres::{
 };
 use storage::filesystem::FilesystemObjectsRepository;
 use thumbnails::{
-    processor::{FilterType, ImageOutputFormat, InMemoryImageProcessor},
+    processor::{FilterType, ImageFormat, InMemoryImageProcessor},
     ThumbnailURLFactory, ThumbnailsService,
 };
 
@@ -106,7 +106,7 @@ where
 }
 
 fn medium_image_processor() -> InMemoryImageProcessor {
-    InMemoryImageProcessor::new(Size::new(240, 240), ImageOutputFormat::WebP, FilterType::CatmullRom)
+    InMemoryImageProcessor::new(Size::new(240, 240), ImageFormat::WebP, FilterType::CatmullRom)
 }
 
 fn graphql_service<T, U, V>(schema: APISchema<T, U, V>) -> GraphQLService<T, U, V>
