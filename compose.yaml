@@ -16,6 +16,8 @@ services:
       PGUSER: hoarder
       PGPASSWORD: hoarder
       PGSSLMODE: disable
+      MEDIA_ROOT_DIR:
+      MEDIA_ROOT_URL:
     volumes:
       - type: bind
         source: .
