@@ -1,13 +1,15 @@
 # syntax = docker/dockerfile:1
-FROM rust:1.75.0-bookworm AS development
+FROM rust:1.75.0-bookworm AS base
 WORKDIR /usr/src
 COPY . ./
+
+FROM base AS development
 RUN --mount=type=cache,id=api:/usr/local/cargo/registry,target=/usr/local/cargo/registry \
     --mount=type=cache,id=api:/usr/src/target,target=/usr/src/target \
     cargo build && \
     cp -r target/debug/hoarder /usr/local/bin/hoarder
 
-FROM development AS release
+FROM base AS release
 RUN --mount=type=cache,id=api:/usr/local/cargo/registry,target=/usr/local/cargo/registry \
     --mount=type=cache,id=api:/usr/src/target,target=/usr/src/target \
     cargo build --release && \
