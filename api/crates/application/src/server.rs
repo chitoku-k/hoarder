@@ -84,7 +84,7 @@ impl Engine {
             },
             #[cfg(feature = "tls")]
             Some((tls_cert, tls_key)) => {
-                let config = match OpenSSLConfig::from_pem_file(&tls_cert, &tls_key) {
+                let config = match OpenSSLConfig::from_pem_chain_file(&tls_cert, &tls_key) {
                     Ok(config) => {
                         enable_auto_reload(config.clone(), tls_cert, tls_key);
                         config
