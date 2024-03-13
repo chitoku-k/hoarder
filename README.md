@@ -23,15 +23,26 @@ $ docker buildx bake -f docker-bake.hcl
 
 ### API
 
-The following environment variables can be used to configure API:
+The following command line options (or environment variables) can be used to configure API:
 
-- `LOG_LEVEL`: Log level as in [RUST\_LOG](https://docs.rs/env_logger/latest/env_logger/)
-- `PORT`: Port number
-- `LOCALE`: [Unicode locale identifier](https://unicode.org/reports/tr35/tr35.html#Unicode_locale_identifier) for collation order
-- `TLS_CERT`/`TLS_KEY`: Path to TLS certificate and private key (if not specified, application is served over HTTP)
-- `MEDIA_ROOT_DIR`: Path to the media directory
-- `MEDIA_ROOT_URL`: Public URL for media
-- `PG`\*: PostgreSQL connection parameters as in [libpq](https://www.postgresql.org/docs/current/libpq-envars.html)
+- `--log-level` (`LOG_LEVEL`): Log level as in [RUST\_LOG](https://docs.rs/env_logger/latest/env_logger/)
+- `--port` (`PORT`): Port number
+- `--locale` (`LOCALE`): [Unicode locale identifier](https://unicode.org/reports/tr35/tr35.html#Unicode_locale_identifier) for collation order
+- `--tls-cert`/`--tls-key` (`TLS_CERT`/`TLS_KEY`): Path to TLS certificate and private key for HTTPS
+- `--media-root-dir` (`MEDIA_ROOT_DIR`): Path to the media directory
+- `--media-root-url` (`MEDIA_ROOT_URL`): Public URL for media
+
+The following environment variables can be used to configure PostgreSQL connection:
+
+- `PGHOST`: Hostname
+- `PGPORT`: Port number
+- `PGUSER`: Username
+- `PGPASSWORD`: Password
+- `PGDATABASE`: Database name
+- `PGSSLROOTCERT`: Path to the root CA
+- `PGSSLCERT`/`PGSSLKEY`: Path to the client certificate and private key
+- `PGSSLMODE`: SSL mode
+- `PGAPPNAME`: Application name
 
 ## Testing
 
