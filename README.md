@@ -16,7 +16,7 @@ $ docker compose up -d --build
 ### Production
 
 ```bash
-$ docker buildx bake
+$ docker buildx bake -f docker-bake.hcl
 ```
 
 ## Configuration
