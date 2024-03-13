@@ -25,12 +25,12 @@ $ docker buildx bake -f docker-bake.hcl
 
 The following command line options (or environment variables) can be used to configure API:
 
-- `--log-level` (`LOG_LEVEL`): Log level as in [RUST\_LOG](https://docs.rs/env_logger/latest/env_logger/)
-- `--port` (`PORT`): Port number
+- `--port` (`PORT`): Port number (**required**)
+- `--media-root-dir` (`MEDIA_ROOT_DIR`): Path to the media directory (**required**)
+- `--media-root-url` (`MEDIA_ROOT_URL`): Public URL for media
 - `--locale` (`LOCALE`): [Unicode locale identifier](https://unicode.org/reports/tr35/tr35.html#Unicode_locale_identifier) for collation order
 - `--tls-cert`/`--tls-key` (`TLS_CERT`/`TLS_KEY`): Path to TLS certificate and private key for HTTPS
-- `--media-root-dir` (`MEDIA_ROOT_DIR`): Path to the media directory
-- `--media-root-url` (`MEDIA_ROOT_URL`): Public URL for media
+- `--log-level` (`LOG_LEVEL`): Log level as in [RUST\_LOG](https://docs.rs/env_logger/latest/env_logger/)
 
 The following environment variables can be used to configure PostgreSQL connection:
 

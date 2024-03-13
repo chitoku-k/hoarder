@@ -9,25 +9,9 @@ pub struct Config {
     #[arg(long)]
     pub print_schema: bool,
 
-    /// Log level
-    #[arg(long, env)]
-    pub log_level: String,
-
     /// Port number
     #[arg(long, env)]
     pub port: u16,
-
-    /// Locale
-    #[arg(long, env)]
-    pub locale: Locale,
-
-    /// Path to TLS certificate (if not specified, application is served over HTTP)
-    #[arg(long, env)]
-    pub tls_cert: Option<String>,
-
-    /// Path to TLS private key (if not specified, application is served over HTTP)
-    #[arg(long, env)]
-    pub tls_key: Option<String>,
 
     /// Root directory for media
     #[arg(long, env)]
@@ -36,6 +20,22 @@ pub struct Config {
     /// Root URL for media
     #[arg(long, env)]
     pub media_root_url: Option<String>,
+
+    /// Locale
+    #[arg(long, env, default_value_t)]
+    pub locale: Locale,
+
+    /// Path to TLS certificate (if not specified, application is served over HTTP)
+    #[arg(long, env, group = "tls")]
+    pub tls_cert: Option<String>,
+
+    /// Path to TLS private key (if not specified, application is served over HTTP)
+    #[arg(long, env, group = "tls")]
+    pub tls_key: Option<String>,
+
+    /// Log level
+    #[arg(long, env, default_value = "info")]
+    pub log_level: String,
 }
 
 pub fn init() -> Config {
