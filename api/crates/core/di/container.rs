@@ -154,7 +154,7 @@ impl Application {
             .init();
 
         let config = env::get();
-        let collator = Collator::try_new(&DataLocale::from(config.icu_locale), CollatorOptions::new())
+        let collator = Collator::try_new(&DataLocale::from(config.locale), CollatorOptions::new())
             .context("error instantiating collator")?;
 
         let pg_options = PgConnectOptions::new()

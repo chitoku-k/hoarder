@@ -27,7 +27,7 @@ The following environment variables can be used to configure API:
 
 - `LOG_LEVEL`: Log level as in [RUST\_LOG](https://docs.rs/env_logger/latest/env_logger/)
 - `PORT`: Port number
-- `ICU_LOCALE`: [Unicode locale identifier](https://unicode.org/reports/tr35/tr35.html#Unicode_locale_identifier) for collation order
+- `LOCALE`: [Unicode locale identifier](https://unicode.org/reports/tr35/tr35.html#Unicode_locale_identifier) for collation order
 - `TLS_CERT`/`TLS_KEY`: Path to TLS certificate and private key (if not specified, application is served over HTTP)
 - `MEDIA_ROOT_DIR`: Path to the media directory
 - `MEDIA_ROOT_URL`: Public URL for media
