@@ -135,10 +135,13 @@ fn enable_graceful_shutdown(handle: Handle, tls: bool) -> JoinHandle<Result<()>>
 
         log::info!("listening on {scheme}://{address}/");
 
-        unix::signal(SignalKind::terminate())
-            .map_err(Error::other)?
-            .recv()
-            .await;
+        let mut interrupt = unix::signal(SignalKind::interrupt()).map_err(Error::other)?;
+        let mut terminate = unix::signal(SignalKind::terminate()).map_err(Error::other)?;
+
+        tokio::select! {
+            _ = interrupt.recv() => {},
+            _ = terminate.recv() => {},
+        };
 
         handle.graceful_shutdown(None);
         Ok(())
