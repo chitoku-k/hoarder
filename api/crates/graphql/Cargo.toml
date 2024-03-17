@@ -14,12 +14,12 @@ workspace = true
 workspace = true
 
 [dependencies.async-graphql]
-version = "7.0.2"
+version = "7.0.3"
 features = ["chrono", "graphiql", "tempfile", "unblock", "uuid"]
 default-features = false
 
 [dependencies.async-graphql-axum]
-version = "7.0.2"
+version = "7.0.3"
 
 [dependencies.axum]
 version = "0.7.4"
@@ -49,10 +49,10 @@ features = ["derive"]
 version = "1.0.114"
 
 [dependencies.thiserror]
-version = "1.0.56"
+version = "1.0.58"
 
 [dependencies.uuid]
-version = "1.7.0"
+version = "1.8.0"
 
 [dev-dependencies.application]
 workspace = true

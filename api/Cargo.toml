@@ -88,10 +88,10 @@ workspace = true
 workspace = true
 
 [dependencies.anyhow]
-version = "1.0.80"
+version = "1.0.81"
 
 [dependencies.clap]
-version = "4.5.2"
+version = "4.5.3"
 features = ["cargo", "derive", "env", "string"]
 
 [dependencies.env_logger]
@@ -109,7 +109,3 @@ version = "0.4.21"
 
 [dependencies.tokio]
 version = "1.36.0"
-
-[patch.crates-io.image-webp]
-git = "https://github.com/image-rs/image-webp.git"
-rev = "c1a1e85584e57f067210b1c052a4ae05a5f560d3"
