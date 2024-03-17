@@ -24,7 +24,7 @@ services:
         target: /usr/src
 
   database:
-    image: postgres:15.6
+    image: postgres:16.2
     environment:
       PGUSER: hoarder
       POSTGRES_DB: hoarder
