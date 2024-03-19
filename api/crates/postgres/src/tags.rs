@@ -198,9 +198,7 @@ impl FromIterator<PostgresTagRelativeRow> for IndexMap<TagId, Rc<RefCell<TagRela
 }
 
 fn extract(rc: Rc<RefCell<TagRelation>>, depth: TagDepth) -> Tag {
-    let relation = Rc::try_unwrap(rc)
-        .unwrap_or_else(|rc| (*rc).clone())
-        .into_inner();
+    let relation = Rc::unwrap_or_clone(rc).into_inner();
 
     let parent = depth
         .has_parent()
