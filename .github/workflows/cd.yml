@@ -1,0 +1,43 @@
+name: CD Workflow
+on:
+  push:
+    tags:
+      - '*'
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build
+        uses: docker/bake-action@v4
+        with:
+          files: docker-bake.hcl
+          load: true
+          set: |
+            *.cache-from=type=gha
+            *.cache-to=type=gha,mode=max
+      - name: Set up ID token
+        uses: actions/github-script@v7
+        id: id-token
+        with:
+          result-encoding: string
+          script: |
+            return await core.getIDToken('container.chitoku.jp');
+      - name: Log into Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: container.chitoku.jp
+          username: oidc-idtoken
+          password: ${{ steps.id-token.outputs.result }}
+      - name: Push to Container Registry
+        run: |
+          docker push container.chitoku.jp/chitoku-k/hoarder/api
