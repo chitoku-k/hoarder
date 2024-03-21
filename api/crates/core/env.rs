@@ -26,11 +26,11 @@ pub struct Config {
     pub locale: Locale,
 
     /// Path to TLS certificate (if not specified, application is served over HTTP)
-    #[arg(long, env, group = "tls")]
+    #[arg(long, env, requires = "tls_key")]
     pub tls_cert: Option<String>,
 
     /// Path to TLS private key (if not specified, application is served over HTTP)
-    #[arg(long, env, group = "tls")]
+    #[arg(long, env, requires = "tls_cert")]
     pub tls_key: Option<String>,
 
     /// Log level
