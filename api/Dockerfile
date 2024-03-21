@@ -28,5 +28,9 @@ COPY --link --from=release /lib64 /lib64
 COPY --link --from=release /usr/local/bin/hoarder /hoarder
 COPY --link --from=release /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --link --from=release /usr/share/zoneinfo /usr/share/zoneinfo
+RUN --mount=from=release,src=/bin,dst=/bin \
+    --mount=from=release,src=/lib,dst=/lib \
+    --mount=from=release,src=/usr,dst=/usr \
+    mkdir --mode=1777 /tmp
 EXPOSE $PORT
 CMD ["/hoarder"]
