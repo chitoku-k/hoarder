@@ -85,6 +85,9 @@ impl ObjectsRepository for FilesystemObjectsRepository {
             Err(e) if e.raw_os_error().is_some_and(|errno| errno == libc::EISDIR) => {
                 return Err(Error::new(ErrorKind::ObjectAlreadyExists { url: url.into_url().into_inner(), entry: None }, e))?
             },
+            Err(e) if e.kind() == io::ErrorKind::InvalidInput => {
+                return Err(Error::new(ErrorKind::ObjectUrlInvalid { url: url.into_url().into_inner() }, e))?
+            },
             Err(e) => {
                 return Err(Error::new(ErrorKind::ObjectPutFailed { url: url.into_url().into_inner() }, e))?
             },
@@ -106,6 +109,7 @@ impl ObjectsRepository for FilesystemObjectsRepository {
                 Ok((entry.into_entry(), file))
             },
             Err(e) if e.kind() == io::ErrorKind::NotFound => Err(Error::new(ErrorKind::ObjectNotFound { url: url.into_url().into_inner() }, e))?,
+            Err(e) if e.kind() == io::ErrorKind::InvalidInput => Err(Error::new(ErrorKind::ObjectUrlInvalid { url: url.into_url().into_inner() }, e))?,
             Err(e) => Err(Error::new(ErrorKind::ObjectGetFailed { url: url.into_url().into_inner() }, e))?,
         }
     }
@@ -117,6 +121,7 @@ impl ObjectsRepository for FilesystemObjectsRepository {
         let readdir = match read_dir(&fullpath).await {
             Ok(readdir) => readdir,
             Err(e) if e.kind() == io::ErrorKind::NotFound => return Err(Error::new(ErrorKind::ObjectNotFound { url: url.into_url().into_inner() }, e))?,
+            Err(e) if e.kind() == io::ErrorKind::InvalidInput => return Err(Error::new(ErrorKind::ObjectUrlInvalid { url: url.into_url().into_inner() }, e))?,
             Err(e) => return Err(Error::new(ErrorKind::ObjectListFailed { url: url.into_url().into_inner() }, e))?,
         };
 
@@ -150,6 +155,7 @@ impl ObjectsRepository for FilesystemObjectsRepository {
         match remove_file(&fullpath).await {
             Ok(()) => Ok(DeleteResult::Deleted(1)),
             Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(DeleteResult::NotFound),
+            Err(e) if e.kind() == io::ErrorKind::InvalidInput => Err(Error::new(ErrorKind::ObjectUrlInvalid { url: url.into_url().into_inner() }, e))?,
             Err(e) => Err(Error::new(ErrorKind::ObjectDeleteFailed { url: url.into_url().into_inner() }, e))?,
         }
     }
