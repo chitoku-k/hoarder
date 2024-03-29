@@ -40,7 +40,7 @@ The following environment variables can be used to configure PostgreSQL connecti
 - `PGPASSWORD`: Password
 - `PGDATABASE`: Database name
 - `PGSSLROOTCERT`: Path to the root CA
-- `PGSSLCERT`/`PGSSLKEY`: Path to the client certificate and private key
+- `PGSSLCERT`/`PGSSLKEY`: Path to the client certificate and private key in PKCS#8 format
 - `PGSSLMODE`: SSL mode
 - `PGAPPNAME`: Application name
 
