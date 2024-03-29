@@ -92,25 +92,28 @@ pub enum ErrorKind {
     MediumTagNotFound { id: MediumId },
 
     #[error("the object with the same path already exists")]
-    ObjectAlreadyExists { path: String, entry: Option<Box<Entry>> },
+    ObjectAlreadyExists { url: String, entry: Option<Box<Entry>> },
 
     #[error("the object was unable to be deleted")]
-    ObjectDeleteFailed { path: String },
+    ObjectDeleteFailed { url: String },
 
     #[error("the object was unable to be gotten")]
-    ObjectGetFailed { path: String },
+    ObjectGetFailed { url: String },
 
     #[error("the objects were unable to be listed")]
-    ObjectListFailed { path: String },
+    ObjectListFailed { url: String },
 
     #[error("the object was not found")]
-    ObjectNotFound { path: String },
+    ObjectNotFound { url: String },
 
     #[error("the object path is invalid")]
-    ObjectPathInvalid { path: String },
+    ObjectPathInvalid,
 
     #[error("the object was unable to be put")]
-    ObjectPutFailed { path: String },
+    ObjectPutFailed { url: String },
+
+    #[error("the object URL is invalid")]
+    ObjectUrlInvalid { url: String },
 
     #[error("the object URL is unsupported")]
     ObjectUrlUnsupported { url: String },

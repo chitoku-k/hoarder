@@ -9,13 +9,13 @@ use crate::{
     entity::{
         external_services::{ExternalMetadata, ExternalServiceId},
         media::{Medium, MediumId},
-        objects::{Entry, EntryKind, EntryPath, EntryUrl},
+        objects::{Entry, EntryKind, EntryUrl, EntryUrlPath},
         replicas::{OriginalImage, Replica, ReplicaId, ThumbnailId, ThumbnailImage},
         sources::{Source, SourceId},
         tag_types::TagTypeId,
         tags::{TagDepth, TagId},
     },
-    error::Result,
+    error::{ErrorKind, Result},
     processor,
     repository::{media, objects, replicas, sources, DeleteResult, Direction, Order},
 };
@@ -23,7 +23,7 @@ use crate::{
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum MediumSource {
     Url(EntryUrl),
-    Content(EntryPath, Vec<u8>, MediumOverwriteBehavior),
+    Content(EntryUrlPath, Vec<u8>, MediumOverwriteBehavior),
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -117,10 +117,10 @@ pub trait MediaServiceInterface: Send + Sync + 'static {
     fn get_thumbnail_by_id(&self, id: ThumbnailId) -> impl Future<Output = Result<Vec<u8>>> + Send;
 
     /// Gets the object by its URL.
-    fn get_object(&self, url: &EntryUrl) -> impl Future<Output = Result<Entry>> + Send;
+    fn get_object(&self, url: EntryUrl) -> impl Future<Output = Result<Entry>> + Send;
 
     /// Gets objects.
-    fn get_objects(&self, prefix: &EntryPath, kind: Option<EntryKind>) -> impl Future<Output = Result<Vec<Entry>>> + Send;
+    fn get_objects(&self, prefix: EntryUrlPath, kind: Option<EntryKind>) -> impl Future<Output = Result<Vec<Entry>>> + Send;
 
     /// Updates the medium by ID.
     fn update_medium_by_id<T, U, V, W, X>(
@@ -172,9 +172,15 @@ impl<MediaRepository, ObjectsRepository, ReplicasRepository, SourcesRepository, 
 where
     ObjectsRepository: objects::ObjectsRepository,
 {
-    async fn get_image(&self, url: &EntryUrl) -> Result<(EntryUrl, ObjectsRepository::Read)> {
+    async fn get_image(&self, url: EntryUrl) -> Result<(EntryUrl, ObjectsRepository::Read)> {
         match self.objects_repository.get(url).await {
-            Ok((entry, read)) => Ok((entry.url, read)),
+            Ok((entry, read)) => {
+                if let Some(url) = entry.url {
+                    Ok((url, read))
+                } else {
+                    Err(ErrorKind::ObjectPathInvalid)?
+                }
+            },
             Err(e) => {
                 log::error!("failed to get an image\nError: {e:?}");
                 Err(e)
@@ -182,12 +188,18 @@ where
         }
     }
 
-    async fn put_image<R>(&self, path: &EntryPath, read: R, overwrite: MediumOverwriteBehavior) -> Result<EntryUrl>
+    async fn put_image<R>(&self, url: EntryUrl, read: R, overwrite: MediumOverwriteBehavior) -> Result<EntryUrl>
     where
         R: AsyncRead + Send + Unpin,
     {
-        match self.objects_repository.put(path, read, overwrite.into()).await {
-            Ok(entry) => Ok(entry.url),
+        match self.objects_repository.put(url, read, overwrite.into()).await {
+            Ok(entry) => {
+                if let Some(url) = entry.url {
+                    Ok(url)
+                } else {
+                    Err(ErrorKind::ObjectPathInvalid)?
+                }
+            },
             Err(e) => {
                 log::error!("failed to put an image\nError: {e:?}");
                 Err(e)
@@ -222,7 +234,7 @@ where
     async fn extract_medium_source(&self, medium_source: MediumSource) -> Result<(EntryUrl, OriginalImage, ThumbnailImage)> {
         match medium_source {
             MediumSource::Url(url) => {
-                let (url, read) = self.get_image(&url).await?;
+                let (url, read) = self.get_image(url).await?;
                 let read = SyncIoBridge::new(BufReader::new(read));
 
                 let (original_image, thumbnail_image) = self.generate_thumbnail_image(read).await?;
@@ -230,7 +242,8 @@ where
             },
             MediumSource::Content(path, content, overwrite) => {
                 let read = Cursor::new(&*content);
-                let url = self.put_image(&path, read, overwrite).await?;
+                let url = path.to_url(ObjectsRepository::scheme());
+                let url = self.put_image(url, read, overwrite).await?;
 
                 let read = Cursor::new(content);
                 let (original_image, thumbnail_image) = self.generate_thumbnail_image(read).await?;
@@ -404,7 +417,7 @@ where
         }
     }
 
-    async fn get_object(&self, url: &EntryUrl) -> Result<Entry> {
+    async fn get_object(&self, url: EntryUrl) -> Result<Entry> {
         match self.objects_repository.get(url).await {
             Ok((entry, ..)) => Ok(entry),
             Err(e) => {
@@ -414,8 +427,9 @@ where
         }
     }
 
-    async fn get_objects(&self, prefix: &EntryPath, kind: Option<EntryKind>) -> Result<Vec<Entry>> {
-        match self.objects_repository.list(prefix).await {
+    async fn get_objects(&self, prefix: EntryUrlPath, kind: Option<EntryKind>) -> Result<Vec<Entry>> {
+        let url = prefix.to_url(ObjectsRepository::scheme());
+        match self.objects_repository.list(url).await {
             Ok(mut entries) => {
                 if let Some(kind) = kind {
                     entries.retain(|e| e.kind == kind);

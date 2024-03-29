@@ -2836,9 +2836,9 @@ dependencies = [
 
 [[package]]
 name = "percent-encoding"
-version = "2.3.0"
+version = "2.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9b2a4787296e9989611394c33f193f676704af1686e70b8f8033ab5ba9a35a94"
+checksum = "e3148f5046208a5d56bcfc03053e3ca6334e51da8dfb19b6cdc8b306fae3283e"
 
 [[package]]
 name = "pest"
@@ -3856,12 +3856,14 @@ checksum = "d7beae5182595e9a8b683fa98c4317f956c9a2dec3b9716990d20023cc60c766"
 name = "storage"
 version = "0.0.0"
 dependencies = [
+ "cow-utils",
  "derive_more",
  "domain",
  "futures",
  "icu",
  "libc",
  "normalize-path",
+ "percent-encoding",
  "tokio",
  "tokio-stream",
 ]

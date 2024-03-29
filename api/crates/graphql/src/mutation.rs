@@ -2,7 +2,7 @@ use async_graphql::{Context, Object, SimpleObject};
 use chrono::{DateTime, FixedOffset};
 use derive_more::Constructor;
 use domain::{
-    entity::objects::{EntryPath, EntryUrl},
+    entity::objects::{EntryUrl, EntryUrlPath},
     repository,
     service::{
         external_services::ExternalServicesServiceInterface,
@@ -54,7 +54,7 @@ async fn create_medium_source(ctx: &Context<'_>, original_url: Option<String>, u
             let value = file.value(ctx).map_err(|_| Error::new(ErrorKind::InternalServerError))?;
             let filename = value.filename.clone();
             let content = process_upload(value).await?;
-            Ok(MediumSource::Content(EntryPath::from(filename), content, overwrite))
+            Ok(MediumSource::Content(EntryUrlPath::from(filename), content, overwrite))
         },
     }
 }

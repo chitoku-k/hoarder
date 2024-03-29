@@ -1,91 +1,23 @@
-use std::{
-    fs::{FileType, Metadata},
-    path::{Path, PathBuf},
-    sync::Arc,
-};
+use std::{path::{Path, PathBuf}, sync::Arc};
 
 use derive_more::Constructor;
 use domain::{
-    entity::objects::{Entry, EntryMetadata, EntryKind, EntryPath, EntryUrl},
+    entity::objects::{Entry, EntryKind, EntryUrl},
     error::{Error, ErrorKind, Result},
     repository::{objects::{ObjectOverwriteBehavior, ObjectsRepository}, DeleteResult},
 };
 use futures::{TryFutureExt, TryStreamExt};
 use icu::collator::Collator;
-use normalize_path::NormalizePath;
 use tokio::{
-    fs::{canonicalize, read_dir, remove_file, DirBuilder, DirEntry, File},
+    fs::{canonicalize, read_dir, remove_file, DirBuilder, File},
     io::{self, copy, AsyncRead},
 };
 use tokio_stream::wrappers::ReadDirStream;
 
-const URL_PREFIX: &str = "file://";
+use crate::{filesystem::{entry::FilesystemEntry, url::FilesystemEntryUrl}, StorageEntry, StorageEntryUrl};
 
-enum FileEntryType<'a> {
-    DirEntry(&'a DirEntry),
-    File(&'a File),
-}
-
-fn entry_kind(file_type: FileType) -> EntryKind {
-    if file_type.is_dir() {
-        EntryKind::Container
-    } else {
-        EntryKind::Object
-    }
-}
-
-async fn entry(path: impl AsRef<Path>, entry: FileEntryType<'_>) -> Result<Entry> {
-    let path = path.as_ref();
-    let url = format!("{}{}", URL_PREFIX, Path::new("/").join(path).to_string_lossy());
-
-    match entry {
-        FileEntryType::DirEntry(entry) => {
-            let file_name = entry.file_name();
-            let file_type = entry.file_type().await.map_err(Error::other)?;
-
-            Ok(Entry::new(
-                file_name.to_string_lossy().into_owned(),
-                EntryPath::from(path.join(file_name).to_string_lossy().into_owned()),
-                EntryUrl::from(url),
-                entry_kind(file_type),
-                None,
-            ))
-        },
-        FileEntryType::File(file) => {
-            let file_name = path.file_name().ok_or(ErrorKind::ObjectPathInvalid { path: path.to_string_lossy().into_owned() })?;
-            let metadata = file.metadata().await.map_err(Error::other)?;
-            let file_type = metadata.file_type();
-            let entry_metadata = entry_metadata(&metadata)?;
-
-            Ok(Entry::new(
-                file_name.to_string_lossy().into_owned(),
-                EntryPath::from(path.to_string_lossy().into_owned()),
-                EntryUrl::from(url),
-                entry_kind(file_type),
-                Some(entry_metadata),
-            ))
-        },
-    }
-}
-
-fn entry_metadata(metadata: &Metadata) -> Result<EntryMetadata> {
-    let len = metadata.len();
-    let created = metadata.created().map_err(Error::other)?;
-    let modified = metadata.modified().map_err(Error::other)?;
-    let accessed = metadata.accessed().map_err(Error::other)?;
-    Ok(EntryMetadata::new(len, created.into(), modified.into(), accessed.into()))
-}
-
-fn url_to_path(url: &EntryUrl) -> Result<EntryPath> {
-    let path = url.strip_prefix(URL_PREFIX).ok_or_else(|| ErrorKind::ObjectUrlUnsupported { url: url.to_string() })?;
-    Ok(EntryPath::from(path.to_string()))
-}
-
-fn normalize(path: &EntryPath) -> Result<PathBuf> {
-    let path = path.strip_prefix('/').ok_or_else(|| ErrorKind::ObjectPathInvalid { path: path.to_string() })?;
-    let path = Path::new(path).try_normalize().ok_or_else(|| ErrorKind::ObjectPathInvalid { path: path.to_string() })?;
-    Ok(path)
-}
+mod entry;
+mod url;
 
 #[derive(Clone, Constructor)]
 pub struct FilesystemObjectsRepository {
@@ -93,15 +25,28 @@ pub struct FilesystemObjectsRepository {
     root_dir: String,
 }
 
+impl FilesystemObjectsRepository {
+    fn fullpath<P>(&self, path: P) -> PathBuf
+    where
+        P: AsRef<Path>,
+    {
+        Path::new(&self.root_dir).join(path.as_ref())
+    }
+}
+
 impl ObjectsRepository for FilesystemObjectsRepository {
     type Read = File;
 
-    async fn put<R>(&self, path: &EntryPath, mut content: R, overwrite: ObjectOverwriteBehavior) -> Result<Entry>
+    fn scheme() -> &'static str {
+        "file"
+    }
+
+    async fn put<R>(&self, url: EntryUrl, mut content: R, overwrite: ObjectOverwriteBehavior) -> Result<Entry>
     where
         R: AsyncRead + Send + Unpin,
     {
-        let path = normalize(path)?;
-        let fullpath = Path::new(&self.root_dir).join(&path);
+        let url = FilesystemEntryUrl::try_from(url)?;
+        let fullpath = self.fullpath(url.as_path());
 
         if let Some(parent) = fullpath.parent() {
             DirBuilder::new()
@@ -124,70 +69,71 @@ impl ObjectsRepository for FilesystemObjectsRepository {
                 let entry = File::open(&fullpath)
                     .map_err(Error::other)
                     .and_then(|file| {
-                        let path = path.clone();
+                        let path = url.as_path();
                         async move {
-                            let entry = entry(path, FileEntryType::File(&file)).await?;
-                            Ok(Box::new(entry))
+                            let entry = FilesystemEntry::from_file(path, &file).await?;
+                            Ok(Box::new(entry.into_entry()))
                         }
                     })
                     .await
                     .ok()
                     .filter(|entry| entry.kind == EntryKind::Object);
 
-                return Err(ErrorKind::ObjectAlreadyExists { path: path.to_string_lossy().into_owned(), entry })?;
+                return Err(Error::new(ErrorKind::ObjectAlreadyExists { url: url.into_url().into_inner(), entry }, e))?;
             },
             #[cfg(unix)]
             Err(e) if e.raw_os_error().is_some_and(|errno| errno == libc::EISDIR) => {
-                return Err(ErrorKind::ObjectAlreadyExists { path: path.to_string_lossy().into_owned(), entry: None })?
+                return Err(Error::new(ErrorKind::ObjectAlreadyExists { url: url.into_url().into_inner(), entry: None }, e))?
             },
             Err(e) => {
-                return Err(Error::new(ErrorKind::ObjectPutFailed { path: path.to_string_lossy().into_owned() }, e))?
+                return Err(Error::new(ErrorKind::ObjectPutFailed { url: url.into_url().into_inner() }, e))?
             },
         };
 
         copy(&mut content, &mut file).await.map_err(Error::other)?;
 
-        let entry = entry(path, FileEntryType::File(&file)).await?;
-        Ok(entry)
+        let entry = FilesystemEntry::from_file(url.as_path(), &file).await?;
+        Ok(entry.into_entry())
     }
 
-    async fn get(&self, url: &EntryUrl) -> Result<(Entry, Self::Read)> {
-        let path = url_to_path(url)?;
-        let path = normalize(&path)?;
-        let fullpath = Path::new(&self.root_dir).join(&path);
+    async fn get(&self, url: EntryUrl) -> Result<(Entry, Self::Read)> {
+        let url = FilesystemEntryUrl::try_from(url)?;
+        let fullpath = self.fullpath(url.as_path());
 
         match File::open(&fullpath).await {
             Ok(file) => {
-                let entry = entry(path, FileEntryType::File(&file)).await?;
-                Ok((entry, file))
+                let entry = FilesystemEntry::from_file(url.as_path(), &file).await?;
+                Ok((entry.into_entry(), file))
             },
-            Err(e) if e.kind() == io::ErrorKind::NotFound => Err(ErrorKind::ObjectNotFound { path: path.to_string_lossy().into_owned() })?,
-            Err(e) => Err(Error::new(ErrorKind::ObjectGetFailed { path: path.to_string_lossy().into_owned() }, e))?,
+            Err(e) if e.kind() == io::ErrorKind::NotFound => Err(Error::new(ErrorKind::ObjectNotFound { url: url.into_url().into_inner() }, e))?,
+            Err(e) => Err(Error::new(ErrorKind::ObjectGetFailed { url: url.into_url().into_inner() }, e))?,
         }
     }
 
-    async fn list(&self, prefix: &EntryPath) -> Result<Vec<Entry>> {
-        let prefix = normalize(prefix)?;
-        let fullpath = Path::new(&self.root_dir).join(&prefix);
+    async fn list(&self, prefix: EntryUrl) -> Result<Vec<Entry>> {
+        let url = FilesystemEntryUrl::try_from(prefix)?;
+        let fullpath = self.fullpath(url.as_path());
 
-        let readdir = read_dir(&fullpath)
-            .await
-            .map_err(|e| Error::new(ErrorKind::ObjectListFailed { path: prefix.to_string_lossy().into_owned() }, e))?;
+        let readdir = match read_dir(&fullpath).await {
+            Ok(readdir) => readdir,
+            Err(e) if e.kind() == io::ErrorKind::NotFound => return Err(Error::new(ErrorKind::ObjectNotFound { url: url.into_url().into_inner() }, e))?,
+            Err(e) => return Err(Error::new(ErrorKind::ObjectListFailed { url: url.into_url().into_inner() }, e))?,
+        };
 
         let canonical_path = canonicalize(&fullpath)
             .await
-            .map_err(|e| Error::new(ErrorKind::ObjectGetFailed { path: prefix.to_string_lossy().into_owned() }, e))?
+            .map_err(|e| Error::new(ErrorKind::ObjectGetFailed { url: url.to_string() }, e))?
             .strip_prefix(&self.root_dir)
-            .map_err(|_| ErrorKind::ObjectPathInvalid { path: prefix.to_string_lossy().into_owned() })?
+            .map_err(|e| Error::new(ErrorKind::ObjectUrlInvalid { url: url.to_string() }, e))?
             .to_owned();
 
         let mut entries: Vec<_> = ReadDirStream::new(readdir)
-            .map_err(|e| Error::new(ErrorKind::ObjectListFailed { path: prefix.to_string_lossy().into_owned() }, e))
-            .try_filter_map(|d| {
-                let canonical_path = Path::new("/").join(canonical_path.clone());
+            .map_err(|e| Error::new(ErrorKind::ObjectListFailed { url: url.to_string() }, e))
+            .try_filter_map(|dir| {
+                let canonical_path = Path::new("/").join(&canonical_path);
                 async move {
-                    let entry = entry(canonical_path, FileEntryType::DirEntry(&d)).await?;
-                    Ok(Some(entry))
+                    let entry = FilesystemEntry::from_dir_entry(canonical_path, &dir).await?;
+                    Ok(Some(entry.into_entry()))
                 }
             })
             .try_collect()
@@ -197,15 +143,14 @@ impl ObjectsRepository for FilesystemObjectsRepository {
         Ok(entries)
     }
 
-    async fn delete(&self, url: &EntryUrl) -> Result<DeleteResult> {
-        let path = url_to_path(url)?;
-        let path = normalize(&path)?;
-        let fullpath = Path::new(&self.root_dir).join(&path);
+    async fn delete(&self, url: EntryUrl) -> Result<DeleteResult> {
+        let url = FilesystemEntryUrl::try_from(url)?;
+        let fullpath = self.fullpath(url.as_path());
 
         match remove_file(&fullpath).await {
             Ok(()) => Ok(DeleteResult::Deleted(1)),
             Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(DeleteResult::NotFound),
-            Err(e) => Err(Error::new(ErrorKind::ObjectDeleteFailed { path: path.to_string_lossy().into_owned() }, e))?,
+            Err(e) => Err(Error::new(ErrorKind::ObjectDeleteFailed { url: url.into_url().into_inner() }, e))?,
         }
     }
 }

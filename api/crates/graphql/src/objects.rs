@@ -6,8 +6,7 @@ use serde::Serialize;
 #[derive(Debug, Serialize, SimpleObject)]
 pub(crate) struct ObjectEntry {
     name: String,
-    path: String,
-    url: String,
+    url: Option<String>,
     kind: ObjectKind,
     metadata: Option<ObjectEntryMetadata>,
 }
@@ -32,8 +31,7 @@ impl From<objects::Entry> for ObjectEntry {
     fn from(entry: objects::Entry) -> Self {
         Self {
             name: entry.name,
-            path: entry.path.into_inner(),
-            url: entry.url.into_inner(),
+            url: entry.url.map(|u| u.into_inner()),
             kind: entry.kind.into(),
             metadata: entry.metadata.map(Into::into),
         }

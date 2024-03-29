@@ -31,12 +31,16 @@ where
     MediaService: MediaServiceInterface,
 {
     async fn redirect(&self, url: String) -> Response {
-        let entry = self.media_service.get_object(&EntryUrl::from(url)).await;
-        match entry.map(|entry| self.media_url_factory.public_url(&entry.url)) {
-            Ok(Some(url)) => {
+        let public_url = self.media_service
+            .get_object(EntryUrl::from(url))
+            .await
+            .map(|entry| entry.url.and_then(|u| self.media_url_factory.public_url(&u)));
+
+        match public_url {
+            Ok(Some(public_url)) => {
                 HttpResponse::builder()
                     .status(StatusCode::FOUND)
-                    .header(LOCATION, url)
+                    .header(LOCATION, public_url)
                     .body(Body::from(()))
                     .unwrap()
                     .into_response()
@@ -48,11 +52,27 @@ where
                     .unwrap()
                     .into_response()
             },
-            Err(e) if matches!(e.kind(), ErrorKind::ObjectPathInvalid { .. } | ErrorKind::ObjectUrlUnsupported { .. }) => {
+            Err(e) if matches!(e.kind(), ErrorKind::ObjectPathInvalid { .. }) => {
                 HttpResponse::builder()
                     .status(StatusCode::BAD_REQUEST)
                     .header(CONTENT_TYPE, "text/plain; charset=utf-8")
-                    .body(Body::from("Bad Request\n"))
+                    .body(Body::from("Bad Request: object path invalid\n"))
+                    .unwrap()
+                    .into_response()
+            },
+            Err(e) if matches!(e.kind(), ErrorKind::ObjectUrlInvalid { .. }) => {
+                HttpResponse::builder()
+                    .status(StatusCode::BAD_REQUEST)
+                    .header(CONTENT_TYPE, "text/plain; charset=utf-8")
+                    .body(Body::from("Bad Request: object url invalid\n"))
+                    .unwrap()
+                    .into_response()
+            },
+            Err(e) if matches!(e.kind(), ErrorKind::ObjectUrlUnsupported { .. }) => {
+                HttpResponse::builder()
+                    .status(StatusCode::BAD_REQUEST)
+                    .header(CONTENT_TYPE, "text/plain; charset=utf-8")
+                    .body(Body::from("Bad Request: object url unsupported\n"))
                     .unwrap()
                     .into_response()
             },
