@@ -63,7 +63,7 @@ workspace = true
 features = ["test-mock"]
 
 [dev-dependencies.indoc]
-version = "2.0.4"
+version = "2.0.5"
 
 [dev-dependencies.pretty_assertions]
 version = "1.3.0"
