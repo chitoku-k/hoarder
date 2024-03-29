@@ -61,25 +61,28 @@ pub(crate) enum ErrorKind {
     MediumTagNotFound { id: MediumId },
 
     #[error("the object with the same path already exists")]
-    ObjectAlreadyExists { path: String, entry: Option<Box<ObjectEntry>> },
+    ObjectAlreadyExists { url: String, entry: Option<Box<ObjectEntry>> },
 
     #[error("the object was unable to be deleted")]
-    ObjectDeleteFailed { path: String },
+    ObjectDeleteFailed { url: String },
 
     #[error("the object was unable to be gotten")]
-    ObjectGetFailed { path: String },
+    ObjectGetFailed { url: String },
 
     #[error("the objects were unable to be listed")]
-    ObjectListFailed { path: String },
+    ObjectListFailed { url: String },
 
     #[error("the object was not found")]
-    ObjectNotFound { path: String },
+    ObjectNotFound { url: String },
 
     #[error("the object path is invalid")]
-    ObjectPathInvalid { path: String },
+    ObjectPathInvalid,
 
     #[error("the object was unable to be put")]
-    ObjectPutFailed { path: String },
+    ObjectPutFailed { url: String },
+
+    #[error("the object URL is invalid")]
+    ObjectUrlInvalid { url: String },
 
     #[error("the object URL is unsupported")]
     ObjectUrlUnsupported { url: String },
@@ -174,16 +177,17 @@ impl From<domain::error::ErrorKind> for ErrorKind {
             MediumReplicasNotMatch { medium_id, expected_replicas, actual_replicas } => ErrorKind::MediumReplicasNotMatch { medium_id, expected_replicas, actual_replicas },
             MediumSourceNotFound { id } => ErrorKind::MediumSourceNotFound { id },
             MediumTagNotFound { id } => ErrorKind::MediumTagNotFound { id },
-            ObjectAlreadyExists { path, entry } => ErrorKind::ObjectAlreadyExists {
-                path,
+            ObjectAlreadyExists { url, entry } => ErrorKind::ObjectAlreadyExists {
+                url,
                 entry: entry.map(|e| Box::new(ObjectEntry::from(*e))),
             },
-            ObjectDeleteFailed { path, .. } => ErrorKind::ObjectDeleteFailed { path },
-            ObjectGetFailed { path, .. } => ErrorKind::ObjectGetFailed { path },
-            ObjectListFailed { path, .. } => ErrorKind::ObjectListFailed { path },
-            ObjectNotFound { path } => ErrorKind::ObjectNotFound { path },
-            ObjectPathInvalid { path } => ErrorKind::ObjectPathInvalid { path },
-            ObjectPutFailed { path, .. } => ErrorKind::ObjectPutFailed { path },
+            ObjectDeleteFailed { url, .. } => ErrorKind::ObjectDeleteFailed { url },
+            ObjectGetFailed { url, .. } => ErrorKind::ObjectGetFailed { url },
+            ObjectListFailed { url, .. } => ErrorKind::ObjectListFailed { url },
+            ObjectNotFound { url } => ErrorKind::ObjectNotFound { url },
+            ObjectPathInvalid => ErrorKind::ObjectPathInvalid,
+            ObjectPutFailed { url, .. } => ErrorKind::ObjectPutFailed { url },
+            ObjectUrlInvalid { url } => ErrorKind::ObjectUrlInvalid { url },
             ObjectUrlUnsupported { url } => ErrorKind::ObjectUrlUnsupported { url },
             ReplicaNotFound { id } => ErrorKind::ReplicaNotFound { id },
             ReplicaNotFoundByUrl { original_url } => ErrorKind::ReplicaNotFoundByUrl { original_url },

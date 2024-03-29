@@ -4,7 +4,7 @@ use async_graphql::{
 };
 use derive_more::Constructor;
 use domain::{
-    entity::objects::EntryPath,
+    entity::objects::EntryUrlPath,
     repository,
     service::{
         external_services::ExternalServicesServiceInterface,
@@ -164,7 +164,7 @@ where
     async fn objects(&self, prefix: String, kind: Option<ObjectKind>) -> Result<Vec<ObjectEntry>> {
         let kind = kind.map(Into::into);
 
-        let objects = self.media_service.get_objects(&EntryPath::from(prefix), kind).await?;
+        let objects = self.media_service.get_objects(EntryUrlPath::from(prefix), kind).await?;
         Ok(objects.into_iter().map(Into::into).collect())
     }
 

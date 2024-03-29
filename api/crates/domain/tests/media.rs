@@ -6,7 +6,7 @@ use domain::{
     entity::{
         external_services::{ExternalMetadata, ExternalService, ExternalServiceId},
         media::{Medium, MediumId},
-        objects::{Entry, EntryKind, EntryMetadata, EntryPath, EntryUrl},
+        objects::{Entry, EntryKind, EntryMetadata, EntryUrl, EntryUrlPath},
         replicas::{OriginalImage, Replica, ReplicaId, Size, Thumbnail, ThumbnailId, ThumbnailImage},
         sources::{Source, SourceId},
         tag_types::{TagType, TagTypeId},
@@ -314,8 +314,7 @@ async fn create_replica_from_url_succeeds() {
             Box::pin(ok((
                 Entry::new(
                     "77777777-7777-7777-7777-777777777777.png".to_string(),
-                    EntryPath::from("/77777777-7777-7777-7777-777777777777.png".to_string()),
-                    EntryUrl::from("file:///77777777-7777-7777-7777-777777777777.png".to_string()),
+                    Some(EntryUrl::from("file:///77777777-7777-7777-7777-777777777777.png".to_string())),
                     EntryKind::Object,
                     Some(EntryMetadata::new(
                         4096,
@@ -404,15 +403,14 @@ async fn create_replica_from_content_succeeds() {
         .times(1)
         .withf(|path, _read, overwrite| {
             (path, overwrite) == (
-                &EntryPath::from("/77777777-7777-7777-7777-777777777777.png".to_string()),
+                &EntryUrl::from("file:///77777777-7777-7777-7777-777777777777.png".to_string()),
                 &ObjectOverwriteBehavior::Overwrite,
             )
         })
         .returning(|_, _, _| {
             Box::pin(ok(Entry::new(
                 "77777777-7777-7777-7777-777777777777.png".to_string(),
-                EntryPath::from("/77777777-7777-7777-7777-777777777777.png".to_string()),
-                EntryUrl::from("file:///77777777-7777-7777-7777-777777777777.png".to_string()),
+                Some(EntryUrl::from("file:///77777777-7777-7777-7777-777777777777.png".to_string())),
                 EntryKind::Object,
                 Some(EntryMetadata::new(
                     4096,
@@ -453,11 +451,16 @@ async fn create_replica_from_content_succeeds() {
             }))
         });
 
+    let mock_objects_repository_scheme = MockObjectsRepository::scheme_context();
+    mock_objects_repository_scheme
+        .expect()
+        .return_const("file");
+
     let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.create_replica(
         MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
         MediumSource::Content(
-            EntryPath::from("/77777777-7777-7777-7777-777777777777.png".to_string()),
+            EntryUrlPath::from("/77777777-7777-7777-7777-777777777777.png".to_string()),
             vec![0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08],
             MediumOverwriteBehavior::Overwrite,
         ),
@@ -505,8 +508,7 @@ async fn create_replica_fails() {
             Box::pin(ok((
                 Entry::new(
                     "77777777-7777-7777-7777-777777777777.png".to_string(),
-                    EntryPath::from("/77777777-7777-7777-7777-777777777777.png".to_string()),
-                    EntryUrl::from("file:///77777777-7777-7777-7777-777777777777.png".to_string()),
+                    Some(EntryUrl::from("file:///77777777-7777-7777-7777-777777777777.png".to_string())),
                     EntryKind::Object,
                     Some(EntryMetadata::new(
                         4096,
@@ -1487,83 +1489,78 @@ async fn get_objects_all_kinds_succeeds() {
     mock_objects_repository
         .expect_list()
         .times(1)
-        .withf(|prefix| prefix == &EntryPath::from("/path/to/dest".to_string()))
+        .withf(|prefix| prefix == &EntryUrl::from("file:///path/to/dest".to_string()))
         .returning(|_| {
             Box::pin(ok(vec![
                 Entry::new(
                     "container01".to_string(),
-                    EntryPath::from("/path/to/dest/container01".to_string()),
-                    EntryUrl::from("file:///path/to/dest/container01".to_string()),
+                    Some(EntryUrl::from("file:///path/to/dest/container01".to_string())),
                     EntryKind::Container,
                     None,
                 ),
                 Entry::new(
                     "container02".to_string(),
-                    EntryPath::from("/path/to/dest/container02".to_string()),
-                    EntryUrl::from("file:///path/to/dest/container02".to_string()),
+                    Some(EntryUrl::from("file:///path/to/dest/container02".to_string())),
                     EntryKind::Container,
                     None,
                 ),
                 Entry::new(
                     "object01".to_string(),
-                    EntryPath::from("/path/to/dest/object01".to_string()),
-                    EntryUrl::from("file:///path/to/dest/object01".to_string()),
+                    Some(EntryUrl::from("file:///path/to/dest/object01".to_string())),
                     EntryKind::Object,
                     None,
                 ),
                 Entry::new(
                     "object02".to_string(),
-                    EntryPath::from("/path/to/dest/object02".to_string()),
-                    EntryUrl::from("file:///path/to/dest/object02".to_string()),
+                    Some(EntryUrl::from("file:///path/to/dest/object02".to_string())),
                     EntryKind::Object,
                     None,
                 ),
                 Entry::new(
                     "unknown".to_string(),
-                    EntryPath::from("/path/to/dest/unknown".to_string()),
-                    EntryUrl::from("file:///path/to/dest/unknown".to_string()),
+                    Some(EntryUrl::from("file:///path/to/dest/unknown".to_string())),
                     EntryKind::Unknown,
                     None,
                 ),
             ]))
         });
 
+    let mock_objects_repository_scheme = MockObjectsRepository::scheme_context();
+    mock_objects_repository_scheme
+        .expect()
+        .return_const("file");
+
     let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
-    let actual = service.get_objects(&EntryPath::from("/path/to/dest".to_string()), None).await.unwrap();
+    let actual = service.get_objects(EntryUrlPath::from("/path/to/dest".to_string()), None).await.unwrap();
 
     assert_eq!(actual, vec![
         Entry::new(
             "container01".to_string(),
-            EntryPath::from("/path/to/dest/container01".to_string()),
-            EntryUrl::from("file:///path/to/dest/container01".to_string()),
+            Some(EntryUrl::from("file:///path/to/dest/container01".to_string())),
             EntryKind::Container,
             None,
         ),
         Entry::new(
             "container02".to_string(),
-            EntryPath::from("/path/to/dest/container02".to_string()),
-            EntryUrl::from("file:///path/to/dest/container02".to_string()),
+            Some(EntryUrl::from("file:///path/to/dest/container02".to_string())),
             EntryKind::Container,
             None,
         ),
         Entry::new(
             "object01".to_string(),
-            EntryPath::from("/path/to/dest/object01".to_string()),
-            EntryUrl::from("file:///path/to/dest/object01".to_string()),
+            Some(EntryUrl::from("file:///path/to/dest/object01".to_string())),
             EntryKind::Object,
             None,
         ),
         Entry::new(
             "object02".to_string(),
-            EntryPath::from("/path/to/dest/object02".to_string()),
-            EntryUrl::from("file:///path/to/dest/object02".to_string()),
+            Some(EntryUrl::from("file:///path/to/dest/object02".to_string())),
             EntryKind::Object,
             None,
         ),
         Entry::new(
             "unknown".to_string(),
-            EntryPath::from("/path/to/dest/unknown".to_string()),
-            EntryUrl::from("file:///path/to/dest/unknown".to_string()),
+            Some(EntryUrl::from("file:///path/to/dest/unknown".to_string())),
             EntryKind::Unknown,
             None,
         ),
@@ -1581,62 +1578,60 @@ async fn get_objects_with_kind_succeeds() {
     mock_objects_repository
         .expect_list()
         .times(1)
-        .withf(|prefix| prefix == &EntryPath::from("/path/to/dest".to_string()))
+        .withf(|prefix| prefix == &EntryUrl::from("file:///path/to/dest".to_string()))
         .returning(|_| {
             Box::pin(ok(vec![
                 Entry::new(
                     "container01".to_string(),
-                    EntryPath::from("/path/to/dest/container01".to_string()),
-                    EntryUrl::from("file:///path/to/dest/container01".to_string()),
+                    Some(EntryUrl::from("file:///path/to/dest/container01".to_string())),
                     EntryKind::Container,
                     None,
                 ),
                 Entry::new(
                     "container02".to_string(),
-                    EntryPath::from("/path/to/dest/container02".to_string()),
-                    EntryUrl::from("file:///path/to/dest/container02".to_string()),
+                    Some(EntryUrl::from("file:///path/to/dest/container02".to_string())),
                     EntryKind::Container,
                     None,
                 ),
                 Entry::new(
                     "object01".to_string(),
-                    EntryPath::from("/path/to/dest/object01".to_string()),
-                    EntryUrl::from("file:///path/to/dest/object01".to_string()),
+                    Some(EntryUrl::from("file:///path/to/dest/object01".to_string())),
                     EntryKind::Object,
                     None,
                 ),
                 Entry::new(
                     "object02".to_string(),
-                    EntryPath::from("/path/to/dest/object02".to_string()),
-                    EntryUrl::from("file:///path/to/dest/object02".to_string()),
+                    Some(EntryUrl::from("file:///path/to/dest/object02".to_string())),
                     EntryKind::Object,
                     None,
                 ),
                 Entry::new(
                     "unknown".to_string(),
-                    EntryPath::from("/path/to/dest/unknown".to_string()),
-                    EntryUrl::from("file:///path/to/dest/unknown".to_string()),
+                    Some(EntryUrl::from("file:///path/to/dest/unknown".to_string())),
                     EntryKind::Unknown,
                     None,
                 ),
             ]))
         });
 
+    let mock_objects_repository_scheme = MockObjectsRepository::scheme_context();
+    mock_objects_repository_scheme
+        .expect()
+        .return_const("file");
+
     let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
-    let actual = service.get_objects(&EntryPath::from("/path/to/dest".to_string()), Some(EntryKind::Container)).await.unwrap();
+    let actual = service.get_objects(EntryUrlPath::from("/path/to/dest".to_string()), Some(EntryKind::Container)).await.unwrap();
 
     assert_eq!(actual, vec![
         Entry::new(
             "container01".to_string(),
-            EntryPath::from("/path/to/dest/container01".to_string()),
-            EntryUrl::from("file:///path/to/dest/container01".to_string()),
+            Some(EntryUrl::from("file:///path/to/dest/container01".to_string())),
             EntryKind::Container,
             None,
         ),
         Entry::new(
             "container02".to_string(),
-            EntryPath::from("/path/to/dest/container02".to_string()),
-            EntryUrl::from("file:///path/to/dest/container02".to_string()),
+            Some(EntryUrl::from("file:///path/to/dest/container02".to_string())),
             EntryKind::Container,
             None,
         ),
@@ -1654,18 +1649,23 @@ async fn get_objects_fails() {
     mock_objects_repository
         .expect_list()
         .times(1)
-        .withf(|prefix| prefix == &EntryPath::from("/path/to/dest".to_string()))
+        .withf(|prefix| prefix == &EntryUrl::from("file:///path/to/dest".to_string()))
         .returning(|_| {
             Box::pin(err(Error::new(
-                ErrorKind::ObjectGetFailed { path: "/path/to/dest".to_string() },
+                ErrorKind::ObjectGetFailed { url: "file:///path/to/dest".to_string() },
                 anyhow!("failed to read dir: /path/to/dest"),
             )))
         });
 
-    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
-    let actual = service.get_objects(&EntryPath::from("/path/to/dest".to_string()), None).await.unwrap_err();
+    let mock_objects_repository_scheme = MockObjectsRepository::scheme_context();
+    mock_objects_repository_scheme
+        .expect()
+        .return_const("file");
 
-    assert_matches!(actual.kind(), ErrorKind::ObjectGetFailed { path } if path == "/path/to/dest");
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
+    let actual = service.get_objects(EntryUrlPath::from("/path/to/dest".to_string()), None).await.unwrap_err();
+
+    assert_matches!(actual.kind(), ErrorKind::ObjectGetFailed { url } if url == "file:///path/to/dest");
 }
 
 #[tokio::test]
@@ -1909,8 +1909,7 @@ async fn update_replica_by_id_from_url_succeeds() {
             Box::pin(ok((
                 Entry::new(
                     "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string(),
-                    EntryPath::from("/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string()),
-                    EntryUrl::from("file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string()),
+                    Some(EntryUrl::from("file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string())),
                     EntryKind::Object,
                     Some(EntryMetadata::new(
                         4096,
@@ -1999,7 +1998,7 @@ async fn update_replica_by_id_from_content_succeeds() {
         .times(1)
         .withf(|path, _read, overwrite| {
             (path, overwrite) == (
-                &EntryPath::from("/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string()),
+                &EntryUrl::from("file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string()),
                 &ObjectOverwriteBehavior::Overwrite,
             )
         })
@@ -2007,8 +2006,7 @@ async fn update_replica_by_id_from_content_succeeds() {
             Box::pin(ok(
                 Entry::new(
                     "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string(),
-                    EntryPath::from("/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string()),
-                    EntryUrl::from("file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string()),
+                    Some(EntryUrl::from("file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string())),
                     EntryKind::Object,
                     Some(EntryMetadata::new(
                         4096,
@@ -2019,6 +2017,11 @@ async fn update_replica_by_id_from_content_succeeds() {
                 ),
             ))
         });
+
+    let mock_objects_repository_scheme = MockObjectsRepository::scheme_context();
+    mock_objects_repository_scheme
+        .expect()
+        .return_const("file");
 
     let mut mock_replicas_repository = MockReplicasRepository::new();
     mock_replicas_repository
@@ -2054,7 +2057,7 @@ async fn update_replica_by_id_from_content_succeeds() {
     let actual = service.update_replica_by_id(
         ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
         MediumSource::Content(
-            EntryPath::from("/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string()),
+            EntryUrlPath::from("/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string()),
             vec![0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08],
             MediumOverwriteBehavior::Overwrite,
         ),
@@ -2102,8 +2105,7 @@ async fn update_replica_by_id_fails() {
             Box::pin(ok((
                 Entry::new(
                     "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string(),
-                    EntryPath::from("/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string()),
-                    EntryUrl::from("file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string()),
+                    Some(EntryUrl::from("file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string())),
                     EntryKind::Object,
                     Some(EntryMetadata::new(
                         4096,
