@@ -91,7 +91,7 @@ workspace = true
 version = "1.0.81"
 
 [dependencies.clap]
-version = "4.5.3"
+version = "4.5.4"
 features = ["cargo", "derive", "env", "string"]
 
 [dependencies.env_logger]
