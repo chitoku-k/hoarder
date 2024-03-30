@@ -1,6 +1,5 @@
 use clap::{crate_version, Parser};
 use icu_locid::Locale;
-use log::LevelFilter;
 
 #[derive(Debug, Parser)]
 #[command(version = version())]
@@ -54,7 +53,6 @@ impl Config {
             .format_target(true)
             .format_timestamp_secs()
             .format_indent(None)
-            .filter(None, LevelFilter::Info)
             .parse_filters(&self.log_level)
             .init();
     }
