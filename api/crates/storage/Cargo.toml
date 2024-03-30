@@ -20,9 +20,8 @@ version = "0.99.17"
 version = "0.3.30"
 default-features = false
 
-[dependencies.icu]
+[dependencies.icu_collator]
 version = "1.4.0"
-features = ["sync"]
 
 [dependencies.normalize-path]
 version = "0.2.1"

@@ -1,5 +1,5 @@
 use clap::{crate_version, Parser};
-use icu::locid::Locale;
+use icu_locid::Locale;
 use log::LevelFilter;
 
 #[derive(Debug, Parser)]

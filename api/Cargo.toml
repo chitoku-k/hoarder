@@ -97,12 +97,17 @@ features = ["cargo", "derive", "env", "string"]
 [dependencies.env_logger]
 version = "0.11.3"
 
-[dependencies.icu]
+[dependencies.icu_collator]
 version = "1.4.0"
-features = ["std", "sync"]
+features = ["std"]
+
+[dependencies.icu_locid]
+version = "1.4.0"
+features = ["std"]
 
 [dependencies.icu_provider]
 version = "1.4.0"
+features = ["std", "sync"]
 
 [dependencies.log]
 version = "0.4.21"

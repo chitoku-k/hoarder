@@ -18,7 +18,7 @@ use domain::{
     },
 };
 use graphql::{mutation::Mutation, query::Query, subscription::Subscription, APISchema, GraphQLService};
-use icu::collator::{Collator, CollatorOptions};
+use icu_collator::{Collator, CollatorOptions};
 use icu_provider::DataLocale;
 use log::LevelFilter;
 use media::{FileMediaURLFactory, NoopMediaURLFactory};

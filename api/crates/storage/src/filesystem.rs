@@ -7,7 +7,7 @@ use domain::{
     repository::{objects::{ObjectOverwriteBehavior, ObjectsRepository}, DeleteResult},
 };
 use futures::{TryFutureExt, TryStreamExt};
-use icu::collator::Collator;
+use icu_collator::Collator;
 use tokio::{
     fs::{canonicalize, read_dir, remove_file, DirBuilder, File},
     io::{self, copy, AsyncRead},
