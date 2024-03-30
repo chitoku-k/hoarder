@@ -21,7 +21,6 @@ updates:
       - async-graphql-*
     icu:
       patterns:
-      - icu
       - icu_*
     sea-query:
       patterns:
