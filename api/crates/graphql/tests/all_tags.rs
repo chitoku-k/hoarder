@@ -102,8 +102,13 @@ async fn root_first_succeeds() {
             ]))
         });
 
-    let query = Query::new(external_services_service, media_service, tags_service);
-    let schema = Schema::build(query, EmptyMutation, EmptySubscription).finish();
+    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface>::new();
+    let schema = Schema::build(query, EmptyMutation, EmptySubscription)
+        .data(external_services_service)
+        .data(media_service)
+        .data(tags_service)
+        .finish();
+
     let req = indoc! {r#"
         query {
             allTags(root: true, first: 3) {
@@ -291,8 +296,13 @@ async fn root_last_succeeds() {
             ]))
         });
 
-    let query = Query::new(external_services_service, media_service, tags_service);
-    let schema = Schema::build(query, EmptyMutation, EmptySubscription).finish();
+    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface>::new();
+    let schema = Schema::build(query, EmptyMutation, EmptySubscription)
+        .data(external_services_service)
+        .data(media_service)
+        .data(tags_service)
+        .finish();
+
     let req = indoc! {r#"
         query {
             allTags(root: true, last: 3) {
@@ -469,8 +479,13 @@ async fn root_after_first_succeeds() {
             ]))
         });
 
-    let query = Query::new(external_services_service, media_service, tags_service);
-    let schema = Schema::build(query, EmptyMutation, EmptySubscription).finish();
+    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface>::new();
+    let schema = Schema::build(query, EmptyMutation, EmptySubscription)
+        .data(external_services_service)
+        .data(media_service)
+        .data(tags_service)
+        .finish();
+
     let req = indoc! {r#"
         query {
             allTags(root: true, first: 3, after: "44OW44Or44O844Ki44O844Kr44Kk44OWADY2NjY2NjY2LTY2NjYtNjY2Ni02NjY2LTY2NjY2NjY2NjY2Ng==") {
@@ -602,8 +617,13 @@ async fn root_after_last_succeeds() {
             ]))
         });
 
-    let query = Query::new(external_services_service, media_service, tags_service);
-    let schema = Schema::build(query, EmptyMutation, EmptySubscription).finish();
+    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface>::new();
+    let schema = Schema::build(query, EmptyMutation, EmptySubscription)
+        .data(external_services_service)
+        .data(media_service)
+        .data(tags_service)
+        .finish();
+
     let req = indoc! {r#"
         query {
             allTags(root: true, last: 3, after: "44GS44KT44GX44KTADQ0NDQ0NDQ0LTQ0NDQtNDQ0NC00NDQ0LTQ0NDQ0NDQ0NDQ0NA==") {
@@ -726,8 +746,13 @@ async fn root_before_first_succeeds() {
             ]))
         });
 
-    let query = Query::new(external_services_service, media_service, tags_service);
-    let schema = Schema::build(query, EmptyMutation, EmptySubscription).finish();
+    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface>::new();
+    let schema = Schema::build(query, EmptyMutation, EmptySubscription)
+        .data(external_services_service)
+        .data(media_service)
+        .data(tags_service)
+        .finish();
+
     let req = indoc! {r#"
         query {
             allTags(root: true, first: 3, before: "44OW44Or44O844Ki44O844Kr44Kk44OWADY2NjY2NjY2LTY2NjYtNjY2Ni02NjY2LTY2NjY2NjY2NjY2Ng==") {
@@ -862,8 +887,13 @@ async fn root_before_last_succeeds() {
             ]))
         });
 
-    let query = Query::new(external_services_service, media_service, tags_service);
-    let schema = Schema::build(query, EmptyMutation, EmptySubscription).finish();
+    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface>::new();
+    let schema = Schema::build(query, EmptyMutation, EmptySubscription)
+        .data(external_services_service)
+        .data(media_service)
+        .data(tags_service)
+        .finish();
+
     let req = indoc! {r#"
         query {
             allTags(root: true, last: 3, before: "44OW44Or44O844Ki44O844Kr44Kk44OWADY2NjY2NjY2LTY2NjYtNjY2Ni02NjY2LTY2NjY2NjY2NjY2Ng==") {

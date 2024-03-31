@@ -233,8 +233,13 @@ async fn tags_succeeds() {
 
     let tags_service = MockTagsServiceInterface::new();
 
-    let query = Query::new(external_services_service, media_service, tags_service);
-    let schema = Schema::build(query, EmptyMutation, EmptySubscription).finish();
+    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface>::new();
+    let schema = Schema::build(query, EmptyMutation, EmptySubscription)
+        .data(external_services_service)
+        .data(media_service)
+        .data(tags_service)
+        .finish();
+
     let req = indoc! {r#"
         query {
             media(ids: ["77777777-7777-7777-7777-777777777777" "99999999-9999-9999-9999-999999999999"]) {
@@ -559,8 +564,11 @@ async fn replicas_succeeds() {
         .withf(|thumbnail_id| thumbnail_id == &ThumbnailId::from(uuid!("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")))
         .returning(|_| "https://img.example.com/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa".to_string());
 
-    let query = Query::new(external_services_service, media_service, tags_service);
+    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface>::new();
     let schema = Schema::build(query, EmptyMutation, EmptySubscription)
+        .data(external_services_service)
+        .data(media_service)
+        .data(tags_service)
         .data::<Arc<dyn MediaURLFactoryInterface>>(Arc::new(media_url_factory))
         .data::<Arc<dyn ThumbnailURLFactoryInterface>>(Arc::new(thumbnail_url_factory))
         .finish();
@@ -717,8 +725,13 @@ async fn sources_succeeds() {
 
     let tags_service = MockTagsServiceInterface::new();
 
-    let query = Query::new(external_services_service, media_service, tags_service);
-    let schema = Schema::build(query, EmptyMutation, EmptySubscription).finish();
+    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface>::new();
+    let schema = Schema::build(query, EmptyMutation, EmptySubscription)
+        .data(external_services_service)
+        .data(media_service)
+        .data(tags_service)
+        .finish();
+
     let req = indoc! {r#"
         query {
             media(ids: ["77777777-7777-7777-7777-777777777777" "99999999-9999-9999-9999-999999999999"]) {

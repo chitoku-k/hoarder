@@ -23,13 +23,9 @@ $ docker buildx bake -f docker-bake.hcl
 
 ### API
 
-The following command line options (or environment variables) can be used to configure API:
+#### Global Options
 
-- `--port` (`PORT`): Port number (**required**)
-- `--media-root-dir` (`MEDIA_ROOT_DIR`): Path to the media directory (**required**)
-- `--media-root-url` (`MEDIA_ROOT_URL`): Public URL for media
 - `--locale` (`LOCALE`): [Unicode locale identifier](https://unicode.org/reports/tr35/tr35.html#Unicode_locale_identifier) for collation order
-- `--tls-cert`/`--tls-key` (`TLS_CERT`/`TLS_KEY`): Path to TLS certificate and private key for HTTPS
 - `--log-level` (`LOG_LEVEL`): Log level as in [RUST\_LOG](https://docs.rs/env_logger/latest/env_logger/)
 
 The following environment variables can be used to configure PostgreSQL connection:
@@ -43,6 +39,27 @@ The following environment variables can be used to configure PostgreSQL connecti
 - `PGSSLCERT`/`PGSSLKEY`: Path to the client certificate and private key in PKCS#8 format
 - `PGSSLMODE`: SSL mode
 - `PGAPPNAME`: Application name
+
+#### Serve API
+
+```
+$ hoarder [serve] [OPTIONS]
+```
+
+The following command line options (or environment variables) can be used to configure API:
+
+- `--port` (`PORT`): Port number (**required**)
+- `--media-root-dir` (`MEDIA_ROOT_DIR`): Path to the media directory (**required**)
+- `--media-root-url` (`MEDIA_ROOT_URL`): Public URL for media
+- `--tls-cert`/`--tls-key` (`TLS_CERT`/`TLS_KEY`): Path to TLS certificate and private key for HTTPS
+
+#### Manage GraphQL schema
+
+To show GraphQL schema in SDL (Schema Definition Language):
+
+```
+$ hoarder schema print
+```
 
 ## Testing
 

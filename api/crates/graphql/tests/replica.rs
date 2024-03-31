@@ -63,8 +63,11 @@ async fn succeeds() {
         .withf(|thumbnail_id| thumbnail_id == &ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888")))
         .returning(|_| "https://img.example.com/88888888-8888-8888-8888-888888888888".to_string());
 
-    let query = Query::new(external_services_service, media_service, tags_service);
+    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface>::new();
     let schema = Schema::build(query, EmptyMutation, EmptySubscription)
+        .data(external_services_service)
+        .data(media_service)
+        .data(tags_service)
         .data::<Arc<dyn MediaURLFactoryInterface>>(Arc::new(media_url_factory))
         .data::<Arc<dyn ThumbnailURLFactoryInterface>>(Arc::new(thumbnail_url_factory))
         .finish();
