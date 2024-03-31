@@ -47,8 +47,12 @@ async fn succeeds() {
 
     let tags_service = MockTagsServiceInterface::new();
 
-    let query = Query::new(external_services_service, media_service, tags_service);
-    let schema = Schema::build(query, EmptyMutation, EmptySubscription).finish();
+    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface>::new();
+    let schema = Schema::build(query, EmptyMutation, EmptySubscription)
+        .data(external_services_service)
+        .data(media_service)
+        .data(tags_service)
+        .finish();
 
     let req = indoc! {r#"
         query {
@@ -111,8 +115,12 @@ async fn not_found() {
 
     let tags_service = MockTagsServiceInterface::new();
 
-    let query = Query::new(external_services_service, media_service, tags_service);
-    let schema = Schema::build(query, EmptyMutation, EmptySubscription).finish();
+    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface>::new();
+    let schema = Schema::build(query, EmptyMutation, EmptySubscription)
+        .data(external_services_service)
+        .data(media_service)
+        .data(tags_service)
+        .finish();
 
     let req = indoc! {r#"
         query {

@@ -1,44 +1,45 @@
 use clap::{crate_version, Parser};
 use icu_locid::Locale;
 
+pub mod commands;
+use commands::{Commands, ServeCommand};
+
 #[derive(Debug, Parser)]
 #[command(version = version())]
+#[command(arg_required_else_help = false)]
+#[command(subcommand_required = false)]
 pub struct Config {
-    /// Print schema in SDL (Schema Definition Language)
-    #[arg(long)]
-    pub print_schema: bool,
+    #[command(flatten)]
+    pub global: Global,
 
-    /// Port number
-    #[arg(long, env)]
-    pub port: u16,
+    #[command(subcommand)]
+    pub command: Commands,
+}
 
-    /// Root directory for media
-    #[arg(long, env)]
-    pub media_root_dir: String,
+#[derive(Debug, Parser)]
+struct ServeConfig {
+    #[command(flatten)]
+    pub global: Global,
 
-    /// Root URL for media
-    #[arg(long, env)]
-    pub media_root_url: Option<String>,
+    #[command(flatten)]
+    pub command: ServeCommand,
+}
 
+#[derive(Debug, Clone, Parser)]
+pub struct Global {
     /// Locale
     #[arg(long, env, default_value_t)]
+    #[arg(global = true)]
     pub locale: Locale,
-
-    /// Path to TLS certificate (if not specified, application is served over HTTP)
-    #[arg(long, env, requires = "tls_key")]
-    pub tls_cert: Option<String>,
-
-    /// Path to TLS private key (if not specified, application is served over HTTP)
-    #[arg(long, env, requires = "tls_cert")]
-    pub tls_key: Option<String>,
 
     /// Log level
     #[arg(long, env, default_value = "info")]
+    #[arg(global = true)]
     pub log_level: String,
 }
 
 pub fn init() -> Config {
-    let config = Config::parse();
+    let config = Config::get();
     config.init();
     config
 }
@@ -48,12 +49,34 @@ const fn version() -> &'static str {
 }
 
 impl Config {
+    fn get() -> Self {
+        use clap::error::{ContextKind, ErrorKind};
+        match Self::try_parse() {
+            Ok(config) => config,
+            Err(e) if matches!(e.kind(), ErrorKind::MissingSubcommand | ErrorKind::UnknownArgument) && e.get(ContextKind::InvalidSubcommand).is_none() => {
+                ServeConfig::parse().into()
+            },
+            Err(e) => {
+                e.exit();
+            },
+        }
+    }
+
     pub fn init(&self) {
         env_logger::builder()
             .format_target(true)
             .format_timestamp_secs()
             .format_indent(None)
-            .parse_filters(&self.log_level)
+            .parse_filters(&self.global.log_level)
             .init();
+    }
+}
+
+impl From<ServeConfig> for Config {
+    fn from(config: ServeConfig) -> Self {
+        Self {
+            command: Commands::Serve(config.command),
+            global: config.global,
+        }
     }
 }
