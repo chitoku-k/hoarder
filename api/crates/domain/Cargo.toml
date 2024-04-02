@@ -25,6 +25,9 @@ version = "0.4.21"
 version = "0.12.1"
 optional = true
 
+[dependencies.percent-encoding]
+version = "2.3.1"
+
 [dependencies.serde]
 version = "1.0.197"
 features = ["derive"]

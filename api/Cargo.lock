@@ -953,6 +953,7 @@ dependencies = [
  "futures",
  "log",
  "mockall",
+ "percent-encoding",
  "pretty_assertions",
  "serde",
  "thiserror",
@@ -3521,7 +3522,6 @@ dependencies = [
  "icu_collator",
  "libc",
  "normalize-path",
- "percent-encoding",
  "tokio",
  "tokio-stream",
 ]
