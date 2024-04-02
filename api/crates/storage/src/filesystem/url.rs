@@ -2,10 +2,7 @@ use std::path::{Path, PathBuf, MAIN_SEPARATOR_STR};
 
 use cow_utils::CowUtils;
 use derive_more::Display;
-use domain::{
-    entity::objects::EntryUrl,
-    error::{Error, ErrorKind, Result},
-};
+use domain::{entity::objects::EntryUrl, error::{Error, ErrorKind, Result}};
 use normalize_path::NormalizePath;
 
 use crate::StorageEntryUrl;
@@ -25,7 +22,7 @@ impl FilesystemEntryUrl {
             .ok_or_else(|| ErrorKind::ObjectPathInvalid)?
             .cow_replace(MAIN_SEPARATOR_STR, "/");
 
-        Self::from_path_str(&path)
+        Self::try_from(EntryUrl::from_path_str(Self::URL_PREFIX, &path))
     }
 
     pub(crate) fn as_path(&self) -> &Path {
@@ -37,7 +34,7 @@ impl TryFrom<EntryUrl> for FilesystemEntryUrl {
     type Error = Error;
 
     fn try_from(url: EntryUrl) -> Result<Self> {
-        let path = Self::to_path_string(&url)?;
+        let path = url.to_path_string(Self::URL_PREFIX)?;
         let path = match path.strip_prefix('/') {
             Some(path) => path,
             None => return Err(ErrorKind::ObjectUrlInvalid { url: url.into_inner() })?,
