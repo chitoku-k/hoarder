@@ -36,6 +36,7 @@ impl From<repository::DeleteResult> for DeleteResult {
     }
 }
 
+#[derive(Default)]
 pub struct Mutation<ExternalServicesService, MediaService, TagsService> {
     external_services_service: PhantomData<fn() -> ExternalServicesService>,
     media_service: PhantomData<fn() -> MediaService>,
