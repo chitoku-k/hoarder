@@ -26,6 +26,7 @@ use crate::{
     Order,
 };
 
+#[derive(Default)]
 pub struct Query<ExternalServicesService, MediaService, TagsService> {
     external_services_service: PhantomData<fn() -> ExternalServicesService>,
     media_service: PhantomData<fn() -> MediaService>,
