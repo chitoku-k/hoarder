@@ -7,6 +7,9 @@ pub enum Commands {
 
     /// Manage GraphQL schema
     Schema(SchemaCommand),
+
+    /// Execute database migration
+    Migration(MigrationCommand),
 }
 
 #[derive(Debug, Subcommand)]
@@ -46,3 +49,10 @@ pub struct SchemaCommand {
 
 #[derive(Debug, Parser)]
 pub struct SchemaPrintCommand;
+
+#[derive(Debug, Parser)]
+#[group(skip)]
+pub struct MigrationCommand {
+    #[command(flatten)]
+    pub command: postgres::MigrationCommand,
+}

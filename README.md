@@ -11,12 +11,14 @@ Collects your favorite media and organizes them with the hierarchical tag system
 
 ```bash
 $ docker compose up -d --build
+$ docker compose exec api hoarder migration apply
 ```
 
 ### Production
 
 ```bash
 $ docker buildx bake -f docker-bake.hcl
+$ docker run --rm -it container.chitoku.jp/chitoku-k/hoarder/api hoarder migration apply
 ```
 
 ## Configuration
@@ -59,6 +61,14 @@ To show GraphQL schema in SDL (Schema Definition Language):
 
 ```
 $ hoarder schema print
+```
+
+#### Databse Migration
+
+To execute database migration:
+
+```
+$ hoarder migration [OPTIONS] (apply | drop | list | revert)
 ```
 
 ## Testing

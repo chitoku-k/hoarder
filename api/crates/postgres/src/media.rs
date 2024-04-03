@@ -84,7 +84,7 @@ pub(crate) enum PostgresMedium {
 }
 
 #[derive(Iden)]
-enum PostgresMediumSource {
+pub(crate) enum PostgresMediumSource {
     #[iden = "media_sources"]
     Table,
     MediumId,
@@ -92,7 +92,7 @@ enum PostgresMediumSource {
 }
 
 #[derive(Iden)]
-enum PostgresMediumTag {
+pub(crate) enum PostgresMediumTag {
     #[iden = "media_tags"]
     Table,
     MediumId,
