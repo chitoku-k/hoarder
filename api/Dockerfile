@@ -18,6 +18,7 @@ RUN --mount=type=cache,id=api:/usr/local/cargo/registry,target=/usr/local/cargo/
 FROM scratch AS production
 ARG PORT=80
 ENV PORT=$PORT
+ENV PATH=/
 COPY --link --from=release /lib/x86_64-linux-gnu/ld-linux-x86-64.* /lib/x86_64-linux-gnu/
 COPY --link --from=release /lib/x86_64-linux-gnu/libc.so* /lib/x86_64-linux-gnu/
 COPY --link --from=release /lib/x86_64-linux-gnu/libcrypto.so* /lib/x86_64-linux-gnu/
@@ -31,6 +32,6 @@ COPY --link --from=release /usr/share/zoneinfo /usr/share/zoneinfo
 RUN --mount=from=release,src=/bin,dst=/bin \
     --mount=from=release,src=/lib,dst=/lib \
     --mount=from=release,src=/usr,dst=/usr \
-    mkdir --mode=1777 /tmp
+    /bin/mkdir --mode=1777 /tmp
 EXPOSE $PORT
-CMD ["/hoarder"]
+CMD ["hoarder"]
