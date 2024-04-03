@@ -30,7 +30,7 @@ use postgres::{
     sources::PostgresSourcesRepository,
     tag_types::PostgresTagTypesRepository,
     tags::PostgresTagsRepository,
-    ConnectOptions, PgConnectOptions, PgPool, PgPoolOptions,
+    ConnectOptions, Migrator, PgConnectOptions, PgPool, PgPoolOptions,
 };
 use storage::filesystem::FilesystemObjectsRepository;
 use thumbnails::{
@@ -215,6 +215,13 @@ impl Application {
                 let schema = noop_schema();
                 let graphql_service = graphql_service(schema);
                 println!("{}", graphql_service.definitions());
+            },
+            Commands::Migration(migration) => {
+                let pg_pool = pg_pool().await?;
+
+                let migrator = Migrator::new();
+                let mut conn = pg_pool.acquire().await?;
+                migration.command.run(migrator.into_boxed_migrator(), &mut conn).await?;
             },
         }
 

@@ -334,9 +334,9 @@ checksum = "ecc7ab41815b3c653ccd2978ec3255c81349336702dfdf62ee6f7069b12a3aae"
 
 [[package]]
 name = "async-trait"
-version = "0.1.77"
+version = "0.1.79"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c980ee35e870bd1a4d2c8294d4c04d0499e67bca1e4b5cefcc693c2fa00caea9"
+checksum = "a507401cad91ec6a857ed5513a2073c82a9b9048762b885bb98655b306964681"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2629,6 +2629,7 @@ dependencies = [
 name = "postgres"
 version = "0.0.0"
 dependencies = [
+ "async-trait",
  "chrono",
  "cow-utils",
  "derive_more",
@@ -2642,6 +2643,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sqlx",
+ "sqlx_migrator",
  "test-context",
  "tokio",
  "uuid",
@@ -3497,6 +3499,20 @@ dependencies = [
  "url",
  "urlencoding",
  "uuid",
+]
+
+[[package]]
+name = "sqlx_migrator"
+version = "0.14.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8733fa58c6b79f6a18c89363e850ff72aeb4b43cc6382757d8637a12ff53a7db"
+dependencies = [
+ "async-trait",
+ "clap",
+ "crc32fast",
+ "sqlx",
+ "thiserror",
+ "tracing",
 ]
 
 [[package]]

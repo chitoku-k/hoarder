@@ -1,6 +1,7 @@
 #![allow(clippy::enum_variant_names)]
 
 mod expr;
+mod migrations;
 
 pub mod external_services;
 pub mod media;
@@ -13,6 +14,9 @@ pub use sqlx::{
     postgres::{PgConnectOptions, PgPoolOptions},
     ConnectOptions, PgPool,
 };
+pub use sqlx_migrator::cli::MigrationCommand;
+
+pub use crate::migrations::Migrator;
 
 macro_rules! sea_query_uuid_value {
     ($newtype:ty, $innertype:ty) => {

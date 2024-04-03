@@ -1,14 +1,16 @@
 use std::error::Error;
 
 use include_dir::{include_dir, Dir};
+use postgres::Migrator;
 use sqlx::{
     postgres::{PgConnectOptions, PgPoolOptions},
     Connection, Executor, PgConnection, PgPool,
 };
+use sqlx_migrator::migrator::{Migrate, Plan};
 use test_context::AsyncTestContext;
 use uuid::Uuid;
 
-static FIXTURES: Dir = include_dir!("../database");
+static FIXTURES: Dir = include_dir!("crates/postgres/tests/fixtures");
 
 type BoxDynError = Box<dyn Error + Send + Sync + 'static>;
 
@@ -35,17 +37,14 @@ async fn connect_database(name: &str) -> Result<PgPool, BoxDynError> {
 }
 
 async fn setup_database(pool: &PgPool) -> Result<(), BoxDynError> {
-    let fixtures = FIXTURES.files()
-        .chain(
-            FIXTURES
-                .get_dir("fixtures")
-                .ok_or("fixtures not found")?
-                .files()
-        );
+    let mut conn = pool.acquire().await?;
 
-    for file in fixtures {
+    let migrator = Migrator::new().into_boxed_migrator();
+    migrator.run(&mut conn, &Plan::apply_all()).await?;
+
+    for file in FIXTURES.files() {
         let sql = file.contents_utf8().ok_or("invalid fixture")?;
-        pool
+        conn
             .execute(sql)
             .await
             .map_err(|e| format!("initializing test database failed in {:?}: {e}", file.path()))?;
