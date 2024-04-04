@@ -2,6 +2,7 @@ use sqlx::Postgres;
 use sqlx_migrator::{migrator::{self, Info}, vec_box};
 
 mod v1;
+mod v2;
 
 pub struct Migrator(migrator::Migrator<Postgres, State>);
 
@@ -10,6 +11,7 @@ impl Migrator {
         let mut migrator = migrator::Migrator::new(State);
         migrator.add_migrations(vec_box![
             v1::V1Migration,
+            v2::V2Migration,
         ]);
 
         Self(migrator)
