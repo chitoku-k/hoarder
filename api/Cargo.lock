@@ -2637,6 +2637,7 @@ dependencies = [
  "futures",
  "include_dir",
  "indexmap",
+ "log",
  "pretty_assertions",
  "sea-query",
  "sea-query-binder",

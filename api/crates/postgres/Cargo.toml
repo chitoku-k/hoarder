@@ -35,6 +35,9 @@ default-features = false
 version = "2.2.6"
 features = ["serde"]
 
+[dependencies.log]
+version = "0.4.21"
+
 [dependencies.sea-query]
 version = "0.30.7"
 features = ["thread-safe"]
