@@ -20,7 +20,7 @@ version = "0.7.5"
 version = "0.99.17"
 
 [dependencies.image]
-version = "0.25.0"
+version = "0.25.1"
 
 [dependencies.tokio]
 version = "1.37.0"
