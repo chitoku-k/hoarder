@@ -22,4 +22,10 @@ impl Migrator {
     }
 }
 
+impl Default for Migrator {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 pub struct State;
