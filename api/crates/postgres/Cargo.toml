@@ -17,7 +17,7 @@ workspace = true
 version = "0.1.80"
 
 [dependencies.chrono]
-version = "0.4.37"
+version = "0.4.38"
 default-features = false
 features = ["clock", "std"]
 
