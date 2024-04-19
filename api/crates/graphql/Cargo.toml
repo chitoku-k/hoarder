@@ -42,7 +42,7 @@ features = ["std"]
 default-features = false
 
 [dependencies.serde]
-version = "1.0.197"
+version = "1.0.198"
 features = ["derive"]
 
 [dependencies.serde_json]
