@@ -33,7 +33,7 @@ version = "1.0.198"
 features = ["derive"]
 
 [dependencies.thiserror]
-version = "1.0.58"
+version = "1.0.59"
 
 [dependencies.tokio]
 version = "1.37.0"
