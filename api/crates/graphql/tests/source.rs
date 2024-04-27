@@ -37,7 +37,9 @@ async fn succeeds() {
                 external_service: external_services::ExternalService {
                     id: ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                     slug: "twitter".to_string(),
+                    kind: "twitter".to_string(),
                     name: "Twitter".to_string(),
+                    base_url: Some("https://twitter.com".to_string()),
                 },
                 external_metadata: external_services::ExternalMetadata::Twitter { id: 727620202049900544 },
                 created_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 0).unwrap(),
@@ -68,7 +70,9 @@ async fn succeeds() {
                 externalService {
                     id
                     slug
+                    kind
                     name
+                    baseUrl
                 }
                 externalMetadata
                 createdAt
@@ -84,7 +88,9 @@ async fn succeeds() {
             "externalService": {
                 "id": "33333333-3333-3333-3333-333333333333",
                 "slug": "twitter",
+                "kind": "twitter",
                 "name": "Twitter",
+                "baseUrl": "https://twitter.com",
             },
             "externalMetadata": {
                 "twitter": {
@@ -136,7 +142,9 @@ async fn not_found() {
                 externalService {
                     id
                     slug
+                    kind
                     name
+                    baseUrl
                 }
                 externalMetadata
                 createdAt

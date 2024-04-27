@@ -103,7 +103,7 @@ pub(crate) enum ErrorKind {
     SourceMetadataInvalid,
 
     #[error("the source metadata does not match with external service")]
-    SourceMetadataNotMatch { slug: String },
+    SourceMetadataNotMatch { kind: String },
 
     #[error("the source was not found")]
     SourceNotFound { id: SourceId },
@@ -194,7 +194,7 @@ impl From<domain::error::ErrorKind> for ErrorKind {
             ReplicaOriginalUrlDuplicate { original_url } => ErrorKind::ReplicaOriginalUrlDuplicate { original_url },
             SourceMetadataDuplicate { id } => ErrorKind::SourceMetadataDuplicate { id },
             SourceMetadataInvalid => ErrorKind::SourceMetadataInvalid,
-            SourceMetadataNotMatch { slug } => ErrorKind::SourceMetadataNotMatch { slug },
+            SourceMetadataNotMatch { kind } => ErrorKind::SourceMetadataNotMatch { kind },
             SourceNotFound { id } => ErrorKind::SourceNotFound { id },
             TagAttachingRoot | TagDeletingRoot | TagDetachingRoot | TagUpdatingRoot => ErrorKind::TagNotFound { id: TagId::default() },
             TagAttachingToDescendant { id } => ErrorKind::TagAttachingToDescendant { id },

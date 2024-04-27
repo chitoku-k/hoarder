@@ -962,7 +962,9 @@ async fn sources_asc_succeeds() {
                             external_service: ExternalService {
                                 id: ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                                 slug: "twitter".to_string(),
+                                kind: "twitter".to_string(),
                                 name: "Twitter".to_string(),
+                                base_url: Some("https://twitter.com".to_string()),
                             },
                             external_metadata: ExternalMetadata::Twitter { id: 727620202049900544 },
                             created_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 0).unwrap(),
@@ -973,7 +975,9 @@ async fn sources_asc_succeeds() {
                             external_service: ExternalService {
                                 id: ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
                                 slug: "pixiv".to_string(),
+                                kind: "pixiv".to_string(),
                                 name: "pixiv".to_string(),
+                                base_url: Some("https://www.pixiv.net".to_string()),
                             },
                             external_metadata: ExternalMetadata::Pixiv { id: 56736941 },
                             created_at: Utc.with_ymd_and_hms(2016, 5, 6, 5, 14, 0).unwrap(),
@@ -993,7 +997,9 @@ async fn sources_asc_succeeds() {
                             external_service: ExternalService {
                                 id: ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
                                 slug: "pixiv".to_string(),
+                                kind: "pixiv".to_string(),
                                 name: "pixiv".to_string(),
+                                base_url: Some("https://www.pixiv.net".to_string()),
                             },
                             external_metadata: ExternalMetadata::Pixiv { id: 1234 },
                             created_at: Utc.with_ymd_and_hms(2016, 5, 5, 7, 6, 0).unwrap(),
@@ -1048,7 +1054,9 @@ async fn sources_asc_succeeds() {
                             externalService {
                                 id
                                 slug
+                                kind
                                 name
+                                baseUrl
                             }
                             externalMetadata
                             createdAt
@@ -1079,7 +1087,9 @@ async fn sources_asc_succeeds() {
                                 "externalService": {
                                     "id": "33333333-3333-3333-3333-333333333333",
                                     "slug": "twitter",
+                                    "kind": "twitter",
                                     "name": "Twitter",
+                                    "baseUrl": "https://twitter.com",
                                 },
                                 "externalMetadata": {
                                     "twitter": {
@@ -1094,7 +1104,9 @@ async fn sources_asc_succeeds() {
                                 "externalService": {
                                     "id": "11111111-1111-1111-1111-111111111111",
                                     "slug": "pixiv",
+                                    "kind": "pixiv",
                                     "name": "pixiv",
+                                    "baseUrl": "https://www.pixiv.net",
                                 },
                                 "externalMetadata": {
                                     "pixiv": {
@@ -1118,7 +1130,9 @@ async fn sources_asc_succeeds() {
                                 "externalService": {
                                     "id": "11111111-1111-1111-1111-111111111111",
                                     "slug": "pixiv",
+                                    "kind": "pixiv",
                                     "name": "pixiv",
+                                    "baseUrl": "https://www.pixiv.net",
                                 },
                                 "externalMetadata": {
                                     "pixiv": {

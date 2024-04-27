@@ -6,7 +6,9 @@ use uuid::Uuid;
 pub(crate) struct ExternalService {
     id: Uuid,
     slug: String,
+    kind: String,
     name: String,
+    base_url: Option<String>,
 }
 
 impl From<external_services::ExternalService> for ExternalService {
@@ -14,7 +16,9 @@ impl From<external_services::ExternalService> for ExternalService {
         Self {
             id: *external_service.id,
             slug: external_service.slug,
+            kind: external_service.kind,
             name: external_service.name,
+            base_url: external_service.base_url,
         }
     }
 }

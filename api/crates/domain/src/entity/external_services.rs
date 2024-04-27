@@ -9,7 +9,9 @@ pub struct ExternalServiceId(Uuid);
 pub struct ExternalService {
     pub id: ExternalServiceId,
     pub slug: String,
+    pub kind: String,
     pub name: String,
+    pub base_url: Option<String>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]

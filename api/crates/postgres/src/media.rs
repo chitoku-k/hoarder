@@ -62,7 +62,9 @@ struct PostgresMediumSourceExternalServiceRow {
     source_updated_at: DateTime<Utc>,
     external_service_id: PostgresExternalServiceId,
     external_service_slug: String,
+    external_service_kind: String,
     external_service_name: String,
+    external_service_base_url: Option<String>,
 }
 
 #[derive(Debug, FromRow)]
@@ -138,7 +140,9 @@ impl From<PostgresMediumSourceExternalServiceRow> for (MediumId, Source) {
                 external_service: ExternalService {
                     id: row.external_service_id.into(),
                     slug: row.external_service_slug,
+                    kind: row.external_service_kind,
                     name: row.external_service_name,
+                    base_url: row.external_service_base_url,
                 },
                 external_metadata,
                 created_at: row.source_created_at,
@@ -297,7 +301,9 @@ where
         .expr_as(Expr::col((PostgresSource::Table, PostgresSource::UpdatedAt)), PostgresSourceExternalService::SourceUpdatedAt)
         .expr_as(Expr::col((PostgresExternalService::Table, PostgresExternalService::Id)), PostgresSourceExternalService::ExternalServiceId)
         .expr_as(Expr::col((PostgresExternalService::Table, PostgresExternalService::Slug)), PostgresSourceExternalService::ExternalServiceSlug)
+        .expr_as(Expr::col((PostgresExternalService::Table, PostgresExternalService::Kind)), PostgresSourceExternalService::ExternalServiceKind)
         .expr_as(Expr::col((PostgresExternalService::Table, PostgresExternalService::Name)), PostgresSourceExternalService::ExternalServiceName)
+        .expr_as(Expr::col((PostgresExternalService::Table, PostgresExternalService::BaseUrl)), PostgresSourceExternalService::ExternalServiceBaseUrl)
         .from(PostgresMediumSource::Table)
         .join(
             JoinType::InnerJoin,

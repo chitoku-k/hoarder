@@ -27,7 +27,9 @@ async fn succeeds_with_default(ctx: &DatabaseContext) {
         ExternalService {
             id: ExternalServiceId::from(uuid!("4e0c68c7-e5ec-4d60-b9eb-733f47290cd3")),
             slug: "pixiv".to_string(),
+            kind: "pixiv".to_string(),
             name: "pixiv".to_string(),
+            base_url: Some("https://www.pixiv.net".to_string()),
         },
     );
     assert_eq!(actual.external_metadata, ExternalMetadata::Pixiv { id: 123456789 });
@@ -63,7 +65,9 @@ async fn succeeds_with_custom_object(ctx: &DatabaseContext) {
         ExternalService {
             id: ExternalServiceId::from(uuid!("6c07eb4d-93a1-4efd-afce-e13f8f2c0e14")),
             slug: "whatever".to_string(),
+            kind: "custom".to_string(),
             name: "Custom".to_string(),
+            base_url: None,
         },
     );
     assert_eq!(actual.external_metadata, ExternalMetadata::Custom(r#"{"id":123456789}"#.to_string()));
@@ -98,7 +102,9 @@ async fn succeeds_with_custom_string(ctx: &DatabaseContext) {
         ExternalService {
             id: ExternalServiceId::from(uuid!("6c07eb4d-93a1-4efd-afce-e13f8f2c0e14")),
             slug: "whatever".to_string(),
+            kind: "custom".to_string(),
             name: "Custom".to_string(),
+            base_url: None,
         },
     );
     assert_eq!(actual.external_metadata, ExternalMetadata::Custom(r#""123456789abcdefg""#.to_string()));
@@ -131,7 +137,9 @@ async fn succeeds_with_custom_number(ctx: &DatabaseContext) {
         ExternalService {
             id: ExternalServiceId::from(uuid!("6c07eb4d-93a1-4efd-afce-e13f8f2c0e14")),
             slug: "whatever".to_string(),
+            kind: "custom".to_string(),
             name: "Custom".to_string(),
+            base_url: None,
         },
     );
     assert_eq!(actual.external_metadata, ExternalMetadata::Custom("123456789".to_string()));

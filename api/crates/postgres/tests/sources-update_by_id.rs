@@ -34,7 +34,9 @@ async fn with_external_metadata_succeeds(ctx: &DatabaseContext) {
         ExternalService {
             id: ExternalServiceId::from(uuid!("4e0c68c7-e5ec-4d60-b9eb-733f47290cd3")),
             slug: "pixiv".to_string(),
+            kind: "pixiv".to_string(),
             name: "pixiv".to_string(),
+            base_url: Some("https://www.pixiv.net".to_string()),
         },
     );
     assert_eq!(actual.external_metadata, ExternalMetadata::Pixiv { id: 123456789 });
@@ -74,7 +76,9 @@ async fn with_external_service_and_external_metadata_succeeds(ctx: &DatabaseCont
         ExternalService {
             id: ExternalServiceId::from(uuid!("2018afa2-aed9-46de-af9e-02e5fab64ed7")),
             slug: "skeb".to_string(),
+            kind: "skeb".to_string(),
             name: "Skeb".to_string(),
+            base_url: Some("https://skeb.jp".to_string()),
         },
     );
     assert_eq!(

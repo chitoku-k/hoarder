@@ -134,7 +134,7 @@ pub enum ErrorKind {
     SourceMetadataInvalid,
 
     #[error("the source metadata does not match with external service")]
-    SourceMetadataNotMatch { slug: String },
+    SourceMetadataNotMatch { kind: String },
 
     #[error("the source was not found")]
     SourceNotFound { id: SourceId },

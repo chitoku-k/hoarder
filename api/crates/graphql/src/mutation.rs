@@ -77,17 +77,23 @@ where
     MediaService: MediaServiceInterface,
     TagsService: TagsServiceInterface,
 {
-    async fn create_external_service(&self, ctx: &Context<'_>, slug: String, name: String) -> Result<ExternalService> {
+    async fn create_external_service(&self, ctx: &Context<'_>, slug: String, kind: String, name: String, base_url: Option<String>) -> Result<ExternalService> {
         let external_services_service = ctx.data_unchecked::<ExternalServicesService>();
 
-        let service = external_services_service.create_external_service(&slug, &name).await?;
+        let service = external_services_service.create_external_service(&slug, &kind, &name, base_url.as_deref()).await?;
         Ok(service.into())
     }
 
-    async fn update_external_service(&self, ctx: &Context<'_>, id: Uuid, name: Option<String>) -> Result<ExternalService> {
+    async fn update_external_service(&self, ctx: &Context<'_>, id: Uuid, slug: Option<String>, name: Option<String>, base_url: Option<String>) -> Result<ExternalService> {
         let external_services_service = ctx.data_unchecked::<ExternalServicesService>();
 
-        let service = external_services_service.update_external_service_by_id(id.into(), name.as_deref()).await?;
+        let base_url = match &base_url {
+            Some(base_url) if base_url.is_empty() => Some(None),
+            Some(base_url) => Some(Some(base_url.as_str())),
+            None => None,
+        };
+
+        let service = external_services_service.update_external_service_by_id(id.into(), slug.as_deref(), name.as_deref(), base_url).await?;
         Ok(service.into())
     }
 

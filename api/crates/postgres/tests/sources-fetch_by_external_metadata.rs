@@ -29,7 +29,9 @@ async fn succeeds(ctx: &DatabaseContext) {
         external_service: ExternalService {
             id: ExternalServiceId::from(uuid!("4e0c68c7-e5ec-4d60-b9eb-733f47290cd3")),
             slug: "pixiv".to_string(),
+            kind: "pixiv".to_string(),
             name: "pixiv".to_string(),
+            base_url: Some("https://www.pixiv.net".to_string()),
         },
         external_metadata: ExternalMetadata::Pixiv { id: 8888888 },
         created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 8).unwrap(),
