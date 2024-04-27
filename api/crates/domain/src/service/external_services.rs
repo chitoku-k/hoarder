@@ -12,7 +12,7 @@ use crate::{
 #[cfg_attr(feature = "test-mock", mockall::automock)]
 pub trait ExternalServicesServiceInterface: Send + Sync + 'static {
     /// Creates an external service.
-    fn create_external_service(&self, slug: &str, name: &str) -> impl Future<Output = Result<ExternalService>> + Send;
+    fn create_external_service<'a>(&self, slug: &str, kind: &str, name: &str, base_url: Option<&'a str>) -> impl Future<Output = Result<ExternalService>> + Send;
 
     /// Gets external services.
     fn get_external_services(&self) -> impl Future<Output = Result<Vec<ExternalService>>> + Send;
@@ -23,7 +23,7 @@ pub trait ExternalServicesServiceInterface: Send + Sync + 'static {
         T: IntoIterator<Item = ExternalServiceId> + Send + Sync + 'static;
 
     /// Updates the external service by ID.
-    fn update_external_service_by_id<'a>(&self, id: ExternalServiceId, name: Option<&'a str>) -> impl Future<Output = Result<ExternalService>> + Send;
+    fn update_external_service_by_id<'a>(&self, id: ExternalServiceId, slug: Option<&'a str>, name: Option<&'a str>, base_url: Option<Option<&'a str>>) -> impl Future<Output = Result<ExternalService>> + Send;
 
     /// Deletes the external service by ID.
     fn delete_external_service_by_id(&self, id: ExternalServiceId) -> impl Future<Output = Result<DeleteResult>> + Send;
@@ -38,8 +38,8 @@ impl<ExternalServicesRepository> ExternalServicesServiceInterface for ExternalSe
 where
     ExternalServicesRepository: external_services::ExternalServicesRepository,
 {
-    async fn create_external_service(&self, slug: &str, name: &str) -> Result<ExternalService> {
-        match self.external_services_repository.create(slug, name).await {
+    async fn create_external_service<'a>(&self, slug: &str, kind: &str, name: &str, base_url: Option<&'a str>) -> Result<ExternalService> {
+        match self.external_services_repository.create(slug, kind, name, base_url).await {
             Ok(service) => Ok(service),
             Err(e) => {
                 log::error!("failed to create an external service\nError: {e:?}");
@@ -71,8 +71,8 @@ where
         }
     }
 
-    async fn update_external_service_by_id<'a>(&self, id: ExternalServiceId, name: Option<&'a str>) -> Result<ExternalService> {
-        match self.external_services_repository.update_by_id(id, name).await {
+    async fn update_external_service_by_id<'a>(&self, id: ExternalServiceId, slug: Option<&'a str>, name: Option<&'a str>, base_url: Option<Option<&'a str>>) -> Result<ExternalService> {
+        match self.external_services_repository.update_by_id(id, slug, name, base_url).await {
             Ok(service) => Ok(service),
             Err(e) => {
                 log::error!("failed to update the external service\nError: {e:?}");

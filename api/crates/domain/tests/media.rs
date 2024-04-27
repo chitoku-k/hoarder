@@ -65,7 +65,9 @@ async fn create_medium_succeeds() {
                         external_service: ExternalService {
                             id: ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                             slug: "twitter".to_string(),
+                            kind: "twitter".to_string(),
                             name: "Twitter".to_string(),
+                            base_url: Some("https://twitter.com".to_string()),
                         },
                         external_metadata: ExternalMetadata::Twitter { id: 727620202049900544 },
                         created_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 0).unwrap(),
@@ -76,7 +78,9 @@ async fn create_medium_succeeds() {
                         external_service: ExternalService {
                             id: ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
                             slug: "pixiv".to_string(),
+                            kind: "pixiv".to_string(),
                             name: "pixiv".to_string(),
+                            base_url: Some("https://www.pixiv.net".to_string()),
                         },
                         external_metadata: ExternalMetadata::Pixiv { id: 56736941 },
                         created_at: Utc.with_ymd_and_hms(2016, 5, 6, 5, 14, 0).unwrap(),
@@ -165,7 +169,9 @@ async fn create_medium_succeeds() {
                 external_service: ExternalService {
                     id: ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                     slug: "twitter".to_string(),
+                    kind: "twitter".to_string(),
                     name: "Twitter".to_string(),
+                    base_url: Some("https://twitter.com".to_string()),
                 },
                 external_metadata: ExternalMetadata::Twitter { id: 727620202049900544 },
                 created_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 0).unwrap(),
@@ -176,7 +182,9 @@ async fn create_medium_succeeds() {
                 external_service: ExternalService {
                     id: ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
                     slug: "pixiv".to_string(),
+                    kind: "pixiv".to_string(),
                     name: "pixiv".to_string(),
+                    base_url: Some("https://www.pixiv.net".to_string()),
                 },
                 external_metadata: ExternalMetadata::Pixiv { id: 56736941 },
                 created_at: Utc.with_ymd_and_hms(2016, 5, 6, 5, 14, 0).unwrap(),
@@ -567,7 +575,9 @@ async fn create_source_succeeds() {
                 external_service: ExternalService {
                     id: ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                     slug: "twitter".to_string(),
+                    kind: "twitter".to_string(),
                     name: "Twitter".to_string(),
+                    base_url: Some("https://twitter.com".to_string()),
                 },
                 external_metadata: ExternalMetadata::Twitter { id: 727620202049900544 },
                 created_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 0).unwrap(),
@@ -586,7 +596,9 @@ async fn create_source_succeeds() {
         external_service: ExternalService {
             id: ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
             slug: "twitter".to_string(),
+            kind: "twitter".to_string(),
             name: "Twitter".to_string(),
+            base_url: Some("https://twitter.com".to_string()),
         },
         external_metadata: ExternalMetadata::Twitter { id: 727620202049900544 },
         created_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 0).unwrap(),
@@ -1355,7 +1367,9 @@ async fn get_source_by_external_metadata_succeeds() {
                 external_service: ExternalService {
                     id: ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
                     slug: "pixiv".to_string(),
+                    kind: "pixiv".to_string(),
                     name: "pixiv".to_string(),
+                    base_url: Some("https://www.pixiv.net".to_string()),
                 },
                 external_metadata: ExternalMetadata::Pixiv { id: 56736941 },
                 created_at: Utc.with_ymd_and_hms(2016, 5, 6, 5, 14, 0).unwrap(),
@@ -1374,7 +1388,9 @@ async fn get_source_by_external_metadata_succeeds() {
         external_service: ExternalService {
             id: ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
             slug: "pixiv".to_string(),
+            kind: "pixiv".to_string(),
             name: "pixiv".to_string(),
+            base_url: Some("https://www.pixiv.net".to_string()),
         },
         external_metadata: ExternalMetadata::Pixiv { id: 56736941 },
         created_at: Utc.with_ymd_and_hms(2016, 5, 6, 5, 14, 0).unwrap(),
@@ -2165,7 +2181,9 @@ async fn update_source_by_id_succeeds() {
                 external_service: ExternalService {
                     id: ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
                     slug: "pixiv".to_string(),
+                    kind: "pixiv".to_string(),
                     name: "pixiv".to_string(),
+                    base_url: Some("https://www.pixiv.net".to_string()),
                 },
                 external_metadata: ExternalMetadata::Pixiv { id: 56736941 },
                 created_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 0).unwrap(),
@@ -2185,7 +2203,9 @@ async fn update_source_by_id_succeeds() {
         external_service: ExternalService {
             id: ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
             slug: "pixiv".to_string(),
+            kind: "pixiv".to_string(),
             name: "pixiv".to_string(),
+            base_url: Some("https://www.pixiv.net".to_string()),
         },
         external_metadata: ExternalMetadata::Pixiv { id: 56736941 },
         created_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 0).unwrap(),

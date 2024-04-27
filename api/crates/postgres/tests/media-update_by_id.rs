@@ -465,7 +465,9 @@ async fn with_sources_succeeds(ctx: &DatabaseContext) {
             external_service: ExternalService {
                 id: ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")),
                 slug: "twitter".to_string(),
+                kind: "twitter".to_string(),
                 name: "Twitter".to_string(),
+                base_url: Some("https://twitter.com".to_string()),
             },
             external_metadata: ExternalMetadata::Twitter { id: 333333333333 },
             created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 16).unwrap(),
@@ -476,7 +478,9 @@ async fn with_sources_succeeds(ctx: &DatabaseContext) {
             external_service: ExternalService {
                 id: ExternalServiceId::from(uuid!("2018afa2-aed9-46de-af9e-02e5fab64ed7")),
                 slug: "skeb".to_string(),
+                kind: "skeb".to_string(),
                 name: "Skeb".to_string(),
+                base_url: Some("https://skeb.jp".to_string()),
             },
             external_metadata: ExternalMetadata::Skeb { id: 1111, creator_id: "creator_02".to_string() },
             created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 13).unwrap(),
@@ -1016,7 +1020,9 @@ async fn reorder_replicas_with_sources_succeeds(ctx: &DatabaseContext) {
             external_service: ExternalService {
                 id: ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")),
                 slug: "twitter".to_string(),
+                kind: "twitter".to_string(),
                 name: "Twitter".to_string(),
+                base_url: Some("https://twitter.com".to_string()),
             },
             external_metadata: ExternalMetadata::Twitter { id: 333333333333 },
             created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 16).unwrap(),
@@ -1027,7 +1033,9 @@ async fn reorder_replicas_with_sources_succeeds(ctx: &DatabaseContext) {
             external_service: ExternalService {
                 id: ExternalServiceId::from(uuid!("2018afa2-aed9-46de-af9e-02e5fab64ed7")),
                 slug: "skeb".to_string(),
+                kind: "skeb".to_string(),
                 name: "Skeb".to_string(),
+                base_url: Some("https://skeb.jp".to_string()),
             },
             external_metadata: ExternalMetadata::Skeb { id: 1111, creator_id: "creator_02".to_string() },
             created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 13).unwrap(),

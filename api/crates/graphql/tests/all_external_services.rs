@@ -24,17 +24,23 @@ async fn succeeds() {
                 ExternalService {
                     id: ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
                     slug: "pixiv".to_string(),
+                    kind: "pixiv".to_string(),
                     name: "pixiv".to_string(),
+                    base_url: Some("https://www.pixiv.net".to_string()),
                 },
                 ExternalService {
                     id: ExternalServiceId::from(uuid!("22222222-2222-2222-2222-222222222222")),
                     slug: "skeb".to_string(),
+                    kind: "skeb".to_string(),
                     name: "Skeb".to_string(),
+                    base_url: Some("https://skeb.jp".to_string()),
                 },
                 ExternalService {
                     id: ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                     slug: "twitter".to_string(),
+                    kind: "twitter".to_string(),
                     name: "Twitter".to_string(),
+                    base_url: Some("https://twitter.com".to_string()),
                 },
             ]))
         });
@@ -54,7 +60,9 @@ async fn succeeds() {
             allExternalServices {
                 id
                 slug
+                kind
                 name
+                baseUrl
             }
         }
     "#};
@@ -65,17 +73,23 @@ async fn succeeds() {
             {
                 "id": "11111111-1111-1111-1111-111111111111",
                 "slug": "pixiv",
+                "kind": "pixiv",
                 "name": "pixiv",
+                "baseUrl": "https://www.pixiv.net",
             },
             {
                 "id": "22222222-2222-2222-2222-222222222222",
                 "slug": "skeb",
+                "kind": "skeb",
                 "name": "Skeb",
+                "baseUrl": "https://skeb.jp",
             },
             {
                 "id": "33333333-3333-3333-3333-333333333333",
                 "slug": "twitter",
+                "kind": "twitter",
                 "name": "Twitter",
+                "baseUrl": "https://twitter.com",
             },
         ],
     }));

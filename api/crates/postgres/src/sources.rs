@@ -46,7 +46,9 @@ struct PostgresSourceExternalServiceRow {
     source_updated_at: DateTime<Utc>,
     external_service_id: PostgresExternalServiceId,
     external_service_slug: String,
+    external_service_kind: String,
     external_service_name: String,
+    external_service_base_url: Option<String>,
 }
 
 #[derive(Debug)]
@@ -86,7 +88,9 @@ pub(crate) enum PostgresSourceExternalService {
     SourceUpdatedAt,
     ExternalServiceId,
     ExternalServiceSlug,
+    ExternalServiceKind,
     ExternalServiceName,
+    ExternalServiceBaseUrl,
 }
 
 sea_query_uuid_value!(PostgresSourceId, SourceId);
@@ -152,7 +156,9 @@ impl From<PostgresSourceExternalServiceRow> for Source {
             external_service: ExternalService {
                 id: row.external_service_id.into(),
                 slug: row.external_service_slug,
+                kind: row.external_service_kind,
                 name: row.external_service_name,
+                base_url: row.external_service_base_url,
             },
             external_metadata,
             created_at: row.source_created_at,
@@ -169,7 +175,9 @@ impl SourcesRepository for PostgresSourcesRepository {
             .columns([
                 PostgresExternalService::Id,
                 PostgresExternalService::Slug,
+                PostgresExternalService::Kind,
                 PostgresExternalService::Name,
+                PostgresExternalService::BaseUrl,
             ])
             .from(PostgresExternalService::Table)
             .and_where(Expr::col(PostgresExternalService::Id).eq(PostgresExternalServiceId::from(external_service_id)))
@@ -234,7 +242,9 @@ impl SourcesRepository for PostgresSourcesRepository {
             .expr_as(Expr::col((PostgresSource::Table, PostgresSource::UpdatedAt)), PostgresSourceExternalService::SourceUpdatedAt)
             .expr_as(Expr::col((PostgresExternalService::Table, PostgresExternalService::Id)), PostgresSourceExternalService::ExternalServiceId)
             .expr_as(Expr::col((PostgresExternalService::Table, PostgresExternalService::Slug)), PostgresSourceExternalService::ExternalServiceSlug)
+            .expr_as(Expr::col((PostgresExternalService::Table, PostgresExternalService::Kind)), PostgresSourceExternalService::ExternalServiceKind)
             .expr_as(Expr::col((PostgresExternalService::Table, PostgresExternalService::Name)), PostgresSourceExternalService::ExternalServiceName)
+            .expr_as(Expr::col((PostgresExternalService::Table, PostgresExternalService::BaseUrl)), PostgresSourceExternalService::ExternalServiceBaseUrl)
             .from(PostgresSource::Table)
             .join(
                 JoinType::InnerJoin,
@@ -315,7 +325,9 @@ impl SourcesRepository for PostgresSourcesRepository {
             .columns([
                 PostgresExternalService::Id,
                 PostgresExternalService::Slug,
+                PostgresExternalService::Kind,
                 PostgresExternalService::Name,
+                PostgresExternalService::BaseUrl,
             ])
             .from(PostgresExternalService::Table)
             .and_where(Expr::col(PostgresExternalService::Id).eq(row.external_service_id.clone()))

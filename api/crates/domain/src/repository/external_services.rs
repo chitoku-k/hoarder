@@ -9,7 +9,7 @@ use crate::{
 #[cfg_attr(feature = "test-mock", mockall::automock)]
 pub trait ExternalServicesRepository: Send + Sync + 'static {
     /// Creates an external service.
-    fn create(&self, slug: &str, name: &str) -> impl Future<Output = Result<ExternalService>> + Send;
+    fn create<'a>(&self, slug: &str, kind: &str, name: &str, base_url: Option<&'a str>) -> impl Future<Output = Result<ExternalService>> + Send;
 
     /// Fetches the external services by their IDs.
     fn fetch_by_ids<T>(&self, ids: T) -> impl Future<Output = Result<Vec<ExternalService>>> + Send
@@ -20,7 +20,7 @@ pub trait ExternalServicesRepository: Send + Sync + 'static {
     fn fetch_all(&self) -> impl Future<Output = Result<Vec<ExternalService>>> + Send;
 
     /// Updates the external service by ID.
-    fn update_by_id<'a>(&self, id: ExternalServiceId, name: Option<&'a str>) -> impl Future<Output = Result<ExternalService>> + Send;
+    fn update_by_id<'a>(&self, id: ExternalServiceId, slug: Option<&'a str>, name: Option<&'a str>, base_url: Option<Option<&'a str>>) -> impl Future<Output = Result<ExternalService>> + Send;
 
     /// Deletes the external service by ID.
     fn delete_by_id(&self, id: ExternalServiceId) -> impl Future<Output = Result<DeleteResult>> + Send;

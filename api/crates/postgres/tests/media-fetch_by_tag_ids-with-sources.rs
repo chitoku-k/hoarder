@@ -49,7 +49,9 @@ async fn asc_succeeds(ctx: &DatabaseContext) {
                     external_service: ExternalService {
                         id: ExternalServiceId::from(uuid!("4e0c68c7-e5ec-4d60-b9eb-733f47290cd3")),
                         slug: "pixiv".to_string(),
+                        kind: "pixiv".to_string(),
                         name: "pixiv".to_string(),
+                        base_url: Some("https://www.pixiv.net".to_string()),
                     },
                     external_metadata: ExternalMetadata::Pixiv { id: 2222222 },
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 5).unwrap(),
@@ -60,7 +62,9 @@ async fn asc_succeeds(ctx: &DatabaseContext) {
                     external_service: ExternalService {
                         id: ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")),
                         slug: "twitter".to_string(),
+                        kind: "twitter".to_string(),
                         name: "Twitter".to_string(),
+                        base_url: Some("https://twitter.com".to_string()),
                     },
                     external_metadata: ExternalMetadata::Twitter { id: 222222222222 },
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 14).unwrap(),
@@ -80,7 +84,9 @@ async fn asc_succeeds(ctx: &DatabaseContext) {
                     external_service: ExternalService {
                         id: ExternalServiceId::from(uuid!("4e0c68c7-e5ec-4d60-b9eb-733f47290cd3")),
                         slug: "pixiv".to_string(),
+                        kind: "pixiv".to_string(),
                         name: "pixiv".to_string(),
+                        base_url: Some("https://www.pixiv.net".to_string()),
                     },
                     external_metadata: ExternalMetadata::Pixiv { id: 3333333 },
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
@@ -91,7 +97,9 @@ async fn asc_succeeds(ctx: &DatabaseContext) {
                     external_service: ExternalService {
                         id: ExternalServiceId::from(uuid!("2018afa2-aed9-46de-af9e-02e5fab64ed7")),
                         slug: "skeb".to_string(),
+                        kind: "skeb".to_string(),
                         name: "Skeb".to_string(),
+                        base_url: Some("https://skeb.jp".to_string()),
                     },
                     external_metadata: ExternalMetadata::Skeb { id: 3333, creator_id: "creator_01".to_string() },
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 11).unwrap(),
@@ -111,7 +119,9 @@ async fn asc_succeeds(ctx: &DatabaseContext) {
                     external_service: ExternalService {
                         id: ExternalServiceId::from(uuid!("4e0c68c7-e5ec-4d60-b9eb-733f47290cd3")),
                         slug: "pixiv".to_string(),
+                        kind: "pixiv".to_string(),
                         name: "pixiv".to_string(),
+                        base_url: Some("https://www.pixiv.net".to_string()),
                     },
                     external_metadata: ExternalMetadata::Pixiv { id: 1111111 },
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
@@ -156,7 +166,9 @@ async fn desc_succeeds(ctx: &DatabaseContext) {
                     external_service: ExternalService {
                         id: ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")),
                         slug: "twitter".to_string(),
+                        kind: "twitter".to_string(),
                         name: "Twitter".to_string(),
+                        base_url: Some("https://twitter.com".to_string()),
                     },
                     external_metadata: ExternalMetadata::Twitter { id: 111111111111 },
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 15).unwrap(),
@@ -167,7 +179,9 @@ async fn desc_succeeds(ctx: &DatabaseContext) {
                     external_service: ExternalService {
                         id: ExternalServiceId::from(uuid!("4e0c68c7-e5ec-4d60-b9eb-733f47290cd3")),
                         slug: "pixiv".to_string(),
+                        kind: "pixiv".to_string(),
                         name: "pixiv".to_string(),
+                        base_url: Some("https://www.pixiv.net".to_string()),
                     },
                     external_metadata: ExternalMetadata::Pixiv { id: 7777777 },
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 7).unwrap(),
@@ -187,7 +201,9 @@ async fn desc_succeeds(ctx: &DatabaseContext) {
                     external_service: ExternalService {
                         id: ExternalServiceId::from(uuid!("4e0c68c7-e5ec-4d60-b9eb-733f47290cd3")),
                         slug: "pixiv".to_string(),
+                        kind: "pixiv".to_string(),
                         name: "pixiv".to_string(),
+                        base_url: Some("https://www.pixiv.net".to_string()),
                     },
                     external_metadata: ExternalMetadata::Pixiv { id: 1111111 },
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
@@ -207,7 +223,9 @@ async fn desc_succeeds(ctx: &DatabaseContext) {
                     external_service: ExternalService {
                         id: ExternalServiceId::from(uuid!("4e0c68c7-e5ec-4d60-b9eb-733f47290cd3")),
                         slug: "pixiv".to_string(),
+                        kind: "pixiv".to_string(),
                         name: "pixiv".to_string(),
+                        base_url: Some("https://www.pixiv.net".to_string()),
                     },
                     external_metadata: ExternalMetadata::Pixiv { id: 3333333 },
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
@@ -218,7 +236,9 @@ async fn desc_succeeds(ctx: &DatabaseContext) {
                     external_service: ExternalService {
                         id: ExternalServiceId::from(uuid!("2018afa2-aed9-46de-af9e-02e5fab64ed7")),
                         slug: "skeb".to_string(),
+                        kind: "skeb".to_string(),
                         name: "Skeb".to_string(),
+                        base_url: Some("https://skeb.jp".to_string()),
                     },
                     external_metadata: ExternalMetadata::Skeb { id: 3333, creator_id: "creator_01".to_string() },
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 11).unwrap(),
@@ -263,7 +283,9 @@ async fn since_asc_succeeds(ctx: &DatabaseContext) {
                     external_service: ExternalService {
                         id: ExternalServiceId::from(uuid!("4e0c68c7-e5ec-4d60-b9eb-733f47290cd3")),
                         slug: "pixiv".to_string(),
+                        kind: "pixiv".to_string(),
                         name: "pixiv".to_string(),
+                        base_url: Some("https://www.pixiv.net".to_string()),
                     },
                     external_metadata: ExternalMetadata::Pixiv { id: 3333333 },
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
@@ -274,7 +296,9 @@ async fn since_asc_succeeds(ctx: &DatabaseContext) {
                     external_service: ExternalService {
                         id: ExternalServiceId::from(uuid!("2018afa2-aed9-46de-af9e-02e5fab64ed7")),
                         slug: "skeb".to_string(),
+                        kind: "skeb".to_string(),
                         name: "Skeb".to_string(),
+                        base_url: Some("https://skeb.jp".to_string()),
                     },
                     external_metadata: ExternalMetadata::Skeb { id: 3333, creator_id: "creator_01".to_string() },
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 11).unwrap(),
@@ -294,7 +318,9 @@ async fn since_asc_succeeds(ctx: &DatabaseContext) {
                     external_service: ExternalService {
                         id: ExternalServiceId::from(uuid!("4e0c68c7-e5ec-4d60-b9eb-733f47290cd3")),
                         slug: "pixiv".to_string(),
+                        kind: "pixiv".to_string(),
                         name: "pixiv".to_string(),
+                        base_url: Some("https://www.pixiv.net".to_string()),
                     },
                     external_metadata: ExternalMetadata::Pixiv { id: 1111111 },
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
@@ -314,7 +340,9 @@ async fn since_asc_succeeds(ctx: &DatabaseContext) {
                     external_service: ExternalService {
                         id: ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")),
                         slug: "twitter".to_string(),
+                        kind: "twitter".to_string(),
                         name: "Twitter".to_string(),
+                        base_url: Some("https://twitter.com".to_string()),
                     },
                     external_metadata: ExternalMetadata::Twitter { id: 111111111111 },
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 15).unwrap(),
@@ -325,7 +353,9 @@ async fn since_asc_succeeds(ctx: &DatabaseContext) {
                     external_service: ExternalService {
                         id: ExternalServiceId::from(uuid!("4e0c68c7-e5ec-4d60-b9eb-733f47290cd3")),
                         slug: "pixiv".to_string(),
+                        kind: "pixiv".to_string(),
                         name: "pixiv".to_string(),
+                        base_url: Some("https://www.pixiv.net".to_string()),
                     },
                     external_metadata: ExternalMetadata::Pixiv { id: 7777777 },
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 7).unwrap(),
@@ -370,7 +400,9 @@ async fn since_desc_succeeds(ctx: &DatabaseContext) {
                     external_service: ExternalService {
                         id: ExternalServiceId::from(uuid!("4e0c68c7-e5ec-4d60-b9eb-733f47290cd3")),
                         slug: "pixiv".to_string(),
+                        kind: "pixiv".to_string(),
                         name: "pixiv".to_string(),
+                        base_url: Some("https://www.pixiv.net".to_string()),
                     },
                     external_metadata: ExternalMetadata::Pixiv { id: 2222222 },
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 5).unwrap(),
@@ -381,7 +413,9 @@ async fn since_desc_succeeds(ctx: &DatabaseContext) {
                     external_service: ExternalService {
                         id: ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")),
                         slug: "twitter".to_string(),
+                        kind: "twitter".to_string(),
                         name: "Twitter".to_string(),
+                        base_url: Some("https://twitter.com".to_string()),
                     },
                     external_metadata: ExternalMetadata::Twitter { id: 222222222222 },
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 14).unwrap(),
@@ -426,7 +460,9 @@ async fn until_asc_succeeds(ctx: &DatabaseContext) {
                     external_service: ExternalService {
                         id: ExternalServiceId::from(uuid!("4e0c68c7-e5ec-4d60-b9eb-733f47290cd3")),
                         slug: "pixiv".to_string(),
+                        kind: "pixiv".to_string(),
                         name: "pixiv".to_string(),
+                        base_url: Some("https://www.pixiv.net".to_string()),
                     },
                     external_metadata: ExternalMetadata::Pixiv { id: 2222222 },
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 5).unwrap(),
@@ -437,7 +473,9 @@ async fn until_asc_succeeds(ctx: &DatabaseContext) {
                     external_service: ExternalService {
                         id: ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")),
                         slug: "twitter".to_string(),
+                        kind: "twitter".to_string(),
                         name: "Twitter".to_string(),
+                        base_url: Some("https://twitter.com".to_string()),
                     },
                     external_metadata: ExternalMetadata::Twitter { id: 222222222222 },
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 14).unwrap(),
@@ -457,7 +495,9 @@ async fn until_asc_succeeds(ctx: &DatabaseContext) {
                     external_service: ExternalService {
                         id: ExternalServiceId::from(uuid!("4e0c68c7-e5ec-4d60-b9eb-733f47290cd3")),
                         slug: "pixiv".to_string(),
+                        kind: "pixiv".to_string(),
                         name: "pixiv".to_string(),
+                        base_url: Some("https://www.pixiv.net".to_string()),
                     },
                     external_metadata: ExternalMetadata::Pixiv { id: 3333333 },
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
@@ -468,7 +508,9 @@ async fn until_asc_succeeds(ctx: &DatabaseContext) {
                     external_service: ExternalService {
                         id: ExternalServiceId::from(uuid!("2018afa2-aed9-46de-af9e-02e5fab64ed7")),
                         slug: "skeb".to_string(),
+                        kind: "skeb".to_string(),
                         name: "Skeb".to_string(),
+                        base_url: Some("https://skeb.jp".to_string()),
                     },
                     external_metadata: ExternalMetadata::Skeb { id: 3333, creator_id: "creator_01".to_string() },
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 11).unwrap(),
@@ -513,7 +555,9 @@ async fn until_desc_succeeds(ctx: &DatabaseContext) {
                     external_service: ExternalService {
                         id: ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")),
                         slug: "twitter".to_string(),
+                        kind: "twitter".to_string(),
                         name: "Twitter".to_string(),
+                        base_url: Some("https://twitter.com".to_string()),
                     },
                     external_metadata: ExternalMetadata::Twitter { id: 111111111111 },
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 15).unwrap(),
@@ -524,7 +568,9 @@ async fn until_desc_succeeds(ctx: &DatabaseContext) {
                     external_service: ExternalService {
                         id: ExternalServiceId::from(uuid!("4e0c68c7-e5ec-4d60-b9eb-733f47290cd3")),
                         slug: "pixiv".to_string(),
+                        kind: "pixiv".to_string(),
                         name: "pixiv".to_string(),
+                        base_url: Some("https://www.pixiv.net".to_string()),
                     },
                     external_metadata: ExternalMetadata::Pixiv { id: 7777777 },
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 7).unwrap(),

@@ -31,12 +31,16 @@ async fn succeeds() {
                 ExternalService {
                     id: ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
                     slug: "pixiv".to_string(),
+                    kind: "pixiv".to_string(),
                     name: "pixiv".to_string(),
+                    base_url: Some("https://www.pixiv.net".to_string()),
                 },
                 ExternalService {
                     id: ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                     slug: "twitter".to_string(),
+                    kind: "twitter".to_string(),
                     name: "Twitter".to_string(),
+                    base_url: Some("https://twitter.com".to_string()),
                 },
             ]))
         });

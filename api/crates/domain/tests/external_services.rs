@@ -15,22 +15,26 @@ async fn create_external_service_succeeds() {
     mock_external_services_repository
         .expect_create()
         .times(1)
-        .withf(|slug, name| (slug, name) == ("twitter", "Twitter"))
-        .returning(|_, _| {
+        .withf(|slug, kind, name, base_url| (slug, kind, name, base_url) == ("twitter", "twitter", "Twitter", &Some("https://twitter.com")))
+        .returning(|_, _, _, _| {
             Box::pin(ok(ExternalService {
                 id: ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                 slug: "twitter".to_string(),
+                kind: "twitter".to_string(),
                 name: "Twitter".to_string(),
+                base_url: Some("https://twitter.com".to_string()),
             }))
         });
 
     let service = ExternalServicesService::new(mock_external_services_repository);
-    let actual = service.create_external_service("twitter", "Twitter").await.unwrap();
+    let actual = service.create_external_service("twitter", "twitter", "Twitter", Some("https://twitter.com")).await.unwrap();
 
     assert_eq!(actual, ExternalService {
         id: ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
         slug: "twitter".to_string(),
+        kind: "twitter".to_string(),
         name: "Twitter".to_string(),
+        base_url: Some("https://twitter.com".to_string()),
     });
 }
 
@@ -40,11 +44,11 @@ async fn create_external_service_fails() {
     mock_external_services_repository
         .expect_create()
         .times(1)
-        .withf(|slug, name| (slug, name) == ("twitter", "Twitter"))
-        .returning(|_, _| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
+        .withf(|slug, kind, name, base_url| (slug, kind, name, base_url) == ("twitter", "twitter", "Twitter", &Some("https://twitter.com")))
+        .returning(|_, _, _, _| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
 
     let service = ExternalServicesService::new(mock_external_services_repository);
-    let actual = service.create_external_service("twitter", "Twitter").await.unwrap_err();
+    let actual = service.create_external_service("twitter", "twitter", "Twitter", Some("https://twitter.com")).await.unwrap_err();
 
     assert_matches!(actual.kind(), ErrorKind::Other);
 }
@@ -60,17 +64,23 @@ async fn get_external_services_succeeds() {
                 ExternalService {
                     id: ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
                     slug: "pixiv".to_string(),
+                    kind: "pixiv".to_string(),
                     name: "pixiv".to_string(),
+                    base_url: Some("https://www.pixiv.net".to_string()),
                 },
                 ExternalService {
                     id: ExternalServiceId::from(uuid!("22222222-2222-2222-2222-222222222222")),
                     slug: "skeb".to_string(),
+                    kind: "skeb".to_string(),
                     name: "Skeb".to_string(),
+                    base_url: Some("https://skeb.jp".to_string()),
                 },
                 ExternalService {
                     id: ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                     slug: "twitter".to_string(),
+                    kind: "twitter".to_string(),
                     name: "Twitter".to_string(),
+                    base_url: Some("https://twitter.com".to_string()),
                 },
             ]))
         });
@@ -82,17 +92,23 @@ async fn get_external_services_succeeds() {
         ExternalService {
             id: ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
             slug: "pixiv".to_string(),
+            kind: "pixiv".to_string(),
             name: "pixiv".to_string(),
+            base_url: Some("https://www.pixiv.net".to_string()),
         },
         ExternalService {
             id: ExternalServiceId::from(uuid!("22222222-2222-2222-2222-222222222222")),
             slug: "skeb".to_string(),
+            kind: "skeb".to_string(),
             name: "Skeb".to_string(),
+            base_url: Some("https://skeb.jp".to_string()),
         },
         ExternalService {
             id: ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
             slug: "twitter".to_string(),
+            kind: "twitter".to_string(),
             name: "Twitter".to_string(),
+            base_url: Some("https://twitter.com".to_string()),
         },
     ]);
 }
@@ -126,12 +142,16 @@ async fn get_external_services_by_ids_succeeds() {
                 ExternalService {
                     id: ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
                     slug: "pixiv".to_string(),
+                    kind: "pixiv".to_string(),
                     name: "pixiv".to_string(),
+                    base_url: Some("https://www.pixiv.net".to_string()),
                 },
                 ExternalService {
                     id: ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                     slug: "twitter".to_string(),
+                    kind: "twitter".to_string(),
                     name: "Twitter".to_string(),
+                    base_url: Some("https://twitter.com".to_string()),
                 },
             ]))
         });
@@ -146,12 +166,16 @@ async fn get_external_services_by_ids_succeeds() {
         ExternalService {
             id: ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
             slug: "pixiv".to_string(),
+            kind: "pixiv".to_string(),
             name: "pixiv".to_string(),
+            base_url: Some("https://www.pixiv.net".to_string()),
         },
         ExternalService {
             id: ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
             slug: "twitter".to_string(),
+            kind: "twitter".to_string(),
             name: "Twitter".to_string(),
+            base_url: Some("https://twitter.com".to_string()),
         },
     ]);
 }
@@ -183,28 +207,36 @@ async fn update_external_service_by_id_succeeds() {
     mock_external_services_repository
         .expect_update_by_id()
         .times(1)
-        .withf(|id, name| (id, name) == (
+        .withf(|id, slug, name, base_url| (id, slug, name, base_url) == (
             &ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
+            &None,
             &Some("PIXIV"),
+            &None,
         ))
-        .returning(|_, _| {
+        .returning(|_, _, _, _| {
             Box::pin(ok(ExternalService {
                 id: ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
                 slug: "pixiv".to_string(),
+                kind: "pixiv".to_string(),
                 name: "PIXIV".to_string(),
+                base_url: Some("https://www.pixiv.net".to_string()),
             }))
         });
 
     let service = ExternalServicesService::new(mock_external_services_repository);
     let actual = service.update_external_service_by_id(
         ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
+        None,
         Some("PIXIV"),
+        None,
     ).await.unwrap();
 
     assert_eq!(actual, ExternalService {
         id: ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
         slug: "pixiv".to_string(),
+        kind: "pixiv".to_string(),
         name: "PIXIV".to_string(),
+        base_url: Some("https://www.pixiv.net".to_string()),
     })
 }
 
@@ -214,16 +246,20 @@ async fn update_external_service_by_id_fails() {
     mock_external_services_repository
         .expect_update_by_id()
         .times(1)
-        .withf(|id, name| (id, name) == (
+        .withf(|id, slug, name, base_url| (id, slug, name, base_url) == (
             &ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
+            &None,
             &Some("PIXIV"),
+            &None,
         ))
-        .returning(|_, _| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
+        .returning(|_, _, _, _| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
 
     let service = ExternalServicesService::new(mock_external_services_repository);
     let actual = service.update_external_service_by_id(
         ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
+        None,
         Some("PIXIV"),
+        None,
     ).await.unwrap_err();
 
     assert_matches!(actual.kind(), ErrorKind::Other);
