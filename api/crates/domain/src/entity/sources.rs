@@ -107,7 +107,7 @@ mod tests {
                 name: "mastodon.social".to_string(),
                 base_url: Some("https://mastodon.social".to_string()),
             },
-            external_metadata: ExternalMetadata::Mastodon { id: 123456789, creator_id: Some("creator_01".to_string()) },
+            external_metadata: ExternalMetadata::Mastodon { id: 123456789, creator_id: "creator_01".to_string() },
             created_at: Utc.with_ymd_and_hms(2024, 1, 2, 3, 4, 5).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2024, 1, 2, 3, 4, 6).unwrap(),
         };

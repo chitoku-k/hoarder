@@ -24,7 +24,7 @@ pub(crate) struct Source {
 pub(crate) enum ExternalMetadata {
     Bluesky(ExternalMetadataIdCreatorId),
     Fantia(ExternalMetadataId),
-    Mastodon(ExternalMetadataIdOptionalCreatorId),
+    Mastodon(ExternalMetadataIdCreatorId),
     Misskey(ExternalMetadataId),
     Nijie(ExternalMetadataId),
     Pixiv(ExternalMetadataId),
@@ -75,7 +75,7 @@ impl TryFrom<external_services::ExternalMetadata> for ExternalMetadata {
         match value {
             Bluesky { id, creator_id } => Ok(Self::Bluesky(ExternalMetadataIdCreatorId { id, creator_id })),
             Fantia { id } => Ok(Self::Fantia(ExternalMetadataId { id: id.to_string() })),
-            Mastodon { id, creator_id } => Ok(Self::Mastodon(ExternalMetadataIdOptionalCreatorId { id: id.to_string(), creator_id })),
+            Mastodon { id, creator_id } => Ok(Self::Mastodon(ExternalMetadataIdCreatorId { id: id.to_string(), creator_id })),
             Misskey { id } => Ok(Self::Misskey(ExternalMetadataId { id })),
             Nijie { id } => Ok(Self::Nijie(ExternalMetadataId { id: id.to_string() })),
             Pixiv { id } => Ok(Self::Pixiv(ExternalMetadataId { id: id.to_string() })),
@@ -99,7 +99,7 @@ impl TryFrom<ExternalMetadata> for external_services::ExternalMetadata {
         match value {
             Bluesky(ExternalMetadataIdCreatorId { id, creator_id }) => Ok(Self::Bluesky { id, creator_id }),
             Fantia(ExternalMetadataId { id }) => Ok(Self::Fantia { id: id.parse().map_err(|_| ErrorKind::SourceMetadataInvalid)? }),
-            Mastodon(ExternalMetadataIdOptionalCreatorId { id, creator_id }) => Ok(Self::Mastodon { id: id.parse().map_err(|_| ErrorKind::SourceMetadataInvalid)?, creator_id }),
+            Mastodon(ExternalMetadataIdCreatorId { id, creator_id }) => Ok(Self::Mastodon { id: id.parse().map_err(|_| ErrorKind::SourceMetadataInvalid)?, creator_id }),
             Misskey(ExternalMetadataId { id }) => Ok(Self::Misskey { id }),
             Nijie(ExternalMetadataId { id }) => Ok(Self::Nijie { id: id.parse().map_err(|_| ErrorKind::SourceMetadataInvalid)? }),
             Pixiv(ExternalMetadataId { id }) => Ok(Self::Pixiv { id: id.parse().map_err(|_| ErrorKind::SourceMetadataInvalid)? }),
@@ -166,15 +166,15 @@ mod tests {
 
     #[test]
     fn convert_mastodon() {
-        let metadata = ExternalMetadata::Mastodon(ExternalMetadataIdOptionalCreatorId { id: "123456789".to_string(), creator_id: Some("creator_01".to_string()) });
+        let metadata = ExternalMetadata::Mastodon(ExternalMetadataIdCreatorId { id: "123456789".to_string(), creator_id: "creator_01".to_string() });
         let actual = external_services::ExternalMetadata::try_from(metadata).unwrap();
 
-        assert_eq!(actual, external_services::ExternalMetadata::Mastodon { id: 123456789, creator_id: Some("creator_01".to_string()) });
+        assert_eq!(actual, external_services::ExternalMetadata::Mastodon { id: 123456789, creator_id: "creator_01".to_string() });
 
-        let metadata = external_services::ExternalMetadata::Mastodon { id: 123456789, creator_id: Some("creator_01".to_string()) };
+        let metadata = external_services::ExternalMetadata::Mastodon { id: 123456789, creator_id: "creator_01".to_string() };
         let actual = ExternalMetadata::try_from(metadata).unwrap();
 
-        assert_eq!(actual, ExternalMetadata::Mastodon(ExternalMetadataIdOptionalCreatorId { id: "123456789".to_string(), creator_id: Some("creator_01".to_string()) }));
+        assert_eq!(actual, ExternalMetadata::Mastodon(ExternalMetadataIdCreatorId { id: "123456789".to_string(), creator_id: "creator_01".to_string() }));
     }
 
     #[test]

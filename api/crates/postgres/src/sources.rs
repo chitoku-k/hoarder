@@ -61,7 +61,7 @@ struct PostgresSourceRowAndExternalServiceRow(PostgresSourceRow, PostgresExterna
 pub(crate) enum PostgresExternalServiceMetadata {
     Bluesky { id: String, creator_id: String },
     Fantia { id: u64 },
-    Mastodon { id: u64, creator_id: Option<String> },
+    Mastodon { id: u64, creator_id: String },
     Misskey { id: String },
     Nijie { id: u64 },
     Pixiv { id: u64 },
