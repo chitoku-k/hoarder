@@ -101,7 +101,7 @@ async fn with_external_service_and_external_metadata_succeeds(ctx: &DatabaseCont
     assert_eq!(actual.get::<serde_json::Value, &str>("external_metadata"), json!({
         "type": "skeb",
         "id": 7777,
-        "creator_id": "creator_03",
+        "creatorId": "creator_03",
     }));
 }
 
