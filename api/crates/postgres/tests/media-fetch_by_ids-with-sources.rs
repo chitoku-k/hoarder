@@ -80,7 +80,7 @@ async fn succeeds(ctx: &DatabaseContext) {
                         name: "Twitter".to_string(),
                         base_url: Some("https://twitter.com".to_string()),
                     },
-                    external_metadata: ExternalMetadata::Twitter { id: 333333333333 },
+                    external_metadata: ExternalMetadata::Twitter { id: 333333333333, creator_id: Some("creator_03".to_string()) },
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 16).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 6).unwrap(),
                 },

@@ -28,7 +28,7 @@ async fn succeeds() {
         .withf(|external_service_id, external_metadata| {
             (external_service_id, external_metadata) == (
                 &ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
-                &external_services::ExternalMetadata::Twitter { id: 727620202049900544 },
+                &external_services::ExternalMetadata::Twitter { id: 727620202049900544, creator_id: Some("_namori_".to_string()) },
             )
         })
         .returning(|_, _| {
@@ -41,7 +41,7 @@ async fn succeeds() {
                     name: "Twitter".to_string(),
                     base_url: Some("https://twitter.com".to_string()),
                 },
-                external_metadata: external_services::ExternalMetadata::Twitter { id: 727620202049900544 },
+                external_metadata: external_services::ExternalMetadata::Twitter { id: 727620202049900544, creator_id: Some("_namori_".to_string()) },
                 created_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 0).unwrap(),
                 updated_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 1).unwrap(),
             })))
@@ -63,6 +63,7 @@ async fn succeeds() {
                 externalMetadata: {
                     twitter: {
                         id: "727620202049900544",
+                        creatorId: "_namori_",
                     },
                 },
             ) {
@@ -95,6 +96,7 @@ async fn succeeds() {
             "externalMetadata": {
                 "twitter": {
                     "id": "727620202049900544",
+                    "creatorId": "_namori_",
                 },
             },
             "createdAt": "2016-05-04T07:05:00+00:00",
@@ -114,7 +116,7 @@ async fn not_found() {
         .withf(|external_service_id, external_metadata| {
             (external_service_id, external_metadata) == (
                 &ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
-                &external_services::ExternalMetadata::Twitter { id: 727620202049900544 },
+                &external_services::ExternalMetadata::Twitter { id: 727620202049900544, creator_id: Some("_namori_".to_string()) },
             )
         })
         .returning(|_, _| Box::pin(ok(None)));
@@ -135,6 +137,7 @@ async fn not_found() {
                 externalMetadata: {
                     twitter: {
                         id: "727620202049900544",
+                        creatorId: "_namori_",
                     },
                 },
             ) {

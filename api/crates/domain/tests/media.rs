@@ -69,7 +69,7 @@ async fn create_medium_succeeds() {
                             name: "Twitter".to_string(),
                             base_url: Some("https://twitter.com".to_string()),
                         },
-                        external_metadata: ExternalMetadata::Twitter { id: 727620202049900544 },
+                        external_metadata: ExternalMetadata::Twitter { id: 727620202049900544, creator_id: Some("_namori_".to_string()) },
                         created_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 0).unwrap(),
                         updated_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 1).unwrap(),
                     },
@@ -173,7 +173,7 @@ async fn create_medium_succeeds() {
                     name: "Twitter".to_string(),
                     base_url: Some("https://twitter.com".to_string()),
                 },
-                external_metadata: ExternalMetadata::Twitter { id: 727620202049900544 },
+                external_metadata: ExternalMetadata::Twitter { id: 727620202049900544, creator_id: Some("_namori_".to_string()) },
                 created_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 0).unwrap(),
                 updated_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 1).unwrap(),
             },
@@ -566,7 +566,7 @@ async fn create_source_succeeds() {
         .withf(|external_service_id, external_metadata| {
             (external_service_id, external_metadata) == (
                 &ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
-                &ExternalMetadata::Twitter { id: 727620202049900544 },
+                &ExternalMetadata::Twitter { id: 727620202049900544, creator_id: Some("_namori_".to_string()) },
             )
         })
         .returning(|_, _| {
@@ -579,7 +579,7 @@ async fn create_source_succeeds() {
                     name: "Twitter".to_string(),
                     base_url: Some("https://twitter.com".to_string()),
                 },
-                external_metadata: ExternalMetadata::Twitter { id: 727620202049900544 },
+                external_metadata: ExternalMetadata::Twitter { id: 727620202049900544, creator_id: Some("_namori_".to_string()) },
                 created_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 0).unwrap(),
                 updated_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 1).unwrap(),
             }))
@@ -588,7 +588,7 @@ async fn create_source_succeeds() {
     let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.create_source(
         ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
-        ExternalMetadata::Twitter { id: 727620202049900544 },
+        ExternalMetadata::Twitter { id: 727620202049900544, creator_id: Some("_namori_".to_string()) },
     ).await.unwrap();
 
     assert_eq!(actual, Source {
@@ -600,7 +600,7 @@ async fn create_source_succeeds() {
             name: "Twitter".to_string(),
             base_url: Some("https://twitter.com".to_string()),
         },
-        external_metadata: ExternalMetadata::Twitter { id: 727620202049900544 },
+        external_metadata: ExternalMetadata::Twitter { id: 727620202049900544, creator_id: Some("_namori_".to_string()) },
         created_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 0).unwrap(),
         updated_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 1).unwrap(),
     });
@@ -620,7 +620,7 @@ async fn create_source_fails() {
         .withf(|external_service_id, external_metadata| {
             (external_service_id, external_metadata) == (
                 &ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
-                &ExternalMetadata::Twitter { id: 727620202049900544 },
+                &ExternalMetadata::Twitter { id: 727620202049900544, creator_id: Some("_namori_".to_string()) },
             )
         })
         .returning(|_, _| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
@@ -628,7 +628,7 @@ async fn create_source_fails() {
     let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.create_source(
         ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
-        ExternalMetadata::Twitter { id: 727620202049900544 },
+        ExternalMetadata::Twitter { id: 727620202049900544, creator_id: Some("_namori_".to_string()) },
     ).await.unwrap_err();
 
     assert_matches!(actual.kind(), ErrorKind::Other);

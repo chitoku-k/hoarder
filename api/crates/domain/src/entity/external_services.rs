@@ -22,7 +22,7 @@ pub enum ExternalMetadata {
     PixivFanbox { id: u64, creator_id: String },
     Seiga { id: u64 },
     Skeb { id: u64, creator_id: String },
-    Twitter { id: u64 },
+    Twitter { id: u64, creator_id: Option<String> },
     Website { url: String },
     Custom(String),
 }
