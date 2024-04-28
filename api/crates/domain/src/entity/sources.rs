@@ -27,12 +27,17 @@ pub enum SourceError {
 impl Source {
     pub fn validate(&self) -> Result<()> {
         match (self.external_service.kind.as_str(), &self.external_metadata) {
+            ("bluesky", &ExternalMetadata::Bluesky { .. }) => Ok(()),
             ("fantia", &ExternalMetadata::Fantia { .. }) => Ok(()),
+            ("mastodon", &ExternalMetadata::Mastodon { .. }) => Ok(()),
+            ("misskey", &ExternalMetadata::Misskey { .. }) => Ok(()),
             ("nijie", &ExternalMetadata::Nijie { .. }) => Ok(()),
             ("pixiv", &ExternalMetadata::Pixiv { .. }) => Ok(()),
             ("pixiv_fanbox", &ExternalMetadata::PixivFanbox { .. }) => Ok(()),
+            ("pleroma", &ExternalMetadata::Pleroma { .. }) => Ok(()),
             ("seiga", &ExternalMetadata::Seiga { .. }) => Ok(()),
             ("skeb", &ExternalMetadata::Skeb { .. }) => Ok(()),
+            ("threads", &ExternalMetadata::Threads { .. }) => Ok(()),
             ("twitter", &ExternalMetadata::Twitter { .. }) => Ok(()),
             ("website", &ExternalMetadata::Website { .. }) => Ok(()),
             (_, &ExternalMetadata::Custom(_)) => Ok(()),
@@ -52,6 +57,26 @@ mod tests {
     use super::*;
 
     #[test]
+    fn validate_succeeds_with_bluesky() {
+        let source = Source {
+            id: SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
+            external_service: ExternalService {
+                id: ExternalServiceId::from(uuid!("22222222-2222-2222-2222-222222222222")),
+                slug: "bsky_social".to_string(),
+                kind: "bluesky".to_string(),
+                name: "bsky.social".to_string(),
+                base_url: Some("https://bsky.social".to_string()),
+            },
+            external_metadata: ExternalMetadata::Bluesky { id: "abcdefghi".to_string(), creator_id: "creator_01".to_string() },
+            created_at: Utc.with_ymd_and_hms(2024, 1, 2, 3, 4, 5).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2024, 1, 2, 3, 4, 6).unwrap(),
+        };
+
+        let actual = source.validate();
+        assert!(actual.is_ok());
+    }
+
+    #[test]
     fn validate_succeeds_with_fantia() {
         let source = Source {
             id: SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
@@ -65,6 +90,46 @@ mod tests {
             external_metadata: ExternalMetadata::Fantia { id: 1305295 },
             created_at: Utc.with_ymd_and_hms(2022, 6, 4, 19, 34, 0).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2022, 6, 4, 19, 34, 0).unwrap(),
+        };
+
+        let actual = source.validate();
+        assert!(actual.is_ok());
+    }
+
+    #[test]
+    fn validate_succeeds_with_mastodon() {
+        let source = Source {
+            id: SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
+            external_service: ExternalService {
+                id: ExternalServiceId::from(uuid!("22222222-2222-2222-2222-222222222222")),
+                slug: "mastodon_social".to_string(),
+                kind: "mastodon".to_string(),
+                name: "mastodon.social".to_string(),
+                base_url: Some("https://mastodon.social".to_string()),
+            },
+            external_metadata: ExternalMetadata::Mastodon { id: 123456789, creator_id: Some("creator_01".to_string()) },
+            created_at: Utc.with_ymd_and_hms(2024, 1, 2, 3, 4, 5).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2024, 1, 2, 3, 4, 6).unwrap(),
+        };
+
+        let actual = source.validate();
+        assert!(actual.is_ok());
+    }
+
+    #[test]
+    fn validate_succeeds_with_misskey() {
+        let source = Source {
+            id: SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
+            external_service: ExternalService {
+                id: ExternalServiceId::from(uuid!("22222222-2222-2222-2222-222222222222")),
+                slug: "misskey_io".to_string(),
+                kind: "misskey".to_string(),
+                name: "Misskey.io".to_string(),
+                base_url: Some("https://misskey.io".to_string()),
+            },
+            external_metadata: ExternalMetadata::Misskey { id: "abcdefghi".to_string() },
+            created_at: Utc.with_ymd_and_hms(2024, 1, 2, 3, 4, 5).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2024, 1, 2, 3, 4, 6).unwrap(),
         };
 
         let actual = source.validate();
@@ -132,6 +197,26 @@ mod tests {
     }
 
     #[test]
+    fn validate_succeeds_with_pleroma() {
+        let source = Source {
+            id: SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
+            external_service: ExternalService {
+                id: ExternalServiceId::from(uuid!("22222222-2222-2222-2222-222222222222")),
+                slug: "udongein".to_string(),
+                kind: "pleroma".to_string(),
+                name: "Udongein".to_string(),
+                base_url: Some("https://udongein.xyz".to_string()),
+            },
+            external_metadata: ExternalMetadata::Pleroma { id: "abcdefghi".to_string() },
+            created_at: Utc.with_ymd_and_hms(2024, 1, 2, 3, 4, 5).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2024, 1, 2, 3, 4, 6).unwrap(),
+        };
+
+        let actual = source.validate();
+        assert!(actual.is_ok());
+    }
+
+    #[test]
     fn validate_succeeds_with_seiga() {
         let source = Source {
             id: SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
@@ -165,6 +250,26 @@ mod tests {
             external_metadata: ExternalMetadata::Skeb { id: 18, creator_id: "pieleaf_x2".to_string() },
             created_at: Utc.with_ymd_and_hms(2021, 7, 22, 20, 40, 0).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2021, 7, 22, 20, 40, 1).unwrap(),
+        };
+
+        let actual = source.validate();
+        assert!(actual.is_ok());
+    }
+
+    #[test]
+    fn validate_succeeds_with_threads() {
+        let source = Source {
+            id: SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
+            external_service: ExternalService {
+                id: ExternalServiceId::from(uuid!("22222222-2222-2222-2222-222222222222")),
+                slug: "threads".to_string(),
+                kind: "threads".to_string(),
+                name: "Threads".to_string(),
+                base_url: Some("https://www.threads.net".to_string()),
+            },
+            external_metadata: ExternalMetadata::Threads { id: "abcdefghi".to_string(), creator_id: Some("creator_01".to_string()) },
+            created_at: Utc.with_ymd_and_hms(2024, 1, 2, 3, 4, 5).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2024, 1, 2, 3, 4, 6).unwrap(),
         };
 
         let actual = source.validate();
