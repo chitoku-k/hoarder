@@ -16,12 +16,17 @@ pub struct ExternalService {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ExternalMetadata {
+    Bluesky { id: String, creator_id: String },
     Fantia { id: u64 },
+    Mastodon { id: u64, creator_id: Option<String> },
+    Misskey { id: String },
     Nijie { id: u64 },
     Pixiv { id: u64 },
     PixivFanbox { id: u64, creator_id: String },
+    Pleroma { id: String },
     Seiga { id: u64 },
     Skeb { id: u64, creator_id: String },
+    Threads { id: String, creator_id: Option<String> },
     Twitter { id: u64, creator_id: Option<String> },
     Website { url: String },
     Custom(String),

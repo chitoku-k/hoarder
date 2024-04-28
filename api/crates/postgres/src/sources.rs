@@ -59,12 +59,17 @@ struct PostgresSourceRowAndExternalServiceRow(PostgresSourceRow, PostgresExterna
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "camelCase", rename_all_fields = "camelCase")]
 pub(crate) enum PostgresExternalServiceMetadata {
+    Bluesky { id: String, creator_id: String },
     Fantia { id: u64 },
+    Mastodon { id: u64, creator_id: Option<String> },
+    Misskey { id: String },
     Nijie { id: u64 },
     Pixiv { id: u64 },
     PixivFanbox { id: u64, creator_id: String },
+    Pleroma { id: String },
     Seiga { id: u64 },
     Skeb { id: u64, creator_id: String },
+    Threads { id: String, creator_id: Option<String> },
     Twitter { id: u64, creator_id: Option<String> },
     Website { url: String },
     #[serde(untagged)]
@@ -101,12 +106,17 @@ impl From<PostgresExternalServiceMetadata> for ExternalMetadata {
     fn from(metadata: PostgresExternalServiceMetadata) -> Self {
         use PostgresExternalServiceMetadata::*;
         match metadata {
+            Bluesky { id, creator_id } => Self::Bluesky { id, creator_id },
             Fantia { id } => Self::Fantia { id },
+            Mastodon { id, creator_id } => Self::Mastodon { id, creator_id },
+            Misskey { id } => Self::Misskey { id },
             Nijie { id } => Self::Nijie { id },
             Pixiv { id } => Self::Pixiv { id },
             PixivFanbox { id, creator_id } => Self::PixivFanbox { id, creator_id },
+            Pleroma { id } => Self::Pleroma { id },
             Seiga { id } => Self::Seiga { id },
             Skeb { id, creator_id } => Self::Skeb { id, creator_id },
+            Threads { id, creator_id } => Self::Threads { id, creator_id },
             Twitter { id, creator_id } => Self::Twitter { id, creator_id },
             Website { url } => Self::Website { url },
             Custom(v) => Self::Custom(v.to_string()),
@@ -120,12 +130,17 @@ impl TryFrom<ExternalMetadata> for PostgresExternalServiceMetadata {
     fn try_from(metadata: ExternalMetadata) -> serde_json::Result<Self> {
         use ExternalMetadata::*;
         match metadata {
+            Bluesky { id, creator_id } => Ok(Self::Bluesky { id, creator_id }),
             Fantia { id } => Ok(Self::Fantia { id }),
+            Mastodon { id, creator_id } => Ok(Self::Mastodon { id, creator_id }),
+            Misskey { id } => Ok(Self::Misskey { id }),
             Nijie { id } => Ok(Self::Nijie { id }),
             Pixiv { id } => Ok(Self::Pixiv { id }),
             PixivFanbox { id, creator_id } => Ok(Self::PixivFanbox { id, creator_id }),
+            Pleroma { id } => Ok(Self::Pleroma { id }),
             Seiga { id } => Ok(Self::Seiga { id }),
             Skeb { id, creator_id } => Ok(Self::Skeb { id, creator_id }),
+            Threads { id, creator_id } => Ok(Self::Threads { id, creator_id }),
             Twitter { id, creator_id } => Ok(Self::Twitter { id, creator_id }),
             Website { url } => Ok(Self::Website { url }),
             Custom(v) => Ok(Self::Custom(serde_json::from_str(&v)?)),
