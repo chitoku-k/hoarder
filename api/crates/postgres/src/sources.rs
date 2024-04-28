@@ -57,7 +57,7 @@ struct PostgresSourceRowAndExternalServiceRow(PostgresSourceRow, PostgresExterna
 
 #[skip_serializing_none]
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(tag = "type", rename_all = "camelCase")]
+#[serde(tag = "type", rename_all = "camelCase", rename_all_fields = "camelCase")]
 pub(crate) enum PostgresExternalServiceMetadata {
     Fantia { id: u64 },
     Nijie { id: u64 },
