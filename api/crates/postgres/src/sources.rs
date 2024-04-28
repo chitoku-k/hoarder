@@ -14,6 +14,7 @@ use sea_query::{
 };
 use sea_query_binder::SqlxBinder;
 use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
 use sqlx::{types::Json, FromRow, PgPool};
 
 use crate::{
@@ -54,6 +55,7 @@ struct PostgresSourceExternalServiceRow {
 #[derive(Debug)]
 struct PostgresSourceRowAndExternalServiceRow(PostgresSourceRow, PostgresExternalServiceRow);
 
+#[skip_serializing_none]
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub(crate) enum PostgresExternalServiceMetadata {
@@ -63,7 +65,7 @@ pub(crate) enum PostgresExternalServiceMetadata {
     PixivFanbox { id: u64, creator_id: String },
     Seiga { id: u64 },
     Skeb { id: u64, creator_id: String },
-    Twitter { id: u64 },
+    Twitter { id: u64, creator_id: Option<String> },
     Website { url: String },
     #[serde(untagged)]
     Custom(serde_json::Value),
@@ -105,7 +107,7 @@ impl From<PostgresExternalServiceMetadata> for ExternalMetadata {
             PixivFanbox { id, creator_id } => Self::PixivFanbox { id, creator_id },
             Seiga { id } => Self::Seiga { id },
             Skeb { id, creator_id } => Self::Skeb { id, creator_id },
-            Twitter { id } => Self::Twitter { id },
+            Twitter { id, creator_id } => Self::Twitter { id, creator_id },
             Website { url } => Self::Website { url },
             Custom(v) => Self::Custom(v.to_string()),
         }
@@ -124,7 +126,7 @@ impl TryFrom<ExternalMetadata> for PostgresExternalServiceMetadata {
             PixivFanbox { id, creator_id } => Ok(Self::PixivFanbox { id, creator_id }),
             Seiga { id } => Ok(Self::Seiga { id }),
             Skeb { id, creator_id } => Ok(Self::Skeb { id, creator_id }),
-            Twitter { id } => Ok(Self::Twitter { id }),
+            Twitter { id, creator_id } => Ok(Self::Twitter { id, creator_id }),
             Website { url } => Ok(Self::Website { url }),
             Custom(v) => Ok(Self::Custom(serde_json::from_str(&v)?)),
         }
@@ -439,15 +441,15 @@ mod tests {
 
     #[test]
     fn convert_twitter() {
-        let metadata = PostgresExternalServiceMetadata::Twitter { id: 123456789 };
+        let metadata = PostgresExternalServiceMetadata::Twitter { id: 123456789, creator_id: Some("creator_01".to_string()) };
         let actual = ExternalMetadata::from(metadata);
 
-        assert_eq!(actual, ExternalMetadata::Twitter { id: 123456789 });
+        assert_eq!(actual, ExternalMetadata::Twitter { id: 123456789, creator_id: Some("creator_01".to_string()) });
 
-        let metadata = ExternalMetadata::Twitter { id: 123456789 };
+        let metadata = ExternalMetadata::Twitter { id: 123456789, creator_id: Some("creator_01".to_string()) };
         let actual = PostgresExternalServiceMetadata::try_from(metadata).unwrap();
 
-        assert_eq!(actual, PostgresExternalServiceMetadata::Twitter { id: 123456789 });
+        assert_eq!(actual, PostgresExternalServiceMetadata::Twitter { id: 123456789, creator_id: Some("creator_01".to_string()) });
     }
 
     #[test]

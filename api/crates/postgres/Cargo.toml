@@ -53,6 +53,9 @@ features = ["derive"]
 [dependencies.serde_json]
 version = "1.0.116"
 
+[dependencies.serde_with]
+version = "3.8.0"
+
 [dependencies.sqlx]
 version = "0.7.4"
 features = ["chrono", "json", "postgres", "runtime-tokio", "tls-native-tls", "uuid"]

@@ -182,7 +182,7 @@ mod tests {
                 name: "Twitter".to_string(),
                 base_url: Some("https://twitter.com".to_string()),
             },
-            external_metadata: ExternalMetadata::Twitter { id: 727620202049900544 },
+            external_metadata: ExternalMetadata::Twitter { id: 727620202049900544, creator_id: Some("_namori_".to_string()) },
             created_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 0).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 1).unwrap(),
         };
