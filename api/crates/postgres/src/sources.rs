@@ -390,6 +390,19 @@ mod tests {
     use super::*;
 
     #[test]
+    fn convert_bluesky() {
+        let metadata = PostgresExternalServiceMetadata::Bluesky { id: "abcdefghi".to_string(), creator_id: "creator_01".to_string() };
+        let actual = ExternalMetadata::from(metadata);
+
+        assert_eq!(actual, ExternalMetadata::Bluesky { id: "abcdefghi".to_string(), creator_id: "creator_01".to_string() });
+
+        let metadata = ExternalMetadata::Bluesky { id: "abcdefghi".to_string(), creator_id: "creator_01".to_string() };
+        let actual = PostgresExternalServiceMetadata::try_from(metadata).unwrap();
+
+        assert_eq!(actual, PostgresExternalServiceMetadata::Bluesky { id: "abcdefghi".to_string(), creator_id: "creator_01".to_string() });
+    }
+
+    #[test]
     fn convert_fantia() {
         let metadata = PostgresExternalServiceMetadata::Fantia { id: 123456789 };
         let actual = ExternalMetadata::from(metadata);
@@ -400,6 +413,32 @@ mod tests {
         let actual = PostgresExternalServiceMetadata::try_from(metadata).unwrap();
 
         assert_eq!(actual, PostgresExternalServiceMetadata::Fantia { id: 123456789 });
+    }
+
+    #[test]
+    fn convert_mastodon() {
+        let metadata = PostgresExternalServiceMetadata::Mastodon { id: 123456789, creator_id: "creator_01".to_string() };
+        let actual = ExternalMetadata::from(metadata);
+
+        assert_eq!(actual, ExternalMetadata::Mastodon { id: 123456789, creator_id: "creator_01".to_string() });
+
+        let metadata = ExternalMetadata::Mastodon { id: 123456789, creator_id: "creator_01".to_string() };
+        let actual = PostgresExternalServiceMetadata::try_from(metadata).unwrap();
+
+        assert_eq!(actual, PostgresExternalServiceMetadata::Mastodon { id: 123456789, creator_id: "creator_01".to_string() });
+    }
+
+    #[test]
+    fn convert_misskey() {
+        let metadata = PostgresExternalServiceMetadata::Misskey { id: "abcdefghi".to_string() };
+        let actual = ExternalMetadata::from(metadata);
+
+        assert_eq!(actual, ExternalMetadata::Misskey { id: "abcdefghi".to_string() });
+
+        let metadata = ExternalMetadata::Misskey { id: "abcdefghi".to_string() };
+        let actual = PostgresExternalServiceMetadata::try_from(metadata).unwrap();
+
+        assert_eq!(actual, PostgresExternalServiceMetadata::Misskey { id: "abcdefghi".to_string() });
     }
 
     #[test]
@@ -442,6 +481,19 @@ mod tests {
     }
 
     #[test]
+    fn convert_pleroma() {
+        let metadata = PostgresExternalServiceMetadata::Pleroma { id: "abcdefghi".to_string() };
+        let actual = ExternalMetadata::from(metadata);
+
+        assert_eq!(actual, ExternalMetadata::Pleroma { id: "abcdefghi".to_string() });
+
+        let metadata = ExternalMetadata::Pleroma { id: "abcdefghi".to_string() };
+        let actual = PostgresExternalServiceMetadata::try_from(metadata).unwrap();
+
+        assert_eq!(actual, PostgresExternalServiceMetadata::Pleroma { id: "abcdefghi".to_string() });
+    }
+
+    #[test]
     fn convert_seiga() {
         let metadata = PostgresExternalServiceMetadata::Seiga { id: 123456789 };
         let actual = ExternalMetadata::from(metadata);
@@ -452,6 +504,32 @@ mod tests {
         let actual = PostgresExternalServiceMetadata::try_from(metadata).unwrap();
 
         assert_eq!(actual, PostgresExternalServiceMetadata::Seiga { id: 123456789 });
+    }
+
+    #[test]
+    fn convert_skeb() {
+        let metadata = PostgresExternalServiceMetadata::Skeb { id: 123456789, creator_id: "creator_01".to_string() };
+        let actual = ExternalMetadata::from(metadata);
+
+        assert_eq!(actual, ExternalMetadata::Skeb { id: 123456789, creator_id: "creator_01".to_string() });
+
+        let metadata = ExternalMetadata::Skeb { id: 123456789, creator_id: "creator_01".to_string() };
+        let actual = PostgresExternalServiceMetadata::try_from(metadata).unwrap();
+
+        assert_eq!(actual, PostgresExternalServiceMetadata::Skeb { id: 123456789, creator_id: "creator_01".to_string() });
+    }
+
+    #[test]
+    fn convert_threads() {
+        let metadata = PostgresExternalServiceMetadata::Threads { id: "abcdefghi".to_string(), creator_id: Some("creator_01".to_string()) };
+        let actual = ExternalMetadata::from(metadata);
+
+        assert_eq!(actual, ExternalMetadata::Threads { id: "abcdefghi".to_string(), creator_id: Some("creator_01".to_string()) });
+
+        let metadata = ExternalMetadata::Threads { id: "abcdefghi".to_string(), creator_id: Some("creator_01".to_string()) };
+        let actual = PostgresExternalServiceMetadata::try_from(metadata).unwrap();
+
+        assert_eq!(actual, PostgresExternalServiceMetadata::Threads { id: "abcdefghi".to_string(), creator_id: Some("creator_01".to_string()) });
     }
 
     #[test]
