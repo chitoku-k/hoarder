@@ -43,7 +43,7 @@ async fn with_external_metadata_succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual.created_at, Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 8).unwrap());
     assert_ne!(actual.updated_at, Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 14).unwrap());
 
-    let actual = sqlx::query(r#"SELECT "id", "external_service_id", "external_metadata" FROM "sources" WHERE "id" = $1"#)
+    let actual = sqlx::query(r#"SELECT "id", "external_service_id", "external_metadata", "external_metadata_extra" FROM "sources" WHERE "id" = $1"#)
         .bind(uuid!("94055dd8-7a22-4137-b8eb-3a374df5e5d1"))
         .fetch_one(&ctx.pool)
         .await
@@ -55,6 +55,12 @@ async fn with_external_metadata_succeeds(ctx: &DatabaseContext) {
         json!({
             "type": "pixiv",
             "id": 123456789,
+        }),
+    );
+    assert_eq!(
+        actual.get::<serde_json::Value, &str>("external_metadata_extra"),
+        json!({
+            "type": "pixiv",
         }),
     );
 }
@@ -91,7 +97,7 @@ async fn with_external_service_and_external_metadata_succeeds(ctx: &DatabaseCont
     assert_eq!(actual.created_at, Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 8).unwrap());
     assert_ne!(actual.updated_at, Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 14).unwrap());
 
-    let actual = sqlx::query(r#"SELECT "id", "external_service_id", "external_metadata" FROM "sources" WHERE "id" = $1"#)
+    let actual = sqlx::query(r#"SELECT "id", "external_service_id", "external_metadata", "external_metadata_extra" FROM "sources" WHERE "id" = $1"#)
         .bind(uuid!("94055dd8-7a22-4137-b8eb-3a374df5e5d1"))
         .fetch_one(&ctx.pool)
         .await
@@ -102,6 +108,9 @@ async fn with_external_service_and_external_metadata_succeeds(ctx: &DatabaseCont
         "type": "skeb",
         "id": 7777,
         "creatorId": "creator_03",
+    }));
+    assert_eq!(actual.get::<serde_json::Value, &str>("external_metadata_extra"), json!({
+        "type": "skeb",
     }));
 }
 
