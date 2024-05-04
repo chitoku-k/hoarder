@@ -5,6 +5,7 @@ mod v1;
 mod v2;
 mod v3;
 mod v4;
+mod v5;
 
 pub struct Migrator(migrator::Migrator<Postgres, State>);
 
@@ -16,6 +17,7 @@ impl Migrator {
             v2::V2Migration,
             v3::V3Migration,
             v4::V4Migration,
+            v5::V5Migration,
         ]);
 
         Self(migrator)

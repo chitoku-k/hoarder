@@ -14,7 +14,7 @@ use domain::{
     error::{Error, ErrorKind, Result},
     repository::{self, media::MediaRepository, DeleteResult},
 };
-use futures::TryStreamExt;
+use futures::{future::ready, TryStreamExt};
 use indexmap::IndexSet;
 use sea_query::{BinOper, Expr, Iden, JoinType, Keyword, LockType, OnConflict, Order, PostgresQueryBuilder, Query};
 use sea_query_binder::SqlxBinder;
@@ -25,7 +25,7 @@ use crate::{
     external_services::{PostgresExternalService, PostgresExternalServiceId},
     replicas::{PostgresMediumReplica, PostgresReplica, PostgresReplicaId, PostgresReplicaThumbnail, PostgresReplicaThumbnailRow, PostgresThumbnail},
     sea_query_uuid_value,
-    sources::{PostgresExternalServiceMetadata, PostgresSource, PostgresSourceId, PostgresSourceExternalService},
+    sources::{PostgresExternalServiceMetadata, PostgresExternalServiceMetadataExtra, PostgresExternalServiceMetadataFull, PostgresSource, PostgresSourceId, PostgresSourceExternalService},
     tag_types::{PostgresTagTagType, PostgresTagTypeId, PostgresTagType},
     tags::{self, PostgresTagId, PostgresTagPath},
 };
@@ -58,6 +58,7 @@ struct PostgresMediumSourceExternalServiceRow {
     medium_id: PostgresMediumId,
     source_id: PostgresSourceId,
     source_external_metadata: Json<PostgresExternalServiceMetadata>,
+    source_external_metadata_extra: Json<PostgresExternalServiceMetadataExtra>,
     source_created_at: DateTime<Utc>,
     source_updated_at: DateTime<Utc>,
     external_service_id: PostgresExternalServiceId,
@@ -129,11 +130,14 @@ impl From<PostgresMediumReplicaRow> for (Medium, ReplicaId) {
     }
 }
 
-impl From<PostgresMediumSourceExternalServiceRow> for (MediumId, Source) {
-    fn from(row: PostgresMediumSourceExternalServiceRow) -> Self {
-        let external_metadata = ExternalMetadata::from(row.source_external_metadata.0);
+impl TryFrom<PostgresMediumSourceExternalServiceRow> for (MediumId, Source) {
+    type Error = Error;
 
-        (
+    fn try_from(row: PostgresMediumSourceExternalServiceRow) -> Result<Self> {
+        let external_metadata = PostgresExternalServiceMetadataFull(row.source_external_metadata.0, row.source_external_metadata_extra.0);
+        let external_metadata = ExternalMetadata::try_from(external_metadata)?;
+
+        Ok((
             row.medium_id.into(),
             Source {
                 id: row.source_id.into(),
@@ -148,7 +152,7 @@ impl From<PostgresMediumSourceExternalServiceRow> for (MediumId, Source) {
                 created_at: row.source_created_at,
                 updated_at: row.source_updated_at,
             },
-        )
+        ))
     }
 }
 
@@ -297,6 +301,7 @@ where
         .column(PostgresMediumSource::MediumId)
         .column(PostgresMediumSource::SourceId)
         .expr_as(Expr::col((PostgresSource::Table, PostgresSource::ExternalMetadata)), PostgresSourceExternalService::SourceExternalMetadata)
+        .expr_as(Expr::col((PostgresSource::Table, PostgresSource::ExternalMetadataExtra)), PostgresSourceExternalService::SourceExternalMetadataExtra)
         .expr_as(Expr::col((PostgresSource::Table, PostgresSource::CreatedAt)), PostgresSourceExternalService::SourceCreatedAt)
         .expr_as(Expr::col((PostgresSource::Table, PostgresSource::UpdatedAt)), PostgresSourceExternalService::SourceUpdatedAt)
         .expr_as(Expr::col((PostgresExternalService::Table, PostgresExternalService::Id)), PostgresSourceExternalService::ExternalServiceId)
@@ -324,7 +329,8 @@ where
 
     let sources = sqlx::query_as_with::<_, PostgresMediumSourceExternalServiceRow, _>(&sql, values)
         .fetch(conn)
-        .map_ok(Into::into)
+        .map_err(Error::other)
+        .and_then(|row| ready(row.try_into()))
         .try_fold(HashMap::<_, Vec<_>>::new(), |mut sources, (medium_id, source)| async move {
             sources
                 .entry(medium_id)
@@ -332,8 +338,7 @@ where
                 .push(source);
             Ok(sources)
         })
-        .await
-        .map_err(Error::other)?;
+        .await?;
 
     Ok(sources)
 }

@@ -34,7 +34,7 @@ async fn succeeds_with_default(ctx: &DatabaseContext) {
     );
     assert_eq!(actual.external_metadata, ExternalMetadata::Pixiv { id: 123456789 });
 
-    let actual = sqlx::query(r#"SELECT "id", "external_service_id", "external_metadata" FROM "sources" WHERE "id" = $1"#)
+    let actual = sqlx::query(r#"SELECT "id", "external_service_id", "external_metadata", "external_metadata_extra" FROM "sources" WHERE "id" = $1"#)
         .bind(*actual.id)
         .fetch_one(&ctx.pool)
         .await
@@ -46,6 +46,57 @@ async fn succeeds_with_default(ctx: &DatabaseContext) {
         json!({
             "type": "pixiv",
             "id": 123456789,
+        }),
+    );
+    assert_eq!(
+        actual.get::<serde_json::Value, &str>("external_metadata_extra"),
+        json!({
+            "type": "pixiv",
+        }),
+    );
+}
+
+#[test_context(DatabaseContext)]
+#[tokio::test]
+#[cfg_attr(not(feature = "test-postgres"), ignore)]
+async fn succeeds_with_extra(ctx: &DatabaseContext) {
+    let repository = PostgresSourcesRepository::new(ctx.pool.clone());
+    let actual = repository.create(
+        ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")),
+        ExternalMetadata::Twitter{ id: 123456789, creator_id: Some("creator_01".to_string()) },
+    ).await.unwrap();
+
+    assert_eq!(
+        actual.external_service,
+        ExternalService {
+            id: ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")),
+            slug: "twitter".to_string(),
+            kind: "twitter".to_string(),
+            name: "Twitter".to_string(),
+            base_url: Some("https://twitter.com".to_string()),
+        },
+    );
+    assert_eq!(actual.external_metadata, ExternalMetadata::Twitter { id: 123456789, creator_id: Some("creator_01".to_string()) });
+
+    let actual = sqlx::query(r#"SELECT "id", "external_service_id", "external_metadata", "external_metadata_extra" FROM "sources" WHERE "id" = $1"#)
+        .bind(*actual.id)
+        .fetch_one(&ctx.pool)
+        .await
+        .unwrap();
+
+    assert_eq!(actual.get::<Uuid, &str>("external_service_id"), uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab"));
+    assert_eq!(
+        actual.get::<serde_json::Value, &str>("external_metadata"),
+        json!({
+            "type": "twitter",
+            "id": 123456789,
+        }),
+    );
+    assert_eq!(
+        actual.get::<serde_json::Value, &str>("external_metadata_extra"),
+        json!({
+            "type": "twitter",
+            "creatorId": "creator_01",
         }),
     );
 }
@@ -72,7 +123,7 @@ async fn succeeds_with_custom_object(ctx: &DatabaseContext) {
     );
     assert_eq!(actual.external_metadata, ExternalMetadata::Custom(r#"{"id":123456789}"#.to_string()));
 
-    let actual = sqlx::query(r#"SELECT "id", "external_service_id", "external_metadata" FROM "sources" WHERE "id" = $1"#)
+    let actual = sqlx::query(r#"SELECT "id", "external_service_id", "external_metadata", "external_metadata_extra" FROM "sources" WHERE "id" = $1"#)
         .bind(*actual.id)
         .fetch_one(&ctx.pool)
         .await
@@ -84,6 +135,10 @@ async fn succeeds_with_custom_object(ctx: &DatabaseContext) {
         json!({
             "id": 123456789,
         }),
+    );
+    assert_eq!(
+        actual.get::<serde_json::Value, &str>("external_metadata_extra"),
+        json!({}),
     );
 }
 
@@ -109,7 +164,7 @@ async fn succeeds_with_custom_string(ctx: &DatabaseContext) {
     );
     assert_eq!(actual.external_metadata, ExternalMetadata::Custom(r#""123456789abcdefg""#.to_string()));
 
-    let actual = sqlx::query(r#"SELECT "id", "external_service_id", "external_metadata" FROM "sources" WHERE "id" = $1"#)
+    let actual = sqlx::query(r#"SELECT "id", "external_service_id", "external_metadata", "external_metadata_extra" FROM "sources" WHERE "id" = $1"#)
         .bind(*actual.id)
         .fetch_one(&ctx.pool)
         .await
@@ -119,6 +174,10 @@ async fn succeeds_with_custom_string(ctx: &DatabaseContext) {
     assert_eq!(
         actual.get::<serde_json::Value, &str>("external_metadata"),
         json!("123456789abcdefg"),
+    );
+    assert_eq!(
+        actual.get::<serde_json::Value, &str>("external_metadata_extra"),
+        json!({}),
     );
 }
 
@@ -144,7 +203,7 @@ async fn succeeds_with_custom_number(ctx: &DatabaseContext) {
     );
     assert_eq!(actual.external_metadata, ExternalMetadata::Custom("123456789".to_string()));
 
-    let actual = sqlx::query(r#"SELECT "id", "external_service_id", "external_metadata" FROM "sources" WHERE "id" = $1"#)
+    let actual = sqlx::query(r#"SELECT "id", "external_service_id", "external_metadata", "external_metadata_extra" FROM "sources" WHERE "id" = $1"#)
         .bind(*actual.id)
         .fetch_one(&ctx.pool)
         .await
@@ -154,5 +213,9 @@ async fn succeeds_with_custom_number(ctx: &DatabaseContext) {
     assert_eq!(
         actual.get::<serde_json::Value, &str>("external_metadata"),
         json!(123456789),
+    );
+    assert_eq!(
+        actual.get::<serde_json::Value, &str>("external_metadata_extra"),
+        json!({}),
     );
 }
