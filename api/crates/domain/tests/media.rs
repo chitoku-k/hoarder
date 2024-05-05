@@ -25,6 +25,7 @@ use domain::{
 };
 use futures::future::{err, ok};
 use pretty_assertions::{assert_eq, assert_matches};
+use serial_test::serial;
 use tokio::io::BufReader;
 use tokio_util::io::SyncIoBridge;
 use uuid::uuid;
@@ -389,6 +390,7 @@ async fn create_replica_from_url_succeeds() {
 }
 
 #[tokio::test]
+#[serial]
 async fn create_replica_from_content_succeeds() {
     let mock_media_repository = MockMediaRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
@@ -1495,6 +1497,7 @@ async fn get_thumbnail_by_id_fails() {
 }
 
 #[tokio::test]
+#[serial]
 async fn get_objects_all_kinds_succeeds() {
     let mock_media_repository = MockMediaRepository::new();
     let mock_replicas_repository = MockReplicasRepository::new();
@@ -1584,6 +1587,7 @@ async fn get_objects_all_kinds_succeeds() {
 }
 
 #[tokio::test]
+#[serial]
 async fn get_objects_with_kind_succeeds() {
     let mock_media_repository = MockMediaRepository::new();
     let mock_replicas_repository = MockReplicasRepository::new();
@@ -1655,6 +1659,7 @@ async fn get_objects_with_kind_succeeds() {
 }
 
 #[tokio::test]
+#[serial]
 async fn get_objects_fails() {
     let mock_media_repository = MockMediaRepository::new();
     let mock_replicas_repository = MockReplicasRepository::new();
@@ -1992,6 +1997,7 @@ async fn update_replica_by_id_from_url_succeeds() {
 }
 
 #[tokio::test]
+#[serial]
 async fn update_replica_by_id_from_content_succeeds() {
     let mock_media_repository = MockMediaRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
