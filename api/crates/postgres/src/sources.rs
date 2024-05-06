@@ -73,6 +73,7 @@ pub(crate) enum PostgresExternalServiceMetadata {
     Threads { id: String },
     Twitter { id: u64 },
     Website { url: String },
+    Xfolio { id: u64, creator_id: String },
     #[serde(untagged)]
     Custom(serde_json::Value),
 }
@@ -94,6 +95,7 @@ pub(crate) enum PostgresExternalServiceMetadataExtra {
     Threads { creator_id: Option<String> },
     Twitter { creator_id: Option<String> },
     Website {},
+    Xfolio {},
     #[serde(untagged)]
     Custom {},
 }
@@ -154,6 +156,7 @@ impl TryFrom<PostgresExternalServiceMetadataFull> for ExternalMetadata {
             (Threads { id }, PostgresExternalServiceMetadataExtra::Threads { creator_id }) => Ok(Self::Threads { id, creator_id }),
             (Twitter { id }, PostgresExternalServiceMetadataExtra::Twitter { creator_id }) => Ok(Self::Twitter { id, creator_id }),
             (Website { url }, PostgresExternalServiceMetadataExtra::Website {}) => Ok(Self::Website { url }),
+            (Xfolio { id, creator_id }, PostgresExternalServiceMetadataExtra::Xfolio {}) => Ok(Self::Xfolio { id, creator_id }),
             (Custom(v), PostgresExternalServiceMetadataExtra::Custom {}) => Ok(Self::Custom(v.to_string())),
             _ => Err(ErrorKind::SourceMetadataInvalid)?,
         }
@@ -179,6 +182,7 @@ impl TryFrom<ExternalMetadata> for PostgresExternalServiceMetadataFull {
             Threads { id, creator_id } => Ok(Self(PostgresExternalServiceMetadata::Threads { id }, PostgresExternalServiceMetadataExtra::Threads { creator_id })),
             Twitter { id, creator_id } => Ok(Self(PostgresExternalServiceMetadata::Twitter { id }, PostgresExternalServiceMetadataExtra::Twitter { creator_id })),
             Website { url } => Ok(Self(PostgresExternalServiceMetadata::Website { url }, PostgresExternalServiceMetadataExtra::Website {})),
+            Xfolio { id, creator_id } => Ok(Self(PostgresExternalServiceMetadata::Xfolio { id, creator_id }, PostgresExternalServiceMetadataExtra::Xfolio {})),
             Custom(v) => Ok(Self(PostgresExternalServiceMetadata::Custom(serde_json::from_str(&v)?), PostgresExternalServiceMetadataExtra::Custom {})),
         }
     }
@@ -657,6 +661,21 @@ mod tests {
 
         assert_eq!(actual.0, PostgresExternalServiceMetadata::Website { url: "https://example.com".to_string() });
         assert_eq!(actual.1, PostgresExternalServiceMetadataExtra::Website {});
+    }
+
+    #[test]
+    fn convert_xfolio() {
+        let metadata = PostgresExternalServiceMetadata::Xfolio { id: 123456789, creator_id: "creator_01".to_string() };
+        let extra = PostgresExternalServiceMetadataExtra::Xfolio {};
+        let actual = ExternalMetadata::try_from(PostgresExternalServiceMetadataFull(metadata, extra)).unwrap();
+
+        assert_eq!(actual, ExternalMetadata::Xfolio { id: 123456789, creator_id: "creator_01".to_string() });
+
+        let metadata = ExternalMetadata::Xfolio { id: 123456789, creator_id: "creator_01".to_string() };
+        let actual = PostgresExternalServiceMetadataFull::try_from(metadata).unwrap();
+
+        assert_eq!(actual.0, PostgresExternalServiceMetadata::Xfolio { id: 123456789, creator_id: "creator_01".to_string() });
+        assert_eq!(actual.1, PostgresExternalServiceMetadataExtra::Xfolio {});
     }
 
     #[test]
