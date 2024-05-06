@@ -40,6 +40,7 @@ impl Source {
             ("threads", &ExternalMetadata::Threads { .. }) => Ok(()),
             ("twitter", &ExternalMetadata::Twitter { .. }) => Ok(()),
             ("website", &ExternalMetadata::Website { .. }) => Ok(()),
+            ("xfolio", &ExternalMetadata::Xfolio { .. }) => Ok(()),
             (_, &ExternalMetadata::Custom(_)) => Ok(()),
             (kind, _) => Err(ErrorKind::SourceMetadataNotMatch { kind: kind.to_string() })?,
         }
@@ -310,6 +311,26 @@ mod tests {
             external_metadata: ExternalMetadata::Website { url: "https://www.melonbooks.co.jp/corner/detail.php?corner_id=885".to_string() },
             created_at: Utc.with_ymd_and_hms(2022, 4, 1, 0, 0, 0).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2022, 4, 1, 0, 0, 1).unwrap(),
+        };
+
+        let actual = source.validate();
+        assert!(actual.is_ok());
+    }
+
+    #[test]
+    fn validate_succeeds_with_xfolio() {
+        let source = Source {
+            id: SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
+            external_service: ExternalService {
+                id: ExternalServiceId::from(uuid!("22222222-2222-2222-2222-222222222222")),
+                slug: "xfolio".to_string(),
+                kind: "xfolio".to_string(),
+                name: "Xfolio".to_string(),
+                base_url: Some("https://xfolio.jp".to_string()),
+            },
+            external_metadata: ExternalMetadata::Xfolio { id: 123456789, creator_id: "creator_01".to_string() },
+            created_at: Utc.with_ymd_and_hms(2021, 7, 22, 20, 40, 1).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2021, 7, 22, 20, 40, 2).unwrap(),
         };
 
         let actual = source.validate();

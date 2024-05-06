@@ -29,5 +29,6 @@ pub enum ExternalMetadata {
     Threads { id: String, creator_id: Option<String> },
     Twitter { id: u64, creator_id: Option<String> },
     Website { url: String },
+    Xfolio { id: u64, creator_id: String },
     Custom(String),
 }
