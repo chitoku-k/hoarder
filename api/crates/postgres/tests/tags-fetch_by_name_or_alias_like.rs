@@ -187,6 +187,68 @@ async fn with_name_succeeds(ctx: &DatabaseContext) {
 #[test_context(DatabaseContext)]
 #[tokio::test]
 #[cfg_attr(not(feature = "test-postgres"), ignore)]
+async fn with_name_case_insensitive_succeeds(ctx: &DatabaseContext) {
+    let repository = PostgresTagsRepository::new(ctx.pool.clone());
+    let actual = repository.fetch_by_name_or_alias_like("project", TagDepth::new(2, 2)).await.unwrap();
+
+    assert_eq!(actual, vec![
+        Tag {
+            id: TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
+            name: "東方Project".to_string(),
+            kana: "とうほうProject".to_string(),
+            aliases: AliasSet::new(BTreeSet::from(["東方".to_string()])),
+            parent: None,
+            children: vec![
+                Tag {
+                    id: TagId::from(uuid!("7648d9b5-e0f0-48c2-870c-1fcd60a099de")),
+                    name: "古明地こいし".to_string(),
+                    kana: "こめいじこいし".to_string(),
+                    aliases: AliasSet::default(),
+                    parent: None,
+                    children: Vec::new(),
+                    created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 8).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap(),
+                },
+                Tag {
+                    id: TagId::from(uuid!("3255874e-1035-427e-80e3-19bb7b28a3fb")),
+                    name: "博麗霊夢".to_string(),
+                    kana: "はくれいれいむ".to_string(),
+                    aliases: AliasSet::default(),
+                    parent: None,
+                    children: Vec::new(),
+                    created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 10).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 11).unwrap(),
+                },
+                Tag {
+                    id: TagId::from(uuid!("d65c551d-5a49-4ec7-8e8b-0054e116a18d")),
+                    name: "フランドール・スカーレット".to_string(),
+                    kana: "フランドール・スカーレット".to_string(),
+                    aliases: AliasSet::new(BTreeSet::from(["フラン".to_string()])),
+                    parent: None,
+                    children: Vec::new(),
+                    created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 9).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap(),
+                },
+                Tag {
+                    id: TagId::from(uuid!("1157d6d9-54c5-48df-9f6c-3eba9fe38dfc")),
+                    name: "鈴仙・優曇華院・イナバ".to_string(),
+                    kana: "れいせん・うどんげいん・いなば".to_string(),
+                    aliases: AliasSet::new(BTreeSet::from(["うどんげ".to_string()])),
+                    parent: None,
+                    children: Vec::new(),
+                    created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 9).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
+                },
+            ],
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 8).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap(),
+        },
+    ]);
+}
+
+#[test_context(DatabaseContext)]
+#[tokio::test]
+#[cfg_attr(not(feature = "test-postgres"), ignore)]
 async fn with_alias_succeeds(ctx: &DatabaseContext) {
     let repository = PostgresTagsRepository::new(ctx.pool.clone());
     let actual = repository.fetch_by_name_or_alias_like("げ", TagDepth::new(2, 2)).await.unwrap();
