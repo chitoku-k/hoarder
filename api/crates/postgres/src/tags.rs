@@ -14,7 +14,7 @@ use domain::{
 };
 use futures::TryStreamExt;
 use indexmap::{IndexMap, IndexSet};
-use sea_query::{Alias, Asterisk, BinOper, Cond, Expr, Iden, JoinType, LikeExpr, LockType, Order, PostgresQueryBuilder, Query, SelectStatement};
+use sea_query::{extension::postgres::PgExpr, Alias, Asterisk, BinOper, Cond, Expr, Iden, JoinType, LikeExpr, LockType, Order, PostgresQueryBuilder, Query, SelectStatement};
 use sea_query_binder::SqlxBinder;
 use sqlx::{Acquire, FromRow, PgPool, Postgres, Transaction, PgConnection, Row};
 
@@ -571,9 +571,9 @@ impl TagsRepository for PostgresTagsRepository {
             )
             .cond_where(
                 Cond::any()
-                    .add(Expr::col(PostgresTag::Name).like(LikeExpr::new(name_or_alias_like.clone())))
-                    .add(Expr::col(PostgresTag::Kana).like(LikeExpr::new(name_or_alias_like.clone())))
-                    .add(Expr::col(alias).like(LikeExpr::new(name_or_alias_like))),
+                    .add(Expr::col(PostgresTag::Name).ilike(LikeExpr::new(name_or_alias_like.clone())))
+                    .add(Expr::col(PostgresTag::Kana).ilike(LikeExpr::new(name_or_alias_like.clone())))
+                    .add(Expr::col(alias).ilike(LikeExpr::new(name_or_alias_like))),
             )
             .build_sqlx(PostgresQueryBuilder);
 
