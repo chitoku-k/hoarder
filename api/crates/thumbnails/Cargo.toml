@@ -22,6 +22,9 @@ version = "0.99.17"
 [dependencies.image]
 version = "0.25.1"
 
+[dependencies.kamadak-exif]
+version = "0.5.5"
+
 [dependencies.tokio]
 version = "1.37.0"
 features = ["rt-multi-thread"]
