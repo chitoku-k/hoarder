@@ -1,0 +1,5 @@
+mutation DeleteReplica($id: UUID!) {
+  deleteReplica(id: $id) {
+    deleted
+  }
+}

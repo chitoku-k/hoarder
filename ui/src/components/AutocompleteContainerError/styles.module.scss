@@ -1,0 +1,19 @@
+.container {
+  &:global(.MuiStack-root) {
+    padding: 8px 12px 7px;
+  }
+}
+
+.icon {
+  &:global(.MuiSvgIcon-root) {
+    color: #666;
+    min-height: 1.5rem;
+  }
+}
+
+.text {
+  &:global(.MuiTypography-root) {
+    color: #666;
+    font-size: 0.95rem;
+  }
+}

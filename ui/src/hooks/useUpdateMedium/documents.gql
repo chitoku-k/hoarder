@@ -1,0 +1,107 @@
+fragment externalServiceNode on ExternalService {
+  id
+  slug
+  kind
+  name
+  baseUrl
+}
+
+fragment mediumItemNode on Medium {
+  id
+  tags {
+    tag {
+      ...tagNode
+      parent {
+        ...tagNode
+        parent {
+          ...tagNode
+          parent {
+            ...tagNode
+            parent {
+              ...tagNode
+              parent {
+                ...tagNode
+              }
+            }
+          }
+        }
+      }
+    }
+    type {
+      ...tagTypeNode
+    }
+  }
+  replicas {
+    ...replicaNode
+  }
+  sources {
+    ...sourceNode
+  }
+  createdAt
+  updatedAt
+}
+
+fragment replicaNode on Replica {
+  id
+  displayOrder
+  thumbnail {
+    id
+    width
+    height
+    url
+    createdAt
+    updatedAt
+  }
+  originalUrl
+  url
+  mimeType
+  width
+  height
+  createdAt
+  updatedAt
+}
+
+fragment sourceNode on Source {
+  id
+  externalService {
+    ...externalServiceNode
+  }
+  externalMetadata
+  createdAt
+  updatedAt
+}
+
+fragment tagNode on Tag {
+  id
+  name
+  kana
+  aliases
+}
+
+fragment tagTypeNode on TagType {
+  id
+  slug
+  name
+}
+
+mutation UpdateMedium(
+  $id: UUID!,
+  $addSourceIDs: [UUID!],
+  $removeSourceIDs: [UUID!],
+  $addTagTagTypeIDs: [TagTagTypeInput!],
+  $removeTagTagTypeIDs: [TagTagTypeInput!],
+  $replicaOrders: [UUID!],
+  $createdAt: DateTime,
+) {
+  updateMedium(
+    id: $id,
+    addSourceIds: $addSourceIDs,
+    removeSourceIds: $removeSourceIDs,
+    addTagIds: $addTagTagTypeIDs,
+    removeTagIds: $removeTagTagTypeIDs,
+    replicaOrders: $replicaOrders,
+    createdAt: $createdAt,
+  ) {
+    ...mediumItemNode
+  }
+}

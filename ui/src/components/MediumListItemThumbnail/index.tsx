@@ -1,0 +1,36 @@
+'use client'
+
+import type { FunctionComponent } from 'react'
+import Image from 'next/image'
+import Stack from '@mui/material/Stack'
+import PhotoOutlinedIcon from '@mui/icons-material/PhotoOutlined'
+
+import type { Replica } from '@/types'
+
+import styles from './styles.module.scss'
+
+const imagePixelRatio = 1.5;
+
+const MediumListItemThumbnail: FunctionComponent<MediumListItemThumbnailProps> = ({
+  replica,
+}) => replica?.thumbnail ? (
+  <Image
+    className={styles.image}
+    src={replica.thumbnail.url}
+    width={Math.round(replica.thumbnail.width / imagePixelRatio)}
+    height={Math.round(replica.thumbnail.height / imagePixelRatio)}
+    quality={100}
+    loading="lazy"
+    alt=""
+  />
+) : (
+  <Stack className={styles.noimage} alignItems="center" justifyContent="center">
+    <PhotoOutlinedIcon className={styles.noimageIcon} />
+  </Stack>
+)
+
+export interface MediumListItemThumbnailProps {
+  replica?: Replica
+}
+
+export default MediumListItemThumbnail

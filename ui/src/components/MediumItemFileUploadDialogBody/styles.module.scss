@@ -1,0 +1,52 @@
+.container {
+  &:global(.MuiStack-root) {
+    width: min(1200px, calc(100vw - 64px));
+    height: min(800px, calc(100vh - 64px));
+  }
+}
+
+.uploads {
+  &:global(.MuiPaper-root) {
+    flex-grow: 1;
+    margin: 12px 0;
+  }
+}
+
+.table {
+  &:global(.MuiTable-root) {
+    border-collapse: separate;
+  }
+}
+
+.headerCell {
+  &:global(.MuiTableCell-root) {
+    background-color: white;
+  }
+}
+
+.destination {
+  &:global(.MuiCard-root) {
+    flex-grow: 1;
+  }
+}
+
+.containerComplete {
+  &:global(.MuiAutocomplete-root .MuiTextField-root .MuiInput-root) {
+    padding: 6px 12px;
+
+    &::before {
+      border-bottom: none;
+    }
+  }
+
+  &:global(.MuiAutocomplete-root .MuiAutocomplete-endAdornment) {
+    right: 8px;
+  }
+}
+
+.containerPopper {
+  &:global(.MuiAutocomplete-popper .MuiAutocomplete-option) {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+}

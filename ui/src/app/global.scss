@@ -1,0 +1,15 @@
+:root {
+  scroll-padding-top: 64px;
+}
+
+body {
+  > .MuiDialog-root {
+    & + .MuiDialog-root .MuiBackdrop-root {
+      transition: none !important;
+    }
+
+    &:has(~ .MuiDialog-root) .MuiBackdrop-root {
+      background: none;
+    }
+  }
+}

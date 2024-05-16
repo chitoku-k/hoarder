@@ -1,0 +1,42 @@
+fragment mediumNode on Medium {
+  id
+  replicas {
+    ...replicaNode
+  }
+  createdAt
+  updatedAt
+}
+
+fragment replicaNode on Replica {
+  id
+  displayOrder
+  thumbnail {
+    id
+    width
+    height
+    url
+    createdAt
+    updatedAt
+  }
+  originalUrl
+  url
+  mimeType
+  width
+  height
+  createdAt
+  updatedAt
+}
+
+query AllMedia($number: Int!, $after: String) {
+  allMedia(first: $number, after: $after, order: DESC) {
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    edges {
+      node {
+        ...mediumNode
+      }
+    }
+  }
+}

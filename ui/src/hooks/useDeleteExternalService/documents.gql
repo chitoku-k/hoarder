@@ -1,0 +1,5 @@
+mutation DeleteExternalService($id: UUID!) {
+  deleteExternalService(id: $id) {
+    deleted
+  }
+}

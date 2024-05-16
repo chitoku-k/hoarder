@@ -1,0 +1,9 @@
+.dialog {
+  &:global(.MuiDialog-root > .MuiDialog-container > .MuiPaper-root) {
+    max-width: 1200px;
+  }
+  &:global(.MuiDialog-root .MuiDialogContent-root) {
+    display: flex;
+    flex-direction: column;
+  }
+}

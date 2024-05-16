@@ -1,0 +1,12 @@
+fragment tagNode on Tag {
+  id
+  name
+  kana
+  aliases
+}
+
+mutation UpdateTag($id: UUID!, $name: String, $kana: String, $addAliases: [String!], $removeAliases: [String!]) {
+  updateTag(id: $id, name: $name, kana: $kana, addAliases: $addAliases, removeAliases: $removeAliases) {
+    ...tagNode
+  }
+}

@@ -1,0 +1,12 @@
+.icon {
+  &:global(.MuiSvgIcon-root) {
+    margin-right: 6px;
+    color: #666;
+  }
+}
+
+.open {
+  &:global(.MuiIconButton-root) {
+    margin: 4px 0;
+  }
+}

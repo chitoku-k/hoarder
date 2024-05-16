@@ -1,0 +1,28 @@
+.files {
+  &:global(.MuiStack-root) {
+    margin-top: 8px;
+  }
+}
+
+.description {
+  &:global(.MuiTypography-root) {
+    font-size: 0.95rem;
+  }
+}
+
+.imageWrapper {
+  &:global(.MuiStack-root) {
+    position: relative;
+    width: 128px;
+    height: 128px;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}

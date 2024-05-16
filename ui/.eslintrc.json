@@ -1,0 +1,10 @@
+{
+  "extends": [
+    "next/core-web-vitals"
+  ],
+  "rules": {
+    "jsx-a11y/alt-text": "off",
+    "react/display-name": "warn",
+    "react-hooks/rules-of-hooks": "warn"
+  }
+}

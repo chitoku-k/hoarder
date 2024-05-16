@@ -1,0 +1,44 @@
+.item {
+  &:global(.MuiImageListItem-root) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.count {
+  &:global(.MuiSvgIcon-root) {
+    position: absolute;
+    bottom: 4px;
+    left: 4px;
+    height: 1.25em;
+    width: 1.75em;
+    max-width: calc(100% - 8px);
+    padding: 0.2em 0.25em;
+    border-radius: 8px;
+    opacity: .6;
+    background-color: #111;
+    color: #eee;
+  }
+}
+
+.link {
+  position: relative;
+  display: inline-flex;
+  border-radius: 8px;
+  box-shadow: 0px 8px 16px -2px rgba(10, 10, 10, 0.1), 4px 4px 8px 1px rgba(10, 10, 10,  0.02);
+  background-color: #eee;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 8px;
+    opacity: .4;
+    transition: background-color .4s;
+  }
+
+  &:hover::after {
+    background-color: black;
+  }
+}

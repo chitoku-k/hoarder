@@ -1,0 +1,30 @@
+.container {
+  &:global(.MuiCard-root) {
+    display: flex;
+    flex-direction: column;
+    margin: 12px 0;
+    scrollbar-width: thin;
+  }
+}
+
+.wrapper {
+  &:global(.MuiGrid2-root) {
+    flex-wrap: nowrap;
+    height: inherit;
+    overflow: hidden visible;
+  }
+}
+
+.column {
+  &:global(.MuiGrid2-root) {
+    position: relative;
+    flex-shrink: 0;
+    height: inherit;
+  }
+}
+
+.listColumn {
+  &:global(.MuiGrid2-root) {
+    border-right: 1px solid rgba(0, 0, 0, 0.12);
+  }
+}

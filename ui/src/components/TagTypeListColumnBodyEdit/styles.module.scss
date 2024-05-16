@@ -1,0 +1,12 @@
+.container {
+  &:global(.MuiStack-root) {
+    padding: 12px 20px;
+    height: 100%;
+  }
+}
+
+.buttons {
+  &:global(.MuiStack-root) {
+    flex-shrink: 0;
+  }
+}

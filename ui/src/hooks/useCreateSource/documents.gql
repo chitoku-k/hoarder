@@ -1,0 +1,23 @@
+fragment externalServiceNode on ExternalService {
+  id
+  slug
+  kind
+  name
+  baseUrl
+}
+
+fragment sourceNode on Source {
+  id
+  externalService {
+    ...externalServiceNode
+  }
+  externalMetadata
+  createdAt
+  updatedAt
+}
+
+mutation CreateSource($externalServiceID: UUID!, $externalMetadata: ExternalMetadataInput!) {
+  createSource(externalServiceId: $externalServiceID, externalMetadata: $externalMetadata) {
+    ...sourceNode
+  }
+}

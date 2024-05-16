@@ -1,0 +1,25 @@
+.container {
+  &:global(.MuiStack-root) {
+    width: min(1200px, calc(100vw - 64px));
+    height: min(800px, calc(100vh - 64px));
+  }
+}
+
+.tagList {
+  &:global(.MuiCard-root) {
+    height: 100%;
+  }
+}
+
+.destination {
+  &:global(.MuiCard-root) {
+    flex-grow: 1;
+    margin-top: 4px;
+  }
+}
+
+.breadcrumbs {
+  &:global(.MuiStack-root) {
+    padding: 8px 16px;
+  }
+}

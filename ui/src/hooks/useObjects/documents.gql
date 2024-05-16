@@ -1,0 +1,11 @@
+fragment objectEntryNode on ObjectEntry {
+  name
+  url
+  kind
+}
+
+query Objects($prefix: String!, $kind: ObjectKind) {
+  objects(prefix: $prefix, kind: $kind) {
+    ...objectEntryNode
+  }
+}

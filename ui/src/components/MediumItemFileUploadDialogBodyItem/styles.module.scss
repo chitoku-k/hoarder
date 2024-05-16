@@ -1,0 +1,42 @@
+.imageCell {
+  &:global(.MuiTableCell-root) {
+    width: 128px;
+  }
+}
+
+.imageWrapper {
+  &:global(.MuiStack-root) {
+    width: 128px;
+    height: 128px;
+    padding: 0;
+    border-radius: 4px;
+  }
+}
+
+.image {
+  border-radius: inherit;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.filesizeCell {
+  &:global(.MuiTableCell-root) {
+    width: 128px;
+  }
+}
+
+.progressCell {
+  &:global(.MuiTableCell-root) {
+    width: 384px;
+  }
+}
+
+.progress {
+  &:global(.MuiLinearProgress-root) {
+    color: rgb(224, 224, 224);
+  }
+
+  &:global(.MuiLinearProgress-root .MuiLinearProgress-bar) {
+    transition: none;
+  }
+}

@@ -1,0 +1,21 @@
+.header {
+  &:global(.MuiStack-root) {
+    min-height: 36px;
+    padding: 0 0 6px;
+  }
+}
+
+.title {
+  &:global(.MuiTypography-root) {
+    font-size: 1.05rem;
+  }
+}
+
+.buttonArea {
+  &:global(.MuiStack-root) {
+    display: inline-block;
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+  }
+}

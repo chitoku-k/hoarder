@@ -1,0 +1,16 @@
+.dockerignore
+.editorconfig
+.eslintrc.json
+.gitignore
+.graphqlrc
+Dockerfile
+next-env.d.ts
+*.tsbuildinfo
+/node_modules
+/.next
+/.yarn/*
+!/.yarn/releases
+!/.yarn/patches
+!/.yarn/plugins
+!/.yarn/sdks
+!/.yarn/versions

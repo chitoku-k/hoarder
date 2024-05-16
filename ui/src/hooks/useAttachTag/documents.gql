@@ -1,0 +1,12 @@
+fragment tagNode on Tag {
+  id
+  name
+  kana
+  aliases
+}
+
+mutation AttachTag($id: UUID!, $parentID: UUID!) {
+  attachTag(id: $id, parentId: $parentID) {
+    ...tagNode
+  }
+}

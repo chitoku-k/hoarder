@@ -1,0 +1,13 @@
+fragment externalServiceNode on ExternalService {
+  id
+  slug
+  kind
+  name
+  baseUrl
+}
+
+mutation CreateExternalService($slug: String!, $kind: String!, $name: String!, $baseUrl: String) {
+  createExternalService(slug: $slug, kind: $kind, name: $name, baseUrl: $baseUrl) {
+    ...externalServiceNode
+  }
+}

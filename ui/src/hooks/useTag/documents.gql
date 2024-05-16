@@ -1,0 +1,30 @@
+fragment tagNode on Tag {
+  id
+  name
+  kana
+  aliases
+}
+
+query Tag($id: UUID!) {
+  tags(ids: [$id]) {
+    ...tagNode
+    parent {
+      ...tagNode
+      parent {
+        ...tagNode
+        parent {
+          ...tagNode
+          parent {
+            ...tagNode
+            parent {
+              ...tagNode
+            }
+          }
+        }
+      }
+    }
+    children {
+      ...tagNode
+    }
+  }
+}

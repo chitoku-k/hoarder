@@ -1,0 +1,35 @@
+.header {
+  &:global(.MuiStack-root) {
+    min-height: 36px;
+    padding: 0 0 6px;
+  }
+}
+
+.title {
+  &:global(.MuiTypography-root) {
+    font-size: 1.05rem;
+  }
+}
+
+.newSource {
+  &:global(.MuiAutocomplete-root .MuiInputBase-input) {
+    padding-top: 2px;
+    font-size: 0.95rem;
+    color: #666;
+  }
+}
+
+.newSourcePopper {
+  &:global(.MuiAutocomplete-popper) {
+    width: auto !important;
+  }
+
+  &:global(.MuiAutocomplete-popper .MuiAutocomplete-loading),
+  &:global(.MuiAutocomplete-popper .MuiAutocomplete-noOptions) {
+    display: none;
+  }
+
+  &:global(.MuiAutocomplete-popper .MuiAutocomplete-option) {
+    padding-left: 8px;
+  }
+}

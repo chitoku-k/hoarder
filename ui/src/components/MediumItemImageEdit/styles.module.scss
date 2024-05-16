@@ -1,0 +1,81 @@
+.container {
+  &:global(.MuiStack-root) {
+    padding: 32px 0;
+  }
+}
+
+.imageListContainer {
+  > div {
+    position: static !important;
+  }
+
+  &:has(.imageList:not(:empty)) {
+    margin-bottom: 32px;
+  }
+}
+
+.imageList {
+  &:global(.MuiImageList-root) {
+    grid-template-columns: 100% !important;
+    overflow: visible;
+  }
+}
+
+.imageListItem {
+  &:global(.MuiImageListItem-root) {
+    min-height: 60px;
+    max-height: calc(100vh - 128px);
+    border-radius: 8px;
+    background-color: #eee;
+    box-shadow: 0px 8px 16px -2px rgba(10, 10, 10, 0.1), 4px 4px 8px 1px rgba(10, 10, 10, 0.02);
+    overflow: hidden;
+  }
+}
+
+.imageItem {
+  &:global(.MuiStack-root) {
+    overflow: hidden;
+
+    > img {
+      border-radius: 0;
+    }
+  }
+}
+
+.removingImageItem {
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.6);
+    pointer-events: none;
+  }
+}
+
+.addButtonContainer {
+  &:global(.MuiStack-root) {
+    padding: 0 16px;
+  }
+}
+
+.addButton {
+  &:global(.MuiIconButton-root) {
+    position: relative;
+    padding: 96px;
+    border: 4px dashed #ccc;
+    border-radius: 8px;
+    font-size: 72px;
+    color: #ccc;
+    background-color: rgba(0, 0, 0, 0.04);
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.08);
+    }
+  }
+}
+
+.addArea {
+  position: absolute;
+  inset: 0;
+}

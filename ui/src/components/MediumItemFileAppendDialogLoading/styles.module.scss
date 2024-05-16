@@ -1,0 +1,7 @@
+.container {
+  &:global(.MuiStack-root) {
+    position: fixed;
+    inset: 0;
+    color: white;
+  }
+}
