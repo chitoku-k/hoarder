@@ -44,9 +44,9 @@ COPY --link --from=release /etc/group /etc/group
 COPY --link --from=release /etc/passwd /etc/passwd
 COPY --link --from=release /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --link --from=release /usr/share/zoneinfo /usr/share/zoneinfo
-COPY --link --from=release --chown=nobody:nogroup /usr/src/entrypoint.mjs /app/
-COPY --link --from=release --chown=nobody:nogroup /usr/src/.next/standalone /app/
-COPY --link --from=release --chown=nobody:nogroup /usr/src/.next/static /app/.next/static
+COPY --chown=nobody:nogroup --from=release /usr/src/entrypoint.mjs /app/
+COPY --chown=nobody:nogroup --from=release /usr/src/.next/standalone /app/
+COPY --chown=nobody:nogroup --from=release /usr/src/.next/static /app/.next/static
 RUN --mount=from=release,src=/bin,dst=/bin \
     --mount=from=release,src=/lib,dst=/lib \
     --mount=from=release,src=/usr,dst=/usr \
