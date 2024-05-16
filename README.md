@@ -10,6 +10,7 @@ Collects your favorite media and organizes them with the hierarchical tag system
 ### Development
 
 ```bash
+$ yarn && yarn codegen
 $ docker compose up -d --build
 $ docker compose exec api hoarder migration apply
 ```
@@ -70,6 +71,16 @@ To execute database migration:
 ```
 $ hoarder migration [OPTIONS] (apply | drop | list | revert)
 ```
+
+### UI
+
+#### Options
+
+The following environment variables can be used to configure UI:
+
+- `API_URL`: URL for API (**required**)
+- `PUBLIC_URL`: Public URL for UI (**required**)
+- `BASE_URL`: Base URL for UI (**required**)
 
 ## Testing
 
