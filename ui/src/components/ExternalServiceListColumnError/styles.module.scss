@@ -1,0 +1,28 @@
+.column {
+  &:global(.MuiStack-root) {
+    position: absolute;
+    inset: 0;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.icon {
+  &:global(.MuiSvgIcon-root) {
+    font-size: 4rem;
+    color: rgba(0, 0, 0, 0.54);
+  }
+}
+
+.text {
+  &:global(.MuiTypography-root) {
+    color: rgba(0, 0, 0, 0.54);
+  }
+}
+
+.retry {
+  &:global(.MuiLink-root) {
+    margin-bottom: 24px;
+    cursor: pointer;
+  }
+}

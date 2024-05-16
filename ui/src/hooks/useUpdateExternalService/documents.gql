@@ -1,0 +1,13 @@
+fragment externalServiceNode on ExternalService {
+  id
+  slug
+  kind
+  name
+  baseUrl
+}
+
+mutation UpdateExternalService($id: UUID!, $slug: String, $name: String, $baseUrl: String) {
+  updateExternalService(id: $id, slug: $slug, name: $name, baseUrl: $baseUrl) {
+    ...externalServiceNode
+  }
+}

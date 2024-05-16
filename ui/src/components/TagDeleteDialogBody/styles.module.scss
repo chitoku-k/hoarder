@@ -1,0 +1,17 @@
+.errorDescription {
+  margin: 12px 0 0;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.form {
+  &:global(.MuiStack-root) {
+    padding: 12px 20px;
+    height: 100%;
+  }
+}
+
+.label {
+  &:global(.MuiFormControlLabel-root) {
+    color: rgba(0, 0, 0, 0.6);
+  }
+}

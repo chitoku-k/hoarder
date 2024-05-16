@@ -1,0 +1,5 @@
+mutation DeleteMedium($id: UUID!) {
+  deleteMedium(id: $id) {
+    deleted
+  }
+}

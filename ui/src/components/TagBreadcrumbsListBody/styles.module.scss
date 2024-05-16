@@ -1,0 +1,49 @@
+.breadcrumbsContainer {
+  &:global(.MuiStack-root) {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+  }
+  &.nowrap::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 64px;
+    background: linear-gradient(to left, white, rgba(255, 255, 255, 0.001));
+  }
+}
+
+.breadcrumbs {
+  &:global(.MuiBreadcrumbs-root .MuiBreadcrumbs-separator) {
+    margin-right: 0;
+    margin-left: 0;
+  }
+  &.nowrap {
+    &:global(.MuiBreadcrumbs-root .MuiBreadcrumbs-ol) {
+      flex-wrap: nowrap;
+    }
+  }
+  &:global(.MuiBreadcrumbs-root) {
+    margin-left: 0;
+  }
+}
+
+.icon,
+.name {
+  color: #666;
+}
+
+.icon {
+  &:global(.MuiSvgIcon-root) {
+    min-height: 1.5rem;
+  }
+}
+
+.name {
+  &:global(.MuiTypography-root) {
+    overflow-wrap: anywhere;
+    font-size: 0.95rem;
+  }
+}

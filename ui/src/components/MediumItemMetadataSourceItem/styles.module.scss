@@ -1,0 +1,28 @@
+.icon {
+  &:global(.MuiSvgIcon-root) {
+    margin-top: 2px;
+    margin-right: 6px;
+    color: #666;
+  }
+}
+
+.item {
+  font-size: 0.95rem;
+
+  .text {
+    margin-right: 4px;
+    overflow-wrap: anywhere;
+  }
+
+  .launch {
+    vertical-align: -0.15rem;
+  }
+
+  &.noLink {
+    color: #666;
+  }
+}
+
+.link {
+  text-decoration: none;
+}

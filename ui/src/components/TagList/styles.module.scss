@@ -1,0 +1,18 @@
+.container {
+  &:global(.MuiContainer-root) {
+    margin: 20px auto;
+  }
+}
+
+.header {
+  &:global(.MuiTypography-root) {
+    font-size: 1.35rem;
+  }
+}
+
+.tagList,
+.tagTypeList {
+  &:global(.MuiCard-root) {
+    height: 768px;
+  }
+}

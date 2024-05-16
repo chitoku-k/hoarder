@@ -1,0 +1,25 @@
+fragment replicaNode on Replica {
+  id
+  displayOrder
+  thumbnail {
+    id
+    width
+    height
+    url
+    createdAt
+    updatedAt
+  }
+  originalUrl
+  url
+  mimeType
+  width
+  height
+  createdAt
+  updatedAt
+}
+
+mutation CreateReplica($mediumID: UUID!, $file: Upload!, $overwrite: Boolean!) {
+  createReplica(mediumId: $mediumID, upload: { file: $file, overwrite: $overwrite }) {
+    ...replicaNode
+  }
+}

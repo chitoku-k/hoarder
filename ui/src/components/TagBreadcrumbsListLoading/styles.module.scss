@@ -1,0 +1,22 @@
+.breadcrumbs {
+  &:global(.MuiStack-root) {
+    margin: 0;
+  }
+}
+
+.icon {
+  &:global(.MuiSvgIcon-root),
+  &:global(.MuiCircularProgress-root) {
+    color: #666;
+  }
+  &:global(.MuiSvgIcon-root) {
+    min-height: 1.5rem;
+  }
+}
+
+.nextIcon {
+  &:global(.MuiSvgIcon-root) {
+    color: #666;
+    min-height: 1.5rem;
+  }
+}

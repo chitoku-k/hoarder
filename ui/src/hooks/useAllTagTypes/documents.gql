@@ -1,0 +1,11 @@
+fragment tagTypeNode on TagType {
+  id
+  slug
+  name
+}
+
+query AllTagTypes {
+  allTagTypes {
+    ...tagTypeNode
+  }
+}

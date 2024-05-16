@@ -1,0 +1,33 @@
+.container {
+  &:global(.MuiGrid2-root) {
+    margin: 0;
+  }
+}
+
+.imageContainer {
+  &:global(.MuiGrid2-root) {
+    padding: 0 16px;
+  }
+}
+
+.imageList {
+  margin: 0;
+  padding: 16px;
+}
+
+.metadataContainer {
+  &:global(.MuiGrid2-root) {
+    position: sticky;
+    top: 64px;
+    height: calc(100vh - 64px);
+    overflow: auto;
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+  }
+}
+
+.metadataList {
+  &:global(.MuiStack-root) {
+    padding: 16px 0;
+  }
+}

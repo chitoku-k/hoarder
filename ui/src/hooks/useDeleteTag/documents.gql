@@ -1,0 +1,5 @@
+mutation DeleteTag($id: UUID!, $recursive: Boolean!) {
+  deleteTag(id: $id, recursive: $recursive) {
+    deleted
+  }
+}

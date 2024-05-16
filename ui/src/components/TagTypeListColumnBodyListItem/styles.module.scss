@@ -1,0 +1,27 @@
+.tagType {
+  &:global(.MuiListItemButton-root) {
+    padding-right: 8px;
+  }
+}
+
+.icon {
+  &:global(.MuiListItemIcon-root) {
+    min-width: 40px;
+    &.iconDense {
+      min-width: 28px;
+    }
+  }
+}
+
+.text {
+  &:global(.MuiListItemText-root) {
+    margin-top: 6px;
+    margin-bottom: 6px;
+  }
+  &:global(.MuiListItemText-root .MuiTypography-root) {
+    &:empty::before {
+      content: "";
+      display: inline-block;
+    }
+  }
+}

@@ -1,0 +1,12 @@
+fragment tagNode on Tag {
+  id
+  name
+  kana
+  aliases
+}
+
+mutation DetachTag($id: UUID!) {
+  detachTag(id: $id) {
+    ...tagNode
+  }
+}

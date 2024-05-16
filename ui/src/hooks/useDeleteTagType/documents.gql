@@ -1,0 +1,5 @@
+mutation DeleteTagType($id: UUID!) {
+  deleteTagType(id: $id) {
+    deleted
+  }
+}

@@ -1,0 +1,32 @@
+.container {
+  &:global(.MuiStack-root) {
+    height: 100%;
+  }
+}
+
+.buttons {
+  &:global(.MuiStack-root) {
+    &:not(:empty) {
+      padding: 12px 16px;
+    }
+  }
+}
+
+.tagTypes {
+  &:global(.MuiList-root) {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    flex-grow: 1;
+    padding-top: 0;
+    padding-bottom: 0;
+    scrollbar-width: thin;
+  }
+}
+
+.tagType {
+  &:global(.MuiListItemButton-root) {
+    &:not(:hover) .tagTypeButton {
+      display: none;
+    }
+  }
+}

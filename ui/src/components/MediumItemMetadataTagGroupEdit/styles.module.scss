@@ -1,0 +1,50 @@
+.header {
+  &:global(.MuiStack-root) {
+    min-height: 36px;
+    padding: 0 0 6px;
+  }
+}
+
+.title {
+  &:global(.MuiTypography-root) {
+    font-size: 1.05rem;
+  }
+}
+
+.removed {
+  &:global(.MuiStack-root .MuiBreadcrumbs-li) {
+    position: relative;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      border-top: 1px solid #666;
+    }
+  }
+}
+
+.newTag {
+  &:global(.MuiAutocomplete-root .MuiInputBase-input) {
+    padding-top: 4px;
+    font-size: 0.95rem;
+    color: #666;
+  }
+}
+
+.newTagPopper {
+  &:global(.MuiAutocomplete-popper) {
+    width: auto !important;
+  }
+
+  &:global(.MuiAutocomplete-popper .MuiAutocomplete-loading),
+  &:global(.MuiAutocomplete-popper .MuiAutocomplete-noOptions) {
+    display: none;
+  }
+
+  &:global(.MuiAutocomplete-popper .MuiAutocomplete-option) {
+    padding-left: 8px;
+  }
+}

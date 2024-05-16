@@ -1,0 +1,11 @@
+.icon {
+  &:global(.MuiSvgIcon-root) {
+    color: #666;
+  }
+}
+
+.createdAt {
+  &:global(.MuiStack-root) {
+    padding: 4px 0;
+  }
+}

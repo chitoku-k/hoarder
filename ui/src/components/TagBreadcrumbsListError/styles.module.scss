@@ -1,0 +1,25 @@
+.breadcrumbs {
+  &:global(.MuiStack-root) {
+    margin: 0;
+  }
+}
+
+.icon {
+  &:global(.MuiSvgIcon-root) {
+    color: #666;
+    min-height: 1.5rem;
+  }
+}
+
+.text {
+  &:global(.MuiTypography-root) {
+    color: #666;
+    font-size: 0.95rem;
+  }
+}
+
+.retry {
+  &:global(.MuiLink-root) {
+    cursor: pointer;
+  }
+}

@@ -1,0 +1,13 @@
+# vim: set ft=nginx sw=4:
+
+root $MEDIA_ROOT_DIR;
+server_tokens off;
+charset utf-8;
+
+server {
+    listen 80 default;
+    listen [::]:80 default;
+    server_name _;
+
+    include /etc/nginx/conf.d/locations/*.conf;
+}

@@ -1,0 +1,40 @@
+.tag {
+  &:global(.MuiListItemButton-root) {
+    padding-right: 24px;
+  }
+}
+
+.icon {
+  &:global(.MuiListItemIcon-root) {
+    min-width: 40px;
+    &.iconDense {
+      min-width: 28px;
+    }
+  }
+}
+
+.text {
+  &:global(.MuiListItemText-root) {
+    margin-top: 6px;
+    margin-bottom: 6px;
+  }
+  &:global(.MuiListItemText-root .MuiTypography-root) {
+    &:empty::before {
+      content: "";
+      display: inline-block;
+    }
+  }
+}
+
+.arrowContainer {
+  display: flex;
+  position: absolute;
+  right: 4px;
+  overflow: hidden;
+  width: 16px;
+  justify-content: center;
+}
+
+.arrow {
+  color: rgba(0, 0, 0, 0.54);
+}

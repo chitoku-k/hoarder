@@ -1,0 +1,12 @@
+fragment tagNode on Tag {
+  id
+  name
+  kana
+  aliases
+}
+
+mutation CreateTag($name: String!, $kana: String!, $aliases: [String!]!, $parentID: UUID) {
+  createTag(name: $name, kana: $kana, aliases: $aliases, parentId: $parentID) {
+    ...tagNode
+  }
+}

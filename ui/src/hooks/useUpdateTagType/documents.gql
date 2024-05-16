@@ -1,0 +1,11 @@
+fragment tagTypeNode on TagType {
+  id
+  slug
+  name
+}
+
+mutation UpdateTagType($id: UUID!, $slug: String, $name: String) {
+  updateTagType(id: $id, slug: $slug, name: $name) {
+    ...tagTypeNode
+  }
+}

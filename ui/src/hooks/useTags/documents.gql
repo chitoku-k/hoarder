@@ -1,0 +1,52 @@
+fragment tagNode on Tag {
+  id
+  name
+  kana
+  aliases
+}
+
+query AllTags($number: Int!, $after: String) {
+  allTags(root: true, first: $number, after: $after) {
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    edges {
+      node {
+        ...tagNode
+      }
+    }
+  }
+}
+
+query AllTagsLike($nameOrAliasLike: String!) {
+  allTagsLike(nameOrAliasLike: $nameOrAliasLike) {
+    ...tagNode
+    parent {
+      ...tagNode
+      parent {
+        ...tagNode
+        parent {
+          ...tagNode
+          parent {
+            ...tagNode
+            parent {
+              ...tagNode
+            }
+          }
+        }
+      }
+    }
+    children {
+      ...tagNode
+    }
+  }
+}
+
+query Tags($ids: [UUID!]!) {
+  tags(ids: $ids) {
+    children {
+      ...tagNode
+    }
+  }
+}

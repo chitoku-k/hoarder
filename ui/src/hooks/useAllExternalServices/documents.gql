@@ -1,0 +1,13 @@
+fragment externalServiceNode on ExternalService {
+  id
+  slug
+  kind
+  name
+  baseUrl
+}
+
+query AllExternalServices {
+  allExternalServices {
+    ...externalServiceNode
+  }
+}

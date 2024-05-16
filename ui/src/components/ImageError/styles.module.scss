@@ -1,0 +1,12 @@
+.container {
+  &:global(.MuiStack-root) {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+}
+
+.icon {
+  &:global(.MuiSvgIcon-root) {
+    font-size: 72px;
+    color: #ccc;
+  }
+}

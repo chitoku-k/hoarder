@@ -1,0 +1,31 @@
+.item {
+  margin: auto;
+  max-width: 100%;
+  max-height: 100%;
+  align-items: center;
+  overflow: hidden;
+}
+
+.wrapper {
+  &:global(.MuiStack-root) {
+    margin: auto;
+    height: 100%;
+  }
+}
+
+.image {
+  margin: 0 auto;
+  border-radius: inherit;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.noimage {
+  margin: auto;
+}
+
+.noimageIcon {
+  width: 96px;
+  height: 96px;
+  color: #aaa;
+}
