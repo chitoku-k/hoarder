@@ -27,8 +27,48 @@ updates:
       - sea-query
       - sea-query-*
   open-pull-requests-limit: 99
+- package-ecosystem: npm
+  directory: "/ui"
+  schedule:
+    interval: weekly
+    day: saturday
+    time: "00:00"
+    timezone: Asia/Tokyo
+  groups:
+    date-fns:
+      patterns:
+      - date-fns
+      - date-fns-tz
+    emotion:
+      patterns:
+      - "@emotion/*"
+    graphql-codegen:
+      patterns:
+      - "@graphql-codegen/*"
+    mui:
+      patterns:
+      - "@mui/*"
+    react:
+      patterns:
+      - react
+      - react-dom
+  open-pull-requests-limit: 99
+  versioning-strategy: increase
+  ignore:
+  # TODO: Update eslint when eslint-config-next supports ESLint v9
+  - dependency-name: eslint
+    versions:
+    - ">= 9.0.0"
 - package-ecosystem: docker
   directory: "/api"
+  schedule:
+    interval: weekly
+    day: saturday
+    time: "00:00"
+    timezone: Asia/Tokyo
+  open-pull-requests-limit: 99
+- package-ecosystem: docker
+  directory: "/ui"
   schedule:
     interval: weekly
     day: saturday
