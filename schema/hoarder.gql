@@ -1,0 +1,300 @@
+directive @oneOf on INPUT_OBJECT
+
+
+"""
+Implement the DateTime<Utc> scalar
+
+The input/output is a string in RFC3339 format.
+"""
+scalar DateTime
+
+type DeleteResult {
+	deleted: Boolean!
+}
+
+input ExternalMetadataIdCreatorIdInput {
+	id: String!
+	creatorId: String!
+}
+
+input ExternalMetadataIdInput {
+	id: String!
+}
+
+input ExternalMetadataIdOptionalCreatorIdInput {
+	id: String!
+	creatorId: String
+}
+
+input ExternalMetadataInput @oneOf {
+	bluesky: ExternalMetadataIdCreatorIdInput
+	fantia: ExternalMetadataIdInput
+	mastodon: ExternalMetadataIdCreatorIdInput
+	misskey: ExternalMetadataIdInput
+	nijie: ExternalMetadataIdInput
+	pixiv: ExternalMetadataIdInput
+	pixiv_fanbox: ExternalMetadataIdCreatorIdInput
+	pleroma: ExternalMetadataIdInput
+	seiga: ExternalMetadataIdInput
+	skeb: ExternalMetadataIdCreatorIdInput
+	threads: ExternalMetadataIdOptionalCreatorIdInput
+	twitter: ExternalMetadataIdOptionalCreatorIdInput
+	website: ExternalMetadataUrlInput
+	xfolio: ExternalMetadataIdCreatorIdInput
+	custom: JSON
+}
+
+input ExternalMetadataUrlInput {
+	url: String!
+}
+
+type ExternalService {
+	id: UUID!
+	slug: String!
+	kind: String!
+	name: String!
+	baseUrl: String
+}
+
+
+
+
+"""
+A scalar that can represent any JSON value.
+"""
+scalar JSON
+
+type Medium {
+	id: UUID!
+	sources: [Source!]!
+	tags: [TagTagType!]!
+	replicas: [Replica!]!
+	createdAt: DateTime!
+	updatedAt: DateTime!
+}
+
+type MediumConnection {
+	"""
+	Information to aid in pagination.
+	"""
+	pageInfo: PageInfo!
+	"""
+	A list of edges.
+	"""
+	edges: [MediumEdge!]!
+	"""
+	A list of nodes.
+	"""
+	nodes: [Medium!]!
+}
+
+"""
+An edge in a connection.
+"""
+type MediumEdge {
+	"""
+	The item at the end of the edge
+	"""
+	node: Medium!
+	"""
+	A cursor for use in pagination
+	"""
+	cursor: String!
+}
+
+type Mutation {
+	createExternalService(slug: String!, kind: String!, name: String!, baseUrl: String): ExternalService!
+	updateExternalService(id: UUID!, slug: String, name: String, baseUrl: String): ExternalService!
+	deleteExternalService(id: UUID!): DeleteResult!
+	createMedium(sourceIds: [UUID!], createdAt: DateTime, tagIds: [TagTagTypeInput!]): Medium!
+	createReplica(mediumId: UUID!, originalUrl: String, upload: ReplicaInput): Replica!
+	createSource(externalServiceId: UUID!, externalMetadata: ExternalMetadataInput!): Source!
+	updateMedium(id: UUID!, addSourceIds: [UUID!], removeSourceIds: [UUID!], addTagIds: [TagTagTypeInput!], removeTagIds: [TagTagTypeInput!], replicaOrders: [UUID!], createdAt: DateTime): Medium!
+	updateReplica(id: UUID!, originalUrl: String, upload: ReplicaInput): Replica!
+	updateSource(id: UUID!, externalServiceId: UUID, externalMetadata: ExternalMetadataInput): Source!
+	deleteMedium(id: UUID!): DeleteResult!
+	deleteReplica(id: UUID!): DeleteResult!
+	deleteSource(id: UUID!): DeleteResult!
+	createTag(name: String!, kana: String!, aliases: [String!], parentId: UUID): Tag!
+	createTagType(slug: String!, name: String!): TagType!
+	updateTag(id: UUID!, name: String, kana: String, addAliases: [String!], removeAliases: [String!]): Tag!
+	updateTagType(id: UUID!, slug: String, name: String): TagType!
+	attachTag(id: UUID!, parentId: UUID!): Tag!
+	detachTag(id: UUID!): Tag!
+	deleteTag(id: UUID!, recursive: Boolean! = false): DeleteResult!
+	deleteTagType(id: UUID!): DeleteResult!
+}
+
+type ObjectEntry {
+	name: String!
+	url: String
+	kind: ObjectKind!
+	metadata: ObjectEntryMetadata
+}
+
+type ObjectEntryMetadata {
+	size: Int!
+	createdAt: DateTime!
+	updatedAt: DateTime!
+	accessedAt: DateTime!
+}
+
+enum ObjectKind {
+	CONTAINER
+	OBJECT
+	UNKNOWN
+}
+
+enum Order {
+	ASC
+	DESC
+}
+
+"""
+Information about pagination in a connection
+"""
+type PageInfo {
+	"""
+	When paginating backwards, are there more items?
+	"""
+	hasPreviousPage: Boolean!
+	"""
+	When paginating forwards, are there more items?
+	"""
+	hasNextPage: Boolean!
+	"""
+	When paginating backwards, the cursor to continue.
+	"""
+	startCursor: String
+	"""
+	When paginating forwards, the cursor to continue.
+	"""
+	endCursor: String
+}
+
+type Query {
+	allExternalServices: [ExternalService!]!
+	externalServices(ids: [UUID!]!): [ExternalService!]!
+	allMedia(sourceIds: [UUID!], tagIds: [TagTagTypeInput!], order: Order! = ASC, after: String, before: String, first: Int, last: Int): MediumConnection!
+	media(ids: [UUID!]!): [Medium!]!
+	replica(originalUrl: String!): Replica!
+	source(externalServiceId: UUID!, externalMetadata: ExternalMetadataInput!): Source
+	objects(prefix: String!, kind: ObjectKind): [ObjectEntry!]!
+	allTags(root: Boolean! = false, after: String, before: String, first: Int, last: Int): TagConnection!
+	allTagsLike(nameOrAliasLike: String!): [Tag!]!
+	tags(ids: [UUID!]!): [Tag!]!
+	allTagTypes: [TagType!]!
+}
+
+type Replica {
+	id: UUID!
+	displayOrder: Int!
+	thumbnail: Thumbnail
+	originalUrl: String!
+	mimeType: String!
+	width: Int!
+	height: Int!
+	createdAt: DateTime!
+	updatedAt: DateTime!
+	url: String
+}
+
+input ReplicaInput {
+	file: Upload!
+	overwrite: Boolean!
+}
+
+type Source {
+	id: UUID!
+	externalService: ExternalService!
+	externalMetadata: JSON!
+	createdAt: DateTime!
+	updatedAt: DateTime!
+}
+
+
+type Tag {
+	id: UUID!
+	name: String!
+	kana: String!
+	aliases: [String!]!
+	parent: Tag
+	children: [Tag!]!
+	createdAt: DateTime!
+	updatedAt: DateTime!
+}
+
+type TagConnection {
+	"""
+	Information to aid in pagination.
+	"""
+	pageInfo: PageInfo!
+	"""
+	A list of edges.
+	"""
+	edges: [TagEdge!]!
+	"""
+	A list of nodes.
+	"""
+	nodes: [Tag!]!
+}
+
+"""
+An edge in a connection.
+"""
+type TagEdge {
+	"""
+	The item at the end of the edge
+	"""
+	node: Tag!
+	"""
+	A cursor for use in pagination
+	"""
+	cursor: String!
+}
+
+type TagTagType {
+	tag: Tag!
+	type: TagType!
+}
+
+input TagTagTypeInput {
+	tagId: UUID!
+	tagTypeId: UUID!
+}
+
+type TagType {
+	id: UUID!
+	slug: String!
+	name: String!
+}
+
+type Thumbnail {
+	id: UUID!
+	width: Int!
+	height: Int!
+	createdAt: DateTime!
+	updatedAt: DateTime!
+	url: String!
+}
+
+"""
+A UUID is a unique 128-bit number, stored as 16 octets. UUIDs are parsed as
+Strings within GraphQL. UUIDs are used to assign unique identifiers to
+entities without requiring a central allocating authority.
+
+# References
+
+* [Wikipedia: Universally Unique Identifier](http://en.wikipedia.org/wiki/Universally_unique_identifier)
+* [RFC4122: A Universally Unique IDentifier (UUID) URN Namespace](http://tools.ietf.org/html/rfc4122)
+"""
+scalar UUID
+
+scalar Upload
+
+directive @include(if: Boolean!) on FIELD | FRAGMENT_SPREAD | INLINE_FRAGMENT
+directive @skip(if: Boolean!) on FIELD | FRAGMENT_SPREAD | INLINE_FRAGMENT
+schema {
+	query: Query
+	mutation: Mutation
+}
