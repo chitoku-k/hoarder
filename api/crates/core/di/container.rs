@@ -214,7 +214,7 @@ impl Application {
             Commands::Schema(SchemaCommand { command: SchemaCommands::Print(..) }) => {
                 let schema = noop_schema();
                 let graphql_service = graphql_service(schema);
-                println!("{}", graphql_service.definitions());
+                print!("{}", graphql_service.definitions());
             },
             Commands::Migration(migration) => {
                 let pg_pool = pg_pool().await?;
