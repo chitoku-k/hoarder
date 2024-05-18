@@ -106,19 +106,19 @@ const builders: Builder[] = [
     build: ({ id, creatorId }) => ({ id, creatorId }),
   },
   {
-    kind: 'twitter',
-    patterns: [
-      /^(?<id>\d+)$/,
-      /^https?:\/\/(?:twitter\.com|x\.com)\/(?<creatorId>[^\/]+)\/status\/(?<id>\d+)(?:[\/?#].*)?$/,
-    ],
-    build: ({ id, creatorId }) => ({ id, creatorId: creatorId !== 'i' ? creatorId : null }),
-  },
-  {
     kind: 'website',
     patterns: [
       /^(?<url>https?:\/\/.+)$/,
     ],
     build: ({ url }) => ({ url }),
+  },
+  {
+    kind: 'x',
+    patterns: [
+      /^(?<id>\d+)$/,
+      /^https?:\/\/(?:twitter\.com|x\.com)\/(?<creatorId>[^\/]+)\/status\/(?<id>\d+)(?:[\/?#].*)?$/,
+    ],
+    build: ({ id, creatorId }) => ({ id, creatorId: creatorId !== 'i' ? creatorId : null }),
   },
   {
     kind: 'xfolio',
