@@ -46,19 +46,19 @@ async fn succeeds_with_extra(ctx: &DatabaseContext) {
     let repository = PostgresSourcesRepository::new(ctx.pool.clone());
     let actual = repository.fetch_by_external_metadata(
         ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")),
-        ExternalMetadata::Twitter{ id: 222222222222, creator_id: Some("creator_01".to_string()) },
+        ExternalMetadata::X{ id: 222222222222, creator_id: Some("creator_01".to_string()) },
     ).await.unwrap();
 
     assert_eq!(actual, Some(Source {
         id: SourceId::from(uuid!("76a94241-1736-4823-bb59-bef097c687e1")),
         external_service: ExternalService {
             id: ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")),
-            slug: "twitter".to_string(),
-            kind: "twitter".to_string(),
-            name: "Twitter".to_string(),
-            base_url: Some("https://twitter.com".to_string()),
+            slug: "x".to_string(),
+            kind: "x".to_string(),
+            name: "X".to_string(),
+            base_url: Some("https://x.com".to_string()),
         },
-        external_metadata: ExternalMetadata::Twitter { id: 222222222222, creator_id: None },
+        external_metadata: ExternalMetadata::X { id: 222222222222, creator_id: None },
         created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 14).unwrap(),
         updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 15).unwrap(),
     }));

@@ -63,20 +63,20 @@ async fn succeeds_with_extra(ctx: &DatabaseContext) {
     let repository = PostgresSourcesRepository::new(ctx.pool.clone());
     let actual = repository.create(
         ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")),
-        ExternalMetadata::Twitter{ id: 123456789, creator_id: Some("creator_01".to_string()) },
+        ExternalMetadata::X{ id: 123456789, creator_id: Some("creator_01".to_string()) },
     ).await.unwrap();
 
     assert_eq!(
         actual.external_service,
         ExternalService {
             id: ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")),
-            slug: "twitter".to_string(),
-            kind: "twitter".to_string(),
-            name: "Twitter".to_string(),
-            base_url: Some("https://twitter.com".to_string()),
+            slug: "x".to_string(),
+            kind: "x".to_string(),
+            name: "X".to_string(),
+            base_url: Some("https://x.com".to_string()),
         },
     );
-    assert_eq!(actual.external_metadata, ExternalMetadata::Twitter { id: 123456789, creator_id: Some("creator_01".to_string()) });
+    assert_eq!(actual.external_metadata, ExternalMetadata::X { id: 123456789, creator_id: Some("creator_01".to_string()) });
 
     let actual = sqlx::query(r#"SELECT "id", "external_service_id", "external_metadata", "external_metadata_extra" FROM "sources" WHERE "id" = $1"#)
         .bind(*actual.id)
@@ -88,14 +88,14 @@ async fn succeeds_with_extra(ctx: &DatabaseContext) {
     assert_eq!(
         actual.get::<serde_json::Value, &str>("external_metadata"),
         json!({
-            "type": "twitter",
+            "type": "x",
             "id": 123456789,
         }),
     );
     assert_eq!(
         actual.get::<serde_json::Value, &str>("external_metadata_extra"),
         json!({
-            "type": "twitter",
+            "type": "x",
             "creatorId": "creator_01",
         }),
     );

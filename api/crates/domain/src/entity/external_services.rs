@@ -27,8 +27,8 @@ pub enum ExternalMetadata {
     Seiga { id: u64 },
     Skeb { id: u64, creator_id: String },
     Threads { id: String, creator_id: Option<String> },
-    Twitter { id: u64, creator_id: Option<String> },
     Website { url: String },
+    X { id: u64, creator_id: Option<String> },
     Xfolio { id: u64, creator_id: String },
     Custom(String),
 }

@@ -38,8 +38,8 @@ input ExternalMetadataInput @oneOf {
 	seiga: ExternalMetadataIdInput
 	skeb: ExternalMetadataIdCreatorIdInput
 	threads: ExternalMetadataIdOptionalCreatorIdInput
-	twitter: ExternalMetadataIdOptionalCreatorIdInput
 	website: ExternalMetadataUrlInput
+	x: ExternalMetadataIdOptionalCreatorIdInput
 	xfolio: ExternalMetadataIdCreatorIdInput
 	custom: JSON
 }

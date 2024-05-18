@@ -34,8 +34,8 @@ pub(crate) enum ExternalMetadata {
     Seiga(ExternalMetadataId),
     Skeb(ExternalMetadataIdCreatorId),
     Threads(ExternalMetadataIdOptionalCreatorId),
-    Twitter(ExternalMetadataIdOptionalCreatorId),
     Website(ExternalMetadataUrl),
+    X(ExternalMetadataIdOptionalCreatorId),
     Xfolio(ExternalMetadataIdCreatorId),
     Custom(serde_json::Value),
 }
@@ -85,8 +85,8 @@ impl TryFrom<external_services::ExternalMetadata> for ExternalMetadata {
             Seiga { id } => Ok(Self::Seiga(ExternalMetadataId { id: id.to_string() })),
             Skeb { id, creator_id } => Ok(Self::Skeb(ExternalMetadataIdCreatorId { id: id.to_string(), creator_id })),
             Threads { id, creator_id } => Ok(Self::Threads(ExternalMetadataIdOptionalCreatorId { id, creator_id })),
-            Twitter { id, creator_id } => Ok(Self::Twitter(ExternalMetadataIdOptionalCreatorId { id: id.to_string(), creator_id })),
             Website { url } => Ok(Self::Website(ExternalMetadataUrl { url })),
+            X { id, creator_id } => Ok(Self::X(ExternalMetadataIdOptionalCreatorId { id: id.to_string(), creator_id })),
             Xfolio { id, creator_id } => Ok(Self::Xfolio(ExternalMetadataIdCreatorId { id: id.to_string(), creator_id })),
             Custom(v) => Ok(Self::Custom(serde_json::from_str(&v).map_err(|_| ErrorKind::SourceMetadataInvalid)?)),
         }
@@ -110,8 +110,8 @@ impl TryFrom<ExternalMetadata> for external_services::ExternalMetadata {
             Seiga(ExternalMetadataId { id }) => Ok(Self::Seiga { id: id.parse().map_err(|_| ErrorKind::SourceMetadataInvalid)? }),
             Skeb(ExternalMetadataIdCreatorId { id, creator_id }) => Ok(Self::Skeb { id: id.parse().map_err(|_| ErrorKind::SourceMetadataInvalid)?, creator_id }),
             Threads(ExternalMetadataIdOptionalCreatorId { id, creator_id }) => Ok(Self::Threads { id: id.parse().map_err(|_| ErrorKind::SourceMetadataInvalid)?, creator_id }),
-            Twitter(ExternalMetadataIdOptionalCreatorId { id, creator_id }) => Ok(Self::Twitter { id: id.parse().map_err(|_| ErrorKind::SourceMetadataInvalid)?, creator_id }),
             Website(ExternalMetadataUrl { url }) => Ok(Self::Website { url }),
+            X(ExternalMetadataIdOptionalCreatorId { id, creator_id }) => Ok(Self::X { id: id.parse().map_err(|_| ErrorKind::SourceMetadataInvalid)?, creator_id }),
             Xfolio(ExternalMetadataIdCreatorId { id, creator_id }) => Ok(Self::Xfolio { id: id.parse().map_err(|_| ErrorKind::SourceMetadataInvalid)?, creator_id }),
             Custom(v) => Ok(Self::Custom(v.to_string())),
         }
@@ -285,19 +285,6 @@ mod tests {
     }
 
     #[test]
-    fn convert_twitter() {
-        let metadata = ExternalMetadata::Twitter(ExternalMetadataIdOptionalCreatorId { id: "123456789".to_string(), creator_id: Some("creator_01".to_string()) });
-        let actual = external_services::ExternalMetadata::try_from(metadata).unwrap();
-
-        assert_eq!(actual, external_services::ExternalMetadata::Twitter { id: 123456789, creator_id: Some("creator_01".to_string()) });
-
-        let metadata = external_services::ExternalMetadata::Twitter { id: 123456789, creator_id: Some("creator_01".to_string()) };
-        let actual = ExternalMetadata::try_from(metadata).unwrap();
-
-        assert_eq!(actual, ExternalMetadata::Twitter(ExternalMetadataIdOptionalCreatorId { id: "123456789".to_string(), creator_id: Some("creator_01".to_string()) }));
-    }
-
-    #[test]
     fn convert_website() {
         let metadata = ExternalMetadata::Website(ExternalMetadataUrl { url: "https://example.com".to_string() });
         let actual = external_services::ExternalMetadata::try_from(metadata).unwrap();
@@ -308,6 +295,19 @@ mod tests {
         let actual = ExternalMetadata::try_from(metadata).unwrap();
 
         assert_eq!(actual, ExternalMetadata::Website(ExternalMetadataUrl { url: "https://example.com".to_string() }));
+    }
+
+    #[test]
+    fn convert_x() {
+        let metadata = ExternalMetadata::X(ExternalMetadataIdOptionalCreatorId { id: "123456789".to_string(), creator_id: Some("creator_01".to_string()) });
+        let actual = external_services::ExternalMetadata::try_from(metadata).unwrap();
+
+        assert_eq!(actual, external_services::ExternalMetadata::X { id: 123456789, creator_id: Some("creator_01".to_string()) });
+
+        let metadata = external_services::ExternalMetadata::X { id: 123456789, creator_id: Some("creator_01".to_string()) };
+        let actual = ExternalMetadata::try_from(metadata).unwrap();
+
+        assert_eq!(actual, ExternalMetadata::X(ExternalMetadataIdOptionalCreatorId { id: "123456789".to_string(), creator_id: Some("creator_01".to_string()) }));
     }
 
     #[test]

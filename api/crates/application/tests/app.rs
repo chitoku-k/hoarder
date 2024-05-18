@@ -30,8 +30,8 @@ async fn graphql() {
                 },
                 {
                     "id": "33333333-3333-3333-3333-333333333333",
-                    "slug": "twitter",
-                    "name": "Twitter",
+                    "slug": "x",
+                    "name": "X",
                 },
             ],
         },
@@ -96,8 +96,8 @@ async fn graphql() {
                 },
                 {
                     "id": "33333333-3333-3333-3333-333333333333",
-                    "slug": "twitter",
-                    "name": "Twitter",
+                    "slug": "x",
+                    "name": "X",
                 },
             ],
         },

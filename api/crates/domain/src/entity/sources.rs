@@ -38,8 +38,8 @@ impl Source {
             ("seiga", &ExternalMetadata::Seiga { .. }) => Ok(()),
             ("skeb", &ExternalMetadata::Skeb { .. }) => Ok(()),
             ("threads", &ExternalMetadata::Threads { .. }) => Ok(()),
-            ("twitter", &ExternalMetadata::Twitter { .. }) => Ok(()),
             ("website", &ExternalMetadata::Website { .. }) => Ok(()),
+            ("x", &ExternalMetadata::X { .. }) => Ok(()),
             ("xfolio", &ExternalMetadata::Xfolio { .. }) => Ok(()),
             (_, &ExternalMetadata::Custom(_)) => Ok(()),
             (kind, _) => Err(ErrorKind::SourceMetadataNotMatch { kind: kind.to_string() })?,
@@ -278,26 +278,6 @@ mod tests {
     }
 
     #[test]
-    fn validate_succeeds_with_twitter() {
-        let source = Source {
-            id: SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
-            external_service: ExternalService {
-                id: ExternalServiceId::from(uuid!("22222222-2222-2222-2222-222222222222")),
-                slug: "twitter".to_string(),
-                kind: "twitter".to_string(),
-                name: "Twitter".to_string(),
-                base_url: Some("https://twitter.com".to_string()),
-            },
-            external_metadata: ExternalMetadata::Twitter { id: 727620202049900544, creator_id: Some("_namori_".to_string()) },
-            created_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 0).unwrap(),
-            updated_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 1).unwrap(),
-        };
-
-        let actual = source.validate();
-        assert!(actual.is_ok());
-    }
-
-    #[test]
     fn validate_succeeds_with_website() {
         let source = Source {
             id: SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
@@ -311,6 +291,26 @@ mod tests {
             external_metadata: ExternalMetadata::Website { url: "https://www.melonbooks.co.jp/corner/detail.php?corner_id=885".to_string() },
             created_at: Utc.with_ymd_and_hms(2022, 4, 1, 0, 0, 0).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2022, 4, 1, 0, 0, 1).unwrap(),
+        };
+
+        let actual = source.validate();
+        assert!(actual.is_ok());
+    }
+
+    #[test]
+    fn validate_succeeds_with_x() {
+        let source = Source {
+            id: SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
+            external_service: ExternalService {
+                id: ExternalServiceId::from(uuid!("22222222-2222-2222-2222-222222222222")),
+                slug: "x".to_string(),
+                kind: "x".to_string(),
+                name: "X".to_string(),
+                base_url: Some("https://x.com".to_string()),
+            },
+            external_metadata: ExternalMetadata::X { id: 727620202049900544, creator_id: Some("_namori_".to_string()) },
+            created_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 0).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 1).unwrap(),
         };
 
         let actual = source.validate();
