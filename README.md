@@ -12,14 +12,14 @@ Collects your favorite media and organizes them with the hierarchical tag system
 ```bash
 $ yarn && yarn codegen
 $ docker compose up -d --build
-$ docker compose exec api hoarder migration apply
+$ docker compose exec api migration apply
 ```
 
 ### Production
 
 ```bash
 $ docker buildx bake -f docker-bake.hcl
-$ docker run --rm -it container.chitoku.jp/chitoku-k/hoarder/api hoarder migration apply
+$ docker run --rm -it container.chitoku.jp/chitoku-k/hoarder/api migration apply
 ```
 
 ## Configuration
