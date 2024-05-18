@@ -961,12 +961,12 @@ async fn sources_asc_succeeds() {
                             id: SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
                             external_service: ExternalService {
                                 id: ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
-                                slug: "twitter".to_string(),
-                                kind: "twitter".to_string(),
-                                name: "Twitter".to_string(),
-                                base_url: Some("https://twitter.com".to_string()),
+                                slug: "x".to_string(),
+                                kind: "x".to_string(),
+                                name: "X".to_string(),
+                                base_url: Some("https://x.com".to_string()),
                             },
-                            external_metadata: ExternalMetadata::Twitter { id: 727620202049900544, creator_id: Some("_namori_".to_string()) },
+                            external_metadata: ExternalMetadata::X { id: 727620202049900544, creator_id: Some("_namori_".to_string()) },
                             created_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 0).unwrap(),
                             updated_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 1).unwrap(),
                         },
@@ -1086,13 +1086,13 @@ async fn sources_asc_succeeds() {
                                 "id": "11111111-1111-1111-1111-111111111111",
                                 "externalService": {
                                     "id": "33333333-3333-3333-3333-333333333333",
-                                    "slug": "twitter",
-                                    "kind": "twitter",
-                                    "name": "Twitter",
-                                    "baseUrl": "https://twitter.com",
+                                    "slug": "x",
+                                    "kind": "x",
+                                    "name": "X",
+                                    "baseUrl": "https://x.com",
                                 },
                                 "externalMetadata": {
-                                    "twitter": {
+                                    "x": {
                                         "id": "727620202049900544",
                                         "creatorId": "_namori_",
                                     },

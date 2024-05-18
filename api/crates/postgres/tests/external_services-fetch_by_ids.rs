@@ -30,10 +30,10 @@ async fn succeeds(ctx: &DatabaseContext) {
         },
         ExternalService {
             id: ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")),
-            slug: "twitter".to_string(),
-            kind: "twitter".to_string(),
-            name: "Twitter".to_string(),
-            base_url: Some("https://twitter.com".to_string()),
+            slug: "x".to_string(),
+            kind: "x".to_string(),
+            name: "X".to_string(),
+            base_url: Some("https://x.com".to_string()),
         },
     ]);
 }

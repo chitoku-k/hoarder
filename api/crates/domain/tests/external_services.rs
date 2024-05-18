@@ -15,26 +15,26 @@ async fn create_external_service_succeeds() {
     mock_external_services_repository
         .expect_create()
         .times(1)
-        .withf(|slug, kind, name, base_url| (slug, kind, name, base_url) == ("twitter", "twitter", "Twitter", &Some("https://twitter.com")))
+        .withf(|slug, kind, name, base_url| (slug, kind, name, base_url) == ("x", "x", "X", &Some("https://x.com")))
         .returning(|_, _, _, _| {
             Box::pin(ok(ExternalService {
                 id: ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
-                slug: "twitter".to_string(),
-                kind: "twitter".to_string(),
-                name: "Twitter".to_string(),
-                base_url: Some("https://twitter.com".to_string()),
+                slug: "x".to_string(),
+                kind: "x".to_string(),
+                name: "X".to_string(),
+                base_url: Some("https://x.com".to_string()),
             }))
         });
 
     let service = ExternalServicesService::new(mock_external_services_repository);
-    let actual = service.create_external_service("twitter", "twitter", "Twitter", Some("https://twitter.com")).await.unwrap();
+    let actual = service.create_external_service("x", "x", "X", Some("https://x.com")).await.unwrap();
 
     assert_eq!(actual, ExternalService {
         id: ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
-        slug: "twitter".to_string(),
-        kind: "twitter".to_string(),
-        name: "Twitter".to_string(),
-        base_url: Some("https://twitter.com".to_string()),
+        slug: "x".to_string(),
+        kind: "x".to_string(),
+        name: "X".to_string(),
+        base_url: Some("https://x.com".to_string()),
     });
 }
 
@@ -44,11 +44,11 @@ async fn create_external_service_fails() {
     mock_external_services_repository
         .expect_create()
         .times(1)
-        .withf(|slug, kind, name, base_url| (slug, kind, name, base_url) == ("twitter", "twitter", "Twitter", &Some("https://twitter.com")))
+        .withf(|slug, kind, name, base_url| (slug, kind, name, base_url) == ("x", "x", "X", &Some("https://x.com")))
         .returning(|_, _, _, _| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
 
     let service = ExternalServicesService::new(mock_external_services_repository);
-    let actual = service.create_external_service("twitter", "twitter", "Twitter", Some("https://twitter.com")).await.unwrap_err();
+    let actual = service.create_external_service("x", "x", "X", Some("https://x.com")).await.unwrap_err();
 
     assert_matches!(actual.kind(), ErrorKind::Other);
 }
@@ -77,10 +77,10 @@ async fn get_external_services_succeeds() {
                 },
                 ExternalService {
                     id: ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
-                    slug: "twitter".to_string(),
-                    kind: "twitter".to_string(),
-                    name: "Twitter".to_string(),
-                    base_url: Some("https://twitter.com".to_string()),
+                    slug: "x".to_string(),
+                    kind: "x".to_string(),
+                    name: "X".to_string(),
+                    base_url: Some("https://x.com".to_string()),
                 },
             ]))
         });
@@ -105,10 +105,10 @@ async fn get_external_services_succeeds() {
         },
         ExternalService {
             id: ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
-            slug: "twitter".to_string(),
-            kind: "twitter".to_string(),
-            name: "Twitter".to_string(),
-            base_url: Some("https://twitter.com".to_string()),
+            slug: "x".to_string(),
+            kind: "x".to_string(),
+            name: "X".to_string(),
+            base_url: Some("https://x.com".to_string()),
         },
     ]);
 }
@@ -148,10 +148,10 @@ async fn get_external_services_by_ids_succeeds() {
                 },
                 ExternalService {
                     id: ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
-                    slug: "twitter".to_string(),
-                    kind: "twitter".to_string(),
-                    name: "Twitter".to_string(),
-                    base_url: Some("https://twitter.com".to_string()),
+                    slug: "x".to_string(),
+                    kind: "x".to_string(),
+                    name: "X".to_string(),
+                    base_url: Some("https://x.com".to_string()),
                 },
             ]))
         });
@@ -172,10 +172,10 @@ async fn get_external_services_by_ids_succeeds() {
         },
         ExternalService {
             id: ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
-            slug: "twitter".to_string(),
-            kind: "twitter".to_string(),
-            name: "Twitter".to_string(),
-            base_url: Some("https://twitter.com".to_string()),
+            slug: "x".to_string(),
+            kind: "x".to_string(),
+            name: "X".to_string(),
+            base_url: Some("https://x.com".to_string()),
         },
     ]);
 }

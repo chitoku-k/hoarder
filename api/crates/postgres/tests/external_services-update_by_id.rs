@@ -25,8 +25,8 @@ async fn succeeds(ctx: &DatabaseContext) {
     ).await.unwrap();
 
     assert_eq!(actual.id, ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")));
-    assert_eq!(actual.slug, "twitter".to_string());
-    assert_eq!(actual.name, "Twitter".to_string());
+    assert_eq!(actual.slug, "x".to_string());
+    assert_eq!(actual.name, "X".to_string());
 
     let actual = sqlx::query(r#"SELECT "id", "slug", "kind", "name", "base_url" FROM "external_services" WHERE "id" = $1"#)
         .bind(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab"))
@@ -34,10 +34,10 @@ async fn succeeds(ctx: &DatabaseContext) {
         .await
         .unwrap();
 
-    assert_eq!(actual.get::<&str, &str>("slug"), "twitter");
-    assert_eq!(actual.get::<&str, &str>("kind"), "twitter");
-    assert_eq!(actual.get::<&str, &str>("name"), "Twitter");
-    assert_eq!(actual.get::<Option<&str>, &str>("base_url"), Some("https://twitter.com"));
+    assert_eq!(actual.get::<&str, &str>("slug"), "x");
+    assert_eq!(actual.get::<&str, &str>("kind"), "x");
+    assert_eq!(actual.get::<&str, &str>("name"), "X");
+    assert_eq!(actual.get::<Option<&str>, &str>("base_url"), Some("https://x.com"));
 }
 
 #[test_context(DatabaseContext)]
@@ -54,9 +54,9 @@ async fn with_slug_succeeds(ctx: &DatabaseContext) {
 
     assert_eq!(actual.id, ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")));
     assert_eq!(actual.slug, "x".to_string());
-    assert_eq!(actual.kind, "twitter".to_string());
-    assert_eq!(actual.name, "Twitter".to_string());
-    assert_eq!(actual.base_url, Some("https://twitter.com".to_string()));
+    assert_eq!(actual.kind, "x".to_string());
+    assert_eq!(actual.name, "X".to_string());
+    assert_eq!(actual.base_url, Some("https://x.com".to_string()));
 
     let actual = sqlx::query(r#"SELECT "id", "slug", "kind", "name", "base_url" FROM "external_services" WHERE "id" = $1"#)
         .bind(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab"))
@@ -65,9 +65,9 @@ async fn with_slug_succeeds(ctx: &DatabaseContext) {
         .unwrap();
 
     assert_eq!(actual.get::<&str, &str>("slug"), "x");
-    assert_eq!(actual.get::<&str, &str>("kind"), "twitter");
-    assert_eq!(actual.get::<&str, &str>("name"), "Twitter");
-    assert_eq!(actual.get::<Option<&str>, &str>("base_url"), Some("https://twitter.com"));
+    assert_eq!(actual.get::<&str, &str>("kind"), "x");
+    assert_eq!(actual.get::<&str, &str>("name"), "X");
+    assert_eq!(actual.get::<Option<&str>, &str>("base_url"), Some("https://x.com"));
 }
 
 #[test_context(DatabaseContext)]
@@ -83,10 +83,10 @@ async fn with_name_succeeds(ctx: &DatabaseContext) {
     ).await.unwrap();
 
     assert_eq!(actual.id, ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")));
-    assert_eq!(actual.slug, "twitter".to_string());
-    assert_eq!(actual.kind, "twitter".to_string());
+    assert_eq!(actual.slug, "x".to_string());
+    assert_eq!(actual.kind, "x".to_string());
     assert_eq!(actual.name, "X".to_string());
-    assert_eq!(actual.base_url, Some("https://twitter.com".to_string()));
+    assert_eq!(actual.base_url, Some("https://x.com".to_string()));
 
     let actual = sqlx::query(r#"SELECT "id", "slug", "kind", "name", "base_url" FROM "external_services" WHERE "id" = $1"#)
         .bind(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab"))
@@ -94,10 +94,10 @@ async fn with_name_succeeds(ctx: &DatabaseContext) {
         .await
         .unwrap();
 
-    assert_eq!(actual.get::<&str, &str>("slug"), "twitter");
-    assert_eq!(actual.get::<&str, &str>("kind"), "twitter");
+    assert_eq!(actual.get::<&str, &str>("slug"), "x");
+    assert_eq!(actual.get::<&str, &str>("kind"), "x");
     assert_eq!(actual.get::<&str, &str>("name"), "X");
-    assert_eq!(actual.get::<Option<&str>, &str>("base_url"), Some("https://twitter.com"));
+    assert_eq!(actual.get::<Option<&str>, &str>("base_url"), Some("https://x.com"));
 }
 
 #[test_context(DatabaseContext)]
@@ -113,9 +113,9 @@ async fn with_base_url_set_succeeds(ctx: &DatabaseContext) {
     ).await.unwrap();
 
     assert_eq!(actual.id, ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")));
-    assert_eq!(actual.slug, "twitter".to_string());
-    assert_eq!(actual.kind, "twitter".to_string());
-    assert_eq!(actual.name, "Twitter".to_string());
+    assert_eq!(actual.slug, "x".to_string());
+    assert_eq!(actual.kind, "x".to_string());
+    assert_eq!(actual.name, "X".to_string());
     assert_eq!(actual.base_url, Some("https://x.com".to_string()));
 
     let actual = sqlx::query(r#"SELECT "id", "slug", "kind", "name", "base_url" FROM "external_services" WHERE "id" = $1"#)
@@ -124,9 +124,9 @@ async fn with_base_url_set_succeeds(ctx: &DatabaseContext) {
         .await
         .unwrap();
 
-    assert_eq!(actual.get::<&str, &str>("slug"), "twitter");
-    assert_eq!(actual.get::<&str, &str>("kind"), "twitter");
-    assert_eq!(actual.get::<&str, &str>("name"), "Twitter");
+    assert_eq!(actual.get::<&str, &str>("slug"), "x");
+    assert_eq!(actual.get::<&str, &str>("kind"), "x");
+    assert_eq!(actual.get::<&str, &str>("name"), "X");
     assert_eq!(actual.get::<Option<&str>, &str>("base_url"), Some("https://x.com"));
 }
 
@@ -143,9 +143,9 @@ async fn with_base_url_remove_succeeds(ctx: &DatabaseContext) {
     ).await.unwrap();
 
     assert_eq!(actual.id, ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")));
-    assert_eq!(actual.slug, "twitter".to_string());
-    assert_eq!(actual.kind, "twitter".to_string());
-    assert_eq!(actual.name, "Twitter".to_string());
+    assert_eq!(actual.slug, "x".to_string());
+    assert_eq!(actual.kind, "x".to_string());
+    assert_eq!(actual.name, "X".to_string());
     assert_eq!(actual.base_url, None);
 
     let actual = sqlx::query(r#"SELECT "id", "slug", "kind", "name", "base_url" FROM "external_services" WHERE "id" = $1"#)
@@ -154,9 +154,9 @@ async fn with_base_url_remove_succeeds(ctx: &DatabaseContext) {
         .await
         .unwrap();
 
-    assert_eq!(actual.get::<&str, &str>("slug"), "twitter");
-    assert_eq!(actual.get::<&str, &str>("kind"), "twitter");
-    assert_eq!(actual.get::<&str, &str>("name"), "Twitter");
+    assert_eq!(actual.get::<&str, &str>("slug"), "x");
+    assert_eq!(actual.get::<&str, &str>("kind"), "x");
+    assert_eq!(actual.get::<&str, &str>("name"), "X");
     assert_eq!(actual.get::<Option<&str>, &str>("base_url"), None);
 }
 
@@ -174,7 +174,7 @@ async fn with_all_succeeds(ctx: &DatabaseContext) {
 
     assert_eq!(actual.id, ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")));
     assert_eq!(actual.slug, "x".to_string());
-    assert_eq!(actual.kind, "twitter".to_string());
+    assert_eq!(actual.kind, "x".to_string());
     assert_eq!(actual.name, "X".to_string());
     assert_eq!(actual.base_url, Some("https://x.com".to_string()));
 
@@ -185,7 +185,7 @@ async fn with_all_succeeds(ctx: &DatabaseContext) {
         .unwrap();
 
     assert_eq!(actual.get::<&str, &str>("slug"), "x");
-    assert_eq!(actual.get::<&str, &str>("kind"), "twitter");
+    assert_eq!(actual.get::<&str, &str>("kind"), "x");
     assert_eq!(actual.get::<&str, &str>("name"), "X");
     assert_eq!(actual.get::<Option<&str>, &str>("base_url"), Some("https://x.com"));
 }

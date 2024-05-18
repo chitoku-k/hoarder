@@ -37,10 +37,10 @@ async fn succeeds() {
                 },
                 ExternalService {
                     id: ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
-                    slug: "twitter".to_string(),
-                    kind: "twitter".to_string(),
-                    name: "Twitter".to_string(),
-                    base_url: Some("https://twitter.com".to_string()),
+                    slug: "x".to_string(),
+                    kind: "x".to_string(),
+                    name: "X".to_string(),
+                    base_url: Some("https://x.com".to_string()),
                 },
             ]))
         });
@@ -75,8 +75,8 @@ async fn succeeds() {
             },
             {
                 "id": "33333333-3333-3333-3333-333333333333",
-                "slug": "twitter",
-                "name": "Twitter",
+                "slug": "x",
+                "name": "X",
             },
         ],
     }));

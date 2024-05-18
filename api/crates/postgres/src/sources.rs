@@ -71,8 +71,8 @@ pub(crate) enum PostgresExternalServiceMetadata {
     Seiga { id: u64 },
     Skeb { id: u64, creator_id: String },
     Threads { id: String },
-    Twitter { id: u64 },
     Website { url: String },
+    X { id: u64 },
     Xfolio { id: u64, creator_id: String },
     #[serde(untagged)]
     Custom(serde_json::Value),
@@ -93,8 +93,8 @@ pub(crate) enum PostgresExternalServiceMetadataExtra {
     Seiga {},
     Skeb {},
     Threads { creator_id: Option<String> },
-    Twitter { creator_id: Option<String> },
     Website {},
+    X { creator_id: Option<String> },
     Xfolio {},
     #[serde(untagged)]
     Custom {},
@@ -154,8 +154,8 @@ impl TryFrom<PostgresExternalServiceMetadataFull> for ExternalMetadata {
             (Seiga { id }, PostgresExternalServiceMetadataExtra::Seiga {}) => Ok(Self::Seiga { id }),
             (Skeb { id, creator_id }, PostgresExternalServiceMetadataExtra::Skeb {}) => Ok(Self::Skeb { id, creator_id }),
             (Threads { id }, PostgresExternalServiceMetadataExtra::Threads { creator_id }) => Ok(Self::Threads { id, creator_id }),
-            (Twitter { id }, PostgresExternalServiceMetadataExtra::Twitter { creator_id }) => Ok(Self::Twitter { id, creator_id }),
             (Website { url }, PostgresExternalServiceMetadataExtra::Website {}) => Ok(Self::Website { url }),
+            (X { id }, PostgresExternalServiceMetadataExtra::X { creator_id }) => Ok(Self::X { id, creator_id }),
             (Xfolio { id, creator_id }, PostgresExternalServiceMetadataExtra::Xfolio {}) => Ok(Self::Xfolio { id, creator_id }),
             (Custom(v), PostgresExternalServiceMetadataExtra::Custom {}) => Ok(Self::Custom(v.to_string())),
             _ => Err(ErrorKind::SourceMetadataInvalid)?,
@@ -180,8 +180,8 @@ impl TryFrom<ExternalMetadata> for PostgresExternalServiceMetadataFull {
             Seiga { id } => Ok(Self(PostgresExternalServiceMetadata::Seiga { id }, PostgresExternalServiceMetadataExtra::Seiga {})),
             Skeb { id, creator_id } => Ok(Self(PostgresExternalServiceMetadata::Skeb { id, creator_id }, PostgresExternalServiceMetadataExtra::Skeb {})),
             Threads { id, creator_id } => Ok(Self(PostgresExternalServiceMetadata::Threads { id }, PostgresExternalServiceMetadataExtra::Threads { creator_id })),
-            Twitter { id, creator_id } => Ok(Self(PostgresExternalServiceMetadata::Twitter { id }, PostgresExternalServiceMetadataExtra::Twitter { creator_id })),
             Website { url } => Ok(Self(PostgresExternalServiceMetadata::Website { url }, PostgresExternalServiceMetadataExtra::Website {})),
+            X { id, creator_id } => Ok(Self(PostgresExternalServiceMetadata::X { id }, PostgresExternalServiceMetadataExtra::X { creator_id })),
             Xfolio { id, creator_id } => Ok(Self(PostgresExternalServiceMetadata::Xfolio { id, creator_id }, PostgresExternalServiceMetadataExtra::Xfolio {})),
             Custom(v) => Ok(Self(PostgresExternalServiceMetadata::Custom(serde_json::from_str(&v)?), PostgresExternalServiceMetadataExtra::Custom {})),
         }
@@ -634,21 +634,6 @@ mod tests {
     }
 
     #[test]
-    fn convert_twitter() {
-        let metadata = PostgresExternalServiceMetadata::Twitter { id: 123456789 };
-        let extra = PostgresExternalServiceMetadataExtra::Twitter { creator_id: Some("creator_01".to_string()) };
-        let actual = ExternalMetadata::try_from(PostgresExternalServiceMetadataFull(metadata, extra)).unwrap();
-
-        assert_eq!(actual, ExternalMetadata::Twitter { id: 123456789, creator_id: Some("creator_01".to_string()) });
-
-        let metadata = ExternalMetadata::Twitter { id: 123456789, creator_id: Some("creator_01".to_string()) };
-        let actual = PostgresExternalServiceMetadataFull::try_from(metadata).unwrap();
-
-        assert_eq!(actual.0, PostgresExternalServiceMetadata::Twitter { id: 123456789 });
-        assert_eq!(actual.1, PostgresExternalServiceMetadataExtra::Twitter { creator_id: Some("creator_01".to_string()) });
-    }
-
-    #[test]
     fn convert_website() {
         let metadata = PostgresExternalServiceMetadata::Website { url: "https://example.com".to_string() };
         let extra = PostgresExternalServiceMetadataExtra::Website {};
@@ -661,6 +646,21 @@ mod tests {
 
         assert_eq!(actual.0, PostgresExternalServiceMetadata::Website { url: "https://example.com".to_string() });
         assert_eq!(actual.1, PostgresExternalServiceMetadataExtra::Website {});
+    }
+
+    #[test]
+    fn convert_x() {
+        let metadata = PostgresExternalServiceMetadata::X { id: 123456789 };
+        let extra = PostgresExternalServiceMetadataExtra::X { creator_id: Some("creator_01".to_string()) };
+        let actual = ExternalMetadata::try_from(PostgresExternalServiceMetadataFull(metadata, extra)).unwrap();
+
+        assert_eq!(actual, ExternalMetadata::X { id: 123456789, creator_id: Some("creator_01".to_string()) });
+
+        let metadata = ExternalMetadata::X { id: 123456789, creator_id: Some("creator_01".to_string()) };
+        let actual = PostgresExternalServiceMetadataFull::try_from(metadata).unwrap();
+
+        assert_eq!(actual.0, PostgresExternalServiceMetadata::X { id: 123456789 });
+        assert_eq!(actual.1, PostgresExternalServiceMetadataExtra::X { creator_id: Some("creator_01".to_string()) });
     }
 
     #[test]
