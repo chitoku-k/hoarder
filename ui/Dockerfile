@@ -53,4 +53,4 @@ RUN --mount=from=release,src=/bin,dst=/bin \
     /bin/mkdir --mode=1777 /tmp
 USER nobody
 EXPOSE $PORT
-CMD ["/node", "entrypoint.mjs"]
+ENTRYPOINT ["/node", "entrypoint.mjs"]
