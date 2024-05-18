@@ -34,4 +34,4 @@ RUN --mount=from=release,src=/bin,dst=/bin \
     --mount=from=release,src=/usr,dst=/usr \
     /bin/mkdir --mode=1777 /tmp
 EXPOSE $PORT
-CMD ["hoarder"]
+ENTRYPOINT ["hoarder"]
