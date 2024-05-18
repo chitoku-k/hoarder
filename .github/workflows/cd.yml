@@ -41,6 +41,7 @@ jobs:
       - name: Push to Container Registry
         run: |
           docker push container.chitoku.jp/chitoku-k/hoarder/api
+          docker push container.chitoku.jp/chitoku-k/hoarder/ui
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
@@ -65,3 +66,4 @@ jobs:
       - name: Rollout restart
         run: |
           kubectl rollout restart deployment/hoarder-api
+          kubectl rollout restart deployment/hoarder-ui
