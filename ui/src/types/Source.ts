@@ -21,8 +21,8 @@ export type ExternalMetadata =
   | ExternalMetadataSeiga
   | ExternalMetadataSkeb
   | ExternalMetadataThreads
-  | ExternalMetadataTwitter
   | ExternalMetadataWebsite
+  | ExternalMetadataX
   | ExternalMetadataXfolio
   | ExternalMetadataCustom
 
@@ -97,16 +97,16 @@ export interface ExternalMetadataThreads {
   }
 }
 
-export interface ExternalMetadataTwitter {
-  twitter: {
-    id: string
-    creatorId?: string | null
-  }
-}
-
 export interface ExternalMetadataWebsite {
   website: {
     url: string
+  }
+}
+
+export interface ExternalMetadataX {
+  x: {
+    id: string
+    creatorId?: string | null
   }
 }
 

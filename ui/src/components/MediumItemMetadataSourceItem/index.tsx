@@ -20,8 +20,8 @@ import type {
   ExternalMetadataSeiga,
   ExternalMetadataSkeb,
   ExternalMetadataThreads,
-  ExternalMetadataTwitter,
   ExternalMetadataWebsite,
+  ExternalMetadataX,
   ExternalMetadataXfolio,
   ExternalService,
   Source,
@@ -117,17 +117,17 @@ const builders: Builder[] = [
     },
   },
   {
-    kind: 'twitter',
-    build: (_externalService, params) => {
-      const { twitter } = params as ExternalMetadataTwitter
-      return `https://twitter.com/${twitter.creatorId ?? 'i'}/status/${twitter.id}`
-    },
-  },
-  {
     kind: 'website',
     build: (_externalService, params) => {
       const { website } = params as ExternalMetadataWebsite
       return website.url
+    },
+  },
+  {
+    kind: 'x',
+    build: (_externalService, params) => {
+      const { x } = params as ExternalMetadataX
+      return `https://x.com/${x.creatorId ?? 'i'}/status/${x.id}`
     },
   },
   {
