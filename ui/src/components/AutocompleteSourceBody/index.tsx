@@ -70,6 +70,7 @@ const builders: Builder[] = [
   {
     kind: 'pixiv_fanbox',
     patterns: [
+      /^https?:\/\/www\.fanbox\.cc\/@(?<creatorId>[^.]+)\/posts\/(?<id>\d+)(?:[?#].*)?$/,
       /^https?:\/\/(?<creatorId>[^.]+)\.fanbox\.cc\/posts\/(?<id>\d+)(?:[?#].*)?$/,
     ],
     build: ({ id, creatorId }) => ({ id, creatorId }),
