@@ -209,17 +209,21 @@ where
         Ok(source)
     }
 
-    async fn delete_medium(&self, ctx: &Context<'_>, id: Uuid) -> Result<DeleteResult> {
+    async fn delete_medium(&self, ctx: &Context<'_>, id: Uuid, delete_objects: Option<bool>) -> Result<DeleteResult> {
         let media_service = ctx.data_unchecked::<MediaService>();
 
-        let result = media_service.delete_medium_by_id(id.into()).await?;
+        let delete_objects = delete_objects.unwrap_or_default();
+
+        let result = media_service.delete_medium_by_id(id.into(), delete_objects).await?;
         Ok(result.into())
     }
 
-    async fn delete_replica(&self, ctx: &Context<'_>, id: Uuid) -> Result<DeleteResult> {
+    async fn delete_replica(&self, ctx: &Context<'_>, id: Uuid, delete_object: Option<bool>) -> Result<DeleteResult> {
         let media_service = ctx.data_unchecked::<MediaService>();
 
-        let result = media_service.delete_replica_by_id(id.into()).await?;
+        let delete_object = delete_object.unwrap_or_default();
+
+        let result = media_service.delete_replica_by_id(id.into(), delete_object).await?;
         Ok(result.into())
     }
 
