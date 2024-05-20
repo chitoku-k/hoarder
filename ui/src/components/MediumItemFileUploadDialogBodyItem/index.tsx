@@ -25,6 +25,7 @@ const MediumItemFileUploadDialogBodyItem: FunctionComponent<MediumItemFileUpload
   status,
   progress,
   error,
+  nameValidationError,
   onChangeName,
 }) => {
   const { graphQLError } = useError()
@@ -48,8 +49,11 @@ const MediumItemFileUploadDialogBodyItem: FunctionComponent<MediumItemFileUpload
       </TableCell>
       <TableCell>
         <TextField
+          className={styles.filename}
           fullWidth
           value={replica.name}
+          error={Boolean(nameValidationError)}
+          helperText={nameValidationError}
           onChange={handleChangeName}
           disabled={Boolean(status) && status !== 'error' && status !== 'aborted'}
         />
@@ -125,6 +129,7 @@ export interface MediumItemFileUploadDialogBodyItemProps {
   status: ReplicaUploadStatus
   progress: ReplicaUploadProgress | null
   error: unknown | null
+  nameValidationError?: string | null
   onChangeName?: (name: string) => void
 }
 
