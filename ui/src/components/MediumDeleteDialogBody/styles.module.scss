@@ -1,6 +1,7 @@
-.errorDescription {
-  margin: 12px 0 0;
-  color: rgba(0, 0, 0, 0.6);
+.form {
+  &:global(.MuiFormGroup-root) {
+    padding: 12px 0 0;
+  }
 }
 
 .label {

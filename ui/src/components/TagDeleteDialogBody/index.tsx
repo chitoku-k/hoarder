@@ -78,7 +78,7 @@ const TagDeleteDialogBody: FunctionComponent<TagDeleteDialogBodyProps> = ({
           )}
         </DialogContentText>
         {hasChildren ? (
-          <FormGroup className={styles.form}>
+          <FormGroup>
             <FormControlLabel
               className={styles.label}
               control={<Checkbox checked={recursive} onChange={handleChangeRecursive} />}

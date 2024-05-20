@@ -1,15 +1,21 @@
 'use client'
 
-import type { FunctionComponent } from 'react'
-import { useCallback } from 'react'
+import type { ChangeEvent, FunctionComponent } from 'react'
+import { useCallback, useState } from 'react'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import FormGroup from '@mui/material/FormGroup'
 import LoadingButton from '@mui/lab/LoadingButton'
+import Radio from '@mui/material/Radio'
+import RadioGroup from '@mui/material/RadioGroup'
 
 import { useDeleteMedium } from '@/hooks'
 import type { Medium } from '@/types'
+
+import styles from './styles.module.scss'
 
 const MediumDeleteDialogBody: FunctionComponent<MediumDeleteDialogBodyProps> = ({
   medium,
@@ -17,9 +23,14 @@ const MediumDeleteDialogBody: FunctionComponent<MediumDeleteDialogBodyProps> = (
   onDelete,
 }) => {
   const [ deleteMedium, { error, loading } ] = useDeleteMedium()
+  const [ deleteObjects, setDeleteObjects ] = useState<boolean | null>(null)
+
+  const handleChangeDeleteObjects = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    setDeleteObjects(e.currentTarget.value === 'true')
+  }, [])
 
   const handleClickDelete = useCallback(() => {
-    deleteMedium({ id: medium.id }).then(
+    deleteMedium({ id: medium.id, deleteObjects }).then(
       () => {
         close()
         onDelete(medium)
@@ -28,7 +39,9 @@ const MediumDeleteDialogBody: FunctionComponent<MediumDeleteDialogBodyProps> = (
         console.error('Error deleting medium\n', e)
       },
     )
-  }, [ deleteMedium, medium, close, onDelete ])
+  }, [ deleteMedium, medium, deleteObjects, close, onDelete ])
+
+  const hasReplicas = Boolean(medium.replicas?.length)
 
   return error ? (
     <>
@@ -45,10 +58,18 @@ const MediumDeleteDialogBody: FunctionComponent<MediumDeleteDialogBodyProps> = (
         <DialogContentText>
           メディアを削除しますか？
         </DialogContentText>
+        {hasReplicas ? (
+          <FormGroup className={styles.form}>
+            <RadioGroup value={deleteObjects} onChange={handleChangeDeleteObjects}>
+              <FormControlLabel value={true} className={styles.label} control={<Radio />} label="アップロードされたメディアを削除する" />
+              <FormControlLabel value={false} className={styles.label} control={<Radio />} label="アップロードされたメディアを削除しない" />
+            </RadioGroup>
+          </FormGroup>
+        ) : null}
       </DialogContent>
       <DialogActions>
         <Button onClick={close} autoFocus>キャンセル</Button>
-        <LoadingButton color="error" onClick={handleClickDelete} loading={loading}>削除</LoadingButton>
+        <LoadingButton color="error" onClick={handleClickDelete} loading={loading} disabled={hasReplicas && deleteObjects === null}>削除</LoadingButton>
       </DialogActions>
     </>
   )
