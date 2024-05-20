@@ -112,8 +112,8 @@ type Mutation {
 	updateMedium(id: UUID!, addSourceIds: [UUID!], removeSourceIds: [UUID!], addTagIds: [TagTagTypeInput!], removeTagIds: [TagTagTypeInput!], replicaOrders: [UUID!], createdAt: DateTime): Medium!
 	updateReplica(id: UUID!, originalUrl: String, upload: ReplicaInput): Replica!
 	updateSource(id: UUID!, externalServiceId: UUID, externalMetadata: ExternalMetadataInput): Source!
-	deleteMedium(id: UUID!): DeleteResult!
-	deleteReplica(id: UUID!): DeleteResult!
+	deleteMedium(id: UUID!, deleteObjects: Boolean): DeleteResult!
+	deleteReplica(id: UUID!, deleteObject: Boolean): DeleteResult!
 	deleteSource(id: UUID!): DeleteResult!
 	createTag(name: String!, kana: String!, aliases: [String!], parentId: UUID): Tag!
 	createTagType(slug: String!, name: String!): TagType!

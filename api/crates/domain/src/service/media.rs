@@ -150,10 +150,10 @@ pub trait MediaServiceInterface: Send + Sync + 'static {
     fn update_source_by_id(&self, id: SourceId, external_service_id: Option<ExternalServiceId>, external_metadata: Option<ExternalMetadata>) -> impl Future<Output = Result<Source>> + Send;
 
     /// Deletes the medium by ID.
-    fn delete_medium_by_id(&self, id: MediumId) -> impl Future<Output = Result<DeleteResult>> + Send;
+    fn delete_medium_by_id(&self, id: MediumId, delete_objects: bool) -> impl Future<Output = Result<DeleteResult>> + Send;
 
     /// Deletes the replica by ID.
-    fn delete_replica_by_id(&self, id: ReplicaId) -> impl Future<Output = Result<DeleteResult>> + Send;
+    fn delete_replica_by_id(&self, id: ReplicaId, delete_object: bool) -> impl Future<Output = Result<DeleteResult>> + Send;
 
     /// Deletes the source by ID.
     fn delete_source_by_id(&self, id: SourceId) -> impl Future<Output = Result<DeleteResult>> + Send;
@@ -493,7 +493,30 @@ where
         }
     }
 
-    async fn delete_medium_by_id(&self, id: MediumId) -> Result<DeleteResult> {
+    async fn delete_medium_by_id(&self, id: MediumId, delete_objects: bool) -> Result<DeleteResult> {
+        if delete_objects {
+            let replicas = match self.media_repository.fetch_by_ids([id], None, true, false).await.map(|mut r| r.pop()) {
+                Ok(Some(medium)) => medium.replicas,
+                Ok(None) => return Ok(DeleteResult::NotFound),
+                Err(e) => {
+                    log::error!("failed to delete the objects of the media\nError: {e:?}");
+                    return Err(e);
+                },
+            };
+
+            for replica in replicas {
+                if let Err(e) = self.objects_repository.delete(EntryUrl::from(replica.original_url)).await {
+                    log::error!("failed to delete the objects of the media\nError: {e:?}");
+                    return Err(e);
+                }
+
+                if let Err(e) = self.replicas_repository.delete_by_id(replica.id).await {
+                    log::error!("failed to delete the replica of the media\nError: {e:?}");
+                    return Err(e);
+                }
+            }
+        }
+
         match self.media_repository.delete_by_id(id).await {
             Ok(result) => Ok(result),
             Err(e) => {
@@ -503,7 +526,23 @@ where
         }
     }
 
-    async fn delete_replica_by_id(&self, id: ReplicaId) -> Result<DeleteResult> {
+    async fn delete_replica_by_id(&self, id: ReplicaId, delete_object: bool) -> Result<DeleteResult> {
+        if delete_object {
+            let replica = match self.replicas_repository.fetch_by_ids([id]).await.map(|mut r| r.pop()) {
+                Ok(Some(replica)) => replica,
+                Ok(None) => return Ok(DeleteResult::NotFound),
+                Err(e) => {
+                    log::error!("failed to delete the object of the replica\nError: {e:?}");
+                    return Err(e);
+                },
+            };
+
+            if let Err(e) = self.objects_repository.delete(EntryUrl::from(replica.original_url)).await {
+                log::error!("failed to delete the object of the replica\nError: {e:?}");
+                return Err(e);
+            }
+        }
+
         match self.replicas_repository.delete_by_id(id).await {
             Ok(result) => Ok(result),
             Err(e) => {
