@@ -48,6 +48,10 @@ impl ObjectsRepository for FilesystemObjectsRepository {
         let url = FilesystemEntryUrl::try_from(url)?;
         let fullpath = self.fullpath(url.as_path());
 
+        if Path::new(&self.root_dir) == fullpath {
+            return Err(Error::from(ErrorKind::ObjectUrlInvalid { url: url.into_url().into_inner() }))?;
+        }
+
         if let Some(parent) = fullpath.parent() {
             DirBuilder::new()
                 .mode(0o0755)
