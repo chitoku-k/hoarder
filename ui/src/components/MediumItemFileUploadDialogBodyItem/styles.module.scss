@@ -19,6 +19,13 @@
   max-height: 100%;
 }
 
+.filename {
+  &:global(.MuiTextField-root .MuiFormHelperText-root) {
+    position: absolute;
+    bottom: -2em;
+  }
+}
+
 .filesizeCell {
   &:global(.MuiTableCell-root) {
     width: 128px;

@@ -35,6 +35,9 @@ import type { Medium, Replica } from '@/types'
 
 import styles from './styles.module.scss'
 
+const isValidName = (name: string) => name.length > 0
+const isUniqueName = (name: string, replicas: (Replica | ReplicaCreate)[]) => replicas.reduce((total, replica) => total + Number(isReplica(replica) || replica.name === name), 0) === 1
+
 const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDialogBodyProps> = ({
   resolveMedium,
   replicas,
@@ -262,13 +265,19 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
         status={upload?.status ?? null}
         progress={upload?.progress ?? null}
         error={upload?.error ?? null}
+        nameValidationError={!isValidName(replica.name)
+          ? 'ファイル名が入力されていません'
+          : !isUniqueName(replica.name, replicas)
+            ? '同じファイル名は使用できません'
+            : null}
         onChangeName={name => handleChangeName(replica, name)}
       />
     )
-  }, [ uploads, handleChangeName ])
+  }, [ uploads, replicas, handleChangeName ])
 
   const currentReplicas = replicas.filter((replica): replica is ReplicaCreate => !isReplica(replica))
   const currentOverwrite = overwriting[0]
+  const hasValidationErrors = currentReplicas.some(replica => !isValidName(replica.name) || !isUniqueName(replica.name, replicas))
 
   return (
     <Stack className={styles.container}>
@@ -316,7 +325,7 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClickCancel} autoFocus>キャンセル</Button>
-        <LoadingButton onClick={handleClickUpload} loading={uploading}>アップロード</LoadingButton>
+        <LoadingButton onClick={handleClickUpload} loading={uploading} disabled={hasValidationErrors}>アップロード</LoadingButton>
       </DialogActions>
       {currentOverwrite ? (
         <MediumItemFileOverwriteDialog
