@@ -19,6 +19,7 @@ import MediumItemMetadataSummaryEdit from '@/components/MediumItemMetadataSummar
 import MediumItemMetadataSummaryShow from '@/components/MediumItemMetadataSummaryShow'
 import MediumItemMetadataTagEdit from '@/components/MediumItemMetadataTagEdit'
 import MediumItemMetadataTagList from '@/components/MediumItemMetadataTagList'
+import MediumItemReplicaDeleteDialog from '@/components/MediumItemReplicaDeleteDialog'
 import { useDeleteReplica, useMedium, useUpdateMedium } from '@/hooks'
 import type { TagTagTypeInput } from '@/hooks/types.generated'
 import type { Medium, Replica } from '@/types'
@@ -40,6 +41,7 @@ const MediumItemViewBody: FunctionComponent<MediumItemViewBodyProps> = ({
 
   const [ replicas, setReplicas ] = useState<(Replica | ReplicaCreate)[]>(medium.replicas)
   const [ removingReplicas, setRemovingReplicas ] = useState<Replica[]>([])
+  const [ deletingObjects, setDeletingObjects ] = useState<MediumDeleteObjects | null>(null)
   const [ uploading, setUploading ] = useState(false)
   const [ error, setError ] = useState<unknown>(null)
 
@@ -115,7 +117,7 @@ const MediumItemViewBody: FunctionComponent<MediumItemViewBodyProps> = ({
     setUploading(false)
   }, [])
 
-  const handleComplete = useCallback((current: Medium, replicas: (Replica | ReplicaCreate)[]) => {
+  const handleComplete = useCallback(async (current: Medium, replicas: (Replica | ReplicaCreate)[]) => {
     const processed = (replicas: (Replica | ReplicaCreate)[]): replicas is Replica[] => replicas.every(isReplica)
     if (!processed(replicas)) {
       setReplicas(replicas)
@@ -132,10 +134,22 @@ const MediumItemViewBody: FunctionComponent<MediumItemViewBodyProps> = ({
 
     setUploading(false)
 
+    let deleteObject: boolean | null = null
+    if (removingReplicas.length) {
+      const { promise: confirm, resolve: onConfirm, reject: onCancel } = Promise.withResolvers<boolean>()
+      setDeletingObjects({ onConfirm, onCancel })
+
+      try {
+        deleteObject = await confirm
+      } catch {
+        return
+      }
+    }
+
     const newReplicas: Promise<Replica | void>[] = []
     for (const replica of replicas) {
       if (removingReplicas.some(({ id }) => id === replica.id)) {
-        newReplicas.push(deleteReplica({ id: replica.id }).then(
+        newReplicas.push(deleteReplica({ id: replica.id, deleteObject }).then(
           () => {},
           e => {
             throw new Error('error deleting replica', { cause: e })
@@ -146,7 +160,7 @@ const MediumItemViewBody: FunctionComponent<MediumItemViewBodyProps> = ({
       }
     }
 
-    Promise.all(newReplicas)
+    await Promise.all(newReplicas)
       .then(
         results => {
           return updateMedium({
@@ -246,6 +260,18 @@ const MediumItemViewBody: FunctionComponent<MediumItemViewBodyProps> = ({
           onComplete={handleComplete}
         />
       ) : null}
+      {deletingObjects ? (
+        <MediumItemReplicaDeleteDialog
+          close={() => {
+            deletingObjects.onCancel()
+            setDeletingObjects(null)
+          }}
+          save={result => {
+            deletingObjects.onConfirm(result)
+            setDeletingObjects(null)
+          }}
+        />
+      ) : null}
       {error ? (
         <Portal>
           <Snackbar
@@ -261,6 +287,11 @@ const MediumItemViewBody: FunctionComponent<MediumItemViewBodyProps> = ({
 
 export interface MediumItemViewBodyProps {
   id: string
+}
+
+interface MediumDeleteObjects {
+  onConfirm: (result: boolean) => void
+  onCancel: () => void
 }
 
 export default MediumItemViewBody

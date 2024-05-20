@@ -22,6 +22,7 @@ import MediumItemMetadataSummaryShow from '@/components/MediumItemMetadataSummar
 import MediumItemMetadataTagCreate from '@/components/MediumItemMetadataTagCreate'
 import MediumItemMetadataTagEdit from '@/components/MediumItemMetadataTagEdit'
 import MediumItemMetadataTagList from '@/components/MediumItemMetadataTagList'
+import MediumItemReplicaDeleteDialog from '@/components/MediumItemReplicaDeleteDialog'
 import { useCreateMedium, useDeleteReplica, useUpdateMedium } from '@/hooks'
 import type { TagTagTypeInput } from '@/hooks/types.generated'
 import type { Medium, Replica } from '@/types'
@@ -45,6 +46,7 @@ const MediumCreateView: FunctionComponent = () => {
   const [ tagTagTypeIDs, setTagTagTypeIDs ] = useState<TagTagTypeInput[]>([])
   const [ replicas, setReplicas ] = useState<(Replica | ReplicaCreate)[]>([])
   const [ removingReplicas, setRemovingReplicas ] = useState<Replica[]>([])
+  const [ deletingObjects, setDeletingObjects ] = useState<MediumDeleteObjects | null>(null)
   const [ uploading, setUploading ] = useState(false)
   const [ error, setError ] = useState<unknown>(null)
 
@@ -120,7 +122,7 @@ const MediumCreateView: FunctionComponent = () => {
     setUploading(false)
   }, [])
 
-  const handleComplete = useCallback((current: Medium, replicas: (Replica | ReplicaCreate)[]) => {
+  const handleComplete = useCallback(async (current: Medium, replicas: (Replica | ReplicaCreate)[]) => {
     const processed = (replicas: (Replica | ReplicaCreate)[]): replicas is Replica[] => replicas.every(isReplica)
     if (!processed(replicas)) {
       setReplicas(replicas)
@@ -143,6 +145,18 @@ const MediumCreateView: FunctionComponent = () => {
 
     setUploading(false)
 
+    let deleteObject: boolean | null = null
+    if (removingReplicas.length) {
+      const { promise: confirm, resolve: onConfirm, reject: onCancel } = Promise.withResolvers<boolean>()
+      setDeletingObjects({ onConfirm, onCancel })
+
+      try {
+        deleteObject = await confirm
+      } catch {
+        return
+      }
+    }
+
     const newReplicas: Promise<Replica | void>[] = []
     for (const replica of replicas) {
       if (removingReplicas.some(({ id }) => id === replica.id)) {
@@ -157,7 +171,7 @@ const MediumCreateView: FunctionComponent = () => {
       }
     }
 
-    Promise.all(newReplicas)
+    await Promise.all(newReplicas)
       .then(
         results => {
           return updateMedium({
@@ -286,6 +300,18 @@ const MediumCreateView: FunctionComponent = () => {
           onComplete={handleComplete}
         />
       ) : null}
+      {deletingObjects ? (
+        <MediumItemReplicaDeleteDialog
+          close={() => {
+            deletingObjects.onCancel()
+            setDeletingObjects(null)
+          }}
+          save={result => {
+            deletingObjects.onConfirm(result)
+            setDeletingObjects(null)
+          }}
+        />
+      ) : null}
       {error ? (
         <Portal>
           <Snackbar
@@ -301,6 +327,11 @@ const MediumCreateView: FunctionComponent = () => {
 
 export interface MediumCreate {
   createdAt: string | null
+}
+
+interface MediumDeleteObjects {
+  onConfirm: (result: boolean) => void
+  onCancel: () => void
 }
 
 export default MediumCreateView

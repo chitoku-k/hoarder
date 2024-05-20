@@ -1,5 +1,5 @@
-mutation DeleteReplica($id: UUID!) {
-  deleteReplica(id: $id) {
+mutation DeleteReplica($id: UUID!, $deleteObject: Boolean) {
+  deleteReplica(id: $id, deleteObject: $deleteObject) {
     deleted
   }
 }

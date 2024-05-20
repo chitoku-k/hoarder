@@ -1,5 +1,5 @@
-mutation DeleteMedium($id: UUID!) {
-  deleteMedium(id: $id) {
+mutation DeleteMedium($id: UUID!, $deleteObjects: Boolean) {
+  deleteMedium(id: $id, deleteObjects: $deleteObjects) {
     deleted
   }
 }
