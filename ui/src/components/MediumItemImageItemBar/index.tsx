@@ -70,7 +70,7 @@ const MediumItemImageItemBar: FunctionComponent<MediumItemImageItemBarProps> = (
               <span className={styles.all}>/−</span>
             </Typography>
           )}
-          {name ? (
+          {typeof name === 'string' ? (
             <TextField className={styles.name} variant="standard" value={name} onChange={handleChangeName} />
           ) : null}
         </Stack>
