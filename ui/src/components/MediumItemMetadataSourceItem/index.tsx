@@ -2,7 +2,7 @@
 
 import type { FunctionComponent } from 'react'
 import clsx from 'clsx'
-import Link from 'next/link'
+import Link from '@mui/material/Link'
 import Stack from '@mui/material/Stack'
 import LaunchIcon from '@mui/icons-material/Launch'
 import LinkIcon from '@mui/icons-material/Link'
@@ -165,13 +165,13 @@ const MediumItemMetadataSourceItem: FunctionComponent<MediumItemMetadataSourceIt
         <span className={clsx(styles.item, styles.noLink)}>
           <span className={styles.text}>{displayURL(url)}</span>
           {!noLaunch ? (
-            <Link className={styles.link} href={url} target="_blank">
+            <Link href={url} target="_blank" rel="noopener noreferrer" underline="none">
               <LaunchIcon className={styles.launch} fontSize="inherit" />
             </Link>
           ) : null}
         </span>
       ) : url ? (
-        <Link className={clsx(styles.item, styles.link)} href={url} target="_blank">
+        <Link className={styles.item} href={url} target="_blank" rel="noopener noreferrer" underline="none">
           <span className={styles.text}>{displayURL(url)}</span>
           {!noLaunch ? (
             <LaunchIcon className={styles.launch} fontSize="inherit" />

@@ -1,7 +1,7 @@
 'use client'
 
 import type { FunctionComponent } from 'react'
-import Link from 'next/link'
+import Link from '@mui/material/Link'
 import Stack from '@mui/material/Stack'
 import AddLinkIcon from '@mui/icons-material/AddLink'
 import LaunchIcon from '@mui/icons-material/Launch'
@@ -26,7 +26,7 @@ const MediumItemMetadataSourceItemNew: FunctionComponent<MediumItemMetadataSourc
           <>
             <span className={styles.text}>{displayURL(url)}</span>
             {!noLaunch ? (
-              <Link className={styles.link} href={url} target="_blank">
+              <Link href={url} target="_blank" rel="noopener noreferrer" underline="none">
                 <LaunchIcon className={styles.launch} fontSize="inherit" />
               </Link>
             ) : null}
