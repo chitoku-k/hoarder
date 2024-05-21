@@ -36,7 +36,7 @@ import type { Medium, Replica } from '@/types'
 import styles from './styles.module.scss'
 
 const isValidName = (name: string) => name.length > 0
-const isUniqueName = (name: string, replicas: (Replica | ReplicaCreate)[]) => replicas.reduce((total, replica) => total + Number(isReplica(replica) || replica.name === name), 0) === 1
+const isUniqueName = (name: string, replicas: (Replica | ReplicaCreate)[]) => replicas.reduce((total, replica) => total + Number(!isReplica(replica) && replica.name === name), 0) === 1
 
 const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDialogBodyProps> = ({
   resolveMedium,
