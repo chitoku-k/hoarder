@@ -102,14 +102,14 @@ const AutocompleteContainerBody: FunctionComponent<AutocompleteContainerBodyProp
     </li>
   ), [ Icon ])
 
-  const filterOptions = useCallback((options: string[], state: FilterOptionsState<string>): string[] => {
-    const value = state.inputValue.substring(state.inputValue.lastIndexOf('/') + 1)
+  const filterOptions = useCallback((options: string[], _state: FilterOptionsState<string>): string[] => {
+    const value = inputValue.substring(inputValue.lastIndexOf('/') + 1)
     if (!value.length) {
       return options
     }
 
     return options.filter(option => contains(option.substring(option.lastIndexOf('/') + 1), value))
-  }, [ contains ])
+  }, [ inputValue, contains ])
 
   const containers = open || value.length
     ? useObjects({ prefix: `/${value}`, kind: ObjectKind.Container })
