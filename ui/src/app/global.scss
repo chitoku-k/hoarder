@@ -3,6 +3,8 @@
 }
 
 body {
+  overflow-x: hidden;
+
   > .MuiDialog-root {
     & + .MuiDialog-root .MuiBackdrop-root {
       transition: none !important;
