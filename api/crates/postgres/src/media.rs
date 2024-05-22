@@ -16,18 +16,18 @@ use domain::{
 };
 use futures::{future::ready, TryStreamExt};
 use indexmap::IndexSet;
-use sea_query::{BinOper, Expr, Iden, JoinType, Keyword, LockType, OnConflict, Order, PostgresQueryBuilder, Query};
+use sea_query::{Alias, BinOper, Expr, Iden, JoinType, Keyword, LockType, OnConflict, Order, PostgresQueryBuilder, Query};
 use sea_query_binder::SqlxBinder;
 use sqlx::{types::Json, FromRow, PgConnection, PgPool};
 
 use crate::{
-    expr::distinct::Distinct,
+    expr::{array::ArrayExpr, distinct::Distinct},
     external_services::{PostgresExternalService, PostgresExternalServiceId},
     replicas::{PostgresMediumReplica, PostgresReplica, PostgresReplicaId, PostgresReplicaThumbnail, PostgresReplicaThumbnailRow, PostgresThumbnail},
     sea_query_uuid_value,
-    sources::{PostgresExternalServiceMetadata, PostgresExternalServiceMetadataExtra, PostgresExternalServiceMetadataFull, PostgresSource, PostgresSourceId, PostgresSourceExternalService},
-    tag_types::{PostgresTagTagType, PostgresTagTypeId, PostgresTagType},
-    tags::{self, PostgresTagId, PostgresTagPath},
+    sources::{PostgresExternalServiceMetadata, PostgresExternalServiceMetadataExtra, PostgresExternalServiceMetadataFull, PostgresSource, PostgresSourceExternalService, PostgresSourceId},
+    tag_types::{PostgresTagTagType, PostgresTagType, PostgresTagTypeId},
+    tags::{self, PostgresTag, PostgresTagId, PostgresTagPath},
 };
 
 #[derive(Clone, Constructor)]
@@ -193,6 +193,9 @@ async fn fetch_tags<T>(conn: &mut PgConnection, ids: T, tag_depth: TagDepth) -> 
 where
     T: IntoIterator<Item = MediumId>,
 {
+    let ancestors = Alias::new("ancestors");
+    let display_order = Alias::new("display_order");
+
     let (sql, values) = Query::select()
         .expr(Expr::col((PostgresMediumTag::Table, PostgresMediumTag::MediumId)))
         .expr(Expr::col((PostgresMediumTag::Table, PostgresMediumTag::TagId)))
@@ -206,10 +209,43 @@ where
             Expr::col((PostgresTagType::Table, PostgresTagType::Id))
                 .equals((PostgresMediumTag::Table, PostgresMediumTag::TagTypeId)),
         )
+        .join_subquery(
+            JoinType::InnerJoin,
+            Query::select()
+                .expr(Expr::col((PostgresTag::Table, PostgresTag::Id)))
+                .expr_as(
+                    ArrayExpr::agg(Expr::cust_with_exprs("$1 ORDER BY $2 DESC", [
+                        Expr::col((ancestors.clone(), PostgresTag::Kana)).into(),
+                        Expr::col((PostgresTagPath::Table, PostgresTagPath::Distance)).into(),
+                    ])),
+                    display_order.clone(),
+                )
+                .from(PostgresTag::Table)
+                .join(
+                    JoinType::InnerJoin,
+                    PostgresTagPath::Table,
+                    Expr::col((PostgresTagPath::Table, PostgresTagPath::DescendantId))
+                        .equals((PostgresTag::Table, PostgresTag::Id)),
+                )
+                .join_as(
+                    JoinType::InnerJoin,
+                    PostgresTag::Table,
+                    ancestors.clone(),
+                    Expr::col((PostgresTagPath::Table, PostgresTagPath::AncestorId))
+                        .equals((ancestors.clone(), PostgresTag::Id)),
+                )
+                .and_where(Expr::col(PostgresTagPath::AncestorId).ne(PostgresTagId::from(TagId::root())))
+                .group_by_col((PostgresTag::Table, PostgresTag::Id))
+                .order_by(display_order.clone(), Order::Asc)
+                .take(),
+            ancestors.clone(),
+            Expr::col((ancestors, PostgresTag::Id))
+                .equals((PostgresMediumTag::Table, PostgresMediumTag::TagId)),
+        )
         .and_where(Expr::col((PostgresMediumTag::Table, PostgresMediumTag::MediumId)).is_in(ids.into_iter().map(PostgresMediumId::from)))
         .order_by(PostgresMediumTag::MediumId, Order::Asc)
         .order_by(PostgresMediumTag::TagTypeId, Order::Asc)
-        .order_by(PostgresMediumTag::TagId, Order::Asc)
+        .order_by(display_order, Order::Asc)
         .build_sqlx(PostgresQueryBuilder);
 
     let rows: Vec<_> = sqlx::query_as_with::<_, PostgresMediumTagTypeRow, _>(&sql, values)
