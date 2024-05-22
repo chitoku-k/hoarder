@@ -136,6 +136,8 @@ const MediumItemMetadataTagEditGroup: FunctionComponent<MediumItemMetadataTagEdi
             fullWidth
             autoHighlight
             blurOnSelect
+            clearOnBlur={false}
+            clearOnEscape
             includeInputInList
             focus={focus}
             forcePopupIcon={false}

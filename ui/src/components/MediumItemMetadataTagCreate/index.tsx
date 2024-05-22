@@ -1,6 +1,6 @@
 'use client'
 
-import type { FunctionComponent } from 'react'
+import type { FunctionComponent, SyntheticEvent } from 'react'
 import { useCallback, useState } from 'react'
 import Stack from '@mui/material/Stack'
 import LabelIcon from '@mui/icons-material/Label'
@@ -17,6 +17,7 @@ const MediumItemMetadataTagCreate: FunctionComponent<MediumItemMetadataTagCreate
 }) => {
   const [ focusedTagType, setFocusedTagType ] = useState<TagType | null>(null)
   const [ newTagType, setNewTagType ] = useState<TagType | null>(null)
+  const [ newTagTypeInput, setNewTagTypeInput ] = useState('')
 
   const [ addingTagTypes, setAddingTagTypes ] = useState<TagType[]>([])
   const [ addingTags, setAddingTags ] = useState(new Map<TagTypeID, Tag[]>())
@@ -27,11 +28,17 @@ const MediumItemMetadataTagCreate: FunctionComponent<MediumItemMetadataTagCreate
     }
 
     setNewTagType(null)
+    setNewTagTypeInput('')
+
     setFocusedTagType(type)
     setAddingTagTypes(addingTagTypes => [
       ...addingTagTypes,
       type,
     ])
+  }, [])
+
+  const handleChangeNewTagTypeInput = useCallback((_e: SyntheticEvent, value: string) => {
+    setNewTagTypeInput(value)
   }, [])
 
   const removeTagType = useCallback((type: TagType) => {
@@ -119,13 +126,17 @@ const MediumItemMetadataTagCreate: FunctionComponent<MediumItemMetadataTagCreate
             openOnFocus
             autoHighlight
             blurOnSelect
+            clearOnBlur={false}
+            clearOnEscape
             includeInputInList
             placeholder="タイプの追加..."
             disabled={loading}
             value={newTagType}
+            inputValue={newTagTypeInput}
             getOptionDisabled={({ id }) => addingTagTypes.some(type => type.id === id)}
             icon={({ ...props }) => <LabelIcon {...props} />}
             onChange={handleChangeNewTagType}
+            onInputChange={handleChangeNewTagTypeInput}
           />
         </Stack>
       </Stack>
