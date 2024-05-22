@@ -148,6 +148,8 @@ const MetadataSourceGroupEdit: FunctionComponent<MetadataSourceGroupEditProps> =
             variant="standard"
             fullWidth
             blurOnSelect
+            clearOnBlur={false}
+            clearOnEscape
             includeInputInList
             focus={focus}
             forcePopupIcon={false}

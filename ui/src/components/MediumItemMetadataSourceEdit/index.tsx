@@ -1,6 +1,6 @@
 'use client'
 
-import type { FunctionComponent } from 'react'
+import type { FunctionComponent, SyntheticEvent } from 'react'
 import { useCallback, useState } from 'react'
 import deepEqual from 'deep-equal'
 import Button from '@mui/material/Button'
@@ -31,6 +31,7 @@ const MediumItemMetadataSourceEdit: FunctionComponent<MediumItemMetadataSourceEd
 
   const [ focusedExternalService, setFocusedExternalService ] = useState<ExternalService | null>(null)
   const [ newExternalService, setNewExternalService ] = useState<ExternalService | null>(null)
+  const [ newExternalServiceInput, setNewExternalServiceInput ] = useState('')
 
   const [ addingExternalServices, setAddingExternalServices ] = useState<ExternalService[]>([])
   const [ removingExternalServices, setRemovingExternalServices ] = useState<ExternalService[]>([])
@@ -58,11 +59,17 @@ const MediumItemMetadataSourceEdit: FunctionComponent<MediumItemMetadataSourceEd
     }
 
     setNewExternalService(null)
+    setNewExternalServiceInput('')
+
     setFocusedExternalService(type)
     setAddingExternalServices(addingExternalServices => [
       ...addingExternalServices,
       type,
     ])
+  }, [])
+
+  const handleChangeNewExternalServiceInput = useCallback((_e: SyntheticEvent, value: string) => {
+    setNewExternalServiceInput(value)
   }, [])
 
   const removeExternalService = useCallback((type: ExternalService) => {
@@ -273,14 +280,18 @@ const MediumItemMetadataSourceEdit: FunctionComponent<MediumItemMetadataSourceEd
             openOnFocus
             autoHighlight
             blurOnSelect
+            clearOnBlur={false}
+            clearOnEscape
             includeInputInList
             focus={focus && groups.length === 0}
             placeholder="サービスの追加..."
             disabled={loading}
             value={newExternalService}
+            inputValue={newExternalServiceInput}
             getOptionDisabled={({ id }) => groups.some(group => group.externalService.id === id) || addingExternalServices.some(externalService => externalService.id === id)}
             icon={({ ...props }) => <FolderSpecialIcon {...props} />}
             onChange={handleChangeNewExternalService}
+            onInputChange={handleChangeNewExternalServiceInput}
           />
         </Stack>
       </Stack>

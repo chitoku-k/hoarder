@@ -1,6 +1,6 @@
 'use client'
 
-import type { FunctionComponent } from 'react'
+import type { FunctionComponent, SyntheticEvent } from 'react'
 import { useCallback, useState } from 'react'
 import deepEqual from 'deep-equal'
 import Stack from '@mui/material/Stack'
@@ -24,6 +24,7 @@ const MediumItemMetadataSourceCreate: FunctionComponent<MediumItemMetadataSource
 
   const [ focusedExternalService, setFocusedExternalService ] = useState<ExternalService | null>(null)
   const [ newExternalService, setNewExternalService ] = useState<ExternalService | null>(null)
+  const [ newExternalServiceInput, setNewExternalServiceInput ] = useState('')
 
   const [ addingExternalServices, setAddingExternalServices ] = useState<ExternalService[]>([])
   const [ addingSources, setAddingSources ] = useState(new Map<ExternalServiceID, (Source | SourceCreate)[]>())
@@ -34,11 +35,17 @@ const MediumItemMetadataSourceCreate: FunctionComponent<MediumItemMetadataSource
     }
 
     setNewExternalService(null)
+    setNewExternalServiceInput('')
+
     setFocusedExternalService(type)
     setAddingExternalServices(addingExternalServices => [
       ...addingExternalServices,
       type,
     ])
+  }, [])
+
+  const handleChangeNewExternalServiceInput = useCallback((_e: SyntheticEvent, value: string) => {
+    setNewExternalServiceInput(value)
   }, [])
 
   const removeExternalService = useCallback((type: ExternalService) => {
@@ -151,13 +158,17 @@ const MediumItemMetadataSourceCreate: FunctionComponent<MediumItemMetadataSource
             openOnFocus
             autoHighlight
             blurOnSelect
+            clearOnBlur={false}
+            clearOnEscape
             includeInputInList
             placeholder="サービスの追加..."
             disabled={loading}
             value={newExternalService}
+            inputValue={newExternalServiceInput}
             getOptionDisabled={({ id }) => addingExternalServices.some(externalService => externalService.id === id)}
             icon={({ ...props }) => <FolderSpecialIcon {...props} />}
             onChange={handleChangeNewExternalService}
+            onInputChange={handleChangeNewExternalServiceInput}
           />
         </Stack>
       </Stack>

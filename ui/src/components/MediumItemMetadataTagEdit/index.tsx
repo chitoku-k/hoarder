@@ -1,6 +1,6 @@
 'use client'
 
-import type { FunctionComponent } from 'react'
+import type { FunctionComponent, SyntheticEvent } from 'react'
 import { useCallback, useState } from 'react'
 import Button from '@mui/material/Button'
 import LoadingButton from '@mui/lab/LoadingButton'
@@ -22,6 +22,7 @@ const MediumItemMetadataTagEdit: FunctionComponent<MediumItemMetadataTagEditProp
 }) => {
   const [ focusedTagType, setFocusedTagType ] = useState<TagType | null>(null)
   const [ newTagType, setNewTagType ] = useState<TagType | null>(null)
+  const [ newTagTypeInput, setNewTagTypeInput ] = useState('')
 
   const [ addingTagTypes, setAddingTagTypes ] = useState<TagType[]>([])
   const [ removingTagTypes, setRemovingTagTypes ] = useState<TagType[]>([])
@@ -49,11 +50,17 @@ const MediumItemMetadataTagEdit: FunctionComponent<MediumItemMetadataTagEditProp
     }
 
     setNewTagType(null)
+    setNewTagTypeInput('')
+
     setFocusedTagType(type)
     setAddingTagTypes(addingTagTypes => [
       ...addingTagTypes,
       type,
     ])
+  }, [])
+
+  const handleChangeNewTagTypeInput = useCallback((_e: SyntheticEvent, value: string) => {
+    setNewTagTypeInput(value)
   }, [])
 
   const removeTagType = useCallback((type: TagType) => {
@@ -227,14 +234,18 @@ const MediumItemMetadataTagEdit: FunctionComponent<MediumItemMetadataTagEditProp
             openOnFocus
             autoHighlight
             blurOnSelect
+            clearOnBlur={false}
+            clearOnEscape
             includeInputInList
             focus={focus && groups.length === 0}
             placeholder="タイプの追加..."
             disabled={loading}
             value={newTagType}
+            inputValue={newTagTypeInput}
             getOptionDisabled={({ id }) => groups.some(group => group.type.id === id) || addingTagTypes.some(type => type.id === id)}
             icon={({ ...props }) => <LabelIcon {...props} />}
             onChange={handleChangeNewTagType}
+            onInputChange={handleChangeNewTagTypeInput}
           />
         </Stack>
       </Stack>
