@@ -12,7 +12,7 @@ Collects your favorite media and organizes them with the hierarchical tag system
 ```bash
 $ yarn && yarn codegen
 $ docker compose up -d --build
-$ docker compose exec api migration apply
+$ docker compose exec api hoarder migration apply
 ```
 
 ### Production
