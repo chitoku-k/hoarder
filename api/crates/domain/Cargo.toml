@@ -48,7 +48,7 @@ version = "1.8.0"
 features = ["serde", "v4"]
 
 [dev-dependencies.anyhow]
-version = "1.0.83"
+version = "1.0.86"
 
 [dev-dependencies.futures]
 version = "0.3.30"
