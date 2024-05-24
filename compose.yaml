@@ -16,21 +16,30 @@ services:
       PGUSER: hoarder
       PGPASSWORD: hoarder
       PGSSLMODE: disable
-      MEDIA_ROOT_DIR:
-      MEDIA_ROOT_URL:
+      MEDIA_ROOT_DIR: /media
+      MEDIA_ROOT_URL: http://localhost:8081
     volumes:
       - type: bind
         source: .
         target: /usr/src
+      - type: volume
+        source: media
+        target: /media
 
   static:
     image: nginx:1.26
     ports:
       - '8081:80'
+    environment:
+      MEDIA_ROOT_DIR: /media
     volumes:
       - type: bind
         source: ./static
         target: /etc/nginx/templates
+        read_only: true
+      - type: volume
+        source: media
+        target: /media
         read_only: true
 
   ui:
@@ -42,8 +51,9 @@ services:
       - '3000:3000'
     environment:
       PORT: '3000'
-      BASE_URL: http://localhost:3000
       API_URL: http://api:8080
+      PUBLIC_URL: http://localhost:3000
+      BASE_URL: http://localhost:3000
     volumes:
       - type: bind
         source: ./ui
@@ -65,4 +75,6 @@ services:
 
 volumes:
   database:
+    driver: local
+  media:
     driver: local
