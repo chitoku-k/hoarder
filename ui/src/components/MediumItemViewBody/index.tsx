@@ -2,6 +2,7 @@
 
 import type { FunctionComponent } from 'react'
 import { useCallback, useState } from 'react'
+import * as uuid from 'uuid'
 import { useRouter } from 'next/navigation'
 import Divider from '@mui/material/Divider'
 import Grid from '@mui/material/Unstable_Grid2'
@@ -29,6 +30,10 @@ import styles from './styles.module.scss'
 const MediumItemViewBody: FunctionComponent<MediumItemViewBodyProps> = ({
   id,
 }) => {
+  if (!uuid.validate(id)) {
+    throw new Error(`medium id invalid: ${id}`)
+  }
+
   const router = useRouter()
 
   const medium = useMedium({ id })
