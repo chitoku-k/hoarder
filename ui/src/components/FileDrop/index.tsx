@@ -55,6 +55,13 @@ const FileDrop = function <Flatten extends boolean | undefined>({
       const entry = item.webkitGetAsEntry()
       if (entry) {
         promises.push(readFileSystemEntry(entry))
+        continue
+      }
+
+      const file = item.getAsFile()
+      if (file) {
+        promises.push(Promise.resolve([ file ]))
+        continue
       }
     }
 
