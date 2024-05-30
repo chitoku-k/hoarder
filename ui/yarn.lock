@@ -29,16 +29,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/client-react-streaming@npm:0.10.1":
-  version: 0.10.1
-  resolution: "@apollo/client-react-streaming@npm:0.10.1"
+"@apollo/client-react-streaming@npm:0.11.0":
+  version: 0.11.0
+  resolution: "@apollo/client-react-streaming@npm:0.11.0"
   dependencies:
-    superjson: "npm:^1.12.2 || ^2.0.0"
     ts-invariant: "npm:^0.10.3"
   peerDependencies:
-    "@apollo/client": ^3.9.6
+    "@apollo/client": ^3.10.4
     react: ^18
-  checksum: 10/f71d6a45f547b39beb2ec62ec12f108306823441b4d67347ce5386c2e54cd964192f83b04a7e77cdca325ea95482545bde9e1d26826d0545cd877fe5c15d3e9c
+  checksum: 10/07ffc94d0b9098e6a62cdca69d3104e01c4ead483cc791a91c7657b55d8d0b0c2a55f1c698b3418c20016119c320186952419ad0cc4dd3d609c57e9490dc718d
   languageName: node
   linkType: hard
 
@@ -79,16 +78,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/experimental-nextjs-app-support@npm:^0.10.1":
-  version: 0.10.1
-  resolution: "@apollo/experimental-nextjs-app-support@npm:0.10.1"
+"@apollo/experimental-nextjs-app-support@npm:^0.11.0":
+  version: 0.11.0
+  resolution: "@apollo/experimental-nextjs-app-support@npm:0.11.0"
   dependencies:
-    "@apollo/client-react-streaming": "npm:0.10.1"
+    "@apollo/client-react-streaming": "npm:0.11.0"
   peerDependencies:
-    "@apollo/client": ^3.9.6
-    next: ^13.4.1 || ^14.0.0
+    "@apollo/client": ^3.10.4
+    next: ^13.4.1 || ^14.0.0 || 15.0.0-rc.0
     react: ^18
-  checksum: 10/6d70db93fa94b2dcd5ad57fd84c3f480cb4df13484d52d70ab8a52343e171edac06cbc5ac973784057d33fab12b77785933998ce21675212847af86819398acf
+  checksum: 10/6248f2bfe0892b701cc2df81c40a7a3471b9a86500038e940a6b06a0da0b22dfb39d8d1be9a915cb837969ab6240ab5fd84b5f17d84e61ba568479e2a9943ea6
   languageName: node
   linkType: hard
 
@@ -4395,15 +4394,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"copy-anything@npm:^3.0.2":
-  version: 3.0.5
-  resolution: "copy-anything@npm:3.0.5"
-  dependencies:
-    is-what: "npm:^4.1.8"
-  checksum: 10/4c41385a94a1cff6352a954f9b1c05b6bb1b70713a2d31f4c7b188ae7187ce00ddcc9c09bd58d24cd35b67fc6dd84df5954c0be86ea10700ff74e677db3cb09c
-  languageName: node
-  linkType: hard
-
 "cosmiconfig@npm:^7.0.0":
   version: 7.1.0
   resolution: "cosmiconfig@npm:7.1.0"
@@ -5972,7 +5962,7 @@ __metadata:
   resolution: "hoarder-ui@workspace:."
   dependencies:
     "@apollo/client": "npm:^3.10.4"
-    "@apollo/experimental-nextjs-app-support": "npm:^0.10.1"
+    "@apollo/experimental-nextjs-app-support": "npm:^0.11.0"
     "@emotion/cache": "npm:^11.11.0"
     "@emotion/react": "npm:^11.11.4"
     "@emotion/styled": "npm:^11.11.5"
@@ -6607,13 +6597,6 @@ __metadata:
   version: 3.14.1
   resolution: "is-what@npm:3.14.1"
   checksum: 10/249beb4a8c1729c80ed24fa8527835301c8c70d2fa99706a301224576e0650df61edd7a0a8853999bf5fbe2c551f07148d2c3535260772e05a4c373d3d5362e1
-  languageName: node
-  linkType: hard
-
-"is-what@npm:^4.1.8":
-  version: 4.1.15
-  resolution: "is-what@npm:4.1.15"
-  checksum: 10/5624028fc8fea69ae7ab332a263ca4f379cd796d87f7fdb1bc9aab8d1d57f22c7e35d90e7e85a545eb5a3c62463683f9b84d0c5616182964bd41394a80aa2295
   languageName: node
   linkType: hard
 
@@ -9103,15 +9086,6 @@ __metadata:
   bin:
     stylus: bin/stylus
   checksum: 10/a2d975e619c622a6646fec43489f4a7d0fe824e5dab6343295bca381dd9f1ae9f9d32710c0ca28219eebeb1609448112ba99a246c215824369aec3dc4652b6cf
-  languageName: node
-  linkType: hard
-
-"superjson@npm:^1.12.2 || ^2.0.0":
-  version: 2.2.1
-  resolution: "superjson@npm:2.2.1"
-  dependencies:
-    copy-anything: "npm:^3.0.2"
-  checksum: 10/bb8743a87c97f7845e0c27af1af0731d3185b32099ebce2aee0e67ac9a6ae9a7c4b9edfca7e1fe48693a78b56d5922d1cd13ef80c2fa12b788d3fc0ca25afe47
   languageName: node
   linkType: hard
 
