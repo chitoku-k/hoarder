@@ -6,15 +6,15 @@ import axios from 'axios'
 import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'
 import { buildAxiosFetch } from '@lifeomic/axios-fetch'
 import { relayStylePagination } from '@apollo/client/utilities'
-import { ApolloNextAppProvider, NextSSRApolloClient, NextSSRInMemoryCache } from '@apollo/experimental-nextjs-app-support/ssr'
+import { ApolloClient, ApolloNextAppProvider, InMemoryCache } from '@apollo/experimental-nextjs-app-support'
 
 interface ApolloRequestInit extends RequestInit {
   onUploadProgress?: AxiosRequestConfig['onUploadProgress']
 }
 
-const makeClient = () => new NextSSRApolloClient({
+const makeClient = () => new ApolloClient({
   ssrMode: true,
-  cache: new NextSSRInMemoryCache({
+  cache: new InMemoryCache({
     typePolicies: {
       Query: {
         fields: {
