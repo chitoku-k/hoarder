@@ -9,6 +9,7 @@
 .wrapper {
   &:global(.MuiStack-root) {
     margin: auto;
+    max-width: 100%;
     height: 100%;
   }
 }
