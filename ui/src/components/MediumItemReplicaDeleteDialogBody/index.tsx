@@ -30,6 +30,8 @@ const MediumItemReplicaDeleteDialogBody: FunctionComponent<MediumItemReplicaDele
     save(deleteObjects)
   }, [ deleteObjects, save ])
 
+  const color = deleteObjects ? 'error' : 'primary'
+
   return (
     <>
       <DialogContent>
@@ -45,7 +47,7 @@ const MediumItemReplicaDeleteDialogBody: FunctionComponent<MediumItemReplicaDele
       </DialogContent>
       <DialogActions>
         <Button onClick={close} autoFocus>キャンセル</Button>
-        <Button color="error" onClick={handleClickSave} disabled={deleteObjects === null}>保存</Button>
+        <Button color={color} onClick={handleClickSave} disabled={deleteObjects === null}>保存</Button>
       </DialogActions>
     </>
   )
