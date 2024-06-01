@@ -53,7 +53,15 @@ const FilePaste: FunctionComponent<FilePasteProps> = ({
   }, [ onSelect ])
 
   const handleBeforeInput = useCallback((e: FormEvent<HTMLElement>) => {
-    e.preventDefault()
+    const focusNode = document.getSelection()?.focusNode
+    focusNode?.parentNode?.removeChild(focusNode)
+
+    e.currentTarget.blur()
+  }, [])
+
+  const handleInput = useCallback(() => {
+    const focusNode = document.getSelection()?.focusNode
+    focusNode?.parentNode?.removeChild(focusNode)
   }, [])
 
   return (
@@ -67,6 +75,7 @@ const FilePaste: FunctionComponent<FilePasteProps> = ({
       onCopy={handleCopy}
       onPaste={handlePaste}
       onBeforeInput={handleBeforeInput}
+      onInput={handleInput}
     >
       {children}
     </div>
