@@ -221,17 +221,25 @@ const MediumCreateView: FunctionComponent = () => {
     }
   }, [ medium, resolveSourceIDs, tagTagTypeIDs, replicas, createMedium, handleComplete ])
 
-  const saveTags = useCallback((id: string, addTagTagTypeIDs: TagTagTypeInput[], removeTagTagTypeIDs: TagTagTypeInput[]) => updateMedium({
-    id,
-    addTagTagTypeIDs,
-    removeTagTagTypeIDs,
-  }), [ updateMedium ])
+  const saveTags = useCallback(async (id: string, addTagTagTypeIDs: TagTagTypeInput[], removeTagTagTypeIDs: TagTagTypeInput[]) => {
+    const medium = await updateMedium({
+      id,
+      addTagTagTypeIDs,
+      removeTagTagTypeIDs,
+    })
+    setMedium(medium)
+    return medium
+  }, [ updateMedium ])
 
-  const saveSources = useCallback((id: string, addSourceIDs: string[], removeSourceIDs: string[]) => updateMedium({
-    id,
-    addSourceIDs,
-    removeSourceIDs,
-  }), [ updateMedium ])
+  const saveSources = useCallback(async (id: string, addSourceIDs: string[], removeSourceIDs: string[]) => {
+    const medium = await updateMedium({
+      id,
+      addSourceIDs,
+      removeSourceIDs,
+    })
+    setMedium(medium)
+    return medium
+  }, [ updateMedium ])
 
   const handleDeleteMedium = useCallback(() => {
     router.replace('/')
