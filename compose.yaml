@@ -27,7 +27,7 @@ services:
         target: /media
 
   static:
-    image: nginx:1.26
+    image: nginx:1.27
     ports:
       - '8081:80'
     environment:
@@ -60,7 +60,7 @@ services:
         target: /usr/src
 
   database:
-    image: postgres:16.2
+    image: postgres:16.3
     environment:
       PGUSER: hoarder
       POSTGRES_DB: hoarder
