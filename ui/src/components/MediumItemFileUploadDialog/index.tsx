@@ -3,7 +3,7 @@
 import type { FunctionComponent } from 'react'
 import Dialog from '@mui/material/Dialog'
 
-import type { MediumItemFileUploadDialogBodyProps } from '@/components/MediumItemFileUploadDialogBody'
+import type { MediumItemFileUploadDialogBodyProps, UploadStatus } from '@/components/MediumItemFileUploadDialogBody'
 import MediumItemFileUploadDialogBody from '@/components/MediumItemFileUploadDialogBody'
 
 import styles from './styles.module.scss'
@@ -18,5 +18,6 @@ const MediumItemFileUploadDialog: FunctionComponent<MediumItemFileUploadDialogPr
 )
 
 export type MediumItemFileUploadDialogProps = MediumItemFileUploadDialogBodyProps
+export type MediumItemFileUploadStatus = UploadStatus
 
 export default MediumItemFileUploadDialog

@@ -11,6 +11,8 @@ import Snackbar from '@mui/material/Snackbar'
 import Stack from '@mui/material/Stack'
 
 import type { ReplicaCreate } from '@/components/MediumItemImageEdit'
+import type { MediumItemFileUploadStatus } from '@/components/MediumItemFileUploadDialog'
+import MediumItemFileUploadAbortDialog from '@/components/MediumItemFileUploadAbortDialog'
 import MediumItemFileUploadDialog from '@/components/MediumItemFileUploadDialog'
 import MediumItemImageEdit, { isReplica } from '@/components/MediumItemImageEdit'
 import MediumItemImageList from '@/components/MediumItemImageList'
@@ -47,7 +49,12 @@ const MediumItemViewBody: FunctionComponent<MediumItemViewBodyProps> = ({
   const [ replicas, setReplicas ] = useState<(Replica | ReplicaCreate)[]>(medium.replicas)
   const [ removingReplicas, setRemovingReplicas ] = useState<Replica[]>([])
   const [ deletingObjects, setDeletingObjects ] = useState<MediumDeleteObjects | null>(null)
+
   const [ uploading, setUploading ] = useState(false)
+  const [ uploadAborting, setUploadAborting ] = useState(false)
+  const [ uploadAbortController, setUploadAbortController ] = useState(new AbortController())
+  const [ uploadInProgress, setUploadInProgress ] = useState(false)
+
   const [ error, setError ] = useState<unknown>(null)
 
   const removeReplica = useCallback((replica: Replica | ReplicaCreate) => {
@@ -119,7 +126,28 @@ const MediumItemViewBody: FunctionComponent<MediumItemViewBodyProps> = ({
   }, [])
 
   const closeUpload = useCallback(() => {
-    setUploading(false)
+    if (uploadInProgress && !uploadAborting) {
+      setUploadAborting(true)
+    } else {
+      setUploading(false)
+      setUploadAborting(false)
+      setUploadAbortController(uploadAbortController => {
+        uploadAbortController.abort()
+        return new AbortController()
+      })
+    }
+  }, [ uploadAborting, uploadInProgress ])
+
+  const closeUploadAbort = useCallback(() => {
+    setUploadAborting(false)
+  }, [])
+
+  const handleProgress = useCallback((status: MediumItemFileUploadStatus) => {
+    setUploadInProgress(status === 'uploading')
+
+    if (status === 'done') {
+      setUploadAbortController(new AbortController())
+    }
   }, [])
 
   const handleComplete = useCallback(async (current: Medium, replicas: (Replica | ReplicaCreate)[]) => {
@@ -138,6 +166,7 @@ const MediumItemViewBody: FunctionComponent<MediumItemViewBodyProps> = ({
     }
 
     setUploading(false)
+    setUploadAborting(false)
 
     let deleteObject: boolean | null = null
     if (removingReplicas.length) {
@@ -258,11 +287,19 @@ const MediumItemViewBody: FunctionComponent<MediumItemViewBodyProps> = ({
       </Grid>
       {uploading ? (
         <MediumItemFileUploadDialog
+          abortSignal={uploadAbortController.signal}
           resolveMedium={() => Promise.resolve(medium)}
           replicas={replicas}
           setReplicas={setReplicas}
           close={closeUpload}
+          onProgress={handleProgress}
           onComplete={handleComplete}
+        />
+      ) : null}
+      {uploadAborting ? (
+        <MediumItemFileUploadAbortDialog
+          close={closeUploadAbort}
+          abort={closeUpload}
         />
       ) : null}
       {deletingObjects ? (

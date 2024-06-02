@@ -39,16 +39,17 @@ const isValidName = (name: string) => name.length > 0
 const isUniqueName = (name: string, replicas: (Replica | ReplicaCreate)[]) => replicas.reduce((total, replica) => total + Number(!isReplica(replica) && replica.name === name), 0) === 1
 
 const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDialogBodyProps> = ({
+  abortSignal,
   resolveMedium,
   replicas,
   setReplicas,
   close,
+  onProgress,
   onComplete,
 }) => {
   const [ createReplica ] = useCreateReplica()
   const { graphQLError } = useError()
 
-  const [ abortController, setAbortController ] = useState(new AbortController())
   const [ uploading, setUploading ] = useState(false)
   const [ uploads, setUploads ] = useState(new Map<ReplicaCreateID, ReplicaUpload>())
   const [ overwriting, setOverwriting ] = useState<ReplicaUploadOverwrite[]>([])
@@ -104,13 +105,10 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
   }, [])
 
   const handleClickCancel = useCallback(() => {
-    abortController.abort()
-    if (!uploading) {
-      close()
-    }
-  }, [ abortController, uploading, close ])
+    close()
+  }, [ close ])
 
-  const processReplicaUpload = useCallback(async (medium: Medium, replica: ReplicaCreate, signal: AbortSignal, overwrite?: boolean): Promise<Replica> => {
+  const processReplicaUpload = useCallback(async (medium: Medium, replica: ReplicaCreate, overwrite?: boolean): Promise<Replica> => {
     let file: File
     try {
       const path = container ? `/${container}` : ''
@@ -128,7 +126,7 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
           overwrite: Boolean(overwrite),
         },
         {
-          signal,
+          signal: abortSignal,
           onUploadProgress: ({ loaded, total }) => {
             if (loaded < total) {
               handleUploadProgress(replica, { status: 'uploading', progress: { loaded, total } })
@@ -176,7 +174,7 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
           handleUploadProgress(replica, { status: 'aborted' })
           throw new Error('the uploading file already exists', { cause: e })
         }
-        return await processReplicaUpload(medium, replica, signal, true)
+        return await processReplicaUpload(medium, replica, true)
       }
 
       if (e instanceof ApolloError && e.networkError?.name === 'CanceledError') {
@@ -186,12 +184,10 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
       }
       throw new Error('error creating replica', { cause: e })
     }
-  }, [ container, createReplica, graphQLError, handleUploadProgress ])
+  }, [ container, abortSignal, createReplica, graphQLError, handleUploadProgress, onProgress ])
 
   const handleClickUpload = useCallback(async () => {
     setUploading(true)
-
-    const { signal } = abortController
 
     let medium: Medium
     try {
@@ -201,10 +197,12 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
       return
     }
 
-    Promise.allSettled(
+    onProgress?.('uploading')
+
+    await Promise.allSettled(
       replicas.map(replica => isReplica(replica)
         ? Promise.resolve(replica)
-        : processReplicaUpload(medium, replica, signal),
+        : processReplicaUpload(medium, replica),
       ),
     ).then(results => {
       const newReplicas: (Replica | ReplicaCreate)[] = []
@@ -222,11 +220,12 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
         }
       }
 
+      onProgress?.('done')
       onComplete(medium, newReplicas)
-      setAbortController(new AbortController())
+
       setUploading(false)
     })
-  }, [ abortController, resolveMedium, replicas, processReplicaUpload, onComplete ])
+  }, [ resolveMedium, replicas, processReplicaUpload, onComplete ])
 
   const tableComputeItemKey = useCallback((_index: number, replica: ReplicaCreate) => replica.tempid, [])
 
@@ -355,10 +354,12 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
 }
 
 export interface MediumItemFileUploadDialogBodyProps {
+  abortSignal?: AbortSignal
   resolveMedium: () => Promise<Medium>
   replicas: (Replica | ReplicaCreate)[]
   setReplicas: (setReplicas: (replicas: (Replica | ReplicaCreate)[]) => (Replica | ReplicaCreate)[]) => void
   close: () => void
+  onProgress?: (status: UploadStatus) => void
   onComplete: (medium: Medium, replicas: (Replica | ReplicaCreate)[]) => void
 }
 
@@ -389,6 +390,7 @@ export interface ReplicaUploadProgress {
   total: number
 }
 
+export type UploadStatus = 'uploading' | 'done'
 export type ReplicaUploadStatus = null | 'uploading' | 'creating' | 'done' | 'aborted' | 'error'
 
 export default MediumItemFileUploadDialogBody
