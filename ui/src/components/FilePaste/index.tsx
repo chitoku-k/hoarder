@@ -52,16 +52,15 @@ const FilePaste: FunctionComponent<FilePasteProps> = ({
     onSelect?.(Promise.resolve([ ...e.clipboardData.files ]))
   }, [ onSelect ])
 
-  const handleBeforeInput = useCallback((e: FormEvent<HTMLElement>) => {
+  const handleInput = useCallback((e: FormEvent<HTMLElement>) => {
     const focusNode = document.getSelection()?.focusNode
-    focusNode?.parentNode?.removeChild(focusNode)
-
-    e.currentTarget.blur()
+    if (focusNode !== e.currentTarget && e.nativeEvent.constructor.name === 'InputEvent') {
+      focusNode?.parentNode?.removeChild(focusNode)
+    }
   }, [])
 
-  const handleInput = useCallback(() => {
-    const focusNode = document.getSelection()?.focusNode
-    focusNode?.parentNode?.removeChild(focusNode)
+  const handleCompositionUpdate = useCallback((e: FormEvent<HTMLElement>) => {
+    e.currentTarget.blur()
   }, [])
 
   return (
@@ -74,8 +73,8 @@ const FilePaste: FunctionComponent<FilePasteProps> = ({
       onCut={handleCut}
       onCopy={handleCopy}
       onPaste={handlePaste}
-      onBeforeInput={handleBeforeInput}
       onInput={handleInput}
+      onCompositionUpdate={handleCompositionUpdate}
     >
       {children}
     </div>
