@@ -5,7 +5,8 @@
       "dom",
       "dom.iterable",
       "es2023",
-      "esnext.promise"
+      "esnext.promise",
+      "webworker"
     ],
     "skipLibCheck": true,
     "strict": true,

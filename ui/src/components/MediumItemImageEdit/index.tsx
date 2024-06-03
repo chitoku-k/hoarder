@@ -6,7 +6,7 @@ import type { Components } from 'react-virtuoso'
 import { Virtuoso } from 'react-virtuoso'
 import clsx from 'clsx'
 import { v4 as uuid } from 'uuid'
-import { imageSize } from 'image-size'
+import type { ISize } from 'image-size/types/interface'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import ImageList from '@mui/material/ImageList'
@@ -29,6 +29,7 @@ import styles from './styles.module.scss'
 
 export const isReplica = (replica: Replica | ReplicaCreate): replica is Replica => 'id' in replica
 
+const FILE_MAX_INPUT_SIZE = 512 * 1024
 const FILE_APPEND_CONFIRM_DIALOG_THRESHOLD = 10
 
 const MediumItemImageEdit: FunctionComponent<MediumItemImageEditProps> = ({
@@ -97,8 +98,16 @@ const MediumItemImageEdit: FunctionComponent<MediumItemImageEditProps> = ({
 
     Promise.allSettled(files.map(async (file): Promise<ReplicaCreate> => {
       try {
-        const buffer = await Promise.race([ file.arrayBuffer(), rejectOnAbort ])
-        let { width, height, orientation } = imageSize(new Uint8Array(buffer))
+        const blob = file.slice(0, FILE_MAX_INPUT_SIZE)
+        const buffer = await Promise.race([ blob.arrayBuffer(), rejectOnAbort ])
+        const { promise, resolve, reject } = Promise.withResolvers<ISize>()
+
+        const worker = new Worker(new URL('./worker.ts', import.meta.url))
+        worker.addEventListener('message', (e: MessageEvent<ISize>) => resolve(e.data))
+        worker.addEventListener('error', reject)
+        worker.postMessage(buffer, [ buffer ])
+
+        let { width, height, orientation } = await promise
         if (orientation && orientation > 4) {
           [ width, height ] = [ height, width ]
         }
@@ -109,7 +118,7 @@ const MediumItemImageEdit: FunctionComponent<MediumItemImageEditProps> = ({
           width,
           height,
           lastModified: new Date(file.lastModified),
-          blob: new Blob([ buffer ]),
+          blob: new Blob([ await file.arrayBuffer() ]),
         }
       } catch (e) {
         console.warn('Error reading a file\n', file, '\n', e)
