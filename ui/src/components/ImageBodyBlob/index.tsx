@@ -1,7 +1,7 @@
 'use client'
 
 import type { ComponentPropsWithoutRef, FunctionComponent, SyntheticEvent } from 'react'
-import { use, useCallback, useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useErrorBoundary } from 'react-error-boundary'
 
 const ImageBodyBlob: FunctionComponent<ImageBodyBlobProps> = ({
@@ -9,8 +9,7 @@ const ImageBodyBlob: FunctionComponent<ImageBodyBlobProps> = ({
   onError,
   ...props
 }) => {
-  const blob = use(src)
-  const url = useMemo(() => URL.createObjectURL(blob), [ blob ])
+  const url = useMemo(() => URL.createObjectURL(src), [ src ])
 
   const { showBoundary } = useErrorBoundary()
 
@@ -35,7 +34,7 @@ const ImageBodyBlob: FunctionComponent<ImageBodyBlobProps> = ({
 }
 
 export interface ImageBodyBlobProps extends Omit<ComponentPropsWithoutRef<'img'>, 'src'> {
-  src: Promise<Blob>
+  src: Blob
 }
 
 export default ImageBodyBlob

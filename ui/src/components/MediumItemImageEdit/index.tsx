@@ -109,7 +109,7 @@ const MediumItemImageEdit: FunctionComponent<MediumItemImageEditProps> = ({
           width,
           height,
           lastModified: new Date(file.lastModified),
-          blob: Promise.resolve(new Blob([ buffer ])),
+          blob: new Blob([ buffer ]),
         }
       } catch (e) {
         console.warn('Error reading a file\n', file, '\n', e)
@@ -343,7 +343,7 @@ export interface ReplicaCreate {
   width?: number
   height?: number
   lastModified: Date
-  blob: Promise<Blob>
+  blob: Blob
 }
 
 export interface MediumItemImageEditProps {

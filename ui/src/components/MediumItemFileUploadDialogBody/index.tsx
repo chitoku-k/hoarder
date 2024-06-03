@@ -113,7 +113,7 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
     try {
       const path = container ? `/${container}` : ''
       const url = `${path}/${replica.name}`.split('/').map(strictUriEncode).join('/')
-      file = new File([ await replica.blob ], url)
+      file = new File([ replica.blob ], url)
     } catch (e) {
       throw new Error('error reading file', { cause: e })
     }

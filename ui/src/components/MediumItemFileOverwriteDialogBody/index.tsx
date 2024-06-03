@@ -82,7 +82,7 @@ export interface MediumItemFileOverwriteDialogBodyProps {
     name: string
     size: number
     lastModified: Date
-    blob: Promise<Blob>
+    blob: Blob
   }
   existing: {
     name: string
