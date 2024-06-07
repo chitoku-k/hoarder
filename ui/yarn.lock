@@ -2547,9 +2547,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-date-pickers@npm:^7.6.1":
-  version: 7.6.1
-  resolution: "@mui/x-date-pickers@npm:7.6.1"
+"@mui/x-date-pickers@npm:^7.6.2":
+  version: 7.6.2
+  resolution: "@mui/x-date-pickers@npm:7.6.2"
   dependencies:
     "@babel/runtime": "npm:^7.24.6"
     "@mui/base": "npm:^5.0.0-beta.40"
@@ -2591,7 +2591,7 @@ __metadata:
       optional: true
     moment-jalaali:
       optional: true
-  checksum: 10/795ec290d6fd9ddfca53961e99aea0822461e1577b42136e2609caa8e07de650e7d74759e18cae191422593388938c20363a3dab121a3604eff604b38077ac9b
+  checksum: 10/3e62d656c0c93f26fcb45099b2eaef46c7f5f9da115ee4265d28f84a6ae17af545e5431bbd9d53e84d7c9ef07e7214b03588955fa07082a744aed81755ea43c6
   languageName: node
   linkType: hard
 
@@ -5951,7 +5951,7 @@ __metadata:
     "@mui/material": "npm:^5.15.19"
     "@mui/material-nextjs": "npm:^5.15.11"
     "@mui/system": "npm:^5.15.15"
-    "@mui/x-date-pickers": "npm:^7.6.1"
+    "@mui/x-date-pickers": "npm:^7.6.2"
     "@parcel/watcher": "npm:^2.4.1"
     "@react-aria/i18n": "npm:^3.11.1"
     "@types/apollo-upload-client": "npm:^18.0.0"
