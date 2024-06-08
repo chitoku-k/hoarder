@@ -12,10 +12,11 @@ import styles from './styles.module.scss'
 
 export const MediumListItem: FunctionComponent<MediumListItemProps> = ({
   medium,
+  size,
 }) => (
   <ImageListItem className={styles.item}>
     <Link className={styles.link} href={`/media/${medium.id}`}>
-      <MediumListItemThumbnail replica={medium.replicas?.[0]} />
+      <MediumListItemThumbnail replica={medium.replicas?.[0]} size={size} />
       <MediumListItemCount className={styles.count} count={medium.replicas?.length} fontSize="small" />
     </Link>
   </ImageListItem>
@@ -23,6 +24,7 @@ export const MediumListItem: FunctionComponent<MediumListItemProps> = ({
 
 export interface MediumListItemProps {
   medium: Medium
+  size: number
 }
 
 export default MediumListItem
