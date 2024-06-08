@@ -9,16 +9,15 @@ import type { Replica } from '@/types'
 
 import styles from './styles.module.scss'
 
-const imagePixelRatio = 1.5;
-
 const MediumListItemThumbnail: FunctionComponent<MediumListItemThumbnailProps> = ({
   replica,
+  size,
 }) => replica?.thumbnail ? (
   <Image
     className={styles.image}
     src={replica.thumbnail.url}
-    width={Math.round(replica.thumbnail.width / imagePixelRatio)}
-    height={Math.round(replica.thumbnail.height / imagePixelRatio)}
+    width={replica.width >= replica.height ? size : Math.round(size / (replica.height / replica.width))}
+    height={replica.width <= replica.height ? size : Math.round(size / (replica.width / replica.height))}
     quality={100}
     loading="lazy"
     alt=""
@@ -31,6 +30,7 @@ const MediumListItemThumbnail: FunctionComponent<MediumListItemThumbnailProps> =
 
 export interface MediumListItemThumbnailProps {
   replica?: Replica
+  size: number
 }
 
 export default MediumListItemThumbnail

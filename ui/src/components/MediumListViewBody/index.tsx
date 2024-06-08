@@ -28,7 +28,7 @@ const MediumListViewBody: FunctionComponent<MediumListViewBodyProps> = ({
     <Stack>
       <ImageList className={styles.container} gap={40}>
         {media.map(medium => (
-          <MediumListItem key={medium.id} medium={medium} />
+          <MediumListItem key={medium.id} medium={medium} size={160} />
         ))}
       </ImageList>
       <Stack className={styles.pagination} alignItems="center">
