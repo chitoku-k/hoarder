@@ -109,14 +109,9 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
   }, [ close ])
 
   const processReplicaUpload = useCallback(async (medium: Medium, replica: ReplicaCreate, overwrite?: boolean): Promise<Replica> => {
-    let file: File
-    try {
-      const path = container ? `/${container}` : ''
-      const url = `${path}/${replica.name}`.split('/').map(strictUriEncode).join('/')
-      file = new File([ replica.blob ], url)
-    } catch (e) {
-      throw new Error('error reading file', { cause: e })
-    }
+    const path = container ? `/${container}` : ''
+    const url = `${path}/${replica.name}`.split('/').map(strictUriEncode).join('/')
+    const file = new File([ replica.blob ], url)
 
     try {
       const newReplica = await createReplica(
