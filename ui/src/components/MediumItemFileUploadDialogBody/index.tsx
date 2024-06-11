@@ -100,7 +100,7 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
         return uploads
       }
 
-      return new Map(uploads.set(replica.tempid, upload))
+      return new Map(uploads).set(replica.tempid, upload)
     })
   }, [])
 

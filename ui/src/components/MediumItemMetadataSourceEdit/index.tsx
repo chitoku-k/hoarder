@@ -111,7 +111,7 @@ const MediumItemMetadataSourceEdit: FunctionComponent<MediumItemMetadataSourceEd
       }
 
       newSources.push(source)
-      return new Map(addingSources.set(externalService.id, newSources))
+      return new Map(addingSources).set(externalService.id, newSources)
     })
 
     setRemovingSources(removingSources => {
@@ -125,7 +125,7 @@ const MediumItemMetadataSourceEdit: FunctionComponent<MediumItemMetadataSourceEd
         return removingSources
       }
 
-      return new Map(removingSources.set(externalService.id, newSources.toSpliced(idx, 1)))
+      return new Map(removingSources).set(externalService.id, newSources.toSpliced(idx, 1))
     })
   }, [ groups ])
 
@@ -139,7 +139,7 @@ const MediumItemMetadataSourceEdit: FunctionComponent<MediumItemMetadataSourceEd
         return addingSources
       }
 
-      return new Map(addingSources.set(externalService.id, newSources.toSpliced(idx, 1)))
+      return new Map(addingSources).set(externalService.id, newSources.toSpliced(idx, 1))
     })
 
     if (!isSource(source) || !groups.some(group => group.externalService.id === externalService.id && group.sources.some(({ id }) => id === source.id))) {
@@ -153,7 +153,7 @@ const MediumItemMetadataSourceEdit: FunctionComponent<MediumItemMetadataSourceEd
       }
 
       newSources.push(source)
-      return new Map(removingSources.set(externalService.id, newSources))
+      return new Map(removingSources).set(externalService.id, newSources)
     })
   }, [ groups ])
 
@@ -167,7 +167,7 @@ const MediumItemMetadataSourceEdit: FunctionComponent<MediumItemMetadataSourceEd
         return removingSources
       }
 
-      return new Map(removingSources.set(externalService.id, newSources.toSpliced(idx, 1)))
+      return new Map(removingSources).set(externalService.id, newSources.toSpliced(idx, 1))
     })
   }, [])
 
