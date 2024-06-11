@@ -67,7 +67,7 @@ const MediumItemMetadataTagCreate: FunctionComponent<MediumItemMetadataTagCreate
 
       newTags.push(tag)
 
-      const newAddingTags = new Map(addingTags.set(type.id, newTags))
+      const newAddingTags = new Map(addingTags).set(type.id, newTags)
       setTagTagTypeIDs(() => resolveTagTagTypeIDs(newAddingTags))
       return newAddingTags
     })
@@ -83,7 +83,7 @@ const MediumItemMetadataTagCreate: FunctionComponent<MediumItemMetadataTagCreate
         return addingTags
       }
 
-      const newAddingTags = new Map(addingTags.set(type.id, newTags.toSpliced(idx, 1)))
+      const newAddingTags = new Map(addingTags).set(type.id, newTags.toSpliced(idx, 1))
       setTagTagTypeIDs(() => resolveTagTagTypeIDs(newAddingTags))
       return newAddingTags
     })

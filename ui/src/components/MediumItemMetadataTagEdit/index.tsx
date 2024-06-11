@@ -102,7 +102,7 @@ const MediumItemMetadataTagEdit: FunctionComponent<MediumItemMetadataTagEditProp
       }
 
       newTags.push(tag)
-      return new Map(addingTags.set(type.id, newTags))
+      return new Map(addingTags).set(type.id, newTags)
     })
 
     setRemovingTags(removingTags => {
@@ -112,7 +112,7 @@ const MediumItemMetadataTagEdit: FunctionComponent<MediumItemMetadataTagEditProp
         return removingTags
       }
 
-      return new Map(removingTags.set(type.id, newTags.toSpliced(idx, 1)))
+      return new Map(removingTags).set(type.id, newTags.toSpliced(idx, 1))
     })
   }, [ groups ])
 
@@ -126,7 +126,7 @@ const MediumItemMetadataTagEdit: FunctionComponent<MediumItemMetadataTagEditProp
         return addingTags
       }
 
-      return new Map(addingTags.set(type.id, newTags.toSpliced(idx, 1)))
+      return new Map(addingTags).set(type.id, newTags.toSpliced(idx, 1))
     })
 
     if (!groups.some(group => group.type.id === type.id && group.tags.some(({ id }) => id === tag.id))) {
@@ -140,7 +140,7 @@ const MediumItemMetadataTagEdit: FunctionComponent<MediumItemMetadataTagEditProp
       }
 
       newTags.push(tag)
-      return new Map(removingTags.set(type.id, newTags))
+      return new Map(removingTags).set(type.id, newTags)
     })
   }, [ groups ])
 
@@ -154,7 +154,7 @@ const MediumItemMetadataTagEdit: FunctionComponent<MediumItemMetadataTagEditProp
         return removingTags
       }
 
-      return new Map(removingTags.set(type.id, newTags.toSpliced(idx, 1)))
+      return new Map(removingTags).set(type.id, newTags.toSpliced(idx, 1))
     })
   }, [])
 

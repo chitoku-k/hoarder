@@ -109,7 +109,7 @@ const MediumItemMetadataSourceCreate: FunctionComponent<MediumItemMetadataSource
 
       newSources.push(source)
 
-      const newAddingSources = new Map(addingSources.set(externalService.id, newSources))
+      const newAddingSources = new Map(addingSources).set(externalService.id, newSources)
       setResolveSourceIDs(() => resolveSourceIDs(newAddingSources))
       return newAddingSources
     })
@@ -125,7 +125,7 @@ const MediumItemMetadataSourceCreate: FunctionComponent<MediumItemMetadataSource
         return addingSources
       }
 
-      const newAddingSources = new Map(addingSources.set(externalService.id, newSources.toSpliced(idx, 1)))
+      const newAddingSources = new Map(addingSources).set(externalService.id, newSources.toSpliced(idx, 1))
       setResolveSourceIDs(() => resolveSourceIDs(newAddingSources))
       return newAddingSources
     })
