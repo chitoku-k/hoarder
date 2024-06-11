@@ -13,7 +13,7 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 
 import TagBreadcrumbsList from '@/components/TagBreadcrumbsList'
-import { useCreateTag } from '@/hooks'
+import { useBeforeUnload, useCreateTag } from '@/hooks'
 import type { Tag } from '@/types'
 
 import styles from './styles.module.scss'
@@ -21,6 +21,8 @@ import styles from './styles.module.scss'
 const extractKana = (history: string[]): string => {
   return historykana(history, { kanaRegexp: /^[ 　ぁ-ゔー]*[nｎ]?$/ }).replace(/[nｎ]$/, 'ん')
 }
+
+const hasChanges = (tag: TagCreate) => tag.name.length > 0 || tag.kana.length > 0 || tag.aliases.length > 0
 
 const TagListColumnBodyCreate: FunctionComponent<TagListColumnBodyCreateProps> = ({
   parent,
@@ -36,7 +38,7 @@ const TagListColumnBodyCreate: FunctionComponent<TagListColumnBodyCreateProps> =
     })
   }, [])
 
-  const [ tag, setTag ] = useState<Omit<Tag, 'id' | 'parent' | 'children'>>({
+  const [ tag, setTag ] = useState<TagCreate>({
     name: '',
     kana: '',
     aliases: [],
@@ -101,7 +103,8 @@ const TagListColumnBodyCreate: FunctionComponent<TagListColumnBodyCreateProps> =
     )
   }, [ tag, parent, onCreating, onCreate, createTag, close ])
 
-  const empty = tag.name.length === 0
+  const changed = hasChanges(tag)
+  useBeforeUnload(changed)
 
   return (
     <Stack className={styles.container} direction="column-reverse" justifyContent="flex-end">
@@ -154,7 +157,7 @@ const TagListColumnBodyCreate: FunctionComponent<TagListColumnBodyCreateProps> =
           )}
         </Stack>
         <Stack className={styles.buttons} spacing={1} direction="row-reverse">
-          <LoadingButton onClick={handleClickSubmit} loading={loading} disabled={empty}>
+          <LoadingButton onClick={handleClickSubmit} loading={loading} disabled={!changed}>
             <span>保存</span>
           </LoadingButton>
           <Button onClick={handleClickCancel}>
@@ -181,5 +184,7 @@ export interface TagListColumnBodyCreateProps {
   onCreating?: () => void
   onCreate?: (tag: Tag) => void
 }
+
+type TagCreate = Omit<Tag, 'id' | 'parent' | 'children'>
 
 export default TagListColumnBodyCreate

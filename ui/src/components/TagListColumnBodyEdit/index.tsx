@@ -13,10 +13,24 @@ import TextField from '@mui/material/TextField'
 
 import TagBreadcrumbsList from '@/components/TagBreadcrumbsList'
 import TagMoveDialog from '@/components/TagMoveDialog'
-import { useUpdateTag } from '@/hooks'
+import { useBeforeUnload, useUpdateTag } from '@/hooks'
 import type { Tag } from '@/types'
 
 import styles from './styles.module.scss'
+
+const hasChanges = (a: Tag, b: Tag) => {
+  if (a.name !== b.name || a.kana !== b.kana || a.aliases.length !== b.aliases.length) {
+    return true
+  }
+
+  for (const [ idx, alias ] of a.aliases.entries()) {
+    if (alias !== b.aliases[idx]) {
+      return true
+    }
+  }
+
+  return false
+}
 
 const TagListColumnBodyEdit: FunctionComponent<TagListColumnBodyEditProps> = ({
   tag: current,
@@ -89,6 +103,9 @@ const TagListColumnBodyEdit: FunctionComponent<TagListColumnBodyEditProps> = ({
       },
     )
   }, [ tag, current, updateTag, close ])
+
+  const changed = hasChanges(tag, current)
+  useBeforeUnload(changed)
 
   return (
     <Stack className={styles.container} direction="column-reverse" justifyContent="flex-end">

@@ -11,9 +11,23 @@ import type { SourceCreate } from '@/components/AutocompleteSourceBody'
 import { isSource } from '@/components/AutocompleteSourceBody'
 import MediumItemMetadataHeader from '@/components/MediumItemMetadataHeader'
 import MediumItemMetadataSourceGroupEdit from '@/components/MediumItemMetadataSourceGroupEdit'
-import { SOURCE_METADATA_DUPLICATE, useCreateSource, useError } from '@/hooks'
+import { SOURCE_METADATA_DUPLICATE, useBeforeUnload, useCreateSource, useError } from '@/hooks'
 import type { ExternalMetadataInput } from '@/hooks/types.generated'
 import type { ExternalService, Source } from '@/types'
+
+const hasChanges = (addingExternalServices: ExternalService[], addingSources: Map<ExternalServiceID, (Source | SourceCreate)[]>) => {
+  if (addingExternalServices.length > 0) {
+    return true
+  }
+
+  for (const tags of addingSources.values()) {
+    if (tags.length > 0) {
+      return true
+    }
+  }
+
+  return false
+}
 
 const MediumItemMetadataSourceCreate: FunctionComponent<MediumItemMetadataSourceCreateProps> = ({
   loading,
@@ -130,6 +144,9 @@ const MediumItemMetadataSourceCreate: FunctionComponent<MediumItemMetadataSource
       return newAddingSources
     })
   }, [ setResolveSourceIDs, resolveSourceIDs ])
+
+  const changed = hasChanges(addingExternalServices, addingSources)
+  useBeforeUnload(changed)
 
   return (
     <Stack>

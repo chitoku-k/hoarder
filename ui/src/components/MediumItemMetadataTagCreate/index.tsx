@@ -8,8 +8,23 @@ import LabelIcon from '@mui/icons-material/Label'
 import AutocompleteTagType from '@/components/AutocompleteTagType'
 import MediumItemMetadataHeader from '@/components/MediumItemMetadataHeader'
 import MediumItemMetadataTagGroupEdit from '@/components/MediumItemMetadataTagGroupEdit'
+import { useBeforeUnload } from '@/hooks'
 import type { TagTagTypeInput } from '@/hooks/types.generated'
 import type { Tag, TagType } from '@/types'
+
+const hasChanges = (addingTagTypes: TagType[], addingTags: Map<TagTypeID, Tag[]>) => {
+  if (addingTagTypes.length > 0) {
+    return true
+  }
+
+  for (const tags of addingTags.values()) {
+    if (tags.length > 0) {
+      return true
+    }
+  }
+
+  return false
+}
 
 const MediumItemMetadataTagCreate: FunctionComponent<MediumItemMetadataTagCreateProps> = ({
   loading,
@@ -98,6 +113,9 @@ const MediumItemMetadataTagCreate: FunctionComponent<MediumItemMetadataTagCreate
     }
     return addTagTagTypeIDs
   }
+
+  const changed = hasChanges(addingTagTypes, addingTags)
+  useBeforeUnload(changed)
 
   return (
     <Stack>

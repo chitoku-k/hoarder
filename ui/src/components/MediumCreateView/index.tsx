@@ -25,11 +25,29 @@ import MediumItemMetadataTagCreate from '@/components/MediumItemMetadataTagCreat
 import MediumItemMetadataTagEdit from '@/components/MediumItemMetadataTagEdit'
 import MediumItemMetadataTagList from '@/components/MediumItemMetadataTagList'
 import MediumItemReplicaDeleteDialog from '@/components/MediumItemReplicaDeleteDialog'
-import { useCreateMedium, useDeleteReplica, useUpdateMedium } from '@/hooks'
+import { useBeforeUnload, useCreateMedium, useDeleteReplica, useUpdateMedium } from '@/hooks'
 import type { TagTagTypeInput } from '@/hooks/types.generated'
 import type { Medium, Replica } from '@/types'
 
 import styles from './styles.module.scss'
+
+const hasChanges = (medium: Medium | null, replicas: (Replica | ReplicaCreate)[], removingReplicas: Replica[]) => {
+  if ((medium?.replicas?.length ?? 0) !== replicas.length || removingReplicas.length > 0) {
+    return true
+  }
+
+  for (const [ idx, replica ] of replicas.entries()) {
+    if (!isReplica(replica)) {
+      return true
+    }
+
+    if (medium?.replicas?.[idx]?.id !== replica.id) {
+      return true
+    }
+  }
+
+  return false
+}
 
 const MediumCreateView: FunctionComponent = () => {
   const router = useRouter()
@@ -275,6 +293,8 @@ const MediumCreateView: FunctionComponent = () => {
   }, [ router ])
 
   const loading = createLoading || updateLoading
+  const changed = hasChanges(medium, replicas, removingReplicas)
+  useBeforeUnload(changed)
 
   return (
     <Grid className={styles.container} container spacing={4}>

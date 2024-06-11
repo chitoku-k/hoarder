@@ -15,9 +15,29 @@ import type { SourceCreate } from '@/components/AutocompleteSourceBody'
 import { isSource } from '@/components/AutocompleteSourceBody'
 import MediumItemMetadataHeader from '@/components/MediumItemMetadataHeader'
 import MediumItemMetadataSourceGroupEdit from '@/components/MediumItemMetadataSourceGroupEdit'
-import { SOURCE_METADATA_DUPLICATE, useCreateSource, useError } from '@/hooks'
+import { SOURCE_METADATA_DUPLICATE, useBeforeUnload, useCreateSource, useError } from '@/hooks'
 import type { ExternalMetadataInput } from '@/hooks/types.generated'
 import type { ExternalService, Medium, Source } from '@/types'
+
+const hasChanges = (addingExternalServices: ExternalService[], removingExternalServices: ExternalService[], addingSources: Map<ExternalServiceID, (Source | SourceCreate)[]>, removingSources: Map<ExternalServiceID, Source[]>) => {
+  if (addingExternalServices.length > 0 || removingExternalServices.length > 0) {
+    return true
+  }
+
+  for (const tags of addingSources.values()) {
+    if (tags.length > 0) {
+      return true
+    }
+  }
+
+  for (const tags of removingSources.values()) {
+    if (tags.length > 0) {
+      return true
+    }
+  }
+
+  return false
+}
 
 const MediumItemMetadataSourceEdit: FunctionComponent<MediumItemMetadataSourceEditProps> = ({
   loading: mediumLoading,
@@ -228,6 +248,8 @@ const MediumItemMetadataSourceEdit: FunctionComponent<MediumItemMetadataSourceEd
   }, [ createSource, graphQLError, save, medium, addingSources, removingSources, close ])
 
   const loading = sourceLoading || mediumLoading
+  const changed = hasChanges(addingExternalServices, removingExternalServices, addingSources, removingSources)
+  useBeforeUnload(changed)
 
   return (
     <Stack>
