@@ -11,9 +11,12 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth'
 
 import MediumDeleteDialog from '@/components/MediumDeleteDialog'
 import MediumItemMetadataHeader from '@/components/MediumItemMetadataHeader'
+import { useBeforeUnload } from '@/hooks'
 import type { Medium } from '@/types'
 
 import styles from './styles.module.scss'
+
+const hasChanges = (a: Medium, b: Medium) => new Date(a.createdAt).getTime() !== new Date(b.createdAt).getTime()
 
 const MediumItemMetadataSummaryEdit: FunctionComponent<MediumItemMetadataSummaryEditProps> = ({
   loading,
@@ -56,6 +59,9 @@ const MediumItemMetadataSummaryEdit: FunctionComponent<MediumItemMetadataSummary
   const handleDeleteMedium = useCallback(() => {
     onDelete()
   }, [ onDelete ])
+
+  const changed = hasChanges(medium, current)
+  useBeforeUnload(changed)
 
   return (
     <Stack>

@@ -10,8 +10,11 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth'
 
 import type { MediumCreate } from '@/components/MediumCreateView'
 import MediumItemMetadataHeader from '@/components/MediumItemMetadataHeader'
+import { useBeforeUnload } from '@/hooks'
 
 import styles from './styles.module.scss'
+
+const hasChanges = (medium: MediumCreate) => Boolean(medium.createdAt)
 
 const MediumItemMetadataSummaryCreate: FunctionComponent<MediumItemMetadataSummaryCreateProps> = ({
   loading,
@@ -22,11 +25,7 @@ const MediumItemMetadataSummaryCreate: FunctionComponent<MediumItemMetadataSumma
   })
 
   const handleChangeCreatedAt = useCallback((value: Date | null) => {
-    if (!value || isNaN(value.getTime())) {
-      return
-    }
-
-    const createdAt = value.toISOString()
+    const createdAt = value && !isNaN(value.getTime()) ? value.toISOString() : null
     setMedium(medium => ({
       ...medium,
       createdAt,
@@ -36,6 +35,9 @@ const MediumItemMetadataSummaryCreate: FunctionComponent<MediumItemMetadataSumma
   const handleClickSubmit = useCallback(() => {
     save(medium)
   }, [ save, medium ])
+
+  const changed = hasChanges(medium)
+  useBeforeUnload(changed)
 
   return (
     <Stack>

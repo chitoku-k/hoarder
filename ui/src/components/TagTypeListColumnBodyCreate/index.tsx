@@ -9,10 +9,12 @@ import Snackbar from '@mui/material/Snackbar'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 
-import { TAG_TYPE_SLUG_DUPLICATE, useError, useCreateTagType } from '@/hooks'
+import { TAG_TYPE_SLUG_DUPLICATE, useError, useCreateTagType, useBeforeUnload } from '@/hooks'
 import type { TagType } from '@/types'
 
 import styles from './styles.module.scss'
+
+const hasChanges = (tagType: TagTypeCreate) => tagType.name.length > 0 || tagType.slug.length > 0
 
 const TagTypeListColumnBodyCreate: FunctionComponent<TagTypeListColumnBodyCreateProps> = ({
   close,
@@ -26,7 +28,7 @@ const TagTypeListColumnBodyCreate: FunctionComponent<TagTypeListColumnBodyCreate
     })
   }, [])
 
-  const [ tagType, setTagType ] = useState<Omit<TagType, 'id'>>({
+  const [ tagType, setTagType ] = useState<TagTypeCreate>({
     name: '',
     slug: '',
   })
@@ -67,7 +69,8 @@ const TagTypeListColumnBodyCreate: FunctionComponent<TagTypeListColumnBodyCreate
 
   const tagTypeSlugDuplicate = graphQLError(error, TAG_TYPE_SLUG_DUPLICATE)
   const isSlugDuplicate = tagTypeSlugDuplicate?.extensions.details.data.slug === tagType.slug
-  const empty = tagType.name.length === 0 || tagType.slug.length == 0
+  const changed = hasChanges(tagType)
+  useBeforeUnload(changed)
 
   return (
     <Stack className={styles.container} direction="column-reverse" justifyContent="flex-end">
@@ -102,7 +105,7 @@ const TagTypeListColumnBodyCreate: FunctionComponent<TagTypeListColumnBodyCreate
       </Stack>
       <Stack direction="row" justifyContent="flex-end">
         <Stack className={styles.buttons} spacing={1} direction="row-reverse">
-          <LoadingButton onClick={handleClickSubmit} loading={loading} disabled={empty || isSlugDuplicate}>
+          <LoadingButton onClick={handleClickSubmit} loading={loading} disabled={!changed || isSlugDuplicate}>
             <span>保存</span>
           </LoadingButton>
           <Button onClick={handleClickCancel}>
@@ -126,5 +129,7 @@ const TagTypeListColumnBodyCreate: FunctionComponent<TagTypeListColumnBodyCreate
 export interface TagTypeListColumnBodyCreateProps {
   close: () => void
 }
+
+type TagTypeCreate = Omit<TagType, 'id'>
 
 export default TagTypeListColumnBodyCreate
