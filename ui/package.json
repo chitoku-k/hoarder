@@ -1,6 +1,6 @@
 {
   "name": "hoarder-ui",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "private": true,
   "author": "Chitoku <odango@chitoku.jp>",
   "packageManager": "yarn@4.3.0",
