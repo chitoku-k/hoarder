@@ -11,4 +11,4 @@ doctest = false
 workspace = true
 
 [dependencies.derive_more]
-version = "0.99.17"
+version = "0.99.18"

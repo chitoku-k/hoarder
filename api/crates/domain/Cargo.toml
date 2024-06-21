@@ -16,7 +16,7 @@ default-features = false
 features = ["clock", "std"]
 
 [dependencies.derive_more]
-version = "0.99.17"
+version = "0.99.18"
 
 [dependencies.log]
 version = "0.4.21"
