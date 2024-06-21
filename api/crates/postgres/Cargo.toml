@@ -68,7 +68,7 @@ features = ["postgres"]
 version = "1.8.0"
 
 [dev-dependencies.include_dir]
-version = "0.7.3"
+version = "0.7.4"
 features = ["glob"]
 
 [dev-dependencies.pretty_assertions]
