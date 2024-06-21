@@ -3,7 +3,7 @@
   "version": "0.6.2",
   "private": true,
   "author": "Chitoku <odango@chitoku.jp>",
-  "packageManager": "yarn@4.3.0",
+  "packageManager": "yarn@4.3.1",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
