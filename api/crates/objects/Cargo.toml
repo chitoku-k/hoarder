@@ -17,4 +17,4 @@ workspace = true
 version = "0.7.5"
 
 [dependencies.derive_more]
-version = "0.99.17"
+version = "0.99.18"
