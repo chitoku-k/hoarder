@@ -51,7 +51,7 @@ version = "1.0.203"
 features = ["derive"]
 
 [dependencies.serde_json]
-version = "1.0.118"
+version = "1.0.120"
 
 [dependencies.serde_with]
 version = "3.8.1"
