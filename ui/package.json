@@ -51,7 +51,7 @@
     "sass": "^1.77.6",
     "sharp": "^0.33.4",
     "strict-uri-encode": "^2.0.0",
-    "typescript": "^5.5.2",
+    "typescript": "^5.5.3",
     "uuid": "^10.0.0"
   },
   "devDependencies": {
