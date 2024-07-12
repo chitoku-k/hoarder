@@ -44,7 +44,7 @@ version = "0.7.11"
 features = ["io", "io-util"]
 
 [dependencies.uuid]
-version = "1.9.1"
+version = "1.10.0"
 features = ["serde", "v4"]
 
 [dev-dependencies.anyhow]
