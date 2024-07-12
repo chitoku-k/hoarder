@@ -49,7 +49,7 @@ features = ["derive"]
 version = "1.0.120"
 
 [dependencies.thiserror]
-version = "1.0.61"
+version = "1.0.62"
 
 [dependencies.uuid]
 version = "1.9.1"
