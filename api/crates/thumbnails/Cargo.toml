@@ -20,7 +20,7 @@ version = "0.7.5"
 version = "0.99.18"
 
 [dependencies.image]
-version = "0.25.1"
+version = "0.25.2"
 
 [dependencies.kamadak-exif]
 version = "0.5.5"
