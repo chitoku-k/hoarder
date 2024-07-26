@@ -36,7 +36,7 @@ features = ["derive"]
 version = "1.0.63"
 
 [dependencies.tokio]
-version = "1.38.1"
+version = "1.39.1"
 features = ["macros", "rt-multi-thread"]
 
 [dependencies.tokio-util]
