@@ -1,5 +1,5 @@
 import { ApolloError } from '@apollo/client'
-import { GraphQLError } from 'graphql'
+import type { GraphQLFormattedError } from 'graphql'
 
 import type { ExternalServiceNotFound, EXTERNAL_SERVICE_NOT_FOUND } from './ExternalServiceNotFound'
 import type { ExternalServiceSlugDuplicate, EXTERNAL_SERVICE_SLUG_DUPLICATE } from './ExternalServiceSlugDuplicate'
@@ -102,7 +102,7 @@ function graphQLError(e: unknown, code: typeof TAG_NOT_FOUND): TagNotFound | und
 function graphQLError(e: unknown, code: typeof TAG_TYPE_NOT_FOUND): TagTypeNotFound | undefined;
 function graphQLError(e: unknown, code: typeof TAG_TYPE_SLUG_DUPLICATE): TagTypeSlugDuplicate | undefined;
 function graphQLError(e: unknown, code: typeof THUMBNAIL_NOT_FOUND): ThumbnailNotFound | undefined;
-function graphQLError(e: unknown, code: string): GraphQLError | undefined {
+function graphQLError(e: unknown, code: string): GraphQLFormattedError | undefined {
   if (!(e instanceof ApolloError)) {
     return undefined
   }
