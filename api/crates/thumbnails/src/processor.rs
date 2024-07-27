@@ -7,7 +7,7 @@ use domain::{
     processor::media::MediumImageProcessor,
 };
 use exif::{In, Tag};
-use image::{imageops::{flip_horizontal, flip_vertical, rotate180, rotate270, rotate90}, io::Reader, DynamicImage};
+use image::{imageops::{flip_horizontal, flip_vertical, rotate180, rotate270, rotate90}, DynamicImage, ImageReader};
 use tokio::task;
 
 pub use image::{imageops::FilterType, ImageFormat};
@@ -54,7 +54,7 @@ impl MediumImageProcessor for InMemoryImageProcessor {
             read.seek(SeekFrom::Start(0))
                 .map_err(|e| Error::new(ErrorKind::MediumReplicaReadFailed, e))?;
 
-            let reader = Reader::new(read)
+            let reader = ImageReader::new(read)
                 .with_guessed_format()
                 .map_err(|e| Error::new(ErrorKind::MediumReplicaReadFailed, e))?;
 
