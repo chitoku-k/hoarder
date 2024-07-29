@@ -1,4 +1,4 @@
-use std::process::exit;
+use std::process::ExitCode;
 
 use di::container::Application;
 
@@ -10,14 +10,12 @@ mod env;
 static ALLOC: jemallocator::Jemalloc = jemallocator::Jemalloc;
 
 #[tokio::main]
-async fn main() {
+async fn main() -> ExitCode {
     match Application::start().await {
-        Ok(()) => {
-            exit(0);
-        },
+        Ok(()) => ExitCode::SUCCESS,
         Err(e) => {
             log::error!("failed to start application\nError: {e:?}");
-            exit(1);
+            ExitCode::FAILURE
         },
     }
 }
