@@ -32,7 +32,7 @@ version = "0.3.30"
 default-features = false
 
 [dependencies.indexmap]
-version = "2.2.6"
+version = "2.3.0"
 features = ["serde"]
 
 [dependencies.log]
