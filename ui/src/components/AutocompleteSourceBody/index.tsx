@@ -1,6 +1,6 @@
 'use client'
 
-import type { ComponentPropsWithoutRef, ComponentType, FunctionComponent, SyntheticEvent } from 'react'
+import type { ComponentType, FunctionComponent, SyntheticEvent } from 'react'
 import { useCallback, useMemo, useState, useTransition } from 'react'
 import type { AutocompleteProps } from '@mui/material/Autocomplete'
 import Autocomplete from '@mui/material/Autocomplete'
@@ -10,8 +10,6 @@ import type { TextFieldVariants } from '@mui/material/TextField'
 import TextField from '@mui/material/TextField'
 import debounce from '@mui/material/utils/debounce'
 
-import MediumItemMetadataSourceItem from '@/components/MediumItemMetadataSourceItem'
-import MediumItemMetadataSourceItemNew from '@/components/MediumItemMetadataSourceItemNew'
 import { useSource, useSourceSkip } from '@/hooks'
 import type { ExternalMetadataInput } from '@/hooks/types.generated'
 import type { ExternalService, Source } from '@/types'
@@ -194,24 +192,6 @@ const AutocompleteSourceBody: FunctionComponent<AutocompleteSourceBodyProps> = (
     onChangeSource?.(source)
   }, [ onChangeSource ])
 
-  const renderOption = useCallback(({ key, ...props }: ComponentPropsWithoutRef<'li'>, option: Source | SourceCreate) => (
-    <li key={key} {...props}>
-      {isSource(option) ? (
-        <MediumItemMetadataSourceItem
-          source={option}
-          noLink
-          noLaunch
-        />
-      ) : (
-        <MediumItemMetadataSourceItemNew
-          externalService={option.externalService}
-          externalMetadata={option.externalMetadata}
-          noLaunch
-        />
-      )}
-    </li>
-  ), [])
-
   const externalMetadata = buildExternalMetadata(externalService, value)
   const source = externalMetadata
     ? useSource({ externalServiceID: externalService.id, externalMetadata })
@@ -228,7 +208,6 @@ const AutocompleteSourceBody: FunctionComponent<AutocompleteSourceBodyProps> = (
       {...props}
       isOptionEqualToValue={(option, value) => isSource(option) && isSource(value) && option.id === value.id}
       getOptionLabel={option => JSON.stringify(option.externalMetadata)}
-      renderOption={renderOption}
       filterOptions={x => x}
       filterSelectedOptions
       options={options}

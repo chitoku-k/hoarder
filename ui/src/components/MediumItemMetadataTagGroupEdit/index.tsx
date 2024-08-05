@@ -1,6 +1,6 @@
 'use client'
 
-import type { FunctionComponent } from 'react'
+import type { ComponentPropsWithoutRef, FunctionComponent } from 'react'
 import { useCallback, useState } from 'react'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
@@ -70,6 +70,12 @@ const MediumItemMetadataTagEditGroup: FunctionComponent<MediumItemMetadataTagEdi
     restoreTagType(type)
     restoreTag(type, tag)
   }
+
+  const renderTagOption = useCallback(({ key, ...props }: ComponentPropsWithoutRef<'li'>, option: Tag) => (
+    <li key={key} {...props}>
+      <TagBreadcrumbsList tag={option} />
+    </li>
+  ), [])
 
   const allTags = [ ...tags, ...addingTags ]
 
@@ -143,6 +149,7 @@ const MediumItemMetadataTagEditGroup: FunctionComponent<MediumItemMetadataTagEdi
             forcePopupIcon={false}
             placeholder="タグの追加..."
             disabled={loading}
+            renderOption={renderTagOption}
             value={newTag}
             getOptionDisabled={({ id }) => tags.some(tag => tag.id === id) || addingTags.some(tag => tag.id === id)}
             icon={({ ...props }) => <SellIcon {...props} />}

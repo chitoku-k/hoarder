@@ -1,6 +1,6 @@
 'use client'
 
-import type { FunctionComponent } from 'react'
+import type { ComponentPropsWithoutRef, FunctionComponent } from 'react'
 import { useCallback, useState } from 'react'
 import deepEqual from 'deep-equal'
 import IconButton from '@mui/material/IconButton'
@@ -74,6 +74,24 @@ const MetadataSourceGroupEdit: FunctionComponent<MetadataSourceGroupEditProps> =
     restoreExternalService(externalService)
     restoreSource(externalService, tag)
   }
+
+  const renderSourceOption = useCallback(({ key, ...props }: ComponentPropsWithoutRef<'li'>, option: Source | SourceCreate) => (
+    <li key={key} {...props}>
+      {isSource(option) ? (
+        <MediumItemMetadataSourceItem
+          source={option}
+          noLink
+          noLaunch
+        />
+      ) : (
+        <MediumItemMetadataSourceItemNew
+          externalService={option.externalService}
+          externalMetadata={option.externalMetadata}
+          noLaunch
+        />
+      )}
+    </li>
+  ), [])
 
   const allSources = [ ...sources, ...addingSources ]
 
@@ -156,6 +174,7 @@ const MetadataSourceGroupEdit: FunctionComponent<MetadataSourceGroupEditProps> =
             placeholder="ソースの追加..."
             externalService={externalService}
             disabled={loading}
+            renderOption={renderSourceOption}
             value={newSource}
             getOptionDisabled={option => isSource(option)
               ? sources.some(source => source.id === option.id)
