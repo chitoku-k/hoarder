@@ -169,7 +169,7 @@ const MediumCreateView: FunctionComponent = () => {
   }, [])
 
   const handleComplete = useCallback(async (current: Medium, replicas: (Replica | ReplicaCreate)[]) => {
-    const processed = (replicas: (Replica | ReplicaCreate)[]): replicas is Replica[] => replicas.every(isReplica)
+    const processed = (replicas: (Replica | ReplicaCreate)[]) => replicas.every(isReplica)
     if (!processed(replicas)) {
       setReplicas(replicas)
       updateMedium({
@@ -223,7 +223,7 @@ const MediumCreateView: FunctionComponent = () => {
         results => {
           return updateMedium({
             id: current.id,
-            replicaOrders: results.filter((r): r is Replica => Boolean(r)).map(({ id }) => id),
+            replicaOrders: results.filter(r => r !== undefined).map(({ id }) => id),
             createdAt: current.createdAt,
           })
         },

@@ -269,7 +269,7 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
     )
   }, [ uploads, replicas, handleChangeName ])
 
-  const currentReplicas = replicas.filter((replica): replica is ReplicaCreate => !isReplica(replica))
+  const currentReplicas = replicas.filter((replica) => 'tempid' in replica)
   const currentOverwrite = overwriting[0]
   const hasValidationErrors = currentReplicas.some(replica => !isValidName(replica.name) || !isUniqueName(replica.name, replicas))
 
