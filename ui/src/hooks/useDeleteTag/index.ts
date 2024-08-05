@@ -2,7 +2,7 @@ import { useCallback } from 'react'
 import type { ApolloError } from '@apollo/client'
 import { useMutation } from '@apollo/client'
 
-import { AllTagsDocument, TagDocument, TagsDocument } from '@/hooks'
+import { AllTagsDocument, TagsDocument } from '@/hooks'
 
 import type { DeleteTagMutation, DeleteTagMutationVariables } from './documents.generated'
 import { DeleteTagDocument } from './documents.generated'
@@ -19,10 +19,8 @@ export function useDeleteTag(): [
     useCallback(async (variables: DeleteTagMutationVariables) => {
       const { data } = await deleteTag({
         variables,
-        awaitRefetchQueries: true,
         refetchQueries: [
           AllTagsDocument,
-          TagDocument,
           TagsDocument,
         ],
       })
