@@ -1,6 +1,6 @@
 'use client'
 
-import type { FunctionComponent, SyntheticEvent } from 'react'
+import type { ComponentPropsWithoutRef, FunctionComponent, SyntheticEvent } from 'react'
 import { useCallback, useState } from 'react'
 import Button from '@mui/material/Button'
 import LoadingButton from '@mui/lab/LoadingButton'
@@ -13,6 +13,8 @@ import MediumItemMetadataTagGroupEdit from '@/components/MediumItemMetadataTagGr
 import { useBeforeUnload } from '@/hooks'
 import type { TagTagTypeInput } from '@/hooks/types.generated'
 import type { Medium, Tag, TagType } from '@/types'
+
+import styles from './styles.module.scss'
 
 const hasChanges = (addingTagTypes: TagType[], removingTagTypes: TagType[], addingTags: Map<TagTypeID, Tag[]>, removingTags: Map<TagTypeID, Tag[]>) => {
   if (addingTagTypes.length > 0 || removingTagTypes.length > 0) {
@@ -204,6 +206,15 @@ const MediumItemMetadataTagEdit: FunctionComponent<MediumItemMetadataTagEditProp
     )
   }, [ save, medium, addingTags, removingTags, close ])
 
+  const renderTagTypeOption = useCallback(({ key, ...props }: ComponentPropsWithoutRef<'li'>, option: TagType) => (
+    <li key={key} {...props}>
+      <Stack direction="row" spacing={0.5} alignItems="start">
+        <LabelIcon className={styles.tagTypeSearchIcon} fontSize="small" />
+        <span className={styles.tagTypeSearchText}>{option.name}</span>
+      </Stack>
+    </li>
+  ), [])
+
   const changed = hasChanges(addingTagTypes, removingTagTypes, addingTags, removingTags)
   useBeforeUnload(changed)
 
@@ -265,6 +276,7 @@ const MediumItemMetadataTagEdit: FunctionComponent<MediumItemMetadataTagEditProp
             loadOnOpen
             placeholder="タイプの追加..."
             disabled={loading}
+            renderOption={renderTagTypeOption}
             value={newTagType}
             inputValue={newTagTypeInput}
             getOptionDisabled={({ id }) => groups.some(group => group.type.id === id) || addingTagTypes.some(type => type.id === id)}
