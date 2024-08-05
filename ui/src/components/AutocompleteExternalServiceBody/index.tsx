@@ -16,6 +16,7 @@ import styles from './styles.module.scss'
 
 const AutocompleteExternalServiceBody: FunctionComponent<AutocompleteExternalServiceBodyProps> = ({
   focus,
+  loadOnOpen,
   label,
   placeholder,
   variant,
@@ -50,7 +51,7 @@ const AutocompleteExternalServiceBody: FunctionComponent<AutocompleteExternalSer
     onChangeExternalService?.(type)
   }, [ onChangeExternalService ])
 
-  const externalServices = open
+  const externalServices = open || !loadOnOpen
     ? useAllExternalServices()
     : useAllExternalServicesSkip()
 
@@ -93,6 +94,7 @@ const AutocompleteExternalServiceBody: FunctionComponent<AutocompleteExternalSer
 
 export interface AutocompleteExternalServiceBodyProps extends Omit<AutocompleteProps<ExternalService, false, boolean | undefined, false>, 'onChange' | 'options' | 'renderInput'> {
   focus?: boolean
+  loadOnOpen?: boolean
   label?: string
   placeholder?: string
   variant?: TextFieldVariants

@@ -306,6 +306,7 @@ const MediumItemMetadataSourceEdit: FunctionComponent<MediumItemMetadataSourceEd
             clearOnEscape
             includeInputInList
             focus={focus && groups.length === 0}
+            loadOnOpen
             placeholder="サービスの追加..."
             disabled={loading}
             value={newExternalService}
