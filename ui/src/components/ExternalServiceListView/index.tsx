@@ -29,23 +29,14 @@ const ExternalServiceListView: FunctionComponent<ExternalServiceListViewProps> =
     creating: false,
     editing: null,
     active: initial ?? null,
+    hit: null,
+    hitInput: '',
   })
 
   const [ creating, setCreating ] = useState(false)
   const [ showingExternalService, setShowingExternalService ] = useState<ExternalService | null>(initial ?? null)
   const [ editingExternalService, setEditingExternalService ] = useState<ExternalService | null>(null)
   const [ deletingExternalService, setDeletingExternalService ] = useState<ExternalService | null>(null)
-
-  const createExternalService = useCallback(() => {
-    setCreating(true)
-    setShowingExternalService(null)
-    setEditingExternalService(null)
-    setColumn(column => ({
-      ...column,
-      creating: true,
-      editing: null,
-    }))
-  }, [])
 
   const closeCreateExternalService = useCallback(() => {
     setCreating(false)
@@ -58,17 +49,16 @@ const ExternalServiceListView: FunctionComponent<ExternalServiceListViewProps> =
     }))
   }, [ column ])
 
-  const showExternalService = useCallback((externalService: ExternalService) => {
+  const closeEditExternalService = useCallback(() => {
     setCreating(false)
-    setShowingExternalService(externalService)
+    setShowingExternalService(column.active)
     setEditingExternalService(null)
     setColumn(column => ({
       ...column,
       creating: false,
       editing: null,
-      active: externalService,
     }))
-  }, [])
+  }, [ column ])
 
   const closeShowExternalService = useCallback(() => {
     setCreating(false)
@@ -79,6 +69,21 @@ const ExternalServiceListView: FunctionComponent<ExternalServiceListViewProps> =
       creating: false,
       editing: null,
       active: null,
+    }))
+  }, [])
+
+  const closeDeleteExternalService = useCallback(() => {
+    setDeletingExternalService(null)
+  }, [])
+
+  const createExternalService = useCallback(() => {
+    setCreating(true)
+    setShowingExternalService(null)
+    setEditingExternalService(null)
+    setColumn(column => ({
+      ...column,
+      creating: true,
+      editing: null,
     }))
   }, [])
 
@@ -93,30 +98,28 @@ const ExternalServiceListView: FunctionComponent<ExternalServiceListViewProps> =
     }))
   }, [])
 
-  const closeEditExternalService = useCallback(() => {
+  const showExternalService = useCallback((externalService: ExternalService) => {
     setCreating(false)
-    setShowingExternalService(column.active)
+    setShowingExternalService(externalService)
     setEditingExternalService(null)
     setColumn(column => ({
       ...column,
       creating: false,
       editing: null,
+      active: externalService,
+      hitInput: '',
     }))
-  }, [ column ])
+  }, [])
+
+  const deleteExternalService = useCallback((externalService: ExternalService) => {
+    setDeletingExternalService(externalService)
+  }, [])
 
   const handleEditExternalService = useCallback((externalService: ExternalService) => {
     if (column.active?.id === externalService.id) {
       setShowingExternalService(externalService)
     }
   }, [ column ])
-
-  const deleteExternalService = useCallback((externalService: ExternalService) => {
-    setDeletingExternalService(externalService)
-  }, [])
-
-  const closeDeleteExternalService = useCallback(() => {
-    setDeletingExternalService(null)
-  }, [])
 
   const handleDeleteExternalService = useCallback((externalService: ExternalService) => {
     if (showingExternalService?.id == externalService.id) {
@@ -127,6 +130,23 @@ const ExternalServiceListView: FunctionComponent<ExternalServiceListViewProps> =
     }
   }, [ showingExternalService, closeEditExternalService, editingExternalService, closeShowExternalService ])
 
+  const handleHitExternalService = useCallback((hit: ExternalService | null) => {
+    closeCreateExternalService()
+    closeEditExternalService()
+
+    if (hit) {
+      showExternalService(hit)
+      setColumn(column => ({
+        ...column,
+        hitInput: hit.name,
+      }))
+    }
+  }, [ closeCreateExternalService, closeEditExternalService, showExternalService ])
+
+  const handleSelectExternalService = useCallback((externalService: ExternalService) => {
+    onSelect?.(externalService)
+  }, [ onSelect ])
+
   return (
     <Card className={clsx(styles.container, className)}>
       <Grid className={styles.wrapper} container>
@@ -136,11 +156,13 @@ const ExternalServiceListView: FunctionComponent<ExternalServiceListViewProps> =
             readonly={Boolean(readonly)}
             dense={Boolean(dense)}
             disabled={disabled}
-            onSelect={onSelect}
+            onHit={handleHitExternalService}
+            onSelect={handleSelectExternalService}
             create={createExternalService}
             show={showExternalService}
             edit={editExternalService}
             delete={deleteExternalService}
+            setColumn={setColumn}
           />
         </ExternalServiceListColumn>
         <ExternalServiceListColumn key={showingExternalService?.id ?? editingExternalService?.id ?? String(creating)} className={styles.column} xs={8} lg={9}>
@@ -153,11 +175,11 @@ const ExternalServiceListView: FunctionComponent<ExternalServiceListViewProps> =
           {editingExternalService ? (
             <ExternalServiceListColumnBodyEdit externalService={editingExternalService} close={closeEditExternalService} onEdit={handleEditExternalService} />
           ) : null}
+          {deletingExternalService ? (
+            <ExternalServiceDeleteDialog key={deletingExternalService.id} externalService={deletingExternalService} close={closeDeleteExternalService} onDelete={handleDeleteExternalService} />
+          ) : null}
         </ExternalServiceListColumn>
       </Grid>
-      {deletingExternalService ? (
-        <ExternalServiceDeleteDialog key={deletingExternalService.id} externalService={deletingExternalService} close={closeDeleteExternalService} onDelete={handleDeleteExternalService} />
-      ) : null}
     </Card>
   )
 }
