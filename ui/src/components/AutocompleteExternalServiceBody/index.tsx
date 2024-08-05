@@ -2,6 +2,7 @@
 
 import type { ComponentType, FunctionComponent, SyntheticEvent } from 'react'
 import { useCallback, useState, useTransition } from 'react'
+import clsx from 'clsx'
 import type { AutocompleteProps } from '@mui/material/Autocomplete'
 import Autocomplete from '@mui/material/Autocomplete'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -15,6 +16,7 @@ import { ExternalService } from '@/types'
 import styles from './styles.module.scss'
 
 const AutocompleteExternalServiceBody: FunctionComponent<AutocompleteExternalServiceBodyProps> = ({
+  className,
   focus,
   loadOnOpen,
   label,
@@ -58,6 +60,7 @@ const AutocompleteExternalServiceBody: FunctionComponent<AutocompleteExternalSer
   return (
     <Autocomplete
       {...props}
+      className={clsx(className, styles.autocomplete)}
       isOptionEqualToValue={(option, value) => option.id === value.id}
       getOptionLabel={option => option.name}
       getOptionKey={option => option.id}

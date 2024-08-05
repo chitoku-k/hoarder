@@ -1,6 +1,11 @@
+.autocomplete {
+  &:global(.MuiAutocomplete-root .MuiInputBase-inputSizeSmall) {
+    padding-left: 6px;
+  }
+}
+
 .icon {
   &:global(.MuiSvgIcon-root) {
-    margin-right: 6px;
     color: #666;
   }
 }
