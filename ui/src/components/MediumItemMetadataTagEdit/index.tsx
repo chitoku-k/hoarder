@@ -262,6 +262,7 @@ const MediumItemMetadataTagEdit: FunctionComponent<MediumItemMetadataTagEditProp
             clearOnEscape
             includeInputInList
             focus={focus && groups.length === 0}
+            loadOnOpen
             placeholder="タイプの追加..."
             disabled={loading}
             value={newTagType}

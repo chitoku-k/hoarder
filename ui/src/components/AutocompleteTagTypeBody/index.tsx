@@ -16,6 +16,7 @@ import styles from './styles.module.scss'
 
 const AutocompleteTagTypeBody: FunctionComponent<AutocompleteTagTypeBodyProps> = ({
   focus,
+  loadOnOpen,
   label,
   placeholder,
   variant,
@@ -50,7 +51,7 @@ const AutocompleteTagTypeBody: FunctionComponent<AutocompleteTagTypeBodyProps> =
     onChangeTagType?.(type)
   }, [ onChangeTagType ])
 
-  const tagTypes = open
+  const tagTypes = open || !loadOnOpen
     ? useAllTagTypes()
     : useAllTagTypesSkip()
 
@@ -93,6 +94,7 @@ const AutocompleteTagTypeBody: FunctionComponent<AutocompleteTagTypeBodyProps> =
 
 export interface AutocompleteTagTypeBodyProps extends Omit<AutocompleteProps<TagType, false, boolean | undefined, false>, 'onChange' | 'options' | 'renderInput'> {
   focus?: boolean
+  loadOnOpen?: boolean
   label?: string
   placeholder?: string
   variant?: TextFieldVariants
