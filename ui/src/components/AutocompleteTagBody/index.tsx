@@ -1,6 +1,6 @@
 'use client'
 
-import type { ComponentPropsWithoutRef, ComponentType, FunctionComponent, SyntheticEvent } from 'react'
+import type { ComponentType, FunctionComponent, SyntheticEvent } from 'react'
 import { useCallback, useMemo, useState, useTransition } from 'react'
 import { useCollator } from '@react-aria/i18n'
 import type { AutocompleteProps } from '@mui/material/Autocomplete'
@@ -14,7 +14,6 @@ import Tooltip from '@mui/material/Tooltip'
 import ArrowOutwardIcon from '@mui/icons-material/ArrowOutward'
 import debounce from '@mui/material/utils/debounce'
 
-import TagBreadcrumbsList from '@/components/TagBreadcrumbsList'
 import TagSelectDialog from '@/components/TagSelectDialog'
 import { Tag } from '@/types'
 import { useTagsLike, useTagsLikeSkip } from '@/hooks'
@@ -72,12 +71,6 @@ const AutocompleteTagBody: FunctionComponent<AutocompleteTagBodyProps> = ({
     setSelecting(false)
   }, [])
 
-  const renderOption = useCallback(({ key, ...props }: ComponentPropsWithoutRef<'li'>, option: Tag) => (
-    <li key={key} {...props}>
-      <TagBreadcrumbsList tag={option} />
-    </li>
-  ), [])
-
   const allTags = value.length
     ? useTagsLike({ nameOrAliasLike: value })
         .toSorted((a, b) => collator.compare(a.kana, b.kana))
@@ -100,7 +93,6 @@ const AutocompleteTagBody: FunctionComponent<AutocompleteTagBodyProps> = ({
         isOptionEqualToValue={(option, value) => option.id === value.id}
         getOptionLabel={option => option.name}
         getOptionKey={option => option.id}
-        renderOption={renderOption}
         filterOptions={x => x}
         filterSelectedOptions
         options={tags}
