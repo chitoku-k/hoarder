@@ -54,15 +54,6 @@ updates:
       - react-dom
   open-pull-requests-limit: 99
   versioning-strategy: increase
-  ignore:
-  # TODO: Update axios when `onUploadProgress` is fixed to be called on finish
-  - dependency-name: axios
-    versions:
-    - ">= 1.7.0"
-  # TODO: Update eslint when eslint-config-next supports ESLint v9
-  - dependency-name: eslint
-    versions:
-    - ">= 9.0.0"
 - package-ecosystem: docker
   directory: "/api"
   schedule:
