@@ -22,6 +22,7 @@ import styles from './styles.module.scss'
 
 const AutocompleteTagBody: FunctionComponent<AutocompleteTagBodyProps> = ({
   focus,
+  selector,
   label,
   placeholder,
   variant,
@@ -116,11 +117,13 @@ const AutocompleteTagBody: FunctionComponent<AutocompleteTagBodyProps> = ({
                 <>
                   {loading ? <CircularProgress color="inherit" size={20} /> : null}
                   {params.InputProps.endAdornment}
-                  <Tooltip title="参照..." placement="right">
-                    <IconButton size="small" disabled={disabled} onClick={openSelectDialog}>
-                      <ArrowOutwardIcon fontSize="inherit" />
-                    </IconButton>
-                  </Tooltip>
+                  {selector ? (
+                    <Tooltip title="参照..." placement="right">
+                      <IconButton size="small" disabled={disabled} onClick={openSelectDialog}>
+                        <ArrowOutwardIcon fontSize="inherit" />
+                      </IconButton>
+                    </Tooltip>
+                  ) : null}
                 </>
               ),
             }}
@@ -136,6 +139,7 @@ const AutocompleteTagBody: FunctionComponent<AutocompleteTagBodyProps> = ({
 
 export interface AutocompleteTagBodyProps extends Omit<AutocompleteProps<Tag, false, boolean | undefined, false>, 'onChange' | 'options' | 'renderInput'> {
   focus?: boolean
+  selector?: boolean
   label?: string
   placeholder?: string
   variant?: TextFieldVariants
