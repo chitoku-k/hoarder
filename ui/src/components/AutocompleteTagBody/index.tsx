@@ -3,6 +3,7 @@
 import type { ComponentType, FunctionComponent, SyntheticEvent } from 'react'
 import { useCallback, useEffect, useMemo, useState, useTransition } from 'react'
 import { useCollator } from '@react-aria/i18n'
+import clsx from 'clsx'
 import type { AutocompleteInputChangeReason, AutocompleteProps } from '@mui/material/Autocomplete'
 import Autocomplete from '@mui/material/Autocomplete'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -21,6 +22,7 @@ import { useTagsLike, useTagsLikeSkip } from '@/hooks'
 import styles from './styles.module.scss'
 
 const AutocompleteTagBody: FunctionComponent<AutocompleteTagBodyProps> = ({
+  className,
   focus,
   selector,
   label,
@@ -109,6 +111,7 @@ const AutocompleteTagBody: FunctionComponent<AutocompleteTagBodyProps> = ({
     <>
       <Autocomplete
         {...props}
+        className={clsx(className, styles.autocomplete)}
         isOptionEqualToValue={(option, value) => option.id === value.id}
         getOptionLabel={option => option.name}
         getOptionKey={option => option.id}

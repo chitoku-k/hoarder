@@ -2,6 +2,7 @@
 
 import type { ComponentType, FunctionComponent, SyntheticEvent } from 'react'
 import { useCallback, useMemo, useState, useTransition } from 'react'
+import clsx from 'clsx'
 import type { AutocompleteProps } from '@mui/material/Autocomplete'
 import Autocomplete from '@mui/material/Autocomplete'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -156,6 +157,7 @@ const buildExternalMetadata = (externalService: ExternalService, value: string):
 }
 
 const AutocompleteSourceBody: FunctionComponent<AutocompleteSourceBodyProps> = ({
+  className,
   externalService,
   focus,
   label,
@@ -206,6 +208,7 @@ const AutocompleteSourceBody: FunctionComponent<AutocompleteSourceBodyProps> = (
   return (
     <Autocomplete
       {...props}
+      className={clsx(className, styles.autocomplete)}
       isOptionEqualToValue={(option, value) => isSource(option) && isSource(value) && option.id === value.id}
       getOptionLabel={option => JSON.stringify(option.externalMetadata)}
       filterOptions={x => x}
