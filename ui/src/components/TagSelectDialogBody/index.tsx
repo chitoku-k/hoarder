@@ -32,9 +32,12 @@ const TagSelectDialogBody: FunctionComponent<TagSelectDialogBodyProps> = ({
   }, [ close, onSelect, tag ])
 
   const select = useCallback((tag: Tag | null) => {
-    startTransition(() => {
-      setTag(tag)
-    })
+    if (!tag) {
+      setTag(null)
+      return
+    }
+
+    setTag(tag)
   }, [])
 
   return (
