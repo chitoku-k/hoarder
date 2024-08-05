@@ -1,14 +1,19 @@
 'use client'
 
-import type { FunctionComponent, MouseEvent } from 'react'
+import type { ComponentPropsWithoutRef, FunctionComponent, MouseEvent, SyntheticEvent } from 'react'
 import { useCallback, useState } from 'react'
-import Button from '@mui/material/Button'
+import clsx from 'clsx'
+import type { AutocompleteInputChangeReason } from '@mui/material/Autocomplete'
 import IconButton from '@mui/material/IconButton'
 import List from '@mui/material/List'
 import Stack from '@mui/material/Stack'
+import AddIcon from '@mui/icons-material/Add'
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
+import FolderSpecialIcon from '@mui/icons-material/FolderSpecial'
+import SearchIcon from '@mui/icons-material/Search'
 
+import AutocompleteExternalService from '@/components/AutocompleteExternalService'
 import ExternalServiceListColumnBodyListItem from '@/components/ExternalServiceListColumnBodyListItem'
 import { useAllExternalServices } from '@/hooks'
 import type { ExternalService } from '@/types'
@@ -19,14 +24,18 @@ const ExternalServiceListColumnBodyList: FunctionComponent<ExternalServiceListCo
   creating,
   editing,
   active,
+  hit,
+  hitInput,
   readonly,
   dense,
   disabled: disabledExternalService,
   onSelect: onSelectExternalService,
+  onHit: onHitExternalService,
   show: showExternalService,
   create: createExternalService,
   edit: editExternalService,
   delete: deleteExternalService,
+  setColumn,
 }) => {
   const allExternalServices = useAllExternalServices()
 
@@ -51,8 +60,26 @@ const ExternalServiceListColumnBodyList: FunctionComponent<ExternalServiceListCo
 
   const handleClickExternalService = (externalService: ExternalService) => {
     onSelectExternalService?.(externalService)
+    onHitExternalService?.(externalService)
     showExternalService(externalService)
   }
+
+  const handleHitExternalService = useCallback((externalService: ExternalService | null) => {
+    onHitExternalService?.(externalService)
+  }, [ onHitExternalService ])
+
+  const handleInputHitExternalService = useCallback((_e: SyntheticEvent, value: string, reason: AutocompleteInputChangeReason) => {
+    if (!value && reason === 'input') {
+      onHitExternalService?.(null)
+    }
+    setColumn({
+      creating,
+      editing,
+      active,
+      hit,
+      hitInput: value,
+    })
+  }, [ onHitExternalService, setColumn, creating, editing, active, hit ])
 
   const handleClickCreateExternalService = useCallback(() => {
     createExternalService()
@@ -76,14 +103,50 @@ const ExternalServiceListColumnBodyList: FunctionComponent<ExternalServiceListCo
     e.stopPropagation()
   }, [])
 
+  const renderExternalServiceOption = useCallback(({ key, ...props }: ComponentPropsWithoutRef<'li'>, option: ExternalService) => (
+    <li key={key} {...props}>
+      <Stack direction="row" spacing={0.5} alignItems="start">
+        <FolderSpecialIcon className={styles.externalServiceSearchIcon} fontSize="small" />
+        <span className={styles.externalServiceSearchText}>{option.name}</span>
+      </Stack>
+    </li>
+  ), [])
+
   return (
     <Stack className={styles.container}>
-      <Stack className={styles.buttons}>
-        {!readonly ? (
-          <Button variant="outlined" onClick={handleClickCreateExternalService}>
-            新規作成
-          </Button>
-        ) : null}
+      <Stack className={clsx(styles.title, !readonly && styles.buttons)}>
+        <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between">
+          <AutocompleteExternalService
+            className={styles.externalServiceSearch}
+            size="small"
+            variant="standard"
+            fullWidth
+            autoHighlight
+            blurOnSelect
+            clearOnBlur={false}
+            clearOnEscape
+            includeInputInList
+            forcePopupIcon={false}
+            placeholder="検索"
+            renderOption={renderExternalServiceOption}
+            value={hit}
+            inputValue={hitInput}
+            icon={({ ...props }) => <SearchIcon fontSize="small" {...props} />}
+            onChange={handleHitExternalService}
+            onInputChange={handleInputHitExternalService}
+            slotProps={{
+              popper: {
+                className: styles.externalServiceSearchPopper,
+                placement: 'bottom-start',
+              },
+            }}
+          />
+          {!readonly ? (
+            <IconButton size="small" onClick={handleClickCreateExternalService}>
+              <AddIcon />
+            </IconButton>
+          ) : null}
+        </Stack>
       </Stack>
       <List ref={ref} dense={dense} className={styles.externalServices}>
         {allExternalServices.map(externalService => (
@@ -135,17 +198,21 @@ export interface ExternalServiceColumn {
   creating: boolean
   editing: ExternalService | null
   active: ExternalService | null
+  hit: ExternalService | null
+  hitInput: string
 }
 
 export interface ExternalServiceListColumnBodyListProps extends ExternalServiceColumn {
   readonly: boolean
   dense: boolean
   disabled?: (externalService: ExternalService) => boolean
+  onHit?: (externalService: ExternalService | null) => void
   onSelect?: (externalService: ExternalService) => void
   create: () => void
   show: (externalService: ExternalService) => void
   edit: (externalService: ExternalService) => void
   delete: (externalService: ExternalService) => void
+  setColumn: (column: ExternalServiceColumn) => void
 }
 
 export default ExternalServiceListColumnBodyList

@@ -4,10 +4,14 @@
   }
 }
 
-.buttons {
+.title {
   &:global(.MuiStack-root) {
     &:not(:empty) {
-      padding: 12px 16px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+      padding: 8px 16px;
+    }
+    &.buttons {
+      padding-right: 8px;
     }
   }
 }
@@ -28,5 +32,34 @@
     &:not(:hover) .externalServiceButton {
       display: none;
     }
+  }
+}
+
+.externalServiceSearch {
+  &:global(.MuiAutocomplete-root .MuiInputBase-input) {
+    font-size: 0.875rem;
+  }
+}
+
+.externalServiceSearchIcon {
+  &:global(.MuiSvgIcon-root) {
+    margin-top: 2px;
+    margin-right: 6px;
+    color: #666;
+  }
+}
+
+.externalServiceSearchText {
+  color: #666;
+}
+
+.externalServiceSearchPopper {
+  &:global(.MuiAutocomplete-popper .MuiAutocomplete-loading),
+  &:global(.MuiAutocomplete-popper .MuiAutocomplete-noOptions) {
+    display: none;
+  }
+
+  &:global(.MuiAutocomplete-popper .MuiAutocomplete-option) {
+    padding-left: 8px;
   }
 }
