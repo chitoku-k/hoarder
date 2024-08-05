@@ -29,23 +29,14 @@ const TagTypeListView: FunctionComponent<TagTypeListViewProps> = ({
     creating: false,
     editing: null,
     active: initial ?? null,
+    hit: null,
+    hitInput: '',
   })
 
   const [ creating, setCreating ] = useState(false)
   const [ showingTagType, setShowingTagType ] = useState<TagType | null>(initial ?? null)
   const [ editingTagType, setEditingTagType ] = useState<TagType | null>(null)
   const [ deletingTagType, setDeletingTagType ] = useState<TagType | null>(null)
-
-  const createTagType = useCallback(() => {
-    setCreating(true)
-    setShowingTagType(null)
-    setEditingTagType(null)
-    setColumn(column => ({
-      ...column,
-      creating: true,
-      editing: null,
-    }))
-  }, [])
 
   const closeCreateTagType = useCallback(() => {
     setCreating(false)
@@ -58,17 +49,16 @@ const TagTypeListView: FunctionComponent<TagTypeListViewProps> = ({
     }))
   }, [ column ])
 
-  const showTagType = useCallback((tagType: TagType) => {
+  const closeEditTagType = useCallback(() => {
     setCreating(false)
-    setShowingTagType(tagType)
+    setShowingTagType(column.active)
     setEditingTagType(null)
     setColumn(column => ({
       ...column,
       creating: false,
       editing: null,
-      active: tagType,
     }))
-  }, [])
+  }, [ column ])
 
   const closeShowTagType = useCallback(() => {
     setCreating(false)
@@ -79,6 +69,21 @@ const TagTypeListView: FunctionComponent<TagTypeListViewProps> = ({
       creating: false,
       editing: null,
       active: null,
+    }))
+  }, [])
+
+  const closeDeleteTagType = useCallback(() => {
+    setDeletingTagType(null)
+  }, [])
+
+  const createTagType = useCallback(() => {
+    setCreating(true)
+    setShowingTagType(null)
+    setEditingTagType(null)
+    setColumn(column => ({
+      ...column,
+      creating: true,
+      editing: null,
     }))
   }, [])
 
@@ -93,30 +98,28 @@ const TagTypeListView: FunctionComponent<TagTypeListViewProps> = ({
     }))
   }, [])
 
-  const closeEditTagType = useCallback(() => {
+  const showTagType = useCallback((tagType: TagType) => {
     setCreating(false)
-    setShowingTagType(column.active)
+    setShowingTagType(tagType)
     setEditingTagType(null)
     setColumn(column => ({
       ...column,
       creating: false,
       editing: null,
+      active: tagType,
+      hitInput: '',
     }))
-  }, [ column ])
+  }, [])
+
+  const deleteTagType = useCallback((tagType: TagType) => {
+    setDeletingTagType(tagType)
+  }, [])
 
   const handleEditTagType = useCallback((tagType: TagType) => {
     if (column.active?.id === tagType.id) {
       setShowingTagType(tagType)
     }
   }, [ column ])
-
-  const deleteTagType = useCallback((tagType: TagType) => {
-    setDeletingTagType(tagType)
-  }, [])
-
-  const closeDeleteTagType = useCallback(() => {
-    setDeletingTagType(null)
-  }, [])
 
   const handleDeleteTagType = useCallback((tagType: TagType) => {
     if (showingTagType?.id == tagType.id) {
@@ -127,6 +130,23 @@ const TagTypeListView: FunctionComponent<TagTypeListViewProps> = ({
     }
   }, [ showingTagType, closeShowTagType, editingTagType, closeEditTagType ])
 
+  const handleHitTagType = useCallback((hit: TagType | null) => {
+    closeCreateTagType()
+    closeEditTagType()
+
+    if (hit) {
+      showTagType(hit)
+      setColumn(column => ({
+        ...column,
+        hitInput: hit.name,
+      }))
+    }
+  }, [ closeCreateTagType, closeEditTagType, showTagType ])
+
+  const handleSelectTagType = useCallback((tagType: TagType) => {
+    onSelect?.(tagType)
+  }, [ onSelect ])
+
   return (
     <Card className={clsx(styles.container, className)}>
       <Grid className={styles.wrapper} container>
@@ -136,11 +156,13 @@ const TagTypeListView: FunctionComponent<TagTypeListViewProps> = ({
             readonly={Boolean(readonly)}
             dense={Boolean(dense)}
             disabled={disabled}
-            onSelect={onSelect}
+            onHit={handleHitTagType}
+            onSelect={handleSelectTagType}
             create={createTagType}
             show={showTagType}
             edit={editTagType}
             delete={deleteTagType}
+            setColumn={setColumn}
           />
         </TagTypeListColumn>
         <TagTypeListColumn key={showingTagType?.id ?? editingTagType?.id ?? String(creating)} className={styles.column} xs={8} lg={9}>
@@ -153,11 +175,11 @@ const TagTypeListView: FunctionComponent<TagTypeListViewProps> = ({
           {editingTagType ? (
             <TagTypeListColumnBodyEdit tagType={editingTagType} close={closeEditTagType} onEdit={handleEditTagType} />
           ) : null}
+          {deletingTagType ? (
+            <TagTypeDeleteDialog key={deletingTagType.id} tagType={deletingTagType} close={closeDeleteTagType} onDelete={handleDeleteTagType} />
+          ) : null}
         </TagTypeListColumn>
       </Grid>
-      {deletingTagType ? (
-        <TagTypeDeleteDialog key={deletingTagType.id} tagType={deletingTagType} close={closeDeleteTagType} onDelete={handleDeleteTagType} />
-      ) : null}
     </Card>
   )
 }
