@@ -1,9 +1,9 @@
 'use client'
 
 import type { ComponentType, FunctionComponent, SyntheticEvent } from 'react'
-import { useCallback, useMemo, useState, useTransition } from 'react'
+import { useCallback, useEffect, useMemo, useState, useTransition } from 'react'
 import { useCollator } from '@react-aria/i18n'
-import type { AutocompleteProps } from '@mui/material/Autocomplete'
+import type { AutocompleteInputChangeReason, AutocompleteProps } from '@mui/material/Autocomplete'
 import Autocomplete from '@mui/material/Autocomplete'
 import CircularProgress from '@mui/material/CircularProgress'
 import IconButton from '@mui/material/IconButton'
@@ -27,8 +27,10 @@ const AutocompleteTagBody: FunctionComponent<AutocompleteTagBodyProps> = ({
   placeholder,
   variant,
   onChange: onChangeTag,
+  onInputChange,
   disabled,
   icon: Icon,
+  inputValue,
   ...props
 }) => {
   const [ value, setValue ] = useState('')
@@ -44,9 +46,9 @@ const AutocompleteTagBody: FunctionComponent<AutocompleteTagBodyProps> = ({
     input?.focus()
   }, [ focus ])
 
-  const handleInputChange = useMemo(
+  const updateInputValue = useMemo(
     () => debounce(
-      (_e: SyntheticEvent, value: string) => {
+      (value: string) => {
         startTransition(() => {
           setValue(value)
         })
@@ -55,6 +57,22 @@ const AutocompleteTagBody: FunctionComponent<AutocompleteTagBodyProps> = ({
     ),
     [],
   )
+
+  useEffect(() => {
+    if (typeof inputValue !== 'string') {
+      return
+    }
+    if (!inputValue) {
+      setValue(inputValue)
+      return
+    }
+    updateInputValue(inputValue)
+  }, [ updateInputValue, inputValue ])
+
+  const handleInputChange = useCallback((e: SyntheticEvent, value: string, reason: AutocompleteInputChangeReason) => {
+    onInputChange?.(e, value, reason)
+    updateInputValue(value)
+  }, [ onInputChange, updateInputValue ])
 
   const handleChange = useCallback((_e: SyntheticEvent, tag: Tag | null) => {
     onChangeTag?.(tag)
@@ -78,8 +96,8 @@ const AutocompleteTagBody: FunctionComponent<AutocompleteTagBodyProps> = ({
         .flatMap(tag => [ tag, ...tag.children.map(child => ({ ...child, parent: tag })) ])
     : useTagsLikeSkip()
 
-  const tags = []
-  const ids = new Set()
+  const tags: Tag[] = []
+  const ids = new Set<string>()
   for (const tag of allTags) {
     if (!ids.has(tag.id)) {
       ids.add(tag.id)
@@ -97,6 +115,7 @@ const AutocompleteTagBody: FunctionComponent<AutocompleteTagBodyProps> = ({
         filterOptions={x => x}
         filterSelectedOptions
         options={tags}
+        inputValue={inputValue}
         disabled={disabled}
         loading={loading}
         onInputChange={handleInputChange}

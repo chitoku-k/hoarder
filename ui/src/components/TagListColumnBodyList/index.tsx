@@ -1,17 +1,23 @@
 'use client'
 
-import type { FunctionComponent, MouseEvent } from 'react'
+import type { ComponentPropsWithoutRef, FunctionComponent, MouseEvent, SyntheticEvent } from 'react'
 import { useCallback, useState, useTransition } from 'react'
 import { useListFormatter } from '@react-aria/i18n'
+import clsx from 'clsx'
+import type { AutocompleteInputChangeReason } from '@mui/material/Autocomplete'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import List from '@mui/material/List'
 import LoadingButton from '@mui/lab/LoadingButton'
 import Stack from '@mui/material/Stack'
+import AddIcon from '@mui/icons-material/Add'
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import SearchIcon from '@mui/icons-material/Search'
 
+import AutocompleteTag from '@/components/AutocompleteTag'
+import TagBreadcrumbsList from '@/components/TagBreadcrumbsList'
 import TagListColumnBodyListItem from '@/components/TagListColumnBodyListItem'
 import { useTags } from '@/hooks'
 import type { Tag } from '@/types'
@@ -22,12 +28,16 @@ const TagListColumnBodyList: FunctionComponent<TagListColumnBodyListProps> = ({
   index,
   creating,
   editing,
+  selected,
   parent,
   active,
+  hit,
+  hitInput,
   readonly,
   dense,
   selectable,
   disabled: disabledTag,
+  onHit: onHitTag,
   onSelect: onSelectTag,
   create: createTag,
   edit: editTag,
@@ -73,6 +83,8 @@ const TagListColumnBodyList: FunctionComponent<TagListColumnBodyListProps> = ({
       selected: true,
       parent,
       active: tag,
+      hit: null,
+      hitInput: '',
     })
     appendColumn({
       index: index + 1,
@@ -81,8 +93,30 @@ const TagListColumnBodyList: FunctionComponent<TagListColumnBodyListProps> = ({
       selected: true,
       parent: tag,
       active: null,
+      hit: null,
+      hitInput: '',
     })
   }
+
+  const handleHitTag = useCallback((tag: Tag | null) => {
+    onHitTag?.(tag)
+  }, [ onHitTag ])
+
+  const handleInputHitTag = useCallback((_e: SyntheticEvent, value: string, reason: AutocompleteInputChangeReason) => {
+    if (!value && reason === 'input') {
+      onHitTag?.(null)
+    }
+    setColumn({
+      index,
+      creating,
+      editing,
+      selected,
+      parent,
+      active,
+      hit: null,
+      hitInput: value,
+    })
+  }, [ onHitTag, index, creating, editing, selected, parent, active, hit ])
 
   const handleClickSelectTag = useCallback(() => {
     onSelectTag?.(parent)
@@ -133,22 +167,59 @@ const TagListColumnBodyList: FunctionComponent<TagListColumnBodyListProps> = ({
     )
   }, [ formatter ])
 
+  const renderTagOption = useCallback(({ key, ...props }: ComponentPropsWithoutRef<'li'>, option: Tag) => (
+    <li key={key} {...props}>
+      <TagBreadcrumbsList tag={option} />
+    </li>
+  ), [])
+
+  const tags = !active || children.some(({ id }) => id === active.id)
+    ? children
+    : [ ...children, active ]
+
   return (
     <Stack className={styles.container}>
-      <Stack className={styles.buttons}>
-        {selectable === 'column' ? (
-          <Button variant="outlined" onClick={handleClickSelectTag}>
-            選択
-          </Button>
-        ) : null}
-        {!readonly ? (
-          <Button variant="outlined" onClick={handleClickCreateTag}>
-            新規作成
-          </Button>
-        ) : null}
+      <Stack className={clsx(styles.title, !readonly && styles.buttons)}>
+        <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between">
+          {parent && !hit ? (
+            <Stack className={styles.name}>{parent.name}</Stack>
+          ) : (
+            <AutocompleteTag
+              className={styles.tagSearch}
+              size="small"
+              variant="standard"
+              fullWidth
+              autoHighlight
+              blurOnSelect
+              clearOnBlur={false}
+              clearOnEscape
+              includeInputInList
+              forcePopupIcon={false}
+              placeholder="検索"
+              disabled={loading}
+              renderOption={renderTagOption}
+              value={hit}
+              inputValue={hitInput}
+              icon={({ ...props }) => <SearchIcon fontSize="small" {...props} />}
+              onChange={handleHitTag}
+              onInputChange={handleInputHitTag}
+              slotProps={{
+                popper: {
+                  className: styles.tagSearchPopper,
+                  placement: 'bottom-start',
+                },
+              }}
+            />
+          )}
+          {!readonly ? (
+            <IconButton size="small" onClick={handleClickCreateTag}>
+              <AddIcon />
+            </IconButton>
+          ) : null}
+        </Stack>
       </Stack>
       <List ref={ref} dense={dense} className={styles.tags}>
-        {children.map(tag => (
+        {tags.map(tag => (
           <TagListColumnBodyListItem
             key={tag.id}
             className={styles.tag}
@@ -203,6 +274,13 @@ const TagListColumnBodyList: FunctionComponent<TagListColumnBodyListProps> = ({
           </Stack>
         ) : null}
       </List>
+      {selectable === 'column' ? (
+        <Stack className={styles.selectButtonContainer}>
+          <Button onClick={handleClickSelectTag}>
+            選択
+          </Button>
+        </Stack>
+      ) : null}
     </Stack>
   )
 }
@@ -214,6 +292,8 @@ export interface TagColumn {
   selected: boolean
   parent: Tag | null
   active: Tag | null
+  hit: Tag | null
+  hitInput: string
 }
 
 export type TagColumnSelectable = 'column' | 'tag'
@@ -223,6 +303,7 @@ export interface TagListColumnBodyListProps extends TagColumn {
   dense: boolean
   selectable?: TagColumnSelectable
   disabled?: (tag: Tag) => boolean
+  onHit?: (tag: Tag | null) => void
   onSelect?: (tag: Tag | null) => void
   create: (parent: Tag | null, columnIndex: number) => void
   edit: (tag: Tag, columnIndex: number) => void

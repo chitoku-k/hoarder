@@ -44,6 +44,8 @@ const TagListViewBody: FunctionComponent<TagListViewBodyProps> = ({
         selected: index === hierarchy.length - 1,
         parent: tag.parent ?? null,
         active: index === hierarchy.length - 1 ? null : tag,
+        hit: null,
+        hitInput: '',
       }))
     : [
       {
@@ -53,6 +55,8 @@ const TagListViewBody: FunctionComponent<TagListViewBodyProps> = ({
         selected: true,
         parent: null,
         active: null,
+        hit: null,
+        hitInput: '',
       },
     ]
 
@@ -82,6 +86,8 @@ const TagListViewBody: FunctionComponent<TagListViewBodyProps> = ({
         && column.selected === currentColumn.selected
         && column.parent === currentColumn.parent
         && column.active === currentColumn.active
+        && column.hit?.id === currentColumn.hit?.id
+        && column.hitInput === currentColumn.hitInput
         && columns.reduce((acc, c) => acc + Number(c.selected), 0) === 1
       ) {
         return columns
@@ -116,11 +122,6 @@ const TagListViewBody: FunctionComponent<TagListViewBodyProps> = ({
     })
   }, [])
 
-  const handleSelectTag = useCallback((tag: Tag | null) => {
-    onSelect?.(tag)
-    setSelectedTag(tag)
-  }, [ onSelect ])
-
   const closeCreateTag = useCallback(() => {
     const column = columns.find(c => c.creating)
     if (!column) {
@@ -137,33 +138,6 @@ const TagListViewBody: FunctionComponent<TagListViewBodyProps> = ({
     })
   }, [ columns, setColumn ])
 
-  const handleCreatingTag = useCallback(() => {
-    onSelect?.(null)
-    setSelectedTag(null)
-  }, [ onSelect ])
-
-  const handleCreateTag = useCallback((tag: Tag) => {
-    onSelect?.(tag)
-    setSelectedTag(tag)
-  }, [ onSelect ])
-
-  const editTag = useCallback((tag: Tag, columnIndex: number) => {
-    const column = columns[columnIndex]
-    if (!column) {
-      return
-    }
-
-    closeCreateTag()
-
-    setEditingTag(tag)
-    setColumn({
-      ...column,
-      creating: false,
-      editing: tag,
-      selected: false,
-    })
-  }, [ columns, closeCreateTag, setColumn ])
-
   const closeEditTag = useCallback(() => {
     const column = columns.find(c => c.editing)
     if (!column) {
@@ -178,24 +152,6 @@ const TagListViewBody: FunctionComponent<TagListViewBodyProps> = ({
       selected: true,
     })
   }, [ columns, setColumn ])
-
-  const createTag = useCallback((parent: Tag | null, columnIndex: number) => {
-    const column = columns[columnIndex]
-    if (!column) {
-      return
-    }
-
-    closeEditTag()
-
-    setCreating(true)
-    setCreatingParentTag(parent)
-    setColumn({
-      ...column,
-      creating: true,
-      editing: null,
-      selected: false,
-    })
-  }, [ columns, closeEditTag, setColumn ])
 
   const closeTag = useCallback((tag: Tag) => {
     if (creatingParentTag?.id === tag.id) {
@@ -216,14 +172,52 @@ const TagListViewBody: FunctionComponent<TagListViewBodyProps> = ({
         {
           ...column,
           selected: true,
+          active: column.active?.id !== tag.id ? column.active : null,
+          hit: column.hit?.id !== tag.id ? column.hit : null,
+          hitInput: '',
         },
       ]
     })
   }, [ creatingParentTag, editingTag, closeCreateTag, closeEditTag ])
 
-  const handleMoveTag = useCallback((tag: Tag) => {
-    closeTag(tag)
-  }, [ closeTag ])
+  const closeDeleteTag = useCallback(() => {
+    setDeletingTag(null)
+  }, [])
+
+  const createTag = useCallback((parent: Tag | null, columnIndex: number) => {
+    const column = columns[columnIndex]
+    if (!column) {
+      return
+    }
+
+    closeEditTag()
+
+    setCreating(true)
+    setCreatingParentTag(parent)
+    setColumn({
+      ...column,
+      creating: true,
+      editing: null,
+      selected: false,
+    })
+  }, [ columns, closeEditTag, setColumn ])
+
+  const editTag = useCallback((tag: Tag, columnIndex: number) => {
+    const column = columns[columnIndex]
+    if (!column) {
+      return
+    }
+
+    closeCreateTag()
+
+    setEditingTag(tag)
+    setColumn({
+      ...column,
+      creating: false,
+      editing: tag,
+      selected: false,
+    })
+  }, [ columns, closeCreateTag, setColumn ])
 
   const deleteTag = useCallback((tag: Tag, columnIndex: number) => {
     const column = columns[columnIndex]
@@ -234,18 +228,63 @@ const TagListViewBody: FunctionComponent<TagListViewBodyProps> = ({
     setDeletingTag(tag)
   }, [ columns ])
 
-  const closeDeleteTag = useCallback(() => {
-    setDeletingTag(null)
-  }, [])
+  const handleCreatingTag = useCallback(() => {
+    onSelect?.(null)
+    setSelectedTag(null)
+  }, [ onSelect ])
+
+  const handleCreateTag = useCallback((tag: Tag) => {
+    onSelect?.(tag)
+    setSelectedTag(tag)
+  }, [ onSelect ])
+
+  const handleMoveTag = useCallback((tag: Tag) => {
+    closeTag(tag)
+  }, [ closeTag ])
 
   const handleDeleteTag = useCallback((tag: Tag) => {
-    closeTag(tag)
-
     if (selectedTag?.id === tag.id) {
       onSelect?.(null)
       setSelectedTag(null)
     }
-  }, [ closeTag, selectedTag, onSelect ])
+    if (editingTag?.id === tag.id) {
+      closeEditTag()
+    }
+
+    closeTag(tag)
+  }, [ closeTag, selectedTag, editingTag, onSelect, closeEditTag ])
+
+  const handleHitTag = useCallback((hit: Tag | null) => {
+    closeCreateTag()
+    closeEditTag()
+
+    if (hit) {
+      setColumns([ ...ancestors(hit), null ]
+        .map((tag, index, hierarchy) => ({
+          index,
+          creating: false,
+          editing: null,
+          selected: index === hierarchy.length - 1,
+          parent: tag ? tag.parent ?? null : hit,
+          active: index === hierarchy.length - 1 ? null : tag,
+          hit: index === 0 ? hit : null,
+          hitInput: index === 0 ? hit.name : '',
+        })))
+    } else {
+      setColumns(initialColumns)
+    }
+  }, [ closeCreateTag, closeEditTag, setColumn, initialColumns ])
+
+  const handleSelectTag = useCallback((tag: Tag | null) => {
+    onSelect?.(tag)
+    setSelectedTag(tag)
+
+    setColumns(columns => columns.map(column => ({
+      ...column,
+      hit: null,
+      hitInput: '',
+    })))
+  }, [ onSelect ])
 
   const showsForm = creating || Boolean(editingTag)
   const shownColumns = showsForm
@@ -262,6 +301,7 @@ const TagListViewBody: FunctionComponent<TagListViewBodyProps> = ({
             readonly={Boolean(readonly)}
             dense={Boolean(dense)}
             disabled={disabled}
+            onHit={handleHitTag}
             onSelect={handleSelectTag}
             selectable={selectable}
             create={createTag}
@@ -279,10 +319,10 @@ const TagListViewBody: FunctionComponent<TagListViewBodyProps> = ({
         {editingTag ? (
           <TagListColumnBodyEdit tag={editingTag} close={closeEditTag} onMove={handleMoveTag} />
         ) : null}
+        {deletingTag ? (
+          <TagDeleteDialog key={deletingTag.id} tag={deletingTag} close={closeDeleteTag} onDelete={handleDeleteTag} />
+        ) : null}
       </TagListColumn>
-      {deletingTag ? (
-        <TagDeleteDialog key={deletingTag.id} tag={deletingTag} close={closeDeleteTag} onDelete={handleDeleteTag} />
-      ) : null}
     </Grid>
   )
 }
