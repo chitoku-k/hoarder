@@ -27,7 +27,7 @@ import type { Replica } from '@/types'
 
 import styles from './styles.module.scss'
 
-export const isReplica = (replica: Replica | ReplicaCreate): replica is Replica => 'id' in replica
+export const isReplica = (replica: Replica | ReplicaCreate) => 'id' in replica
 
 const FILE_MAX_INPUT_SIZE = 512 * 1024
 const FILE_APPEND_CONFIRM_DIALOG_THRESHOLD = 10

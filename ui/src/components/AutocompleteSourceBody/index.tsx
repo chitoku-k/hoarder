@@ -18,7 +18,7 @@ import type { ExternalService, Source } from '@/types'
 
 import styles from './styles.module.scss'
 
-export const isSource = (source: Source | SourceCreate): source is Source => 'id' in source
+export const isSource = (source: Source | SourceCreate) => 'id' in source
 
 const builders: Builder[] = [
   {
