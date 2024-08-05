@@ -1,6 +1,6 @@
 'use client'
 
-import type { FunctionComponent, SyntheticEvent } from 'react'
+import type { ComponentPropsWithoutRef, FunctionComponent, SyntheticEvent } from 'react'
 import { useCallback, useState } from 'react'
 import deepEqual from 'deep-equal'
 import Button from '@mui/material/Button'
@@ -18,6 +18,8 @@ import MediumItemMetadataSourceGroupEdit from '@/components/MediumItemMetadataSo
 import { SOURCE_METADATA_DUPLICATE, useBeforeUnload, useCreateSource, useError } from '@/hooks'
 import type { ExternalMetadataInput } from '@/hooks/types.generated'
 import type { ExternalService, Medium, Source } from '@/types'
+
+import styles from './styles.module.scss'
 
 const hasChanges = (addingExternalServices: ExternalService[], removingExternalServices: ExternalService[], addingSources: Map<ExternalServiceID, (Source | SourceCreate)[]>, removingSources: Map<ExternalServiceID, Source[]>) => {
   if (addingExternalServices.length > 0 || removingExternalServices.length > 0) {
@@ -247,6 +249,15 @@ const MediumItemMetadataSourceEdit: FunctionComponent<MediumItemMetadataSourceEd
       )
   }, [ createSource, graphQLError, save, medium, addingSources, removingSources, close ])
 
+  const renderExternalServiceOption = useCallback(({ key, ...props }: ComponentPropsWithoutRef<'li'>, option: ExternalService) => (
+    <li key={key} {...props}>
+      <Stack direction="row" spacing={0.5} alignItems="start">
+        <FolderSpecialIcon className={styles.externalServiceSearchIcon} fontSize="small" />
+        <span className={styles.externalServiceSearchText}>{option.name}</span>
+      </Stack>
+    </li>
+  ), [])
+
   const loading = sourceLoading || mediumLoading
   const changed = hasChanges(addingExternalServices, removingExternalServices, addingSources, removingSources)
   useBeforeUnload(changed)
@@ -309,6 +320,7 @@ const MediumItemMetadataSourceEdit: FunctionComponent<MediumItemMetadataSourceEd
             loadOnOpen
             placeholder="サービスの追加..."
             disabled={loading}
+            renderOption={renderExternalServiceOption}
             value={newExternalService}
             inputValue={newExternalServiceInput}
             getOptionDisabled={({ id }) => groups.some(group => group.externalService.id === id) || addingExternalServices.some(externalService => externalService.id === id)}
