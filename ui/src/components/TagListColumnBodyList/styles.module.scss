@@ -4,11 +4,28 @@
   }
 }
 
-.buttons {
+.title {
   &:global(.MuiStack-root) {
     &:not(:empty) {
-      padding: 12px 16px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+      padding: 8px 16px;
     }
+    &.buttons {
+      padding-right: 8px;
+    }
+  }
+}
+
+.name {
+  &:global(.MuiStack-root) {
+    padding: 1px 0;
+  }
+}
+
+.selectButtonContainer {
+  &:global(.MuiStack-root) {
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+    padding: 8px;
   }
 }
 
@@ -41,5 +58,22 @@
 .tagMoreButton {
   &:global(.MuiButton-root .MuiButton-endIcon) {
     margin-left: 2px;
+  }
+}
+
+.tagSearch {
+  &:global(.MuiAutocomplete-root .MuiInputBase-input) {
+    font-size: 0.875rem;
+  }
+}
+
+.tagSearchPopper {
+  &:global(.MuiAutocomplete-popper .MuiAutocomplete-loading),
+  &:global(.MuiAutocomplete-popper .MuiAutocomplete-noOptions) {
+    display: none;
+  }
+
+  &:global(.MuiAutocomplete-popper .MuiAutocomplete-option) {
+    padding-left: 8px;
   }
 }
