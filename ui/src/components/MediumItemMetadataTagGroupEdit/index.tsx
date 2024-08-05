@@ -146,6 +146,7 @@ const MediumItemMetadataTagEditGroup: FunctionComponent<MediumItemMetadataTagEdi
             clearOnEscape
             includeInputInList
             focus={focus}
+            selector
             forcePopupIcon={false}
             placeholder="タグの追加..."
             disabled={loading}
