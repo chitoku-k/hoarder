@@ -11,4 +11,5 @@ doctest = false
 workspace = true
 
 [dependencies.derive_more]
-version = "0.99.18"
+version = "1.0.0"
+features = ["constructor"]

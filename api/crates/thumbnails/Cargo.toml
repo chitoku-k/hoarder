@@ -17,7 +17,8 @@ workspace = true
 version = "0.7.5"
 
 [dependencies.derive_more]
-version = "0.99.18"
+version = "1.0.0"
+features = ["constructor"]
 
 [dependencies.image]
 version = "0.25.2"
