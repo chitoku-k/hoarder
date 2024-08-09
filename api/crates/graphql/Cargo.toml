@@ -34,7 +34,8 @@ features = ["clock", "serde", "std"]
 default-features = false
 
 [dependencies.derive_more]
-version = "0.99.18"
+version = "1.0.0"
+features = ["constructor"]
 
 [dependencies.futures]
 version = "0.3.30"

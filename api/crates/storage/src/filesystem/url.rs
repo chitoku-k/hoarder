@@ -8,7 +8,7 @@ use normalize_path::NormalizePath;
 use crate::StorageEntryUrl;
 
 #[derive(Display)]
-#[display(fmt = "{_0}")]
+#[display("{_0}")]
 pub(crate) struct FilesystemEntryUrl(EntryUrl, PathBuf);
 
 impl FilesystemEntryUrl {
