@@ -8,7 +8,7 @@ export PGPASSWORD=hoarder_test
 echo -n 'starting postgres ... ' >&2
 pushd "$(git rev-parse --show-toplevel)" &> /dev/null
 
-POSTGRES_IMAGE="${POSTGRES_IMAGE:-postgres:16.2}"
+POSTGRES_IMAGE="${POSTGRES_IMAGE:-postgres:16.3}"
 POSTGRES_OPTIONS=(
     -c fsync=off
     -c full_page_writes=off
