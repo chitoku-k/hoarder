@@ -10,7 +10,7 @@ use sqlx_migrator::migrator::{Migrate, Plan};
 use test_context::AsyncTestContext;
 use uuid::Uuid;
 
-static FIXTURES: Dir = include_dir!("crates/postgres/tests/fixtures");
+static FIXTURES: Dir = include_dir!("$CARGO_MANIFEST_DIR/tests/fixtures");
 
 type BoxDynError = Box<dyn Error + Send + Sync + 'static>;
 
