@@ -40,7 +40,7 @@ async fn setup_database(pool: &PgPool) -> Result<(), BoxDynError> {
     let mut conn = pool.acquire().await?;
 
     let migrator = Migrator::new().into_boxed_migrator();
-    migrator.run(&mut conn, &Plan::apply_all()).await?;
+    migrator.run(&mut *conn, &Plan::apply_all()).await?;
 
     for file in FIXTURES.files() {
         let sql = file.contents_utf8().ok_or("invalid fixture")?;
