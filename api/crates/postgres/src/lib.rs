@@ -82,7 +82,7 @@ macro_rules! sea_query_uuid_value {
             }
 
             impl Encode<'_, postgres::Postgres> for $newtype {
-                fn encode_by_ref(&self, buf: &mut PgArgumentBuffer) -> IsNull {
+                fn encode_by_ref(&self, buf: &mut PgArgumentBuffer) -> Result<IsNull, BoxDynError> {
                     <Uuid as Encode<'_, postgres::Postgres>>::encode_by_ref(&*self.0, buf)
                 }
             }
