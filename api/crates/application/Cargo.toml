@@ -34,7 +34,7 @@ optional = true
 version = "6.1.1"
 
 [dependencies.serde]
-version = "1.0.205"
+version = "1.0.208"
 
 [dependencies.thiserror]
 version = "1.0.63"
