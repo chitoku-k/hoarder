@@ -40,7 +40,7 @@ version = "1.0.208"
 version = "1.0.63"
 
 [dependencies.tokio]
-version = "1.39.2"
+version = "1.39.3"
 features = ["macros", "net", "process", "rt-multi-thread", "signal"]
 
 [dev-dependencies.futures]
