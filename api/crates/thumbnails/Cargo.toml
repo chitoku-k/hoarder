@@ -27,5 +27,5 @@ version = "0.25.2"
 version = "0.5.5"
 
 [dependencies.tokio]
-version = "1.39.2"
+version = "1.39.3"
 features = ["rt-multi-thread"]
