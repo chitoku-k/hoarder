@@ -1,0 +1,50 @@
+name: Bump Workflow
+on:
+  workflow_dispatch:
+    inputs:
+      strategy:
+        type: choice
+        description: The strategy to bump the version number
+        required: true
+        default: patch
+        options:
+          - major
+          - minor
+          - patch
+
+jobs:
+  bump:
+    name: Bump
+    runs-on: ubuntu-latest
+    env:
+      GIT_AUTHOR_NAME: 'github-actions[bot]'
+      GIT_AUTHOR_EMAIL: '41898282+github-actions[bot]@users.noreply.github.com'
+      GIT_COMMITTER_NAME: 'github-actions[bot]'
+      GIT_COMMITTER_EMAIL: '41898282+github-actions[bot]@users.noreply.github.com'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PAT }}
+      - name: Install cargo-edit
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-edit
+      - name: Bump api version
+        working-directory: api
+        run: |
+          cargo set-version --bump="${{ inputs.strategy }}" --package=hoarder
+          git add Cargo.{lock,toml}
+      - name: Install yarn
+        working-directory: ui
+        run: |
+          corepack enable
+      - name: Bump ui version
+        working-directory: ui
+        run: |
+          yarn version "${{ inputs.strategy }}"
+          git add package.json
+      - name: Commit and push
+        run: |
+          git commit --message="Bump to v$(jq -r .version ui/package.json)"
+          git push origin HEAD
