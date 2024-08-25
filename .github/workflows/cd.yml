@@ -58,7 +58,7 @@ jobs:
       - name: Update images
         run: |
           kubectl set image deployment/hoarder-api \
-            migration=ghcr.io/chitoku-k/hoarder/api:${{ github.ref_name }}
+            migration=ghcr.io/chitoku-k/hoarder/api:${{ github.ref_name }} \
             api=ghcr.io/chitoku-k/hoarder/api:${{ github.ref_name }}
 
           kubectl set image deployment/hoarder-ui \
