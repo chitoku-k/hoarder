@@ -1,10 +1,17 @@
+variable "TAG" {
+    default = "latest"
+}
+
 group "default" {
     targets = ["api", "ui"]
 }
 
 target "api" {
     context = "./api"
-    tags = ["container.chitoku.jp/chitoku-k/hoarder/api"]
+    tags = [
+        "ghcr.io/chitoku-k/hoarder/api:latest",
+        "ghcr.io/chitoku-k/hoarder/api:${TAG}",
+    ]
 }
 
 target "ui" {
@@ -12,5 +19,8 @@ target "ui" {
     contexts = {
         schema = "./schema"
     }
-    tags = ["container.chitoku.jp/chitoku-k/hoarder/ui"]
+    tags = [
+        "ghcr.io/chitoku-k/hoarder/ui:latest",
+        "ghcr.io/chitoku-k/hoarder/ui:${TAG}",
+    ]
 }
