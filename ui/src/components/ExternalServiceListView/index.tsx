@@ -4,7 +4,7 @@ import type { FunctionComponent } from 'react'
 import { useCallback, useState } from 'react'
 import clsx from 'clsx'
 import Card from '@mui/material/Card'
-import Grid from '@mui/material/Unstable_Grid2'
+import Grid from '@mui/material/Grid2'
 
 import type { ExternalServiceColumn } from '@/components/ExternalServiceListColumn'
 import ExternalServiceDeleteDialog from '@/components/ExternalServiceDeleteDialog'
@@ -150,7 +150,7 @@ const ExternalServiceListView: FunctionComponent<ExternalServiceListViewProps> =
   return (
     <Card className={clsx(styles.container, className)}>
       <Grid className={styles.wrapper} container>
-        <ExternalServiceListColumn className={clsx(styles.column, styles.listColumn)} xs={4} lg={3}>
+        <ExternalServiceListColumn className={clsx(styles.column, styles.listColumn)} size={{ xs: 4, lg: 3 }}>
           <ExternalServiceListColumnBodyList
             {...column}
             readonly={Boolean(readonly)}
@@ -165,7 +165,7 @@ const ExternalServiceListView: FunctionComponent<ExternalServiceListViewProps> =
             setColumn={setColumn}
           />
         </ExternalServiceListColumn>
-        <ExternalServiceListColumn key={showingExternalService?.id ?? editingExternalService?.id ?? String(creating)} className={styles.column} xs={8} lg={9}>
+        <ExternalServiceListColumn key={showingExternalService?.id ?? editingExternalService?.id ?? String(creating)} className={styles.column} size={{ xs: 8, lg: 9 }}>
           {showingExternalService ? (
             <ExternalServiceListColumnBodyShow externalService={showingExternalService} edit={editExternalService} />
           ) : null}

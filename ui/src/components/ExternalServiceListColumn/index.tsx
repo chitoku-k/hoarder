@@ -3,8 +3,8 @@
 import type { FunctionComponent, ReactNode } from 'react'
 import { Suspense } from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
-import type { GridDefaultBreakpoints } from '@mui/system/Unstable_Grid'
-import Grid from '@mui/material/Unstable_Grid2'
+import type { Grid2Props } from '@mui/material/Grid2'
+import Grid from '@mui/material/Grid2'
 
 import ExternalServiceListColumnError from '@/components/ExternalServiceListColumnError'
 import ExternalServiceListColumnLoading from '@/components/ExternalServiceListColumnLoading'
@@ -23,7 +23,7 @@ const ExternalServiceListColumn: FunctionComponent<ExternalServiceListColumnProp
   </Grid>
 )
 
-export interface ExternalServiceListColumnProps extends GridDefaultBreakpoints {
+export interface ExternalServiceListColumnProps extends Grid2Props {
   className?: string
   children?: ReactNode
 }

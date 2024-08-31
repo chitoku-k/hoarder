@@ -3,8 +3,8 @@
 import type { FunctionComponent, ReactNode } from 'react'
 import { Suspense, useCallback } from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
-import type { GridDefaultBreakpoints } from '@mui/system/Unstable_Grid'
-import Grid from '@mui/material/Unstable_Grid2'
+import type { Grid2Props } from '@mui/material/Grid2'
+import Grid from '@mui/material/Grid2'
 
 import TagListColumnError from '@/components/TagListColumnError'
 import TagListColumnLoading from '@/components/TagListColumnLoading'
@@ -53,7 +53,7 @@ const TagListColumn: FunctionComponent<TagListColumnProps> = ({
   )
 }
 
-export interface TagListColumnProps extends GridDefaultBreakpoints {
+export interface TagListColumnProps extends Grid2Props {
   className?: string
   focus?: boolean
   children?: ReactNode

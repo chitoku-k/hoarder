@@ -1,6 +1,6 @@
 import type { FunctionComponent, ReactNode } from 'react'
 import type { Metadata } from 'next'
-import Grid from '@mui/material/Unstable_Grid2'
+import Grid from '@mui/material/Grid2'
 
 import Header from '@/components/Header'
 import ApolloWrapper from '@/components/ApolloWrapper'
@@ -27,10 +27,10 @@ const RootLayout: FunctionComponent<RootLayoutProps> = ({
         <ApolloWrapper>
           <ThemeRegistry>
             <Grid container>
-              <Grid xs={12}>
+              <Grid size={12}>
                 <Header />
               </Grid>
-              <Grid xs={12}>
+              <Grid size={12}>
                 {children}
               </Grid>
             </Grid>

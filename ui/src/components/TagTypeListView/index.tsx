@@ -4,7 +4,7 @@ import type { FunctionComponent } from 'react'
 import { useCallback, useState } from 'react'
 import clsx from 'clsx'
 import Card from '@mui/material/Card'
-import Grid from '@mui/material/Unstable_Grid2'
+import Grid from '@mui/material/Grid2'
 
 import type { TagTypeColumn } from '@/components/TagTypeListColumn'
 import TagTypeDeleteDialog from '@/components/TagTypeDeleteDialog'
@@ -150,7 +150,7 @@ const TagTypeListView: FunctionComponent<TagTypeListViewProps> = ({
   return (
     <Card className={clsx(styles.container, className)}>
       <Grid className={styles.wrapper} container>
-        <TagTypeListColumn className={clsx(styles.column, styles.listColumn)} xs={4} lg={3}>
+        <TagTypeListColumn className={clsx(styles.column, styles.listColumn)} size={{ xs: 4, lg: 3 }}>
           <TagTypeListColumnBodyList
             {...column}
             readonly={Boolean(readonly)}
@@ -165,7 +165,7 @@ const TagTypeListView: FunctionComponent<TagTypeListViewProps> = ({
             setColumn={setColumn}
           />
         </TagTypeListColumn>
-        <TagTypeListColumn key={showingTagType?.id ?? editingTagType?.id ?? String(creating)} className={styles.column} xs={8} lg={9}>
+        <TagTypeListColumn key={showingTagType?.id ?? editingTagType?.id ?? String(creating)} className={styles.column} size={{ xs: 8, lg: 9 }}>
           {showingTagType ? (
             <TagTypeListColumnBodyShow tagType={showingTagType} edit={editTagType} />
           ) : null}
