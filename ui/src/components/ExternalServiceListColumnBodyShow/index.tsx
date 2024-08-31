@@ -26,8 +26,10 @@ const ExternalServiceListColumnBodyShow: FunctionComponent<ExternalServiceListCo
           label="タイトル"
           value={externalService.name}
           onDoubleClick={handleClickEdit}
-          inputProps={{
-            readOnly: true,
+          slotProps={{
+            htmlInput: {
+              readOnly: true,
+            },
           }}
         />
         <TextField
@@ -35,8 +37,10 @@ const ExternalServiceListColumnBodyShow: FunctionComponent<ExternalServiceListCo
           label="スラッグ"
           value={externalService.slug}
           onDoubleClick={handleClickEdit}
-          inputProps={{
-            readOnly: true,
+          slotProps={{
+            htmlInput: {
+              readOnly: true,
+            },
           }}
         />
         <TextField
@@ -44,8 +48,10 @@ const ExternalServiceListColumnBodyShow: FunctionComponent<ExternalServiceListCo
           label="種別（変更不可）"
           value={externalService.kind}
           onDoubleClick={handleClickEdit}
-          inputProps={{
-            readOnly: true,
+          slotProps={{
+            htmlInput: {
+              readOnly: true,
+            },
           }}
         />
         <TextField
@@ -53,8 +59,10 @@ const ExternalServiceListColumnBodyShow: FunctionComponent<ExternalServiceListCo
           label="ベース URL"
           value={externalService.baseUrl}
           onDoubleClick={handleClickEdit}
-          inputProps={{
-            readOnly: true,
+          slotProps={{
+            htmlInput: {
+              readOnly: true,
+            },
           }}
         />
       </Stack>
