@@ -3,7 +3,7 @@
 import type { ChangeEvent, FunctionComponent } from 'react'
 import { useCallback } from 'react'
 import LinearProgress from '@mui/material/LinearProgress'
-import Stack from '@mui/system/Stack'
+import Stack from '@mui/material/Stack'
 import TableCell from '@mui/material/TableCell'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
