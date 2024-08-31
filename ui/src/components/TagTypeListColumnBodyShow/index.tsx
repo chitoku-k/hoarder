@@ -26,8 +26,10 @@ const TagTypeListColumnBodyShow: FunctionComponent<TagTypeListColumnBodyShowProp
           label="タイトル"
           value={tagType.name}
           onDoubleClick={handleClickEdit}
-          inputProps={{
-            readOnly: true,
+          slotProps={{
+            htmlInput: {
+              readOnly: true,
+            },
           }}
         />
         <TextField

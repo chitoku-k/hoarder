@@ -77,17 +77,19 @@ const AutocompleteExternalServiceBody: FunctionComponent<AutocompleteExternalSer
           placeholder={placeholder}
           variant={variant}
           inputRef={ref}
-          InputProps={{
-            ...params.InputProps,
-            startAdornment: Icon ? (
-              <Icon className={styles.icon} fontSize="small" />
-            ) : null,
-            endAdornment: (
-              <>
-                {loading ? <CircularProgress color="inherit" size={20} /> : null}
-                {params.InputProps.endAdornment}
-              </>
-            ),
+          slotProps={{
+            input: {
+              ...params.InputProps,
+              startAdornment: Icon ? (
+                <Icon className={styles.icon} fontSize="small" />
+              ) : null,
+              endAdornment: (
+                <>
+                  {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                  {params.InputProps.endAdornment}
+                </>
+              ),
+            },
           }}
         />
       )}

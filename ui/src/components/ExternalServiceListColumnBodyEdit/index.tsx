@@ -97,9 +97,11 @@ const ExternalServiceListColumnBodyEdit: FunctionComponent<ExternalServiceListCo
           label="種別（変更不可）"
           disabled={loading}
           value={externalService.kind}
-          inputProps={{
-            readOnly: true,
-            tabIndex: -1,
+          slotProps={{
+            htmlInput: {
+              readOnly: true,
+              tabIndex: -1,
+            },
           }}
         />
         <TextField
