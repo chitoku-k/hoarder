@@ -298,7 +298,7 @@ const MediumCreateView: FunctionComponent = () => {
 
   return (
     <Grid className={styles.container} container spacing={4}>
-      <Grid className={styles.imageContainer} size={9}>
+      <Grid size={9}>
         {!medium || editingSummary ? (
           <MediumItemImageEdit
             className={styles.imageList}
