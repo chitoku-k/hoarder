@@ -262,7 +262,7 @@ const MediumItemViewBody: FunctionComponent<MediumItemViewBodyProps> = ({
 
   return (
     <Grid className={styles.container} container spacing={4}>
-      <Grid className={styles.imageContainer} size={9}>
+      <Grid size={9}>
         {editingSummary ? (
           <MediumItemImageEdit
             className={styles.imageList}
