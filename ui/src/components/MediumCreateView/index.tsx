@@ -4,7 +4,7 @@ import type { FunctionComponent } from 'react'
 import { useCallback, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Divider from '@mui/material/Divider'
-import Grid from '@mui/material/Unstable_Grid2'
+import Grid from '@mui/material/Grid2'
 import Portal from '@mui/material/Portal'
 import Snackbar from '@mui/material/Snackbar'
 import Stack from '@mui/material/Stack'
@@ -298,7 +298,7 @@ const MediumCreateView: FunctionComponent = () => {
 
   return (
     <Grid className={styles.container} container spacing={4}>
-      <Grid className={styles.imageContainer} xs={9}>
+      <Grid className={styles.imageContainer} size={9}>
         {!medium || editingSummary ? (
           <MediumItemImageEdit
             className={styles.imageList}
@@ -317,7 +317,7 @@ const MediumCreateView: FunctionComponent = () => {
           />
         )}
       </Grid>
-      <Grid className={styles.metadataContainer} xs={3}>
+      <Grid className={styles.metadataContainer} size={3}>
         <Stack className={styles.metadataList} divider={<Divider />} spacing={4}>
           {!medium ? (
             <MediumItemMetadataSummaryCreate loading={loading} save={save} />

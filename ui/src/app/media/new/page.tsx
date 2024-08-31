@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 }
 
 const Page: FunctionComponent = () => (
-  <Content xs={12}>
+  <Content size={12}>
     <MediumCreate />
   </Content>
 )

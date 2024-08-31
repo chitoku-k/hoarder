@@ -13,7 +13,7 @@ const Page: FunctionComponent<PageProps> = ({
     id,
   },
 }) => (
-  <Content xs={12}>
+  <Content size={12}>
     <MediumItem id={id} />
   </Content>
 )

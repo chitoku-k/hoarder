@@ -3,7 +3,7 @@
 import type { FunctionComponent } from 'react'
 import { useCallback, useState } from 'react'
 import clsx from 'clsx'
-import Grid from '@mui/material/Unstable_Grid2'
+import Grid from '@mui/material/Grid2'
 
 import TagDeleteDialog from '@/components/TagDeleteDialog'
 import type { TagColumn, TagColumnSelectable } from '@/components/TagListColumn'
@@ -294,7 +294,7 @@ const TagListViewBody: FunctionComponent<TagListViewBodyProps> = ({
   return (
     <Grid className={styles.wrapper} container>
       {shownColumns.map(column => (
-        <TagListColumn key={column.index} className={clsx(styles.column, styles.listColumn)} xs={4} lg={3} focus={column.selected}>
+        <TagListColumn key={column.index} className={clsx(styles.column, styles.listColumn)} size={{ xs: 4, lg: 3 }} focus={column.selected}>
           <TagListColumnBodyList
             key={shownColumns[column.index - 1]?.active?.id}
             {...column}
@@ -312,7 +312,7 @@ const TagListViewBody: FunctionComponent<TagListViewBodyProps> = ({
           />
         </TagListColumn>
       ))}
-      <TagListColumn key={creatingParentTag?.id ?? editingTag?.id} className={styles.column} xs={8} lg={9} focus={showsForm}>
+      <TagListColumn key={creatingParentTag?.id ?? editingTag?.id} className={styles.column} size={{ xs: 8, lg: 9 }} focus={showsForm}>
         {creating ? (
           <TagListColumnBodyCreate parent={creatingParentTag} close={closeCreateTag} onCreating={handleCreatingTag} onCreate={handleCreateTag} />
         ) : null}

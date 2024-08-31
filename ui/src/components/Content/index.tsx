@@ -1,6 +1,6 @@
 import type { FunctionComponent, ReactNode } from 'react'
-import type { GridDefaultBreakpoints } from '@mui/system'
-import Grid from '@mui/material/Unstable_Grid2'
+import type { Grid2Props } from '@mui/material/Grid2'
+import Grid from '@mui/material/Grid2'
 import Toolbar from '@mui/material/Toolbar'
 
 import styles from './styles.module.scss'
@@ -19,7 +19,7 @@ const Content: FunctionComponent<ContentProps> = ({
   </Grid>
 )
 
-export interface ContentProps extends GridDefaultBreakpoints {
+export interface ContentProps extends Grid2Props {
   children: ReactNode
 }
 
