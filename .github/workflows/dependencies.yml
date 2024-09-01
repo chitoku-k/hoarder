@@ -10,5 +10,4 @@ jobs:
     with:
       directory: /ui
     secrets:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      PAT: ${{ secrets.PAT }}
+      GH_TOKEN: ${{ secrets.PAT }}

@@ -8,8 +8,6 @@ on:
     secrets:
       GH_TOKEN:
         required: true
-      PAT:
-        required: true
 
 jobs:
   update:
@@ -26,7 +24,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.PAT }}
+          token: ${{ secrets.GH_TOKEN }}
       - name: Enable Corepack
         run: |
           corepack enable
