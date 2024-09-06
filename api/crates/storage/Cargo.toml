@@ -32,7 +32,7 @@ version = "1.40.0"
 features = ["fs", "io-util", "rt-multi-thread"]
 
 [dependencies.tokio-stream]
-version = "0.1.15"
+version = "0.1.16"
 features = ["fs"]
 
 [target.'cfg(unix)'.dependencies.libc]
