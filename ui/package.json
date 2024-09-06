@@ -46,7 +46,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-error-boundary": "^4.0.13",
-    "react-virtuoso": "^4.10.1",
+    "react-virtuoso": "^4.10.2",
     "sass": "^1.78.0",
     "sharp": "^0.33.5",
     "strict-uri-encode": "^2.0.0",
