@@ -29,15 +29,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/client-react-streaming@npm:0.11.2":
-  version: 0.11.2
-  resolution: "@apollo/client-react-streaming@npm:0.11.2"
+"@apollo/client-react-streaming@npm:0.11.3":
+  version: 0.11.3
+  resolution: "@apollo/client-react-streaming@npm:0.11.3"
   dependencies:
     ts-invariant: "npm:^0.10.3"
   peerDependencies:
     "@apollo/client": ^3.10.4
     react: ^18
-  checksum: 10/cfd5cf18416359e1cf79471d9609e9c1ceddb156a4887f1db60079f0bea36e256c416d2cd7cc1e1f5bdda76296b1c818600d2a468236fe22b7c26f60d3d287dc
+  checksum: 10/dea2f847b3552962d753e979ffc0745488f48e52063b73f026d37237e9e25e17b803e1238fd051661880be55d7446aaf3f312f8a5cd74cdcadf40e0ef01fa555
   languageName: node
   linkType: hard
 
@@ -78,16 +78,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/experimental-nextjs-app-support@npm:^0.11.2":
-  version: 0.11.2
-  resolution: "@apollo/experimental-nextjs-app-support@npm:0.11.2"
+"@apollo/experimental-nextjs-app-support@npm:^0.11.3":
+  version: 0.11.3
+  resolution: "@apollo/experimental-nextjs-app-support@npm:0.11.3"
   dependencies:
-    "@apollo/client-react-streaming": "npm:0.11.2"
+    "@apollo/client-react-streaming": "npm:0.11.3"
   peerDependencies:
     "@apollo/client": ^3.10.4
     next: ^13.4.1 || ^14.0.0 || 15.0.0-rc.0
     react: ^18
-  checksum: 10/c243ca09b6b8ecff785128d7e45f735bfc0a6b99f044c9c0851c6799c12e67a61f4e13fc29c86ca0843b52643d40ff57da4596e820d21a6a3782e123749b302c
+  checksum: 10/1da58f6666ab0b28c7c973fa4995fe346daf25ee53cfea15f474576825710200f4a3e9d4bc7584be2ff355029e89515b0ab47a8f02ecc671ec92d3ea8bd04760
   languageName: node
   linkType: hard
 
@@ -5599,7 +5599,7 @@ __metadata:
   resolution: "hoarder-ui@workspace:."
   dependencies:
     "@apollo/client": "npm:^3.11.5"
-    "@apollo/experimental-nextjs-app-support": "npm:^0.11.2"
+    "@apollo/experimental-nextjs-app-support": "npm:^0.11.3"
     "@emotion/cache": "npm:^11.13.1"
     "@emotion/react": "npm:^11.13.3"
     "@emotion/styled": "npm:^11.13.0"
