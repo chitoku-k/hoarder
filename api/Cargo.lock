@@ -221,7 +221,7 @@ dependencies = [
  "futures-util",
  "handlebars",
  "http",
- "indexmap 2.4.0",
+ "indexmap 2.5.0",
  "mime",
  "multer",
  "num-traits",
@@ -291,7 +291,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3b0206011cad065420c27988f17dd7fe201a0e056b20c262209b7bffcd6fa176"
 dependencies = [
  "bytes",
- "indexmap 2.4.0",
+ "indexmap 2.5.0",
  "serde",
  "serde_json",
 ]
@@ -1383,7 +1383,7 @@ dependencies = [
  "futures-sink",
  "futures-util",
  "http",
- "indexmap 2.4.0",
+ "indexmap 2.5.0",
  "slab",
  "tokio",
  "tokio-util",
@@ -1853,9 +1853,9 @@ dependencies = [
 
 [[package]]
 name = "indexmap"
-version = "2.4.0"
+version = "2.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "93ead53efc7ea8ed3cfb0c79fc8023fbb782a5432b52830b6518941cebe6505c"
+checksum = "68b900aa2f7301e21c36462b170ee99994de34dff39a4a6a528e80e7376d07e5"
 dependencies = [
  "equivalent",
  "hashbrown 0.14.5",
@@ -2697,7 +2697,7 @@ dependencies = [
  "domain",
  "futures",
  "include_dir",
- "indexmap 2.4.0",
+ "indexmap 2.5.0",
  "log",
  "pretty_assertions",
  "sea-query",
@@ -3274,7 +3274,7 @@ dependencies = [
  "chrono",
  "hex",
  "indexmap 1.9.3",
- "indexmap 2.4.0",
+ "indexmap 2.5.0",
  "serde",
  "serde_derive",
  "serde_json",
@@ -3474,7 +3474,7 @@ dependencies = [
  "hashbrown 0.14.5",
  "hashlink",
  "hex",
- "indexmap 2.4.0",
+ "indexmap 2.5.0",
  "log",
  "memchr",
  "native-tls",
@@ -4043,7 +4043,7 @@ version = "0.21.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6a8534fd7f78b5405e860340ad6575217ce99f38d4d5c8f2442cb5ecb50090e1"
 dependencies = [
- "indexmap 2.4.0",
+ "indexmap 2.5.0",
  "toml_datetime",
  "winnow 0.5.0",
 ]
@@ -4054,7 +4054,7 @@ version = "0.22.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "18769cd1cec395d70860ceb4d932812a0b4d06b1a4bb336745a4d21b9496e992"
 dependencies = [
- "indexmap 2.4.0",
+ "indexmap 2.5.0",
  "serde",
  "serde_spanned",
  "toml_datetime",
