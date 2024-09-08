@@ -11,6 +11,9 @@
     "lint": "next lint",
     "codegen": "graphql-codegen --config=codegen.ts"
   },
+  "resolutions": {
+    "@types/apollo-upload-client/@apollo/client": "*"
+  },
   "dependencies": {
     "@apollo/client": "^3.11.8",
     "@apollo/experimental-nextjs-app-support": "^0.11.3",
