@@ -41,7 +41,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/client@npm:^3.11.8, @apollo/client@npm:^3.8.0":
+"@apollo/client@npm:*, @apollo/client@npm:^3.11.8":
   version: 3.11.8
   resolution: "@apollo/client@npm:3.11.8"
   dependencies:
