@@ -30,7 +30,7 @@ optional = true
 version = "2.3.1"
 
 [dependencies.serde]
-version = "1.0.209"
+version = "1.0.210"
 features = ["derive"]
 
 [dependencies.thiserror]
