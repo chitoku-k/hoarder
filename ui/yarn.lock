@@ -1022,10 +1022,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fontsource/roboto@npm:^5.0.14":
-  version: 5.0.14
-  resolution: "@fontsource/roboto@npm:5.0.14"
-  checksum: 10/3feff6b8fa0b423b74776f772151ab5b4f0e0cdec002df5f6990e6fa1df65fd43fceea4cdd26ae85f8001daa60faee87bc7c38fab8f331c198d9ec27398874e1
+"@fontsource/roboto@npm:^5.1.0":
+  version: 5.1.0
+  resolution: "@fontsource/roboto@npm:5.1.0"
+  checksum: 10/a6fb7d4a4605bead714b7e9151912bc7a7577ce8c2cd7e4e725d1ab38d6c5e654f61f38c62cb122504c20f63114a76081fedd532520a4d769e1271d432b61636
   languageName: node
   linkType: hard
 
@@ -5786,7 +5786,7 @@ __metadata:
     "@emotion/cache": "npm:^11.13.1"
     "@emotion/react": "npm:^11.13.3"
     "@emotion/styled": "npm:^11.13.0"
-    "@fontsource/roboto": "npm:^5.0.14"
+    "@fontsource/roboto": "npm:^5.1.0"
     "@graphql-codegen/cli": "npm:^5.0.2"
     "@graphql-codegen/near-operation-file-preset": "npm:^3.0.0"
     "@graphql-codegen/typed-document-node": "npm:^5.0.9"
