@@ -22,7 +22,7 @@ default-features = false
 version = "7.0.9"
 
 [dependencies.axum]
-version = "0.7.5"
+version = "0.7.6"
 features = ["default", "http2"]
 
 [dependencies.base64]
