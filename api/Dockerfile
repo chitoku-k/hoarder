@@ -3,7 +3,7 @@ FROM rust:1.81.0-bookworm AS base
 WORKDIR /usr/src
 COPY . ./
 
-FROM base AS development
+FROM base AS debug
 RUN --mount=type=cache,id=api:/usr/local/cargo/registry,target=/usr/local/cargo/registry \
     --mount=type=cache,id=api:/usr/src/target,target=/usr/src/target \
     cargo build && \
