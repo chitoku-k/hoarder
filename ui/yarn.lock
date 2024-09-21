@@ -760,6 +760,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@date-fns/tz@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "@date-fns/tz@npm:1.0.2"
+  checksum: 10/6a4bf2a9d7c265a2cd471da510e7201adc00c37a9b59de933f4b9a2f688838ff14b6ba5229505dd8a3a55c6a6609c744724eb0bf887243e3f4912cabc0b6b96b
+  languageName: node
+  linkType: hard
+
 "@emnapi/runtime@npm:^1.2.0":
   version: 1.2.0
   resolution: "@emnapi/runtime@npm:1.2.0"
@@ -4345,15 +4352,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns-tz@npm:^3.1.3":
-  version: 3.1.3
-  resolution: "date-fns-tz@npm:3.1.3"
-  peerDependencies:
-    date-fns: ^3.0.0
-  checksum: 10/eb5cb3b2cd152340004efda9f7905e571cf5140b8e85267b1eaa36c2f1eaa54a0f2e3b26e19794f2aca4d3b15aa3d52a5b2dadb540fcec74b239049c7792a981
-  languageName: node
-  linkType: hard
-
 "date-fns@npm:^4.1.0":
   version: 4.1.0
   resolution: "date-fns@npm:4.1.0"
@@ -5736,6 +5734,7 @@ __metadata:
   dependencies:
     "@apollo/client": "npm:^3.11.8"
     "@apollo/experimental-nextjs-app-support": "npm:^0.11.3"
+    "@date-fns/tz": "npm:^1.0.2"
     "@emotion/cache": "npm:^11.13.1"
     "@emotion/react": "npm:^11.13.3"
     "@emotion/styled": "npm:^11.13.0"
@@ -5766,7 +5765,6 @@ __metadata:
     axios: "npm:^1.7.7"
     clsx: "npm:^2.1.1"
     date-fns: "npm:^4.1.0"
-    date-fns-tz: "npm:^3.1.3"
     deep-equal: "npm:^2.2.3"
     eslint: "npm:^9.10.0"
     eslint-config-next: "npm:^14.2.13"

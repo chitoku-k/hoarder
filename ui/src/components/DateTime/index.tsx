@@ -3,19 +3,20 @@
 import type { ComponentPropsWithoutRef, FunctionComponent } from 'react'
 import Typography from '@mui/material/Typography'
 
-import { formatInTimeZone } from 'date-fns-tz'
+import { format } from 'date-fns'
 import { ja } from 'date-fns/locale/ja'
+import { TZDate } from '@date-fns/tz'
 
 const DateTime: FunctionComponent<DateTimeProps> = ({
   date = new Date(),
-  format,
+  format: formatStr,
 }) => (
   <Typography
     component={({ key, ...props }: ComponentPropsWithoutRef<'time'>) => (
       <time key={key} dateTime={date.toISOString()} {...props} />
     )}
   >
-    {formatInTimeZone(date, 'Asia/Tokyo', format, { locale: ja })}
+    {format(new TZDate(date, 'Asia/Tokyo'), formatStr, { locale: ja })}
   </Typography>
 )
 
