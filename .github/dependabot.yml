@@ -38,7 +38,7 @@ updates:
     date-fns:
       patterns:
       - date-fns
-      - date-fns-tz
+      - "@date-fns/*"
     emotion:
       patterns:
       - "@emotion/*"
