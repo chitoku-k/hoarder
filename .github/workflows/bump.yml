@@ -12,6 +12,10 @@ on:
           - minor
           - patch
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   bump:
     name: Bump
