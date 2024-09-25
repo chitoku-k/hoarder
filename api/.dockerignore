@@ -1,5 +1,4 @@
 Dockerfile
-Makefile.toml
 rustfmt.toml
 tarpaulin-report.html
 .dockerignore

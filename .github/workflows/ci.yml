@@ -1,24 +1,50 @@
 name: CI Workflow
 on:
-  - push
+  push:
+    branches:
+      - master
+  pull_request:
+
+defaults:
+  run:
+    shell: bash
 
 jobs:
   api-test:
-    name: API Tests
+    name: API Test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Set up rust
-        uses: dtolnay/rust-toolchain@stable
-      - name: Set up tools
-        uses: taiki-e/install-action@v2
+      - name: Set up reviewdog
+        uses: reviewdog/action-setup@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build
+        uses: docker/build-push-action@v6
+        id: build
         with:
-          tool: cargo-make
+          context: ./api
+          target: dev
+          cache-from: type=gha,scope=${{ github.ref_name }}-test
+          cache-to: type=gha,scope=${{ github.ref_name }}-test,mode=max
+          load: true
       - name: Run tests
+        if: ${{ always() && steps.build.conclusion == 'success' }}
         working-directory: api
         run: |
-          cargo make test --workspace
+          docker run --rm --volume=/var/run/docker.sock:/var/run/docker.sock:ro --network=host ${{ steps.build.outputs.imageid }} \
+            cargo make test --workspace
+      - name: Run clippy
+        if: ${{ always() && steps.build.conclusion == 'success' }}
+        working-directory: api
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          docker run --rm --volume=/var/run/docker.sock:/var/run/docker.sock:ro ${{ steps.build.outputs.imageid }} \
+            cargo clippy --tests --workspace --quiet --message-format=short --color=never 2>&1 |
+            reviewdog -f=clippy -reporter=github-pr-annotations -filter-mode=nofilter -fail-level=any -tee
+
   build:
     name: Build
     runs-on: ubuntu-latest
