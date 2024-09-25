@@ -3,7 +3,7 @@ FROM node:22.9.0-bookworm AS base
 WORKDIR /usr/src
 COPY package.json yarn.lock .yarnrc.yml /usr/src/
 
-FROM base AS development
+FROM base AS debug
 RUN --mount=type=tmpfs,target=/tmp \
     --mount=type=cache,id=ui:/usr/local/share/.cache/yarn,target=/usr/local/share/.cache/yarn \
     corepack enable && \

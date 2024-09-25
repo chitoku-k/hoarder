@@ -45,7 +45,7 @@ services:
   ui:
     build:
       context: ./ui
-      target: development
+      target: debug
     command: yarn dev
     ports:
       - '3000:3000'
