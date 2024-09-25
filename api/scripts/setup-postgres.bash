@@ -6,7 +6,6 @@ export PGUSER=hoarder_test
 export PGPASSWORD=hoarder_test
 
 echo -n 'starting postgres ... ' >&2
-pushd "$(git rev-parse --show-toplevel)" &> /dev/null
 
 POSTGRES_IMAGE="${POSTGRES_IMAGE:-postgres:16.3}"
 POSTGRES_OPTIONS=(
@@ -26,8 +25,6 @@ POSTGRES_CONTAINER_ID=$(docker create \
     --tmpfs=/var/lib/postgresql/data \
     "$POSTGRES_IMAGE" \
     "${POSTGRES_OPTIONS[@]}")
-
-popd &> /dev/null
 
 trap "docker rm --force '$POSTGRES_CONTAINER_ID' > /dev/null" EXIT
 docker start "$POSTGRES_CONTAINER_ID" > /dev/null
