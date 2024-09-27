@@ -14,7 +14,7 @@ test-postgres = []
 workspace = true
 
 [dependencies.async-trait]
-version = "0.1.82"
+version = "0.1.83"
 
 [dependencies.chrono]
 version = "0.4.38"
