@@ -760,10 +760,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@date-fns/tz@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "@date-fns/tz@npm:1.0.2"
-  checksum: 10/6a4bf2a9d7c265a2cd471da510e7201adc00c37a9b59de933f4b9a2f688838ff14b6ba5229505dd8a3a55c6a6609c744724eb0bf887243e3f4912cabc0b6b96b
+"@date-fns/tz@npm:^1.1.2":
+  version: 1.1.2
+  resolution: "@date-fns/tz@npm:1.1.2"
+  checksum: 10/232a160fe151caaf1c03063bae2f83136abf0a61150bf85c99d221cc91f548c5115d060962321dee7c6a333ea42789bf56e5c51a5df2b9662f5ee654db97ebb8
   languageName: node
   linkType: hard
 
@@ -5734,7 +5734,7 @@ __metadata:
   dependencies:
     "@apollo/client": "npm:^3.11.8"
     "@apollo/experimental-nextjs-app-support": "npm:^0.11.3"
-    "@date-fns/tz": "npm:^1.0.2"
+    "@date-fns/tz": "npm:^1.1.2"
     "@emotion/cache": "npm:^11.13.1"
     "@emotion/react": "npm:^11.13.3"
     "@emotion/styled": "npm:^11.13.0"
