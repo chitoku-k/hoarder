@@ -44,7 +44,7 @@ version = "1.40.0"
 features = ["macros", "net", "process", "rt-multi-thread", "signal"]
 
 [dev-dependencies.futures]
-version = "0.3.30"
+version = "0.3.31"
 
 [dev-dependencies.hyper]
 version = "1.4.1"
