@@ -52,7 +52,7 @@ features = ["serde", "v4"]
 version = "1.0.89"
 
 [dev-dependencies.futures]
-version = "0.3.30"
+version = "0.3.31"
 
 [dev-dependencies.pretty_assertions]
 version = "1.4.1"

@@ -18,7 +18,7 @@ version = "1.0.0"
 features = ["constructor", "display"]
 
 [dependencies.futures]
-version = "0.3.30"
+version = "0.3.31"
 default-features = false
 
 [dependencies.icu_collator]
