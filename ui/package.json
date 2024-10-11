@@ -57,12 +57,12 @@
     "uuid": "^10.0.0"
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "^5.0.2",
+    "@graphql-codegen/cli": "^5.0.3",
     "@graphql-codegen/near-operation-file-preset": "^3.0.0",
-    "@graphql-codegen/typed-document-node": "^5.0.9",
-    "@graphql-codegen/typescript": "^4.0.9",
-    "@graphql-codegen/typescript-operations": "^4.2.3",
-    "@graphql-codegen/typescript-resolvers": "^4.2.1",
+    "@graphql-codegen/typed-document-node": "^5.0.10",
+    "@graphql-codegen/typescript": "^4.1.0",
+    "@graphql-codegen/typescript-operations": "^4.3.0",
+    "@graphql-codegen/typescript-resolvers": "^4.3.0",
     "@parcel/watcher": "^2.4.1",
     "eslint": "^9.11.1",
     "eslint-config-next": "^14.2.14",
