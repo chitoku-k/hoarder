@@ -2,6 +2,7 @@
 
 import type { ChangeEvent, FunctionComponent, SyntheticEvent } from 'react'
 import { useCallback, useState } from 'react'
+import { useCollator } from '@react-aria/i18n'
 import historykana from 'historykana'
 import Autocomplete from '@mui/material/Autocomplete'
 import Button from '@mui/material/Button'
@@ -31,6 +32,7 @@ const TagListColumnBodyCreate: FunctionComponent<TagListColumnBodyCreateProps> =
   onCreate,
 }) => {
   const [ createTag, { error, loading } ] = useCreateTag()
+  const collator = useCollator()
 
   const ref = useCallback((input: HTMLElement) => {
     input?.focus({
@@ -74,12 +76,12 @@ const TagListColumnBodyCreate: FunctionComponent<TagListColumnBodyCreateProps> =
   }, [])
 
   const handleChangeAliases = useCallback((_e: SyntheticEvent, value: string[]) => {
-    const aliases = value.toSorted()
+    const aliases = value.toSorted(collator.compare)
     setTag(tag => ({
       ...tag,
       aliases,
     }))
-  }, [])
+  }, [ collator ])
 
   const handleClickCancel = useCallback(() => {
     close()

@@ -2,6 +2,7 @@
 
 import type { ChangeEvent, FunctionComponent, SyntheticEvent } from 'react'
 import { useCallback, useState } from 'react'
+import { useCollator } from '@react-aria/i18n'
 import Autocomplete from '@mui/material/Autocomplete'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
@@ -38,6 +39,7 @@ const TagListColumnBodyEdit: FunctionComponent<TagListColumnBodyEditProps> = ({
   onMove,
 }) => {
   const [ updateTag, { error, loading } ] = useUpdateTag()
+  const collator = useCollator()
 
   const ref = useCallback((input: HTMLElement) => {
     input?.focus({
@@ -65,12 +67,12 @@ const TagListColumnBodyEdit: FunctionComponent<TagListColumnBodyEditProps> = ({
   }, [])
 
   const handleChangeAliases = useCallback((_e: SyntheticEvent, value: string[]) => {
-    const aliases = value.toSorted()
+    const aliases = value.toSorted(collator.compare)
     setTag(tag => ({
       ...tag,
       aliases,
     }))
-  }, [])
+  }, [ collator ])
 
   const handleClickMoveTag = useCallback(() => {
     setMovingTag(true)
