@@ -1,6 +1,6 @@
 'use client'
 
-import type { FunctionComponent, SyntheticEvent } from 'react'
+import type { ComponentPropsWithoutRef, FunctionComponent, SyntheticEvent } from 'react'
 import { useCallback, useState } from 'react'
 import deepEqual from 'deep-equal'
 import Stack from '@mui/material/Stack'
@@ -14,6 +14,8 @@ import MediumItemMetadataSourceGroupEdit from '@/components/MediumItemMetadataSo
 import { SOURCE_METADATA_DUPLICATE, useBeforeUnload, useCreateSource, useError } from '@/hooks'
 import type { ExternalMetadataInput } from '@/hooks/types.generated'
 import type { ExternalService, Source } from '@/types'
+
+import styles from './styles.module.scss'
 
 const hasChanges = (addingExternalServices: ExternalService[], addingSources: Map<ExternalServiceID, (Source | SourceCreate)[]>) => {
   if (addingExternalServices.length > 0) {
@@ -145,6 +147,15 @@ const MediumItemMetadataSourceCreate: FunctionComponent<MediumItemMetadataSource
     })
   }, [ setResolveSourceIDs, resolveSourceIDs ])
 
+  const renderExternalServiceOption = useCallback(({ key, ...props }: ComponentPropsWithoutRef<'li'>, option: ExternalService) => (
+    <li key={key} {...props}>
+      <Stack direction="row" spacing={0.5} alignItems="start">
+        <FolderSpecialIcon className={styles.externalServiceSearchIcon} fontSize="small" />
+        <span className={styles.externalServiceSearchText}>{option.name}</span>
+      </Stack>
+    </li>
+  ), [])
+
   const changed = hasChanges(addingExternalServices, addingSources)
   useBeforeUnload(changed)
 
@@ -180,6 +191,7 @@ const MediumItemMetadataSourceCreate: FunctionComponent<MediumItemMetadataSource
             includeInputInList
             placeholder="サービスの追加..."
             disabled={loading}
+            renderOption={renderExternalServiceOption}
             value={newExternalService}
             inputValue={newExternalServiceInput}
             getOptionDisabled={({ id }) => addingExternalServices.some(externalService => externalService.id === id)}
