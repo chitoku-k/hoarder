@@ -1,6 +1,6 @@
 'use client'
 
-import type { FunctionComponent, SyntheticEvent } from 'react'
+import type { ComponentPropsWithoutRef, FunctionComponent, SyntheticEvent } from 'react'
 import { useCallback, useState } from 'react'
 import Stack from '@mui/material/Stack'
 import LabelIcon from '@mui/icons-material/Label'
@@ -11,6 +11,8 @@ import MediumItemMetadataTagGroupEdit from '@/components/MediumItemMetadataTagGr
 import { useBeforeUnload } from '@/hooks'
 import type { TagTagTypeInput } from '@/hooks/types.generated'
 import type { Tag, TagType } from '@/types'
+
+import styles from './styles.module.scss'
 
 const hasChanges = (addingTagTypes: TagType[], addingTags: Map<TagTypeID, Tag[]>) => {
   if (addingTagTypes.length > 0) {
@@ -114,6 +116,15 @@ const MediumItemMetadataTagCreate: FunctionComponent<MediumItemMetadataTagCreate
     return addTagTagTypeIDs
   }
 
+  const renderTagTypeOption = useCallback(({ key, ...props }: ComponentPropsWithoutRef<'li'>, option: TagType) => (
+    <li key={key} {...props}>
+      <Stack direction="row" spacing={0.5} alignItems="start">
+        <LabelIcon className={styles.tagTypeSearchIcon} fontSize="small" />
+        <span className={styles.tagTypeSearchText}>{option.name}</span>
+      </Stack>
+    </li>
+  ), [])
+
   const changed = hasChanges(addingTagTypes, addingTags)
   useBeforeUnload(changed)
 
@@ -149,6 +160,7 @@ const MediumItemMetadataTagCreate: FunctionComponent<MediumItemMetadataTagCreate
             includeInputInList
             placeholder="タイプの追加..."
             disabled={loading}
+            renderOption={renderTagTypeOption}
             value={newTagType}
             inputValue={newTagTypeInput}
             getOptionDisabled={({ id }) => addingTagTypes.some(type => type.id === id)}
