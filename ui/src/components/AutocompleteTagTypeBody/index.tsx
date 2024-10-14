@@ -4,7 +4,7 @@ import type { ComponentType, FunctionComponent, SyntheticEvent } from 'react'
 import { useCallback, useState, useTransition } from 'react'
 import clsx from 'clsx'
 import type { AutocompleteProps } from '@mui/material/Autocomplete'
-import Autocomplete from '@mui/material/Autocomplete'
+import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete'
 import CircularProgress from '@mui/material/CircularProgress'
 import type { SvgIconProps } from '@mui/material/SvgIcon'
 import type { TextFieldVariants } from '@mui/material/TextField'
@@ -36,6 +36,10 @@ const AutocompleteTagTypeBody: FunctionComponent<AutocompleteTagTypeBodyProps> =
     input?.focus()
   }, [ focus ])
 
+  const filterOptions = useCallback(createFilterOptions<TagType>({
+    stringify: ({ name, kana }) => `${name} ${kana}`,
+  }), [])
+
   const handleOpen = useCallback(() => {
     if (loading) {
       return
@@ -64,6 +68,7 @@ const AutocompleteTagTypeBody: FunctionComponent<AutocompleteTagTypeBodyProps> =
       isOptionEqualToValue={(option, value) => option.id === value.id}
       getOptionLabel={option => option.name}
       getOptionKey={option => option.id}
+      filterOptions={filterOptions}
       options={tagTypes}
       loading={loading}
       open={open}
