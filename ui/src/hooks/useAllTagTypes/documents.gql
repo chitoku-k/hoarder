@@ -2,6 +2,7 @@ fragment tagTypeNode on TagType {
   id
   slug
   name
+  kana
 }
 
 query AllTagTypes {

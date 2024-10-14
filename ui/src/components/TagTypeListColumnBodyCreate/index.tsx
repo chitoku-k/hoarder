@@ -2,6 +2,7 @@
 
 import type { ChangeEvent, FunctionComponent } from 'react'
 import { useCallback, useState } from 'react'
+import historykana from 'historykana'
 import Button from '@mui/material/Button'
 import LoadingButton from '@mui/lab/LoadingButton'
 import Portal from '@mui/material/Portal'
@@ -9,12 +10,16 @@ import Snackbar from '@mui/material/Snackbar'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 
-import { TAG_TYPE_SLUG_DUPLICATE, useError, useCreateTagType, useBeforeUnload } from '@/hooks'
+import { TAG_TYPE_SLUG_DUPLICATE, useBeforeUnload, useCreateTagType, useError } from '@/hooks'
 import type { TagType } from '@/types'
 
 import styles from './styles.module.scss'
 
-const hasChanges = (tagType: TagTypeCreate) => tagType.name.length > 0 || tagType.slug.length > 0
+const extractKana = (history: string[]): string => {
+  return historykana(history, { kanaRegexp: /^[ 　ぁ-ゔー]*[nｎ]?$/ }).replace(/[nｎ]$/, 'ん')
+}
+
+const hasChanges = (tagType: TagTypeCreate) => tagType.name.length > 0 || tagType.slug.length > 0 || tagType.kana.length > 0
 
 const TagTypeListColumnBodyCreate: FunctionComponent<TagTypeListColumnBodyCreateProps> = ({
   close,
@@ -31,13 +36,35 @@ const TagTypeListColumnBodyCreate: FunctionComponent<TagTypeListColumnBodyCreate
   const [ tagType, setTagType ] = useState<TagTypeCreate>({
     name: '',
     slug: '',
+    kana: '',
   })
+
+  const [ kanaChanged, setKanaChanged ] = useState(false)
+  const [ nameHistory, setNameHistory ] = useState<string[]>([])
 
   const handleChangeName = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     const name = e.currentTarget.value
+
+    const newKanaChanged = name ? kanaChanged : false
+    setKanaChanged(newKanaChanged)
+
+    const newNameHistory = name ? [ ...nameHistory, name ] : []
+    setNameHistory(newNameHistory)
+
+    const kana = newKanaChanged ? tagType.kana : extractKana(newNameHistory)
     setTagType(tagType => ({
       ...tagType,
       name,
+      kana,
+    }))
+  }, [ tagType, nameHistory, kanaChanged ])
+
+  const handleChangeKana = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    const kana = e.currentTarget.value
+    setKanaChanged(true)
+    setTagType(tagType => ({
+      ...tagType,
+      kana,
     }))
   }, [])
 
@@ -55,8 +82,9 @@ const TagTypeListColumnBodyCreate: FunctionComponent<TagTypeListColumnBodyCreate
 
   const handleClickSubmit = useCallback(() => {
     createTagType({
-      name: tagType.name,
       slug: tagType.slug,
+      name: tagType.name,
+      kana: tagType.kana,
     }).then(
       () => {
         close()
@@ -82,6 +110,13 @@ const TagTypeListColumnBodyCreate: FunctionComponent<TagTypeListColumnBodyCreate
           value={tagType.name}
           onChange={handleChangeName}
           inputRef={ref}
+        />
+        <TextField
+          margin="normal"
+          label="ふりがな"
+          disabled={loading}
+          value={tagType.kana}
+          onChange={handleChangeKana}
         />
         {isSlugDuplicate ? (
           <TextField

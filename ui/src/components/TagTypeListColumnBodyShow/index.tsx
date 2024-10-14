@@ -34,6 +34,12 @@ const TagTypeListColumnBodyShow: FunctionComponent<TagTypeListColumnBodyShowProp
         />
         <TextField
           margin="normal"
+          label="ふりがな"
+          value={tagType.kana}
+          onDoubleClick={handleClickEdit}
+        />
+        <TextField
+          margin="normal"
           label="スラッグ"
           value={tagType.slug}
           onDoubleClick={handleClickEdit}

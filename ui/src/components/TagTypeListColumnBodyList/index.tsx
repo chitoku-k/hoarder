@@ -157,6 +157,7 @@ const TagTypeListColumnBodyList: FunctionComponent<TagTypeListColumnBodyListProp
             disabled={Boolean(disabledTagType?.(tagType))}
             selected={!creating && (editing ?? active)?.id === tagType.id}
             primary={tagType.name}
+            secondary={dense ? null : tagType.kana || null}
             onClick={() => handleClickTagType(tagType)}
           >
             {!readonly ? (
