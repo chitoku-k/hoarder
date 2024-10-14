@@ -2,7 +2,7 @@
 .editorconfig
 .eslintrc.json
 .gitignore
-.graphqlrc
+.graphqlrc.yml
 Dockerfile
 next-env.d.ts
 *.tsbuildinfo
