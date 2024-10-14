@@ -1,5 +1,3 @@
-directive @oneOf on INPUT_OBJECT
-
 
 """
 Implement the DateTime<Utc> scalar
@@ -294,7 +292,9 @@ scalar UUID
 scalar Upload
 
 directive @include(if: Boolean!) on FIELD | FRAGMENT_SPREAD | INLINE_FRAGMENT
+directive @oneOf on INPUT_OBJECT
 directive @skip(if: Boolean!) on FIELD | FRAGMENT_SPREAD | INLINE_FRAGMENT
+directive @specifiedBy(url: String!) on SCALAR
 schema {
 	query: Query
 	mutation: Mutation
