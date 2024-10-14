@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, HashMap};
+use std::collections::HashMap;
 
 use chrono::{DateTime, Utc};
 use derive_more::{Constructor, From, Into};
@@ -15,7 +15,7 @@ use domain::{
     repository::{self, media::MediaRepository, DeleteResult},
 };
 use futures::{future::ready, TryStreamExt};
-use indexmap::IndexSet;
+use ordermap::{OrderMap, OrderSet};
 use sea_query::{Alias, BinOper, Expr, Iden, JoinType, Keyword, LockType, OnConflict, Order, PostgresQueryBuilder, Query};
 use sea_query_binder::SqlxBinder;
 use sqlx::{types::Json, FromRow, PgConnection, PgPool};
@@ -75,6 +75,7 @@ struct PostgresMediumTagTypeRow {
     tag_type_id: PostgresTagTypeId,
     tag_type_slug: String,
     tag_type_name: String,
+    tag_type_kana: String,
 }
 
 #[derive(Iden)]
@@ -165,12 +166,13 @@ impl From<PostgresMediumTagTypeRow> for (MediumId, TagId, TagType) {
                 id: row.tag_type_id.into(),
                 slug: row.tag_type_slug,
                 name: row.tag_type_name,
+                kana: row.tag_type_kana,
             },
         )
     }
 }
 
-impl FromIterator<PostgresMediumTagTypeRow> for HashMap<MediumId, BTreeMap<TagType, Vec<TagId>>> {
+impl FromIterator<PostgresMediumTagTypeRow> for HashMap<MediumId, OrderMap<TagType, Vec<TagId>>> {
     fn from_iter<T>(iter: T) -> Self
     where
         T: IntoIterator<Item = PostgresMediumTagTypeRow>,
@@ -189,7 +191,7 @@ impl FromIterator<PostgresMediumTagTypeRow> for HashMap<MediumId, BTreeMap<TagTy
     }
 }
 
-async fn fetch_tags<T>(conn: &mut PgConnection, ids: T, tag_depth: TagDepth) -> Result<HashMap<MediumId, BTreeMap<TagType, Vec<Tag>>>>
+async fn fetch_tags<T>(conn: &mut PgConnection, ids: T, tag_depth: TagDepth) -> Result<HashMap<MediumId, OrderMap<TagType, Vec<Tag>>>>
 where
     T: IntoIterator<Item = MediumId>,
 {
@@ -202,6 +204,7 @@ where
         .expr_as(Expr::col((PostgresTagType::Table, PostgresTagType::Id)), PostgresTagTagType::TagTypeId)
         .expr_as(Expr::col((PostgresTagType::Table, PostgresTagType::Slug)), PostgresTagTagType::TagTypeSlug)
         .expr_as(Expr::col((PostgresTagType::Table, PostgresTagType::Name)), PostgresTagTagType::TagTypeName)
+        .expr_as(Expr::col((PostgresTagType::Table, PostgresTagType::Kana)), PostgresTagTagType::TagTypeKana)
         .from(PostgresMediumTag::Table)
         .join(
             JoinType::InnerJoin,
@@ -243,8 +246,8 @@ where
                 .equals((PostgresMediumTag::Table, PostgresMediumTag::TagId)),
         )
         .and_where(Expr::col((PostgresMediumTag::Table, PostgresMediumTag::MediumId)).is_in(ids.into_iter().map(PostgresMediumId::from)))
-        .order_by(PostgresMediumTag::MediumId, Order::Asc)
-        .order_by(PostgresMediumTag::TagTypeId, Order::Asc)
+        .order_by((PostgresMediumTag::Table, PostgresMediumTag::MediumId), Order::Asc)
+        .order_by((PostgresTagType::Table, PostgresTagType::Kana), Order::Asc)
         .order_by(display_order, Order::Asc)
         .build_sqlx(PostgresQueryBuilder);
 
@@ -261,7 +264,7 @@ where
         .map(|tag| (tag.id, tag))
         .collect();
 
-    let media_tag_types: HashMap<_, BTreeMap<_, Vec<_>>> = rows.into_iter().collect();
+    let media_tag_types: HashMap<_, OrderMap<_, Vec<_>>> = rows.into_iter().collect();
     let tags = media_tag_types
         .into_iter()
         .map(|(medium_id, tag_types)| (
@@ -816,7 +819,7 @@ impl MediaRepository for PostgresMediaRepository {
             .lock(LockType::Update)
             .build_sqlx(PostgresQueryBuilder);
 
-        let replica_ids: IndexSet<_> = sqlx::query_as_with::<_, PostgresMediumReplicaRow, _>(&sql, values)
+        let replica_ids: OrderSet<_> = sqlx::query_as_with::<_, PostgresMediumReplicaRow, _>(&sql, values)
             .fetch(&mut *tx)
             .map_ok(<(Medium, ReplicaId)>::from)
             .map_ok(|(_, replica_id)| replica_id)
@@ -824,9 +827,9 @@ impl MediaRepository for PostgresMediaRepository {
             .await
             .map_err(Error::other)?;
 
-        let replica_orders: IndexSet<_> = replica_orders.into_iter().collect();
+        let replica_orders: OrderSet<_> = replica_orders.into_iter().collect();
         if !replica_orders.is_empty() {
-            if replica_orders != replica_ids {
+            if replica_orders.len() != replica_ids.len() || !replica_orders.is_subset(&replica_ids) {
                 let expected_replicas = replica_ids.into_iter().collect();
                 let actual_replicas = replica_orders.into_iter().collect();
                 return Err(ErrorKind::MediumReplicasNotMatch { medium_id: id, expected_replicas, actual_replicas })?;

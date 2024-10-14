@@ -1,4 +1,4 @@
-use std::{collections::{BTreeMap, BTreeSet}, sync::Arc};
+use std::{collections::BTreeSet, sync::Arc};
 
 use application::service::{
     media::{MediaURLFactoryInterface, MockMediaURLFactoryInterface},
@@ -24,6 +24,7 @@ use domain::{
 use futures::future::ok;
 use graphql::query::Query;
 use indoc::indoc;
+use ordermap::OrderMap;
 use pretty_assertions::assert_eq;
 use uuid::{uuid, Uuid};
 
@@ -55,12 +56,13 @@ async fn tags_succeeds() {
                     id: MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
                     sources: Vec::new(),
                     tags: {
-                        let mut tags = BTreeMap::new();
+                        let mut tags = OrderMap::new();
                         tags.insert(
                             TagType {
                                 id: TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
                                 slug: "character".to_string(),
                                 name: "キャラクター".to_string(),
+                                kana: "キャラクター".to_string(),
                             },
                             vec![
                                 Tag {
@@ -108,6 +110,7 @@ async fn tags_succeeds() {
                                 id: TagTypeId::from(uuid!("66666666-6666-6666-6666-666666666666")),
                                 slug: "work".to_string(),
                                 name: "作品".to_string(),
+                                kana: "さくひん".to_string(),
                             },
                             vec![
                                 Tag {
@@ -153,12 +156,13 @@ async fn tags_succeeds() {
                     id: MediumId::from(uuid!("99999999-9999-9999-9999-999999999999")),
                     sources: Vec::new(),
                     tags: {
-                        let mut tags = BTreeMap::new();
+                        let mut tags = OrderMap::new();
                         tags.insert(
                             TagType {
                                 id: TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
                                 slug: "character".to_string(),
                                 name: "キャラクター".to_string(),
+                                kana: "キャラクター".to_string(),
                             },
                             vec![
                                 Tag {
@@ -187,6 +191,7 @@ async fn tags_succeeds() {
                                 id: TagTypeId::from(uuid!("66666666-6666-6666-6666-666666666666")),
                                 slug: "work".to_string(),
                                 name: "作品".to_string(),
+                                kana: "さくひん".to_string(),
                             },
                             vec![
                                 Tag {
@@ -289,6 +294,7 @@ async fn tags_succeeds() {
                         id
                         slug
                         name
+                        kana
                     }
                 }
                 createdAt
@@ -326,6 +332,7 @@ async fn tags_succeeds() {
                             "id": "44444444-4444-4444-4444-444444444444",
                             "slug": "character",
                             "name": "キャラクター",
+                            "kana": "キャラクター",
                         },
                     },
                     {
@@ -351,6 +358,7 @@ async fn tags_succeeds() {
                             "id": "44444444-4444-4444-4444-444444444444",
                             "slug": "character",
                             "name": "キャラクター",
+                            "kana": "キャラクター",
                         },
                     },
                     {
@@ -387,6 +395,7 @@ async fn tags_succeeds() {
                             "id": "66666666-6666-6666-6666-666666666666",
                             "slug": "work",
                             "name": "作品",
+                            "kana": "さくひん",
                         },
                     },
                 ],
@@ -419,6 +428,7 @@ async fn tags_succeeds() {
                             "id": "44444444-4444-4444-4444-444444444444",
                             "slug": "character",
                             "name": "キャラクター",
+                            "kana": "キャラクター",
                         },
                     },
                     {
@@ -455,6 +465,7 @@ async fn tags_succeeds() {
                             "id": "66666666-6666-6666-6666-666666666666",
                             "slug": "work",
                             "name": "作品",
+                            "kana": "さくひん",
                         },
                     },
                 ],
@@ -489,7 +500,7 @@ async fn replicas_succeeds() {
                 Medium {
                     id: MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
                     sources: Vec::new(),
-                    tags: BTreeMap::new(),
+                    tags: OrderMap::new(),
                     replicas: vec![
                         Replica {
                             id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
@@ -528,7 +539,7 @@ async fn replicas_succeeds() {
                 Medium {
                     id: MediumId::from(uuid!("99999999-9999-9999-9999-999999999999")),
                     sources: Vec::new(),
-                    tags: BTreeMap::new(),
+                    tags: OrderMap::new(),
                     replicas: Vec::new(),
                     created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 58).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 2).unwrap(),
@@ -711,7 +722,7 @@ async fn sources_succeeds() {
                             updated_at: Utc.with_ymd_and_hms(2016, 5, 6, 5, 14, 1).unwrap(),
                         },
                     ],
-                    tags: BTreeMap::new(),
+                    tags: OrderMap::new(),
                     replicas: Vec::new(),
                     created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 56).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 0).unwrap(),
@@ -719,7 +730,7 @@ async fn sources_succeeds() {
                 Medium {
                     id: MediumId::from(uuid!("99999999-9999-9999-9999-999999999999")),
                     sources: Vec::new(),
-                    tags: BTreeMap::new(),
+                    tags: OrderMap::new(),
                     replicas: Vec::new(),
                     created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 58).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 2).unwrap(),

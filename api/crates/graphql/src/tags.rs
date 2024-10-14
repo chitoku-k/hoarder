@@ -35,6 +35,7 @@ pub struct TagType {
     id: Uuid,
     slug: String,
     name: String,
+    kana: String,
 }
 
 #[derive(Constructor, SimpleObject)]
@@ -116,6 +117,7 @@ impl From<tag_types::TagType> for TagType {
             id: *tag_type.id,
             slug: tag_type.slug,
             name: tag_type.name,
+            kana: tag_type.kana,
         }
     }
 }

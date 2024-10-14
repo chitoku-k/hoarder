@@ -1,5 +1,3 @@
-use std::collections::BTreeMap;
-
 use chrono::{TimeZone, Utc};
 use domain::{
     entity::{
@@ -9,6 +7,7 @@ use domain::{
     },
     repository::media::MediaRepository,
 };
+use ordermap::OrderMap;
 use postgres::media::PostgresMediaRepository;
 use pretty_assertions::assert_eq;
 use test_context::test_context;
@@ -50,7 +49,7 @@ async fn succeeds(ctx: &DatabaseContext) {
                     updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
                 },
             ],
-            tags: BTreeMap::new(),
+            tags: OrderMap::new(),
             replicas: Vec::new(),
             created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
@@ -85,7 +84,7 @@ async fn succeeds(ctx: &DatabaseContext) {
                     updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 6).unwrap(),
                 },
             ],
-            tags: BTreeMap::new(),
+            tags: OrderMap::new(),
             replicas: Vec::new(),
             created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 7).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap(),

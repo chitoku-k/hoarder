@@ -17,7 +17,7 @@ pub trait TagsServiceInterface: Send + Sync + 'static {
     fn create_tag(&self, name: &str, kana: &str, aliases: &[String], parent_id: Option<TagId>, depth: TagDepth) -> impl Future<Output = Result<Tag>> + Send;
 
     /// Creates a tag type.
-    fn create_tag_type(&self, slug: &str, name: &str) -> impl Future<Output = Result<TagType>> + Send;
+    fn create_tag_type(&self, slug: &str, name: &str, kana: &str) -> impl Future<Output = Result<TagType>> + Send;
 
     /// Gets tags.
     fn get_tags(
@@ -48,7 +48,7 @@ pub trait TagsServiceInterface: Send + Sync + 'static {
         U: IntoIterator<Item = String> + Send + Sync + 'static;
 
     /// Updates the tag type by ID.
-    fn update_tag_type_by_id<'a, 'b>(&self, id: TagTypeId, slug: Option<&'a str>, name: Option<&'b str>) -> impl Future<Output = Result<TagType>> + Send;
+    fn update_tag_type_by_id<'a, 'b, 'c>(&self, id: TagTypeId, slug: Option<&'a str>, name: Option<&'b str>, kana: Option<&'c str>) -> impl Future<Output = Result<TagType>> + Send;
 
     /// Attaches the tag by ID.
     fn attach_tag_by_id(&self, id: TagId, parent_id: TagId, depth: TagDepth) -> impl Future<Output = Result<Tag>> + Send;
@@ -84,8 +84,8 @@ where
         }
     }
 
-    async fn create_tag_type(&self, slug: &str, name: &str) -> Result<TagType> {
-        match self.tag_types_repository.create(slug, name).await {
+    async fn create_tag_type(&self, slug: &str, name: &str, kana: &str) -> Result<TagType> {
+        match self.tag_types_repository.create(slug, name, kana).await {
             Ok(tag_type) => Ok(tag_type),
             Err(e) => {
                 log::error!("failed to create a tag type\nError: {e:?}");
@@ -159,8 +159,8 @@ where
         }
     }
 
-    async fn update_tag_type_by_id<'a, 'b>(&self, id: TagTypeId, slug: Option<&'a str>, name: Option<&'b str>) -> Result<TagType> {
-        match self.tag_types_repository.update_by_id(id, slug, name).await {
+    async fn update_tag_type_by_id<'a, 'b, 'c>(&self, id: TagTypeId, slug: Option<&'a str>, name: Option<&'b str>, kana: Option<&'c str>) -> Result<TagType> {
+        match self.tag_types_repository.update_by_id(id, slug, name, kana).await {
             Ok(tag_type) => Ok(tag_type),
             Err(e) => {
                 log::error!("failed to update the tag type\nError: {e:?}");

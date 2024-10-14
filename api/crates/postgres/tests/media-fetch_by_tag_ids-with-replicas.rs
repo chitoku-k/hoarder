@@ -1,5 +1,3 @@
-use std::collections::BTreeMap;
-
 use chrono::{TimeZone, Utc};
 use domain::{
     entity::{
@@ -10,6 +8,7 @@ use domain::{
     },
     repository::{media::MediaRepository, Direction, Order},
 };
+use ordermap::OrderMap;
 use postgres::media::PostgresMediaRepository;
 use pretty_assertions::assert_eq;
 use test_context::test_context;
@@ -43,7 +42,7 @@ async fn asc_succeeds(ctx: &DatabaseContext) {
         Medium {
             id: MediumId::from(uuid!("ccc5717b-cf11-403d-b466-f37cf1c2e6f6")),
             sources: Vec::new(),
-            tags: BTreeMap::new(),
+            tags: OrderMap::new(),
             replicas: Vec::new(),
             created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 5).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
@@ -51,7 +50,7 @@ async fn asc_succeeds(ctx: &DatabaseContext) {
         Medium {
             id: MediumId::from(uuid!("21cb17ac-6e4c-4da7-8b8a-bc17bc258196")),
             sources: Vec::new(),
-            tags: BTreeMap::new(),
+            tags: OrderMap::new(),
             replicas: vec![
                 Replica {
                     id: ReplicaId::from(uuid!("91626dc4-3e2a-4028-8574-8feb3c817fd1")),
@@ -80,7 +79,7 @@ async fn asc_succeeds(ctx: &DatabaseContext) {
         Medium {
             id: MediumId::from(uuid!("2872ed9d-4db9-4b25-b86f-791ad009cc0a")),
             sources: Vec::new(),
-            tags: BTreeMap::new(),
+            tags: OrderMap::new(),
             replicas: vec![
                 Replica {
                     id: ReplicaId::from(uuid!("b7a54e0b-6ab3-4385-a18b-bacadff6b18d")),
@@ -134,7 +133,7 @@ async fn desc_succeeds(ctx: &DatabaseContext) {
         Medium {
             id: MediumId::from(uuid!("43b77865-c05d-4733-b336-95b5522a8a46")),
             sources: Vec::new(),
-            tags: BTreeMap::new(),
+            tags: OrderMap::new(),
             replicas: vec![
                 Replica {
                     id: ReplicaId::from(uuid!("9b73469d-55fe-4017-aee8-dd8f8d7d067a")),
@@ -153,7 +152,7 @@ async fn desc_succeeds(ctx: &DatabaseContext) {
         Medium {
             id: MediumId::from(uuid!("2872ed9d-4db9-4b25-b86f-791ad009cc0a")),
             sources: Vec::new(),
-            tags: BTreeMap::new(),
+            tags: OrderMap::new(),
             replicas: vec![
                 Replica {
                     id: ReplicaId::from(uuid!("b7a54e0b-6ab3-4385-a18b-bacadff6b18d")),
@@ -182,7 +181,7 @@ async fn desc_succeeds(ctx: &DatabaseContext) {
         Medium {
             id: MediumId::from(uuid!("21cb17ac-6e4c-4da7-8b8a-bc17bc258196")),
             sources: Vec::new(),
-            tags: BTreeMap::new(),
+            tags: OrderMap::new(),
             replicas: vec![
                 Replica {
                     id: ReplicaId::from(uuid!("91626dc4-3e2a-4028-8574-8feb3c817fd1")),
@@ -236,7 +235,7 @@ async fn since_asc_succeeds(ctx: &DatabaseContext) {
         Medium {
             id: MediumId::from(uuid!("21cb17ac-6e4c-4da7-8b8a-bc17bc258196")),
             sources: Vec::new(),
-            tags: BTreeMap::new(),
+            tags: OrderMap::new(),
             replicas: vec![
                 Replica {
                     id: ReplicaId::from(uuid!("91626dc4-3e2a-4028-8574-8feb3c817fd1")),
@@ -265,7 +264,7 @@ async fn since_asc_succeeds(ctx: &DatabaseContext) {
         Medium {
             id: MediumId::from(uuid!("2872ed9d-4db9-4b25-b86f-791ad009cc0a")),
             sources: Vec::new(),
-            tags: BTreeMap::new(),
+            tags: OrderMap::new(),
             replicas: vec![
                 Replica {
                     id: ReplicaId::from(uuid!("b7a54e0b-6ab3-4385-a18b-bacadff6b18d")),
@@ -294,7 +293,7 @@ async fn since_asc_succeeds(ctx: &DatabaseContext) {
         Medium {
             id: MediumId::from(uuid!("43b77865-c05d-4733-b336-95b5522a8a46")),
             sources: Vec::new(),
-            tags: BTreeMap::new(),
+            tags: OrderMap::new(),
             replicas: vec![
                 Replica {
                     id: ReplicaId::from(uuid!("9b73469d-55fe-4017-aee8-dd8f8d7d067a")),
@@ -338,7 +337,7 @@ async fn since_desc_succeeds(ctx: &DatabaseContext) {
         Medium {
             id: MediumId::from(uuid!("ccc5717b-cf11-403d-b466-f37cf1c2e6f6")),
             sources: Vec::new(),
-            tags: BTreeMap::new(),
+            tags: OrderMap::new(),
             replicas: Vec::new(),
             created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 5).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
@@ -371,7 +370,7 @@ async fn until_asc_succeeds(ctx: &DatabaseContext) {
         Medium {
             id: MediumId::from(uuid!("ccc5717b-cf11-403d-b466-f37cf1c2e6f6")),
             sources: Vec::new(),
-            tags: BTreeMap::new(),
+            tags: OrderMap::new(),
             replicas: Vec::new(),
             created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 5).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
@@ -379,7 +378,7 @@ async fn until_asc_succeeds(ctx: &DatabaseContext) {
         Medium {
             id: MediumId::from(uuid!("21cb17ac-6e4c-4da7-8b8a-bc17bc258196")),
             sources: Vec::new(),
-            tags: BTreeMap::new(),
+            tags: OrderMap::new(),
             replicas: vec![
                 Replica {
                     id: ReplicaId::from(uuid!("91626dc4-3e2a-4028-8574-8feb3c817fd1")),
@@ -433,7 +432,7 @@ async fn until_desc_succeeds(ctx: &DatabaseContext) {
         Medium {
             id: MediumId::from(uuid!("43b77865-c05d-4733-b336-95b5522a8a46")),
             sources: Vec::new(),
-            tags: BTreeMap::new(),
+            tags: OrderMap::new(),
             replicas: vec![
                 Replica {
                     id: ReplicaId::from(uuid!("9b73469d-55fe-4017-aee8-dd8f8d7d067a")),

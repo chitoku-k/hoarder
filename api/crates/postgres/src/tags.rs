@@ -13,7 +13,7 @@ use domain::{
     repository::{self, tags::TagsRepository, DeleteResult},
 };
 use futures::TryStreamExt;
-use indexmap::{IndexMap, IndexSet};
+use ordermap::{OrderMap, OrderSet};
 use sea_query::{extension::postgres::PgExpr, Alias, Asterisk, BinOper, Cond, Expr, Iden, JoinType, LikeExpr, LockType, Order, PostgresQueryBuilder, Query, SelectStatement};
 use sea_query_binder::SqlxBinder;
 use sqlx::{Acquire, FromRow, PgPool, Postgres, Transaction, PgConnection, Row};
@@ -157,12 +157,12 @@ impl From<PostgresTagRelativeRow> for (i32, TagRelation, TagRelation) {
     }
 }
 
-impl FromIterator<PostgresTagRelativeRow> for IndexMap<TagId, Rc<RefCell<TagRelation>>> {
+impl FromIterator<PostgresTagRelativeRow> for OrderMap<TagId, Rc<RefCell<TagRelation>>> {
     fn from_iter<T>(rows: T) -> Self
     where
         T: IntoIterator<Item = PostgresTagRelativeRow>,
     {
-        let mut tags = IndexMap::new();
+        let mut tags = OrderMap::new();
 
         for tag in rows {
             let (distance, ancestor, descendant) = tag.into();
@@ -307,15 +307,15 @@ where
         .await
         .map_err(Error::other)?;
 
-    let mut relations: IndexMap<_, _> = rows.into_iter().collect();
+    let mut relations: OrderMap<_, _> = rows.into_iter().collect();
     let tags =
         if root {
             relations
-                .shift_remove(&TagId::root())
+                .remove(&TagId::root())
                 .map(|relation| extract(relation, depth).children)
                 .unwrap_or_default()
         } else {
-            relations.shift_remove(&TagId::root());
+            relations.remove(&TagId::root());
             relations
                 .values()
                 .map(|relation| extract(relation.clone(), depth))
@@ -638,7 +638,7 @@ impl TagsRepository for PostgresTagsRepository {
         }
 
         let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
-        let ids: IndexSet<_> = sqlx::query_as_with::<_, PostgresTagRow, _>(&sql, values)
+        let ids: OrderSet<_> = sqlx::query_as_with::<_, PostgresTagRow, _>(&sql, values)
             .fetch(&self.pool)
             .map_ok(|r| TagId::from(r.id))
             .try_collect()

@@ -28,11 +28,13 @@ async fn succeeds() {
                     id: TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
                     slug: "character".to_string(),
                     name: "キャラクター".to_string(),
+                    kana: "キャラクター".to_string(),
                 },
                 TagType {
                     id: TagTypeId::from(uuid!("66666666-6666-6666-6666-666666666666")),
                     slug: "work".to_string(),
                     name: "作品".to_string(),
+                    kana: "さくひん".to_string(),
                 },
             ]))
         });
@@ -50,6 +52,7 @@ async fn succeeds() {
                 id
                 slug
                 name
+                kana
             }
         }
     "#};
@@ -61,11 +64,13 @@ async fn succeeds() {
                 "id": "44444444-4444-4444-4444-444444444444",
                 "slug": "character",
                 "name": "キャラクター",
+                "kana": "キャラクター",
             },
             {
                 "id": "66666666-6666-6666-6666-666666666666",
                 "slug": "work",
                 "name": "作品",
+                "kana": "さくひん",
             },
         ],
     }))

@@ -1,5 +1,3 @@
-use std::collections::BTreeMap;
-
 use chrono::{TimeZone, Utc};
 use domain::{
     entity::{
@@ -9,6 +7,7 @@ use domain::{
     },
     repository::{media::MediaRepository, Direction, Order},
 };
+use ordermap::OrderMap;
 use postgres::media::PostgresMediaRepository;
 use pretty_assertions::assert_eq;
 use test_context::test_context;
@@ -42,7 +41,7 @@ async fn asc_succeeds(ctx: &DatabaseContext) {
         Medium {
             id: MediumId::from(uuid!("ccc5717b-cf11-403d-b466-f37cf1c2e6f6")),
             sources: Vec::new(),
-            tags: BTreeMap::new(),
+            tags: OrderMap::new(),
             replicas: Vec::new(),
             created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 5).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
@@ -50,7 +49,7 @@ async fn asc_succeeds(ctx: &DatabaseContext) {
         Medium {
             id: MediumId::from(uuid!("21cb17ac-6e4c-4da7-8b8a-bc17bc258196")),
             sources: Vec::new(),
-            tags: BTreeMap::new(),
+            tags: OrderMap::new(),
             replicas: Vec::new(),
             created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 6).unwrap(),
@@ -58,7 +57,7 @@ async fn asc_succeeds(ctx: &DatabaseContext) {
         Medium {
             id: MediumId::from(uuid!("2872ed9d-4db9-4b25-b86f-791ad009cc0a")),
             sources: Vec::new(),
-            tags: BTreeMap::new(),
+            tags: OrderMap::new(),
             replicas: Vec::new(),
             created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
@@ -91,7 +90,7 @@ async fn desc_succeeds(ctx: &DatabaseContext) {
         Medium {
             id: MediumId::from(uuid!("43b77865-c05d-4733-b336-95b5522a8a46")),
             sources: Vec::new(),
-            tags: BTreeMap::new(),
+            tags: OrderMap::new(),
             replicas: Vec::new(),
             created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 7).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
@@ -99,7 +98,7 @@ async fn desc_succeeds(ctx: &DatabaseContext) {
         Medium {
             id: MediumId::from(uuid!("2872ed9d-4db9-4b25-b86f-791ad009cc0a")),
             sources: Vec::new(),
-            tags: BTreeMap::new(),
+            tags: OrderMap::new(),
             replicas: Vec::new(),
             created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
@@ -107,7 +106,7 @@ async fn desc_succeeds(ctx: &DatabaseContext) {
         Medium {
             id: MediumId::from(uuid!("21cb17ac-6e4c-4da7-8b8a-bc17bc258196")),
             sources: Vec::new(),
-            tags: BTreeMap::new(),
+            tags: OrderMap::new(),
             replicas: Vec::new(),
             created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 6).unwrap(),
@@ -140,7 +139,7 @@ async fn since_asc_succeeds(ctx: &DatabaseContext) {
         Medium {
             id: MediumId::from(uuid!("21cb17ac-6e4c-4da7-8b8a-bc17bc258196")),
             sources: Vec::new(),
-            tags: BTreeMap::new(),
+            tags: OrderMap::new(),
             replicas: Vec::new(),
             created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 6).unwrap(),
@@ -148,7 +147,7 @@ async fn since_asc_succeeds(ctx: &DatabaseContext) {
         Medium {
             id: MediumId::from(uuid!("2872ed9d-4db9-4b25-b86f-791ad009cc0a")),
             sources: Vec::new(),
-            tags: BTreeMap::new(),
+            tags: OrderMap::new(),
             replicas: Vec::new(),
             created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
@@ -156,7 +155,7 @@ async fn since_asc_succeeds(ctx: &DatabaseContext) {
         Medium {
             id: MediumId::from(uuid!("43b77865-c05d-4733-b336-95b5522a8a46")),
             sources: Vec::new(),
-            tags: BTreeMap::new(),
+            tags: OrderMap::new(),
             replicas: Vec::new(),
             created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 7).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
@@ -189,7 +188,7 @@ async fn since_desc_succeeds(ctx: &DatabaseContext) {
         Medium {
             id: MediumId::from(uuid!("ccc5717b-cf11-403d-b466-f37cf1c2e6f6")),
             sources: Vec::new(),
-            tags: BTreeMap::new(),
+            tags: OrderMap::new(),
             replicas: Vec::new(),
             created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 5).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
@@ -222,7 +221,7 @@ async fn until_asc_succeeds(ctx: &DatabaseContext) {
         Medium {
             id: MediumId::from(uuid!("ccc5717b-cf11-403d-b466-f37cf1c2e6f6")),
             sources: Vec::new(),
-            tags: BTreeMap::new(),
+            tags: OrderMap::new(),
             replicas: Vec::new(),
             created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 5).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
@@ -230,7 +229,7 @@ async fn until_asc_succeeds(ctx: &DatabaseContext) {
         Medium {
             id: MediumId::from(uuid!("21cb17ac-6e4c-4da7-8b8a-bc17bc258196")),
             sources: Vec::new(),
-            tags: BTreeMap::new(),
+            tags: OrderMap::new(),
             replicas: Vec::new(),
             created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 6).unwrap(),
@@ -263,7 +262,7 @@ async fn until_desc_succeeds(ctx: &DatabaseContext) {
         Medium {
             id: MediumId::from(uuid!("43b77865-c05d-4733-b336-95b5522a8a46")),
             sources: Vec::new(),
-            tags: BTreeMap::new(),
+            tags: OrderMap::new(),
             replicas: Vec::new(),
             created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 7).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),

@@ -1,7 +1,6 @@
-use std::collections::BTreeMap;
-
 use chrono::{DateTime, Utc};
 use derive_more::{Deref, Display, From};
+use ordermap::OrderMap;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 use uuid::Uuid;
@@ -20,7 +19,7 @@ pub struct MediumId(Uuid);
 pub struct Medium {
     pub id: MediumId,
     pub sources: Vec<Source>,
-    pub tags: BTreeMap<TagType, Vec<Tag>>,
+    pub tags: OrderMap<TagType, Vec<Tag>>,
     pub replicas: Vec<Replica>,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,

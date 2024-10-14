@@ -1,5 +1,3 @@
-use std::collections::BTreeMap;
-
 use chrono::{TimeZone, Utc};
 use domain::{
     entity::{
@@ -8,6 +6,7 @@ use domain::{
     },
     repository::media::MediaRepository,
 };
+use ordermap::OrderMap;
 use postgres::media::PostgresMediaRepository;
 use pretty_assertions::assert_eq;
 use test_context::test_context;
@@ -35,7 +34,7 @@ async fn succeeds(ctx: &DatabaseContext) {
         Medium {
             id: MediumId::from(uuid!("2872ed9d-4db9-4b25-b86f-791ad009cc0a")),
             sources: Vec::new(),
-            tags: BTreeMap::new(),
+            tags: OrderMap::new(),
             replicas: vec![
                 Replica {
                     id: ReplicaId::from(uuid!("b7a54e0b-6ab3-4385-a18b-bacadff6b18d")),
@@ -64,7 +63,7 @@ async fn succeeds(ctx: &DatabaseContext) {
         Medium {
             id: MediumId::from(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1")),
             sources: Vec::new(),
-            tags: BTreeMap::new(),
+            tags: OrderMap::new(),
             replicas: vec![
                 Replica {
                     id: ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be")),

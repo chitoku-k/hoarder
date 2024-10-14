@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeSet;
 
 use chrono::{DateTime, TimeZone, Utc};
 use domain::{
@@ -11,6 +11,7 @@ use domain::{
     repository::media::MediaRepository,
 };
 use futures::TryStreamExt;
+use ordermap::OrderMap;
 use postgres::media::PostgresMediaRepository;
 use pretty_assertions::assert_eq;
 use sqlx::Row;
@@ -35,7 +36,7 @@ async fn succeeds(ctx: &DatabaseContext) {
 
     let actual_id = *actual.id;
     assert_eq!(actual.sources, Vec::new());
-    assert_eq!(actual.tags, BTreeMap::new());
+    assert_eq!(actual.tags, OrderMap::<TagType, Vec<Tag>>::new());
     assert_eq!(actual.replicas, Vec::new());
 
     let actual = sqlx::query(r#"SELECT "id" FROM "media" WHERE "id" = $1"#)
@@ -62,7 +63,7 @@ async fn with_created_at_succeeds(ctx: &DatabaseContext) {
 
     let actual_id = *actual.id;
     assert_eq!(actual.sources, Vec::new());
-    assert_eq!(actual.tags, BTreeMap::new());
+    assert_eq!(actual.tags, OrderMap::<TagType, Vec<Tag>>::new());
     assert_eq!(actual.replicas, Vec::new());
 
     let actual = sqlx::query(r#"SELECT "id", "created_at" FROM "media" WHERE "id" = $1"#)
@@ -120,7 +121,7 @@ async fn with_sources_succeeds(ctx: &DatabaseContext) {
             updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
         },
     ]);
-    assert_eq!(actual.tags, BTreeMap::new());
+    assert_eq!(actual.tags, OrderMap::<TagType, Vec<Tag>>::new());
     assert_eq!(actual.replicas, Vec::new());
 
     let actual = sqlx::query(r#"SELECT "id" FROM "media" WHERE "id" = $1"#)
@@ -173,12 +174,79 @@ async fn with_tags_succeeds(ctx: &DatabaseContext) {
     let actual_id = *actual.id;
     assert_eq!(actual.sources, Vec::new());
     assert_eq!(actual.tags, {
-        let mut tags = BTreeMap::new();
+        let mut tags = OrderMap::new();
+        tags.insert(
+            TagType {
+                id: TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
+                slug: "character".to_string(),
+                name: "キャラクター".to_string(),
+                kana: "キャラクター".to_string(),
+            },
+            vec![
+                Tag {
+                    id: TagId::from(uuid!("69c4860d-24d0-41f6-a3ab-ac07dea5abd6")),
+                    name: "歳納京子".to_string(),
+                    kana: "としのうきょうこ".to_string(),
+                    aliases: AliasSet::default(),
+                    parent: Some(Box::new(Tag {
+                        id: TagId::from(uuid!("e8d32062-0185-43e8-a27d-6ca707d7dd60")),
+                        name: "七森中☆ごらく部".to_string(),
+                        kana: "ななもりちゅうごらくぶ".to_string(),
+                        aliases: AliasSet::default(),
+                        parent: Some(Box::new(Tag {
+                            id: TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
+                            name: "ゆるゆり".to_string(),
+                            kana: "ゆるゆり".to_string(),
+                            aliases: AliasSet::default(),
+                            parent: None,
+                            children: Vec::new(),
+                            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 5).unwrap(),
+                            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
+                        })),
+                        children: Vec::new(),
+                        created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
+                        updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
+                    })),
+                    children: Vec::new(),
+                    created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 7).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
+                },
+                Tag {
+                    id: TagId::from(uuid!("a2a6c29d-18d0-47b1-a324-88e93c267707")),
+                    name: "船見結衣".to_string(),
+                    kana: "ふなみゆい".to_string(),
+                    aliases: AliasSet::default(),
+                    parent: Some(Box::new(Tag {
+                        id: TagId::from(uuid!("e8d32062-0185-43e8-a27d-6ca707d7dd60")),
+                        name: "七森中☆ごらく部".to_string(),
+                        kana: "ななもりちゅうごらくぶ".to_string(),
+                        aliases: AliasSet::default(),
+                        parent: Some(Box::new(Tag {
+                            id: TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
+                            name: "ゆるゆり".to_string(),
+                            kana: "ゆるゆり".to_string(),
+                            aliases: AliasSet::default(),
+                            parent: None,
+                            children: Vec::new(),
+                            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 5).unwrap(),
+                            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
+                        })),
+                        children: Vec::new(),
+                        created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
+                        updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
+                    })),
+                    children: Vec::new(),
+                    created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 7).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap(),
+                },
+            ],
+        );
         tags.insert(
             TagType {
                 id: TagTypeId::from(uuid!("1e5021f0-d8ef-4859-815a-747bf3175724")),
                 slug: "work".to_string(),
                 name: "作品".to_string(),
+                kana: "さくひん".to_string(),
             },
             vec![
                 Tag {
@@ -252,71 +320,6 @@ async fn with_tags_succeeds(ctx: &DatabaseContext) {
                     ],
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 5).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
-                },
-            ],
-        );
-        tags.insert(
-            TagType {
-                id: TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
-                slug: "character".to_string(),
-                name: "キャラクター".to_string(),
-            },
-            vec![
-                Tag {
-                    id: TagId::from(uuid!("69c4860d-24d0-41f6-a3ab-ac07dea5abd6")),
-                    name: "歳納京子".to_string(),
-                    kana: "としのうきょうこ".to_string(),
-                    aliases: AliasSet::default(),
-                    parent: Some(Box::new(Tag {
-                        id: TagId::from(uuid!("e8d32062-0185-43e8-a27d-6ca707d7dd60")),
-                        name: "七森中☆ごらく部".to_string(),
-                        kana: "ななもりちゅうごらくぶ".to_string(),
-                        aliases: AliasSet::default(),
-                        parent: Some(Box::new(Tag {
-                            id: TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
-                            name: "ゆるゆり".to_string(),
-                            kana: "ゆるゆり".to_string(),
-                            aliases: AliasSet::default(),
-                            parent: None,
-                            children: Vec::new(),
-                            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 5).unwrap(),
-                            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
-                        })),
-                        children: Vec::new(),
-                        created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
-                        updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
-                    })),
-                    children: Vec::new(),
-                    created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 7).unwrap(),
-                    updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
-                },
-                Tag {
-                    id: TagId::from(uuid!("a2a6c29d-18d0-47b1-a324-88e93c267707")),
-                    name: "船見結衣".to_string(),
-                    kana: "ふなみゆい".to_string(),
-                    aliases: AliasSet::default(),
-                    parent: Some(Box::new(Tag {
-                        id: TagId::from(uuid!("e8d32062-0185-43e8-a27d-6ca707d7dd60")),
-                        name: "七森中☆ごらく部".to_string(),
-                        kana: "ななもりちゅうごらくぶ".to_string(),
-                        aliases: AliasSet::default(),
-                        parent: Some(Box::new(Tag {
-                            id: TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
-                            name: "ゆるゆり".to_string(),
-                            kana: "ゆるゆり".to_string(),
-                            aliases: AliasSet::default(),
-                            parent: None,
-                            children: Vec::new(),
-                            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 5).unwrap(),
-                            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
-                        })),
-                        children: Vec::new(),
-                        created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
-                        updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
-                    })),
-                    children: Vec::new(),
-                    created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 7).unwrap(),
-                    updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap(),
                 },
             ],
         );
@@ -410,12 +413,79 @@ async fn with_sources_tags_succeeds(ctx: &DatabaseContext) {
         },
     ]);
     assert_eq!(actual.tags, {
-        let mut tags = BTreeMap::new();
+        let mut tags = OrderMap::new();
+        tags.insert(
+            TagType {
+                id: TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
+                slug: "character".to_string(),
+                name: "キャラクター".to_string(),
+                kana: "キャラクター".to_string(),
+            },
+            vec![
+                Tag {
+                    id: TagId::from(uuid!("69c4860d-24d0-41f6-a3ab-ac07dea5abd6")),
+                    name: "歳納京子".to_string(),
+                    kana: "としのうきょうこ".to_string(),
+                    aliases: AliasSet::default(),
+                    parent: Some(Box::new(Tag {
+                        id: TagId::from(uuid!("e8d32062-0185-43e8-a27d-6ca707d7dd60")),
+                        name: "七森中☆ごらく部".to_string(),
+                        kana: "ななもりちゅうごらくぶ".to_string(),
+                        aliases: AliasSet::default(),
+                        parent: Some(Box::new(Tag {
+                            id: TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
+                            name: "ゆるゆり".to_string(),
+                            kana: "ゆるゆり".to_string(),
+                            aliases: AliasSet::default(),
+                            parent: None,
+                            children: Vec::new(),
+                            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 5).unwrap(),
+                            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
+                        })),
+                        children: Vec::new(),
+                        created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
+                        updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
+                    })),
+                    children: Vec::new(),
+                    created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 7).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
+                },
+                Tag {
+                    id: TagId::from(uuid!("a2a6c29d-18d0-47b1-a324-88e93c267707")),
+                    name: "船見結衣".to_string(),
+                    kana: "ふなみゆい".to_string(),
+                    aliases: AliasSet::default(),
+                    parent: Some(Box::new(Tag {
+                        id: TagId::from(uuid!("e8d32062-0185-43e8-a27d-6ca707d7dd60")),
+                        name: "七森中☆ごらく部".to_string(),
+                        kana: "ななもりちゅうごらくぶ".to_string(),
+                        aliases: AliasSet::default(),
+                        parent: Some(Box::new(Tag {
+                            id: TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
+                            name: "ゆるゆり".to_string(),
+                            kana: "ゆるゆり".to_string(),
+                            aliases: AliasSet::default(),
+                            parent: None,
+                            children: Vec::new(),
+                            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 5).unwrap(),
+                            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
+                        })),
+                        children: Vec::new(),
+                        created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
+                        updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
+                    })),
+                    children: Vec::new(),
+                    created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 7).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap(),
+                },
+            ],
+        );
         tags.insert(
             TagType {
                 id: TagTypeId::from(uuid!("1e5021f0-d8ef-4859-815a-747bf3175724")),
                 slug: "work".to_string(),
                 name: "作品".to_string(),
+                kana: "さくひん".to_string(),
             },
             vec![
                 Tag {
@@ -489,71 +559,6 @@ async fn with_sources_tags_succeeds(ctx: &DatabaseContext) {
                     ],
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 5).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
-                },
-            ],
-        );
-        tags.insert(
-            TagType {
-                id: TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
-                slug: "character".to_string(),
-                name: "キャラクター".to_string(),
-            },
-            vec![
-                Tag {
-                    id: TagId::from(uuid!("69c4860d-24d0-41f6-a3ab-ac07dea5abd6")),
-                    name: "歳納京子".to_string(),
-                    kana: "としのうきょうこ".to_string(),
-                    aliases: AliasSet::default(),
-                    parent: Some(Box::new(Tag {
-                        id: TagId::from(uuid!("e8d32062-0185-43e8-a27d-6ca707d7dd60")),
-                        name: "七森中☆ごらく部".to_string(),
-                        kana: "ななもりちゅうごらくぶ".to_string(),
-                        aliases: AliasSet::default(),
-                        parent: Some(Box::new(Tag {
-                            id: TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
-                            name: "ゆるゆり".to_string(),
-                            kana: "ゆるゆり".to_string(),
-                            aliases: AliasSet::default(),
-                            parent: None,
-                            children: Vec::new(),
-                            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 5).unwrap(),
-                            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
-                        })),
-                        children: Vec::new(),
-                        created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
-                        updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
-                    })),
-                    children: Vec::new(),
-                    created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 7).unwrap(),
-                    updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
-                },
-                Tag {
-                    id: TagId::from(uuid!("a2a6c29d-18d0-47b1-a324-88e93c267707")),
-                    name: "船見結衣".to_string(),
-                    kana: "ふなみゆい".to_string(),
-                    aliases: AliasSet::default(),
-                    parent: Some(Box::new(Tag {
-                        id: TagId::from(uuid!("e8d32062-0185-43e8-a27d-6ca707d7dd60")),
-                        name: "七森中☆ごらく部".to_string(),
-                        kana: "ななもりちゅうごらくぶ".to_string(),
-                        aliases: AliasSet::default(),
-                        parent: Some(Box::new(Tag {
-                            id: TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
-                            name: "ゆるゆり".to_string(),
-                            kana: "ゆるゆり".to_string(),
-                            aliases: AliasSet::default(),
-                            parent: None,
-                            children: Vec::new(),
-                            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 5).unwrap(),
-                            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
-                        })),
-                        children: Vec::new(),
-                        created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
-                        updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
-                    })),
-                    children: Vec::new(),
-                    created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 7).unwrap(),
-                    updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap(),
                 },
             ],
         );

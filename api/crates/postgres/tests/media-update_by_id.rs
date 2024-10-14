@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeSet;
 
 use chrono::{DateTime, TimeZone, Utc};
 use domain::{
@@ -14,6 +14,7 @@ use domain::{
     repository::media::MediaRepository,
 };
 use futures::TryStreamExt;
+use ordermap::OrderMap;
 use postgres::media::PostgresMediaRepository;
 use pretty_assertions::{assert_eq, assert_matches};
 use sqlx::Row;
@@ -61,7 +62,7 @@ async fn succeeds(ctx: &DatabaseContext) {
     ).await.unwrap();
 
     assert_eq!(actual.sources, Vec::new());
-    assert_eq!(actual.tags, BTreeMap::new());
+    assert_eq!(actual.tags, OrderMap::<TagType, Vec<Tag>>::new());
     assert_eq!(actual.replicas, Vec::new());
     assert_eq!(actual.created_at, Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 7).unwrap());
     assert_ne!(actual.updated_at, Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap());
@@ -151,12 +152,42 @@ async fn with_tags_succeeds(ctx: &DatabaseContext) {
 
     assert_eq!(actual.sources, Vec::new());
     assert_eq!(actual.tags, {
-        let mut tags = BTreeMap::new();
+        let mut tags = OrderMap::new();
+        tags.insert(
+            TagType {
+                id: TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
+                slug: "character".to_string(),
+                name: "キャラクター".to_string(),
+                kana: "キャラクター".to_string(),
+            },
+            vec![
+                Tag {
+                    id: TagId::from(uuid!("d65c551d-5a49-4ec7-8e8b-0054e116a18d")),
+                    name: "フランドール・スカーレット".to_string(),
+                    kana: "フランドール・スカーレット".to_string(),
+                    aliases: AliasSet::new(BTreeSet::from(["フラン".to_string()])),
+                    parent: Some(Box::new(Tag {
+                        id: TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
+                        name: "東方Project".to_string(),
+                        kana: "とうほうProject".to_string(),
+                        aliases: AliasSet::new(BTreeSet::from(["東方".to_string()])),
+                        parent: None,
+                        children: Vec::new(),
+                        created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 8).unwrap(),
+                        updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap(),
+                    })),
+                    children: Vec::new(),
+                    created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 9).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap(),
+                },
+            ],
+        );
         tags.insert(
             TagType {
                 id: TagTypeId::from(uuid!("1e5021f0-d8ef-4859-815a-747bf3175724")),
                 slug: "work".to_string(),
                 name: "作品".to_string(),
+                kana: "さくひん".to_string(),
             },
             vec![
                 Tag {
@@ -208,34 +239,6 @@ async fn with_tags_succeeds(ctx: &DatabaseContext) {
                         },
                     ],
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 8).unwrap(),
-                    updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap(),
-                },
-            ],
-        );
-        tags.insert(
-            TagType {
-                id: TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
-                slug: "character".to_string(),
-                name: "キャラクター".to_string(),
-            },
-            vec![
-                Tag {
-                    id: TagId::from(uuid!("d65c551d-5a49-4ec7-8e8b-0054e116a18d")),
-                    name: "フランドール・スカーレット".to_string(),
-                    kana: "フランドール・スカーレット".to_string(),
-                    aliases: AliasSet::new(BTreeSet::from(["フラン".to_string()])),
-                    parent: Some(Box::new(Tag {
-                        id: TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
-                        name: "東方Project".to_string(),
-                        kana: "とうほうProject".to_string(),
-                        aliases: AliasSet::new(BTreeSet::from(["東方".to_string()])),
-                        parent: None,
-                        children: Vec::new(),
-                        created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 8).unwrap(),
-                        updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap(),
-                    })),
-                    children: Vec::new(),
-                    created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 9).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap(),
                 },
             ],
@@ -330,7 +333,7 @@ async fn with_replicas_succeeds(ctx: &DatabaseContext) {
     ).await.unwrap();
 
     assert_eq!(actual.sources, Vec::new());
-    assert_eq!(actual.tags, BTreeMap::new());
+    assert_eq!(actual.tags, OrderMap::<TagType, Vec<Tag>>::new());
     assert_eq!(actual.replicas, vec![
         Replica {
             id: ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be")),
@@ -487,7 +490,7 @@ async fn with_sources_succeeds(ctx: &DatabaseContext) {
             updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 11).unwrap(),
         },
     ]);
-    assert_eq!(actual.tags, BTreeMap::new());
+    assert_eq!(actual.tags, OrderMap::<TagType, Vec<Tag>>::new());
     assert_eq!(actual.replicas, Vec::new());
     assert_eq!(actual.created_at, Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 7).unwrap());
     assert_ne!(actual.updated_at, Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap());
@@ -580,7 +583,7 @@ async fn reorder_replicas_succeeds(ctx: &DatabaseContext) {
     ).await.unwrap();
 
     assert_eq!(actual.sources, Vec::new());
-    assert_eq!(actual.tags, BTreeMap::new());
+    assert_eq!(actual.tags, OrderMap::<TagType, Vec<Tag>>::new());
     assert_eq!(actual.replicas, Vec::new());
     assert_eq!(actual.created_at, Utc.with_ymd_and_hms(2022, 4, 5, 6, 7, 8).unwrap());
     assert_ne!(actual.updated_at, Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap());
@@ -682,12 +685,42 @@ async fn reorder_replicas_with_tags_succeeds(ctx: &DatabaseContext) {
 
     assert_eq!(actual.sources, Vec::new());
     assert_eq!(actual.tags, {
-        let mut tags = BTreeMap::new();
+        let mut tags = OrderMap::new();
+        tags.insert(
+            TagType {
+                id: TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
+                slug: "character".to_string(),
+                name: "キャラクター".to_string(),
+                kana: "キャラクター".to_string(),
+            },
+            vec![
+                Tag {
+                    id: TagId::from(uuid!("d65c551d-5a49-4ec7-8e8b-0054e116a18d")),
+                    name: "フランドール・スカーレット".to_string(),
+                    kana: "フランドール・スカーレット".to_string(),
+                    aliases: AliasSet::new(BTreeSet::from(["フラン".to_string()])),
+                    parent: Some(Box::new(Tag {
+                        id: TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
+                        name: "東方Project".to_string(),
+                        kana: "とうほうProject".to_string(),
+                        aliases: AliasSet::new(BTreeSet::from(["東方".to_string()])),
+                        parent: None,
+                        children: Vec::new(),
+                        created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 8).unwrap(),
+                        updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap(),
+                    })),
+                    children: Vec::new(),
+                    created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 9).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap(),
+                },
+            ],
+        );
         tags.insert(
             TagType {
                 id: TagTypeId::from(uuid!("1e5021f0-d8ef-4859-815a-747bf3175724")),
                 slug: "work".to_string(),
                 name: "作品".to_string(),
+                kana: "さくひん".to_string(),
             },
             vec![
                 Tag {
@@ -739,34 +772,6 @@ async fn reorder_replicas_with_tags_succeeds(ctx: &DatabaseContext) {
                         },
                     ],
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 8).unwrap(),
-                    updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap(),
-                },
-            ],
-        );
-        tags.insert(
-            TagType {
-                id: TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
-                slug: "character".to_string(),
-                name: "キャラクター".to_string(),
-            },
-            vec![
-                Tag {
-                    id: TagId::from(uuid!("d65c551d-5a49-4ec7-8e8b-0054e116a18d")),
-                    name: "フランドール・スカーレット".to_string(),
-                    kana: "フランドール・スカーレット".to_string(),
-                    aliases: AliasSet::new(BTreeSet::from(["フラン".to_string()])),
-                    parent: Some(Box::new(Tag {
-                        id: TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
-                        name: "東方Project".to_string(),
-                        kana: "とうほうProject".to_string(),
-                        aliases: AliasSet::new(BTreeSet::from(["東方".to_string()])),
-                        parent: None,
-                        children: Vec::new(),
-                        created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 8).unwrap(),
-                        updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap(),
-                    })),
-                    children: Vec::new(),
-                    created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 9).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap(),
                 },
             ],
@@ -873,7 +878,7 @@ async fn reorder_replicas_with_replicas_succeeds(ctx: &DatabaseContext) {
     ).await.unwrap();
 
     assert_eq!(actual.sources, Vec::new());
-    assert_eq!(actual.tags, BTreeMap::new());
+    assert_eq!(actual.tags, OrderMap::<TagType, Vec<Tag>>::new());
     assert_eq!(actual.replicas, vec![
         Replica {
             id: ReplicaId::from(uuid!("6fae1497-e987-492e-987a-f9870b7d3c5b")),
@@ -1042,7 +1047,7 @@ async fn reorder_replicas_with_sources_succeeds(ctx: &DatabaseContext) {
             updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 11).unwrap(),
         },
     ]);
-    assert_eq!(actual.tags, BTreeMap::new());
+    assert_eq!(actual.tags, OrderMap::<TagType, Vec<Tag>>::new());
     assert_eq!(actual.replicas, Vec::new());
     assert_eq!(actual.created_at, Utc.with_ymd_and_hms(2022, 4, 5, 6, 7, 8).unwrap());
     assert_ne!(actual.updated_at, Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap());

@@ -24,6 +24,7 @@ struct PostgresTagTypeRow {
     id: PostgresTagTypeId,
     slug: String,
     name: String,
+    kana: String,
 }
 
 #[derive(Iden)]
@@ -33,6 +34,7 @@ pub(crate) enum PostgresTagType {
     Id,
     Slug,
     Name,
+    Kana,
 }
 
 #[derive(Iden)]
@@ -40,6 +42,7 @@ pub(crate) enum PostgresTagTagType {
     TagTypeId,
     TagTypeSlug,
     TagTypeName,
+    TagTypeKana,
 }
 
 sea_query_uuid_value!(PostgresTagTypeId, TagTypeId);
@@ -50,16 +53,17 @@ impl From<PostgresTagTypeRow> for TagType {
             id: row.id.into(),
             slug: row.slug,
             name: row.name,
+            kana: row.kana,
         }
     }
 }
 
 impl TagTypesRepository for PostgresTagTypesRepository {
-    async fn create(&self, slug: &str, name: &str) -> Result<TagType> {
+    async fn create(&self, slug: &str, name: &str, kana: &str) -> Result<TagType> {
         let (sql, values) = Query::insert()
             .into_table(PostgresTagType::Table)
-            .columns([PostgresTagType::Slug, PostgresTagType::Name])
-            .values([Expr::val(slug).into(), Expr::val(name).into()])
+            .columns([PostgresTagType::Slug, PostgresTagType::Name, PostgresTagType::Kana])
+            .values([Expr::val(slug).into(), Expr::val(name).into(), Expr::val(kana).into()])
             .map_err(Error::other)?
             .returning(
                 Query::returning()
@@ -67,6 +71,7 @@ impl TagTypesRepository for PostgresTagTypesRepository {
                         PostgresTagType::Id,
                         PostgresTagType::Slug,
                         PostgresTagType::Name,
+                        PostgresTagType::Kana,
                     ])
             )
             .build_sqlx(PostgresQueryBuilder);
@@ -86,9 +91,10 @@ impl TagTypesRepository for PostgresTagTypesRepository {
                 PostgresTagType::Id,
                 PostgresTagType::Slug,
                 PostgresTagType::Name,
+                PostgresTagType::Kana,
             ])
             .from(PostgresTagType::Table)
-            .order_by(PostgresTagType::Name, Order::Asc)
+            .order_by(PostgresTagType::Kana, Order::Asc)
             .build_sqlx(PostgresQueryBuilder);
 
         let tag_types = sqlx::query_as_with::<_, PostgresTagTypeRow, _>(&sql, values)
@@ -101,7 +107,7 @@ impl TagTypesRepository for PostgresTagTypesRepository {
         Ok(tag_types)
     }
 
-    async fn update_by_id<'a>(&self, id: TagTypeId, slug: Option<&'a str>, name: Option<&'a str>) -> Result<TagType> {
+    async fn update_by_id<'a>(&self, id: TagTypeId, slug: Option<&'a str>, name: Option<&'a str>, kana: Option<&'a str>) -> Result<TagType> {
         let mut tx = self.pool.begin().await.map_err(Error::other)?;
 
         let (sql, values) = Query::select()
@@ -109,6 +115,7 @@ impl TagTypesRepository for PostgresTagTypesRepository {
                 PostgresTagType::Id,
                 PostgresTagType::Slug,
                 PostgresTagType::Name,
+                PostgresTagType::Kana,
             ])
             .from(PostgresTagType::Table)
             .and_where(Expr::col(PostgresTagType::Id).eq(PostgresTagTypeId::from(id)))
@@ -123,11 +130,13 @@ impl TagTypesRepository for PostgresTagTypesRepository {
 
         let slug = slug.unwrap_or(&tag_type.slug);
         let name = name.unwrap_or(&tag_type.name);
+        let kana = kana.unwrap_or(&tag_type.kana);
 
         let (sql, values) = Query::update()
             .table(PostgresTagType::Table)
             .value(PostgresTagType::Slug, slug)
             .value(PostgresTagType::Name, name)
+            .value(PostgresTagType::Kana, kana)
             .and_where(Expr::col(PostgresTagType::Id).eq(PostgresTagTypeId::from(id)))
             .returning(
                 Query::returning()
@@ -135,6 +144,7 @@ impl TagTypesRepository for PostgresTagTypesRepository {
                         PostgresTagType::Id,
                         PostgresTagType::Slug,
                         PostgresTagType::Name,
+                        PostgresTagType::Kana,
                     ])
             )
             .build_sqlx(PostgresQueryBuilder);
