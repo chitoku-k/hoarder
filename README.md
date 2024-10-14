@@ -19,7 +19,7 @@ $ docker compose exec api hoarder migration apply
 
 ```bash
 $ docker buildx bake -f docker-bake.hcl
-$ docker run --rm -it container.chitoku.jp/chitoku-k/hoarder/api migration apply
+$ docker run --rm -it ghcr.io/chitoku-k/chitoku-k/hoarder/api migration apply
 ```
 
 ## Configuration
