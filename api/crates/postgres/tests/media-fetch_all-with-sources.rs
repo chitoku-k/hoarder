@@ -155,19 +155,6 @@ async fn desc_succeeds(ctx: &DatabaseContext) {
             id: MediumId::from(uuid!("a8c1a9d2-0d17-422b-9c02-632cb7712b5b")),
             sources: vec![
                 Source {
-                    id: SourceId::from(uuid!("2a82a031-e27a-443e-9f22-bb190f70633a")),
-                    external_service: ExternalService {
-                        id: ExternalServiceId::from(uuid!("2018afa2-aed9-46de-af9e-02e5fab64ed7")),
-                        slug: "skeb".to_string(),
-                        kind: "skeb".to_string(),
-                        name: "Skeb".to_string(),
-                        base_url: Some("https://skeb.jp".to_string()),
-                    },
-                    external_metadata: ExternalMetadata::Skeb { id: 4444, creator_id: "creator_01".to_string() },
-                    created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 10).unwrap(),
-                    updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap(),
-                },
-                Source {
                     id: SourceId::from(uuid!("e607c6f5-af17-4f65-9868-b3e72f692f4d")),
                     external_service: ExternalService {
                         id: ExternalServiceId::from(uuid!("4e0c68c7-e5ec-4d60-b9eb-733f47290cd3")),
@@ -180,6 +167,19 @@ async fn desc_succeeds(ctx: &DatabaseContext) {
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 9).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 13).unwrap(),
                 },
+                Source {
+                    id: SourceId::from(uuid!("2a82a031-e27a-443e-9f22-bb190f70633a")),
+                    external_service: ExternalService {
+                        id: ExternalServiceId::from(uuid!("2018afa2-aed9-46de-af9e-02e5fab64ed7")),
+                        slug: "skeb".to_string(),
+                        kind: "skeb".to_string(),
+                        name: "Skeb".to_string(),
+                        base_url: Some("https://skeb.jp".to_string()),
+                    },
+                    external_metadata: ExternalMetadata::Skeb { id: 4444, creator_id: "creator_01".to_string() },
+                    created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 10).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap(),
+                },
             ],
             tags: OrderMap::new(),
             replicas: Vec::new(),
@@ -189,19 +189,6 @@ async fn desc_succeeds(ctx: &DatabaseContext) {
         Medium {
             id: MediumId::from(uuid!("348ffaa9-624b-488f-9c63-d61f78db06a7")),
             sources: vec![
-                Source {
-                    id: SourceId::from(uuid!("725792bf-dbf0-4af1-b639-a147f0b327b2")),
-                    external_service: ExternalService {
-                        id: ExternalServiceId::from(uuid!("2018afa2-aed9-46de-af9e-02e5fab64ed7")),
-                        slug: "skeb".to_string(),
-                        kind: "skeb".to_string(),
-                        name: "Skeb".to_string(),
-                        base_url: Some("https://skeb.jp".to_string()),
-                    },
-                    external_metadata: ExternalMetadata::Skeb { id: 2222, creator_id: "creator_02".to_string() },
-                    created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 12).unwrap(),
-                    updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
-                },
                 Source {
                     id: SourceId::from(uuid!("da2e3cc8-5b12-45fc-b720-815e74fb8fe6")),
                     external_service: ExternalService {
@@ -214,6 +201,19 @@ async fn desc_succeeds(ctx: &DatabaseContext) {
                     external_metadata: ExternalMetadata::Pixiv { id: 6666666 },
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 9).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap(),
+                },
+                Source {
+                    id: SourceId::from(uuid!("725792bf-dbf0-4af1-b639-a147f0b327b2")),
+                    external_service: ExternalService {
+                        id: ExternalServiceId::from(uuid!("2018afa2-aed9-46de-af9e-02e5fab64ed7")),
+                        slug: "skeb".to_string(),
+                        kind: "skeb".to_string(),
+                        name: "Skeb".to_string(),
+                        base_url: Some("https://skeb.jp".to_string()),
+                    },
+                    external_metadata: ExternalMetadata::Skeb { id: 2222, creator_id: "creator_02".to_string() },
+                    created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 12).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
                 },
             ],
             tags: OrderMap::new(),
@@ -244,19 +244,6 @@ async fn since_asc_succeeds(ctx: &DatabaseContext) {
             id: MediumId::from(uuid!("43b77865-c05d-4733-b336-95b5522a8a46")),
             sources: vec![
                 Source {
-                    id: SourceId::from(uuid!("082bdad0-46a9-4637-af44-3c91a605a5f1")),
-                    external_service: ExternalService {
-                        id: ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")),
-                        slug: "x".to_string(),
-                        kind: "x".to_string(),
-                        name: "X".to_string(),
-                        base_url: Some("https://x.com".to_string()),
-                    },
-                    external_metadata: ExternalMetadata::X { id: 111111111111, creator_id: Some("creator_01".to_string()) },
-                    created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 15).unwrap(),
-                    updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 17).unwrap(),
-                },
-                Source {
                     id: SourceId::from(uuid!("3a8f9940-08bc-48bf-a6dd-e9ceaf685dfd")),
                     external_service: ExternalService {
                         id: ExternalServiceId::from(uuid!("4e0c68c7-e5ec-4d60-b9eb-733f47290cd3")),
@@ -268,6 +255,19 @@ async fn since_asc_succeeds(ctx: &DatabaseContext) {
                     external_metadata: ExternalMetadata::Pixiv { id: 7777777 },
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 7).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 16).unwrap(),
+                },
+                Source {
+                    id: SourceId::from(uuid!("082bdad0-46a9-4637-af44-3c91a605a5f1")),
+                    external_service: ExternalService {
+                        id: ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")),
+                        slug: "x".to_string(),
+                        kind: "x".to_string(),
+                        name: "X".to_string(),
+                        base_url: Some("https://x.com".to_string()),
+                    },
+                    external_metadata: ExternalMetadata::X { id: 111111111111, creator_id: Some("creator_01".to_string()) },
+                    created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 15).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 17).unwrap(),
                 },
             ],
             tags: OrderMap::new(),
@@ -599,19 +599,6 @@ async fn until_desc_succeeds(ctx: &DatabaseContext) {
             id: MediumId::from(uuid!("43b77865-c05d-4733-b336-95b5522a8a46")),
             sources: vec![
                 Source {
-                    id: SourceId::from(uuid!("082bdad0-46a9-4637-af44-3c91a605a5f1")),
-                    external_service: ExternalService {
-                        id: ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")),
-                        slug: "x".to_string(),
-                        kind: "x".to_string(),
-                        name: "X".to_string(),
-                        base_url: Some("https://x.com".to_string()),
-                    },
-                    external_metadata: ExternalMetadata::X { id: 111111111111, creator_id: Some("creator_01".to_string()) },
-                    created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 15).unwrap(),
-                    updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 17).unwrap(),
-                },
-                Source {
                     id: SourceId::from(uuid!("3a8f9940-08bc-48bf-a6dd-e9ceaf685dfd")),
                     external_service: ExternalService {
                         id: ExternalServiceId::from(uuid!("4e0c68c7-e5ec-4d60-b9eb-733f47290cd3")),
@@ -623,6 +610,19 @@ async fn until_desc_succeeds(ctx: &DatabaseContext) {
                     external_metadata: ExternalMetadata::Pixiv { id: 7777777 },
                     created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 7).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 16).unwrap(),
+                },
+                Source {
+                    id: SourceId::from(uuid!("082bdad0-46a9-4637-af44-3c91a605a5f1")),
+                    external_service: ExternalService {
+                        id: ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")),
+                        slug: "x".to_string(),
+                        kind: "x".to_string(),
+                        name: "X".to_string(),
+                        base_url: Some("https://x.com".to_string()),
+                    },
+                    external_metadata: ExternalMetadata::X { id: 111111111111, creator_id: Some("creator_01".to_string()) },
+                    created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 15).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 17).unwrap(),
                 },
             ],
             tags: OrderMap::new(),
