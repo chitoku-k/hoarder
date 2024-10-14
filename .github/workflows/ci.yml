@@ -60,3 +60,39 @@ jobs:
           set: |
             *.cache-from=type=gha
             *.cache-to=type=gha,mode=max
+
+  update-schema:
+    name: Update GraphQL Schema
+    runs-on: ubuntu-latest
+    env:
+      GIT_AUTHOR_NAME: 'github-actions[bot]'
+      GIT_AUTHOR_EMAIL: '41898282+github-actions[bot]@users.noreply.github.com'
+      GIT_COMMITTER_NAME: 'github-actions[bot]'
+      GIT_COMMITTER_EMAIL: '41898282+github-actions[bot]@users.noreply.github.com'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || '' }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build
+        uses: docker/build-push-action@v6
+        id: build
+        with:
+          context: ./api
+          target: debug
+          cache-from: type=gha,scope=${{ github.ref_name }}-debug
+          cache-to: type=gha,scope=${{ github.ref_name }}-debug,mode=max
+          load: true
+      - name: Update GraphQL Schema
+        run: |
+          docker run --rm ${{ steps.build.outputs.imageid }} hoarder schema print > ./schema/hoarder.gql
+
+          if git diff --exit-code &> /dev/null; then
+            exit 0
+          fi
+
+          git add ./schema/hoarder.gql
+          git commit --message="Update GraphQL Schema"
+          git push
