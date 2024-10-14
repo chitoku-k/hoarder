@@ -9,10 +9,12 @@ import Snackbar from '@mui/material/Snackbar'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 
-import { TAG_TYPE_SLUG_DUPLICATE, useError, useUpdateTagType } from '@/hooks'
+import { TAG_TYPE_SLUG_DUPLICATE, useBeforeUnload, useError, useUpdateTagType } from '@/hooks'
 import type { TagType } from '@/types'
 
 import styles from './styles.module.scss'
+
+const hasChanges = (a: TagType, b: TagType) => a.name !== b.name || a.kana !== b.kana
 
 const TagTypeListColumnBodyEdit: FunctionComponent<TagTypeListColumnBodyEditProps> = ({
   tagType: current,
@@ -38,6 +40,14 @@ const TagTypeListColumnBodyEdit: FunctionComponent<TagTypeListColumnBodyEditProp
     }))
   }, [])
 
+  const handleChangeKana = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    const kana = e.currentTarget.value
+    setTagType(tagType => ({
+      ...tagType,
+      kana,
+    }))
+  }, [])
+
   const handleChangeSlug = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     const slug = e.currentTarget.value
     setTagType(tagType => ({
@@ -55,6 +65,7 @@ const TagTypeListColumnBodyEdit: FunctionComponent<TagTypeListColumnBodyEditProp
       id: tagType.id,
       slug: tagType.slug,
       name: tagType.name,
+      kana: tagType.kana,
     }).then(
       newTagType => {
         close()
@@ -68,6 +79,8 @@ const TagTypeListColumnBodyEdit: FunctionComponent<TagTypeListColumnBodyEditProp
 
   const tagTypeSlugDuplicate = graphQLError(error, TAG_TYPE_SLUG_DUPLICATE)
   const isSlugDuplicate = tagTypeSlugDuplicate?.extensions.details.data.slug === tagType.slug
+  const changed = hasChanges(tagType, current)
+  useBeforeUnload(changed)
 
   return (
     <Stack className={styles.container} direction="column-reverse" justifyContent="flex-end">
@@ -79,6 +92,13 @@ const TagTypeListColumnBodyEdit: FunctionComponent<TagTypeListColumnBodyEditProp
           value={tagType.name}
           onChange={handleChangeName}
           inputRef={ref}
+        />
+        <TextField
+          margin="normal"
+          label="ふりがな"
+          disabled={loading}
+          value={tagType.kana}
+          onChange={handleChangeKana}
         />
         {isSlugDuplicate ? (
           <TextField

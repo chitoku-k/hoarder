@@ -2,10 +2,11 @@ fragment tagTypeNode on TagType {
   id
   slug
   name
+  kana
 }
 
-mutation CreateTagType($slug: String!, $name: String!) {
-  createTagType(slug: $slug, name: $name) {
+mutation CreateTagType($slug: String!, $name: String!, $kana: String!) {
+  createTagType(slug: $slug, name: $name, kana: $kana) {
     ...tagTypeNode
   }
 }
