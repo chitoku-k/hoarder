@@ -1,4 +1,4 @@
-use std::{collections::BTreeMap, io::Cursor};
+use std::io::Cursor;
 
 use anyhow::anyhow;
 use chrono::{TimeZone, Utc};
@@ -24,6 +24,7 @@ use domain::{
     service::media::{MediaService, MediaServiceInterface, MediumOverwriteBehavior, MediumSource},
 };
 use futures::future::{err, ok};
+use ordermap::OrderMap;
 use pretty_assertions::{assert_eq, assert_matches};
 use serial_test::serial;
 use tokio::io::BufReader;
@@ -89,12 +90,13 @@ async fn create_medium_succeeds() {
                     },
                 ],
                 tags: {
-                    let mut tags = BTreeMap::new();
+                    let mut tags = OrderMap::new();
                     tags.insert(
                         TagType {
                             id: TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
                             slug: "character".to_string(),
                             name: "キャラクター".to_string(),
+                            kana: "キャラクター".to_string(),
                         },
                         vec![
                             Tag {
@@ -114,6 +116,7 @@ async fn create_medium_succeeds() {
                             id: TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
                             slug: "character".to_string(),
                             name: "キャラクター".to_string(),
+                            kana: "キャラクター".to_string(),
                         },
                         vec![
                             Tag {
@@ -193,12 +196,13 @@ async fn create_medium_succeeds() {
             },
         ],
         tags: {
-            let mut tags = BTreeMap::new();
+            let mut tags = OrderMap::new();
             tags.insert(
                 TagType {
                     id: TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
                     slug: "character".to_string(),
                     name: "キャラクター".to_string(),
+                    kana: "キャラクター".to_string(),
                 },
                 vec![
                     Tag {
@@ -218,6 +222,7 @@ async fn create_medium_succeeds() {
                     id: TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
                     slug: "character".to_string(),
                     name: "キャラクター".to_string(),
+                    kana: "キャラクター".to_string(),
                 },
                 vec![
                     Tag {
@@ -658,7 +663,7 @@ async fn get_media_succeeds() {
                 Medium {
                     id: MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
                     sources: Vec::new(),
-                    tags: BTreeMap::new(),
+                    tags: OrderMap::new(),
                     replicas: Vec::new(),
                     created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 56).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 0).unwrap(),
@@ -666,7 +671,7 @@ async fn get_media_succeeds() {
                 Medium {
                     id: MediumId::from(uuid!("88888888-8888-8888-8888-888888888888")),
                     sources: Vec::new(),
-                    tags: BTreeMap::new(),
+                    tags: OrderMap::new(),
                     replicas: Vec::new(),
                     created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 57).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 1).unwrap(),
@@ -674,7 +679,7 @@ async fn get_media_succeeds() {
                 Medium {
                     id: MediumId::from(uuid!("99999999-9999-9999-9999-999999999999")),
                     sources: Vec::new(),
-                    tags: BTreeMap::new(),
+                    tags: OrderMap::new(),
                     replicas: Vec::new(),
                     created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 58).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 2).unwrap(),
@@ -702,7 +707,7 @@ async fn get_media_succeeds() {
         Medium {
             id: MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
             sources: Vec::new(),
-            tags: BTreeMap::new(),
+            tags: OrderMap::new(),
             replicas: Vec::new(),
             created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 56).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 0).unwrap(),
@@ -710,7 +715,7 @@ async fn get_media_succeeds() {
         Medium {
             id: MediumId::from(uuid!("88888888-8888-8888-8888-888888888888")),
             sources: Vec::new(),
-            tags: BTreeMap::new(),
+            tags: OrderMap::new(),
             replicas: Vec::new(),
             created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 57).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 1).unwrap(),
@@ -718,7 +723,7 @@ async fn get_media_succeeds() {
         Medium {
             id: MediumId::from(uuid!("99999999-9999-9999-9999-999999999999")),
             sources: Vec::new(),
-            tags: BTreeMap::new(),
+            tags: OrderMap::new(),
             replicas: Vec::new(),
             created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 58).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 2).unwrap(),
@@ -786,7 +791,7 @@ async fn get_media_by_ids_succeeds() {
                 Medium {
                     id: MediumId::from(uuid!("88888888-8888-8888-8888-888888888888")),
                     sources: Vec::new(),
-                    tags: BTreeMap::new(),
+                    tags: OrderMap::new(),
                     replicas: Vec::new(),
                     created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 57).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 1).unwrap(),
@@ -794,7 +799,7 @@ async fn get_media_by_ids_succeeds() {
                 Medium {
                     id: MediumId::from(uuid!("99999999-9999-9999-9999-999999999999")),
                     sources: Vec::new(),
-                    tags: BTreeMap::new(),
+                    tags: OrderMap::new(),
                     replicas: Vec::new(),
                     created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 58).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 2).unwrap(),
@@ -822,7 +827,7 @@ async fn get_media_by_ids_succeeds() {
         Medium {
             id: MediumId::from(uuid!("88888888-8888-8888-8888-888888888888")),
             sources: Vec::new(),
-            tags: BTreeMap::new(),
+            tags: OrderMap::new(),
             replicas: Vec::new(),
             created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 57).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 1).unwrap(),
@@ -830,7 +835,7 @@ async fn get_media_by_ids_succeeds() {
         Medium {
             id: MediumId::from(uuid!("99999999-9999-9999-9999-999999999999")),
             sources: Vec::new(),
-            tags: BTreeMap::new(),
+            tags: OrderMap::new(),
             replicas: Vec::new(),
             created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 58).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 2).unwrap(),
@@ -902,7 +907,7 @@ async fn get_media_by_source_ids_succeeds() {
                 Medium {
                     id: MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
                     sources: Vec::new(),
-                    tags: BTreeMap::new(),
+                    tags: OrderMap::new(),
                     replicas: Vec::new(),
                     created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 56).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 0).unwrap(),
@@ -910,7 +915,7 @@ async fn get_media_by_source_ids_succeeds() {
                 Medium {
                     id: MediumId::from(uuid!("88888888-8888-8888-8888-888888888888")),
                     sources: Vec::new(),
-                    tags: BTreeMap::new(),
+                    tags: OrderMap::new(),
                     replicas: Vec::new(),
                     created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 57).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 1).unwrap(),
@@ -942,7 +947,7 @@ async fn get_media_by_source_ids_succeeds() {
         Medium {
             id: MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
             sources: Vec::new(),
-            tags: BTreeMap::new(),
+            tags: OrderMap::new(),
             replicas: Vec::new(),
             created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 56).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 0).unwrap(),
@@ -950,7 +955,7 @@ async fn get_media_by_source_ids_succeeds() {
         Medium {
             id: MediumId::from(uuid!("88888888-8888-8888-8888-888888888888")),
             sources: Vec::new(),
-            tags: BTreeMap::new(),
+            tags: OrderMap::new(),
             replicas: Vec::new(),
             created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 57).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 1).unwrap(),
@@ -1036,7 +1041,7 @@ async fn get_media_by_tag_ids_succeeds() {
                 Medium {
                     id: MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
                     sources: Vec::new(),
-                    tags: BTreeMap::new(),
+                    tags: OrderMap::new(),
                     replicas: Vec::new(),
                     created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 56).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 0).unwrap(),
@@ -1044,7 +1049,7 @@ async fn get_media_by_tag_ids_succeeds() {
                 Medium {
                     id: MediumId::from(uuid!("99999999-9999-9999-9999-999999999999")),
                     sources: Vec::new(),
-                    tags: BTreeMap::new(),
+                    tags: OrderMap::new(),
                     replicas: Vec::new(),
                     created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 58).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 2).unwrap(),
@@ -1082,7 +1087,7 @@ async fn get_media_by_tag_ids_succeeds() {
         Medium {
             id: MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
             sources: Vec::new(),
-            tags: BTreeMap::new(),
+            tags: OrderMap::new(),
             replicas: Vec::new(),
             created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 56).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 0).unwrap(),
@@ -1090,7 +1095,7 @@ async fn get_media_by_tag_ids_succeeds() {
         Medium {
             id: MediumId::from(uuid!("99999999-9999-9999-9999-999999999999")),
             sources: Vec::new(),
-            tags: BTreeMap::new(),
+            tags: OrderMap::new(),
             replicas: Vec::new(),
             created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 58).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 2).unwrap(),
@@ -1752,7 +1757,7 @@ async fn update_medium_by_id_succeeds() {
             Box::pin(ok(Medium {
                 id: MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
                 sources: Vec::new(),
-                tags: BTreeMap::new(),
+                tags: OrderMap::new(),
                 replicas: Vec::new(),
                 created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 56).unwrap(),
                 updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 0).unwrap(),
@@ -1798,7 +1803,7 @@ async fn update_medium_by_id_succeeds() {
     assert_eq!(actual, Medium {
         id: MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
         sources: Vec::new(),
-        tags: BTreeMap::new(),
+        tags: OrderMap::new(),
         replicas: Vec::new(),
         created_at: Utc.with_ymd_and_hms(2022, 6, 1, 12, 34, 56).unwrap(),
         updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 5, 0).unwrap(),
@@ -2288,7 +2293,7 @@ async fn delete_medium_by_id_with_delete_objects_succeeds() {
                 Medium {
                     id: MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
                     sources: Vec::new(),
-                    tags: BTreeMap::new(),
+                    tags: OrderMap::new(),
                     replicas: vec![
                         Replica {
                             id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),

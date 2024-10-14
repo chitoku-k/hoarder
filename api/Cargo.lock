@@ -956,6 +956,7 @@ dependencies = [
  "futures",
  "log",
  "mockall",
+ "ordermap",
  "percent-encoding",
  "pretty_assertions",
  "serde",
@@ -1358,6 +1359,7 @@ dependencies = [
  "domain",
  "futures",
  "indoc",
+ "ordermap",
  "pretty_assertions",
  "serde",
  "serde_json",
@@ -2512,6 +2514,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "ordermap"
+version = "0.5.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "31f2bd7b03bf2c767e1bb7b91505dbe022833776e60480275e6f2fb0db0c7503"
+dependencies = [
+ "indexmap 2.6.0",
+ "serde",
+]
+
+[[package]]
 name = "parking"
 version = "2.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2700,8 +2712,8 @@ dependencies = [
  "domain",
  "futures",
  "include_dir",
- "indexmap 2.6.0",
  "log",
+ "ordermap",
  "pretty_assertions",
  "sea-query",
  "sea-query-binder",

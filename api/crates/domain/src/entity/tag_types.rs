@@ -12,6 +12,7 @@ pub struct TagType {
     pub id: TagTypeId,
     pub slug: String,
     pub name: String,
+    pub kana: String,
 }
 
 impl Hash for TagType {
@@ -43,12 +44,14 @@ mod tests {
             id: TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
             slug: "foo".to_string(),
             name: "foo".to_string(),
+            kana: "foo".to_string(),
         };
 
         let b = TagType {
             id: TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
             slug: "bar".to_string(),
             name: "bar".to_string(),
+            kana: "bar".to_string(),
         };
 
         let mut hash_set = HashSet::new();
@@ -65,12 +68,14 @@ mod tests {
             id: TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
             slug: "foo".to_string(),
             name: "foo".to_string(),
+            kana: "foo".to_string(),
         };
 
         let b = TagType {
             id: TagTypeId::from(uuid!("55555555-5555-5555-5555-555555555555")),
             slug: "foo".to_string(),
             name: "foo".to_string(),
+            kana: "foo".to_string(),
         };
 
         let mut hash_set = HashSet::new();

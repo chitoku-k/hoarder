@@ -116,9 +116,9 @@ type Mutation {
 	deleteReplica(id: UUID!, deleteObject: Boolean): DeleteResult!
 	deleteSource(id: UUID!): DeleteResult!
 	createTag(name: String!, kana: String!, aliases: [String!], parentId: UUID): Tag!
-	createTagType(slug: String!, name: String!): TagType!
+	createTagType(slug: String!, name: String!, kana: String!): TagType!
 	updateTag(id: UUID!, name: String, kana: String, addAliases: [String!], removeAliases: [String!]): Tag!
-	updateTagType(id: UUID!, slug: String, name: String): TagType!
+	updateTagType(id: UUID!, slug: String, name: String, kana: String): TagType!
 	attachTag(id: UUID!, parentId: UUID!): Tag!
 	detachTag(id: UUID!): Tag!
 	deleteTag(id: UUID!, recursive: Boolean! = false): DeleteResult!
@@ -267,6 +267,7 @@ type TagType {
 	id: UUID!
 	slug: String!
 	name: String!
+	kana: String!
 }
 
 type Thumbnail {

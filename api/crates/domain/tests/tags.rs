@@ -126,22 +126,24 @@ async fn create_tag_type_succeeds() {
     mock_tag_types_repository
         .expect_create()
         .times(1)
-        .withf(|slug, name| (slug, name) == ("character", "キャラクター"))
-        .returning(|_, _| {
+        .withf(|slug, name, kana| (slug, name, kana) == ("character", "キャラクター", "キャラクター"))
+        .returning(|_, _, _| {
             Box::pin(ok(TagType {
                 id: TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
                 slug: "character".to_string(),
                 name: "キャラクター".to_string(),
+                kana: "キャラクター".to_string(),
             }))
         });
 
     let service = TagsService::new(mock_tags_repository, mock_tag_types_repository);
-    let actual = service.create_tag_type("character", "キャラクター").await.unwrap();
+    let actual = service.create_tag_type("character", "キャラクター", "キャラクター").await.unwrap();
 
     assert_eq!(actual, TagType {
         id: TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
         slug: "character".to_string(),
         name: "キャラクター".to_string(),
+        kana: "キャラクター".to_string(),
     })
 }
 
@@ -152,11 +154,11 @@ async fn create_tag_type_fails() {
     mock_tag_types_repository
         .expect_create()
         .times(1)
-        .withf(|slug, name| (slug, name) == ("character", "キャラクター"))
-        .returning(|_, _| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
+        .withf(|slug, name, kana| (slug, name, kana) == ("character", "キャラクター", "キャラクター"))
+        .returning(|_, _, _| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
 
     let service = TagsService::new(mock_tags_repository, mock_tag_types_repository);
-    let actual = service.create_tag_type("character", "キャラクター").await.unwrap_err();
+    let actual = service.create_tag_type("character", "キャラクター", "キャラクター").await.unwrap_err();
 
     assert_matches!(actual.kind(), ErrorKind::Other);
 }
@@ -600,11 +602,13 @@ async fn get_tag_types_succeeds() {
                     id: TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
                     slug: "character".to_string(),
                     name: "キャラクター".to_string(),
+                    kana: "キャラクター".to_string(),
                 },
                 TagType {
                     id: TagTypeId::from(uuid!("55555555-5555-5555-5555-555555555555")),
                     slug: "illustrator".to_string(),
                     name: "イラストレーター".to_string(),
+                    kana: "イラストレーター".to_string(),
                 },
             ]))
         });
@@ -617,11 +621,13 @@ async fn get_tag_types_succeeds() {
             id: TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
             slug: "character".to_string(),
             name: "キャラクター".to_string(),
+            kana: "キャラクター".to_string(),
         },
         TagType {
             id: TagTypeId::from(uuid!("55555555-5555-5555-5555-555555555555")),
             slug: "illustrator".to_string(),
             name: "イラストレーター".to_string(),
+            kana: "イラストレーター".to_string(),
         },
     ]);
 }
@@ -752,18 +758,20 @@ async fn update_tag_type_by_id_succeeds() {
     mock_tag_types_repository
         .expect_update_by_id()
         .times(1)
-        .withf(|id, slug, name| {
-            (id, slug, name) == (
+        .withf(|id, slug, name, kana| {
+            (id, slug, name, kana) == (
                 &TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
                 &Some("characters"),
                 &None,
+                &None,
             )
         })
-        .returning(|_, _, _| {
+        .returning(|_, _, _, _| {
             Box::pin(ok(TagType {
                 id: TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
                 slug: "characters".to_string(),
                 name: "キャラクター".to_string(),
+                kana: "キャラクター".to_string(),
             }))
         });
 
@@ -772,12 +780,14 @@ async fn update_tag_type_by_id_succeeds() {
         TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
         Some("characters"),
         None,
+        None,
     ).await.unwrap();
 
     assert_eq!(actual, TagType {
         id: TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
         slug: "characters".to_string(),
         name: "キャラクター".to_string(),
+        kana: "キャラクター".to_string(),
     });
 }
 
@@ -788,19 +798,21 @@ async fn update_tag_type_by_id_fails() {
     mock_tag_types_repository
         .expect_update_by_id()
         .times(1)
-        .withf(|id, slug, name| {
-            (id, slug, name) == (
+        .withf(|id, slug, name, kana| {
+            (id, slug, name, kana) == (
                 &TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
                 &Some("characters"),
                 &None,
+                &None,
             )
         })
-        .returning(|_, _, _| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
+        .returning(|_, _, _, _| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
 
     let service = TagsService::new(mock_tags_repository, mock_tag_types_repository);
     let actual = service.update_tag_type_by_id(
         TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
         Some("characters"),
+        None,
         None,
     ).await.unwrap_err();
 

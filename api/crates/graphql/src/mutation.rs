@@ -244,10 +244,10 @@ where
         Ok(tag.into())
     }
 
-    async fn create_tag_type(&self, ctx: &Context<'_>, slug: String, name: String) -> Result<TagType> {
+    async fn create_tag_type(&self, ctx: &Context<'_>, slug: String, name: String, kana: String) -> Result<TagType> {
         let tags_service = ctx.data_unchecked::<TagsService>();
 
-        let tag_type = tags_service.create_tag_type(&slug, &name).await?;
+        let tag_type = tags_service.create_tag_type(&slug, &name, &kana).await?;
         Ok(tag_type.into())
     }
 
@@ -262,10 +262,10 @@ where
         Ok(tag.into())
     }
 
-    async fn update_tag_type(&self, ctx: &Context<'_>, id: Uuid, slug: Option<String>, name: Option<String>) -> Result<TagType> {
+    async fn update_tag_type(&self, ctx: &Context<'_>, id: Uuid, slug: Option<String>, name: Option<String>, kana: Option<String>) -> Result<TagType> {
         let tags_service = ctx.data_unchecked::<TagsService>();
 
-        let tag_type = tags_service.update_tag_type_by_id(id.into(), slug.as_deref(), name.as_deref()).await?;
+        let tag_type = tags_service.update_tag_type_by_id(id.into(), slug.as_deref(), name.as_deref(), kana.as_deref()).await?;
         Ok(tag_type.into())
     }
 

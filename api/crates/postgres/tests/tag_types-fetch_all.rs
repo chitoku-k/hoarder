@@ -19,19 +19,22 @@ async fn succeeds(ctx: &DatabaseContext) {
 
     assert_eq!(actual, vec![
         TagType {
+            id: TagTypeId::from(uuid!("37553a79-53cd-4768-8a06-1378d6010954")),
+            slug: "clothes".to_string(),
+            name: "衣装".to_string(),
+            kana: "いしょう".to_string(),
+        },
+        TagType {
             id: TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
             slug: "character".to_string(),
             name: "キャラクター".to_string(),
+            kana: "キャラクター".to_string(),
         },
         TagType {
             id: TagTypeId::from(uuid!("1e5021f0-d8ef-4859-815a-747bf3175724")),
             slug: "work".to_string(),
             name: "作品".to_string(),
-        },
-        TagType {
-            id: TagTypeId::from(uuid!("37553a79-53cd-4768-8a06-1378d6010954")),
-            slug: "clothes".to_string(),
-            name: "衣装".to_string(),
+            kana: "さくひん".to_string(),
         },
     ]);
 }
