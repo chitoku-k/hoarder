@@ -95,19 +95,6 @@ async fn with_sources_succeeds(ctx: &DatabaseContext) {
     let actual_id = *actual.id;
     assert_eq!(actual.sources, vec![
         Source {
-            id: SourceId::from(uuid!("082bdad0-46a9-4637-af44-3c91a605a5f1")),
-            external_service: ExternalService {
-                id: ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")),
-                slug: "x".to_string(),
-                kind: "x".to_string(),
-                name: "X".to_string(),
-                base_url: Some("https://x.com".to_string()),
-            },
-            external_metadata: ExternalMetadata::X { id: 111111111111, creator_id: Some("creator_01".to_string()) },
-            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 15).unwrap(),
-            updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 17).unwrap(),
-        },
-        Source {
             id: SourceId::from(uuid!("3e1150b0-144a-4fcf-a202-b93a5f3274db")),
             external_service: ExternalService {
                 id: ExternalServiceId::from(uuid!("4e0c68c7-e5ec-4d60-b9eb-733f47290cd3")),
@@ -119,6 +106,19 @@ async fn with_sources_succeeds(ctx: &DatabaseContext) {
             external_metadata: ExternalMetadata::Pixiv { id: 2222222 },
             created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 5).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
+        },
+        Source {
+            id: SourceId::from(uuid!("082bdad0-46a9-4637-af44-3c91a605a5f1")),
+            external_service: ExternalService {
+                id: ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")),
+                slug: "x".to_string(),
+                kind: "x".to_string(),
+                name: "X".to_string(),
+                base_url: Some("https://x.com".to_string()),
+            },
+            external_metadata: ExternalMetadata::X { id: 111111111111, creator_id: Some("creator_01".to_string()) },
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 15).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 17).unwrap(),
         },
     ]);
     assert_eq!(actual.tags, OrderMap::<TagType, Vec<Tag>>::new());
@@ -386,19 +386,6 @@ async fn with_sources_tags_succeeds(ctx: &DatabaseContext) {
     let actual_id = *actual.id;
     assert_eq!(actual.sources, vec![
         Source {
-            id: SourceId::from(uuid!("082bdad0-46a9-4637-af44-3c91a605a5f1")),
-            external_service: ExternalService {
-                id: ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")),
-                slug: "x".to_string(),
-                kind: "x".to_string(),
-                name: "X".to_string(),
-                base_url: Some("https://x.com".to_string()),
-            },
-            external_metadata: ExternalMetadata::X { id: 111111111111, creator_id: Some("creator_01".to_string()) },
-            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 15).unwrap(),
-            updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 17).unwrap(),
-        },
-        Source {
             id: SourceId::from(uuid!("3e1150b0-144a-4fcf-a202-b93a5f3274db")),
             external_service: ExternalService {
                 id: ExternalServiceId::from(uuid!("4e0c68c7-e5ec-4d60-b9eb-733f47290cd3")),
@@ -410,6 +397,19 @@ async fn with_sources_tags_succeeds(ctx: &DatabaseContext) {
             external_metadata: ExternalMetadata::Pixiv { id: 2222222 },
             created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 5).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
+        },
+        Source {
+            id: SourceId::from(uuid!("082bdad0-46a9-4637-af44-3c91a605a5f1")),
+            external_service: ExternalService {
+                id: ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")),
+                slug: "x".to_string(),
+                kind: "x".to_string(),
+                name: "X".to_string(),
+                base_url: Some("https://x.com".to_string()),
+            },
+            external_metadata: ExternalMetadata::X { id: 111111111111, creator_id: Some("creator_01".to_string()) },
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 15).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 17).unwrap(),
         },
     ]);
     assert_eq!(actual.tags, {

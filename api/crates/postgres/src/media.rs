@@ -363,7 +363,8 @@ where
         )
         .and_where(Expr::col((PostgresMediumSource::Table, PostgresMediumSource::MediumId)).is_in(ids.into_iter().map(PostgresMediumId::from)))
         .order_by((PostgresMediumSource::Table, PostgresMediumSource::MediumId), Order::Asc)
-        .order_by((PostgresMediumSource::Table, PostgresMediumSource::SourceId), Order::Asc)
+        .order_by((PostgresExternalService::Table, PostgresExternalService::Slug), Order::Asc)
+        .order_by((PostgresSource::Table, PostgresSource::ExternalMetadata), Order::Asc)
         .build_sqlx(PostgresQueryBuilder);
 
     let sources = sqlx::query_as_with::<_, PostgresMediumSourceExternalServiceRow, _>(&sql, values)

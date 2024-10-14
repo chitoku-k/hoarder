@@ -464,19 +464,6 @@ async fn with_sources_succeeds(ctx: &DatabaseContext) {
 
     assert_eq!(actual.sources, vec![
         Source {
-            id: SourceId::from(uuid!("5c872f82-2ad0-47c4-8c6f-64efc9443128")),
-            external_service: ExternalService {
-                id: ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")),
-                slug: "x".to_string(),
-                kind: "x".to_string(),
-                name: "X".to_string(),
-                base_url: Some("https://x.com".to_string()),
-            },
-            external_metadata: ExternalMetadata::X { id: 333333333333, creator_id: Some("creator_03".to_string()) },
-            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 16).unwrap(),
-            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 6).unwrap(),
-        },
-        Source {
             id: SourceId::from(uuid!("6807b3f6-6325-4212-bba5-bdb48150bb69")),
             external_service: ExternalService {
                 id: ExternalServiceId::from(uuid!("2018afa2-aed9-46de-af9e-02e5fab64ed7")),
@@ -488,6 +475,19 @@ async fn with_sources_succeeds(ctx: &DatabaseContext) {
             external_metadata: ExternalMetadata::Skeb { id: 1111, creator_id: "creator_02".to_string() },
             created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 13).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 11).unwrap(),
+        },
+        Source {
+            id: SourceId::from(uuid!("5c872f82-2ad0-47c4-8c6f-64efc9443128")),
+            external_service: ExternalService {
+                id: ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")),
+                slug: "x".to_string(),
+                kind: "x".to_string(),
+                name: "X".to_string(),
+                base_url: Some("https://x.com".to_string()),
+            },
+            external_metadata: ExternalMetadata::X { id: 333333333333, creator_id: Some("creator_03".to_string()) },
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 16).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 6).unwrap(),
         },
     ]);
     assert_eq!(actual.tags, OrderMap::<TagType, Vec<Tag>>::new());
@@ -1021,19 +1021,6 @@ async fn reorder_replicas_with_sources_succeeds(ctx: &DatabaseContext) {
 
     assert_eq!(actual.sources, vec![
         Source {
-            id: SourceId::from(uuid!("5c872f82-2ad0-47c4-8c6f-64efc9443128")),
-            external_service: ExternalService {
-                id: ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")),
-                slug: "x".to_string(),
-                kind: "x".to_string(),
-                name: "X".to_string(),
-                base_url: Some("https://x.com".to_string()),
-            },
-            external_metadata: ExternalMetadata::X { id: 333333333333, creator_id: Some("creator_03".to_string()) },
-            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 16).unwrap(),
-            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 6).unwrap(),
-        },
-        Source {
             id: SourceId::from(uuid!("6807b3f6-6325-4212-bba5-bdb48150bb69")),
             external_service: ExternalService {
                 id: ExternalServiceId::from(uuid!("2018afa2-aed9-46de-af9e-02e5fab64ed7")),
@@ -1045,6 +1032,19 @@ async fn reorder_replicas_with_sources_succeeds(ctx: &DatabaseContext) {
             external_metadata: ExternalMetadata::Skeb { id: 1111, creator_id: "creator_02".to_string() },
             created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 13).unwrap(),
             updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 11).unwrap(),
+        },
+        Source {
+            id: SourceId::from(uuid!("5c872f82-2ad0-47c4-8c6f-64efc9443128")),
+            external_service: ExternalService {
+                id: ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")),
+                slug: "x".to_string(),
+                kind: "x".to_string(),
+                name: "X".to_string(),
+                base_url: Some("https://x.com".to_string()),
+            },
+            external_metadata: ExternalMetadata::X { id: 333333333333, creator_id: Some("creator_03".to_string()) },
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 16).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 6).unwrap(),
         },
     ]);
     assert_eq!(actual.tags, OrderMap::<TagType, Vec<Tag>>::new());
