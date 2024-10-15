@@ -142,12 +142,6 @@ const TagListColumnBodyEdit: FunctionComponent<TagListColumnBodyEditProps> = ({
               label="別名"
             />
           )}
-          renderTags={(value, getCustomizedTagProps) => value.map((option, index) => {
-            const { key, ...props } = getCustomizedTagProps({ index })
-            return (
-              <Chip key={key} label={option} size="medium" {...props} />
-            )
-          })}
           onChange={handleChangeAliases}
         />
       </Stack>
