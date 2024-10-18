@@ -5,14 +5,14 @@ use sea_query_binder::SqlxBinder;
 use sqlx::{migrate::MigrateError, prelude::FromRow, Connection, PgConnection, Postgres};
 use sqlx_migrator::{error::Error, migration::Migration, operation::Operation, vec_box};
 
-use crate::{migrations::State, replicas::{PostgresReplica, PostgresReplicaId}};
+use crate::replicas::{PostgresReplica, PostgresReplicaId};
 
 const URL_SCHEME: &str = "file";
 const URL_PREFIX: &str = "file://";
 
 pub(super) struct V2Migration;
 
-impl Migration<Postgres, State> for V2Migration {
+impl Migration<Postgres> for V2Migration {
     fn app(&self) -> &str {
         "hoarder"
     }
@@ -21,11 +21,11 @@ impl Migration<Postgres, State> for V2Migration {
         "replicas_urlencode_original_url"
     }
 
-    fn parents(&self) -> Vec<Box<dyn Migration<Postgres, State>>> {
+    fn parents(&self) -> Vec<Box<dyn Migration<Postgres>>> {
         vec_box![]
     }
 
-    fn operations(&self) -> Vec<Box<dyn Operation<Postgres, State>>> {
+    fn operations(&self) -> Vec<Box<dyn Operation<Postgres>>> {
         vec_box![ReplicaUrlOperation]
     }
 }
@@ -39,8 +39,8 @@ struct PostgresReplicaOriginalUrlRow {
 }
 
 #[async_trait]
-impl Operation<Postgres, State> for ReplicaUrlOperation {
-    async fn up(&self, connection: &mut PgConnection, _state: &State) -> Result<(), Error> {
+impl Operation<Postgres> for ReplicaUrlOperation {
+    async fn up(&self, connection: &mut PgConnection) -> Result<(), Error> {
         let mut tx = connection.begin().await?;
 
         let (sql, values) = Query::select()
@@ -75,7 +75,7 @@ impl Operation<Postgres, State> for ReplicaUrlOperation {
         Ok(())
     }
 
-    async fn down(&self, connection: &mut PgConnection, _state: &State) -> Result<(), Error> {
+    async fn down(&self, connection: &mut PgConnection) -> Result<(), Error> {
         let mut tx = connection.begin().await?;
 
         let (sql, values) = Query::select()

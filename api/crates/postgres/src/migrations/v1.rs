@@ -10,7 +10,6 @@ use uuid::Uuid;
 use crate::{
     external_services::PostgresExternalService,
     media::{PostgresMedium, PostgresMediumSource, PostgresMediumTag},
-    migrations::State,
     replicas::{PostgresReplica, PostgresThumbnail},
     sources::PostgresSource,
     tag_types::PostgresTagType,
@@ -19,7 +18,7 @@ use crate::{
 
 pub(super) struct V1Migration;
 
-impl Migration<Postgres, State> for V1Migration {
+impl Migration<Postgres> for V1Migration {
     fn app(&self) -> &str {
         "hoarder"
     }
@@ -28,11 +27,11 @@ impl Migration<Postgres, State> for V1Migration {
         "init"
     }
 
-    fn parents(&self) -> Vec<Box<dyn Migration<Postgres, State>>> {
+    fn parents(&self) -> Vec<Box<dyn Migration<Postgres>>> {
         vec_box![]
     }
 
-    fn operations(&self) -> Vec<Box<dyn Operation<Postgres, State>>> {
+    fn operations(&self) -> Vec<Box<dyn Operation<Postgres>>> {
         vec_box![
             CreateTableOperation,
             CreateIndexOperation,
@@ -44,8 +43,8 @@ impl Migration<Postgres, State> for V1Migration {
 struct CreateTableOperation;
 
 #[async_trait]
-impl Operation<Postgres, State> for CreateTableOperation {
-    async fn up(&self, connection: &mut PgConnection, _state: &State) -> Result<(), Error> {
+impl Operation<Postgres> for CreateTableOperation {
+    async fn up(&self, connection: &mut PgConnection) -> Result<(), Error> {
         let sql = Table::create()
             .table(PostgresExternalService::Table)
             .if_not_exists()
@@ -263,7 +262,7 @@ impl Operation<Postgres, State> for CreateTableOperation {
         Ok(())
     }
 
-    async fn down(&self, connection: &mut PgConnection, _state: &State) -> Result<(), Error> {
+    async fn down(&self, connection: &mut PgConnection) -> Result<(), Error> {
         let sql = Table::drop()
             .table(PostgresMediumTag::Table)
             .to_string(PostgresQueryBuilder);
@@ -331,8 +330,8 @@ impl Operation<Postgres, State> for CreateTableOperation {
 struct CreateIndexOperation;
 
 #[async_trait]
-impl Operation<Postgres, State> for CreateIndexOperation {
-    async fn up(&self, connection: &mut PgConnection, _state: &State) -> Result<(), Error> {
+impl Operation<Postgres> for CreateIndexOperation {
+    async fn up(&self, connection: &mut PgConnection) -> Result<(), Error> {
         let sql = Index::create()
             .name("media_created_at_id_idx")
             .if_not_exists()
@@ -385,7 +384,7 @@ impl Operation<Postgres, State> for CreateIndexOperation {
         Ok(())
     }
 
-    async fn down(&self, connection: &mut PgConnection, _state: &State) -> Result<(), Error> {
+    async fn down(&self, connection: &mut PgConnection) -> Result<(), Error> {
         let sql = Index::drop()
             .name("media_created_at_id_idx")
             .to_string(PostgresQueryBuilder);
@@ -423,8 +422,8 @@ impl Operation<Postgres, State> for CreateIndexOperation {
 struct InsertRootTagsOperation;
 
 #[async_trait]
-impl Operation<Postgres, State> for InsertRootTagsOperation {
-    async fn up(&self, connection: &mut PgConnection, _state: &State) -> Result<(), Error> {
+impl Operation<Postgres> for InsertRootTagsOperation {
+    async fn up(&self, connection: &mut PgConnection) -> Result<(), Error> {
         let (sql, values) = Query::insert()
             .into_table(PostgresTag::Table)
             .columns([
@@ -468,7 +467,7 @@ impl Operation<Postgres, State> for InsertRootTagsOperation {
         Ok(())
     }
 
-    async fn down(&self, connection: &mut PgConnection, _state: &State) -> Result<(), Error> {
+    async fn down(&self, connection: &mut PgConnection) -> Result<(), Error> {
         let mut tx = connection.begin().await?;
 
         let (sql, values) = Query::delete()

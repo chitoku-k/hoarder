@@ -3,11 +3,11 @@ use sea_query::{ColumnDef, Expr, Iden, PostgresQueryBuilder, Query, Table};
 use sqlx::{PgConnection, Postgres};
 use sqlx_migrator::{error::Error, migration::Migration, operation::Operation, vec_box};
 
-use crate::{external_services::PostgresExternalService, migrations::State};
+use crate::external_services::PostgresExternalService;
 
 pub(super) struct V3Migration;
 
-impl Migration<Postgres, State> for V3Migration {
+impl Migration<Postgres> for V3Migration {
     fn app(&self) -> &str {
         "hoarder"
     }
@@ -16,11 +16,11 @@ impl Migration<Postgres, State> for V3Migration {
         "external_services_add_kind_base_url"
     }
 
-    fn parents(&self) -> Vec<Box<dyn Migration<Postgres, State>>> {
+    fn parents(&self) -> Vec<Box<dyn Migration<Postgres>>> {
         vec_box![]
     }
 
-    fn operations(&self) -> Vec<Box<dyn Operation<Postgres, State>>> {
+    fn operations(&self) -> Vec<Box<dyn Operation<Postgres>>> {
         vec_box![ExternalServiceKindOperation]
     }
 }
@@ -33,8 +33,8 @@ enum PostgresExternalServiceTemporary {
 }
 
 #[async_trait]
-impl Operation<Postgres, State> for ExternalServiceKindOperation {
-    async fn up(&self, connection: &mut PgConnection, _state: &State) -> Result<(), Error> {
+impl Operation<Postgres> for ExternalServiceKindOperation {
+    async fn up(&self, connection: &mut PgConnection) -> Result<(), Error> {
         let sql = Table::alter()
             .table(PostgresExternalService::Table)
             .rename_column(PostgresExternalService::Name, PostgresExternalServiceTemporary::NameOld)
@@ -86,7 +86,7 @@ impl Operation<Postgres, State> for ExternalServiceKindOperation {
         Ok(())
     }
 
-    async fn down(&self, connection: &mut PgConnection, _state: &State) -> Result<(), Error> {
+    async fn down(&self, connection: &mut PgConnection) -> Result<(), Error> {
         let sql = Table::alter()
             .table(PostgresExternalService::Table)
             .drop_column(PostgresExternalService::Kind)

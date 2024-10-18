@@ -9,11 +9,11 @@ mod v5;
 mod v6;
 mod v7;
 
-pub struct Migrator(migrator::Migrator<Postgres, State>);
+pub struct Migrator(migrator::Migrator<Postgres>);
 
 impl Migrator {
     pub fn new() -> Self {
-        let mut migrator = migrator::Migrator::new(State);
+        let mut migrator = migrator::Migrator::new();
         migrator.add_migrations(vec_box![
             v1::V1Migration,
             v2::V2Migration,
@@ -27,7 +27,7 @@ impl Migrator {
         Self(migrator)
     }
 
-    pub fn into_boxed_migrator(self) -> Box<migrator::Migrator<Postgres, State>> {
+    pub fn into_boxed_migrator(self) -> Box<migrator::Migrator<Postgres>> {
         Box::new(self.0)
     }
 }
@@ -37,5 +37,3 @@ impl Default for Migrator {
         Self::new()
     }
 }
-
-pub struct State;
