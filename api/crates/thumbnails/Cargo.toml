@@ -21,7 +21,7 @@ version = "1.0.0"
 features = ["constructor"]
 
 [dependencies.image]
-version = "0.25.2"
+version = "0.25.4"
 
 [dependencies.kamadak-exif]
 version = "0.5.5"
