@@ -36,4 +36,4 @@ version = "0.1.16"
 features = ["fs"]
 
 [target.'cfg(unix)'.dependencies.libc]
-version = "0.2.159"
+version = "0.2.161"
