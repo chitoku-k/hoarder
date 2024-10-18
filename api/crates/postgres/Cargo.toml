@@ -40,11 +40,11 @@ version = "0.5.3"
 features = ["serde"]
 
 [dependencies.sea-query]
-version = "0.32.0-rc.2"
+version = "0.32.0"
 features = ["thread-safe"]
 
 [dependencies.sea-query-binder]
-version = "0.7.0-rc.2"
+version = "0.7.0"
 features = ["postgres-array", "sqlx-postgres", "with-chrono", "with-json", "with-uuid"]
 
 [dependencies.serde]
