@@ -3,11 +3,11 @@ use sea_query::{extension::postgres::PgExpr, Expr, PostgresQueryBuilder, Query};
 use sqlx::{PgConnection, Postgres};
 use sqlx_migrator::{error::Error, migration::Migration, operation::Operation, vec_box};
 
-use crate::{external_services::PostgresExternalService, migrations::State, sources::PostgresSource};
+use crate::{external_services::PostgresExternalService, sources::PostgresSource};
 
 pub(super) struct V6Migration;
 
-impl Migration<Postgres, State> for V6Migration {
+impl Migration<Postgres> for V6Migration {
     fn app(&self) -> &str {
         "hoarder"
     }
@@ -16,11 +16,11 @@ impl Migration<Postgres, State> for V6Migration {
         "external_service_and_sources_twitter_to_x"
     }
 
-    fn parents(&self) -> Vec<Box<dyn Migration<Postgres, State>>> {
+    fn parents(&self) -> Vec<Box<dyn Migration<Postgres>>> {
         vec_box![]
     }
 
-    fn operations(&self) -> Vec<Box<dyn Operation<Postgres, State>>> {
+    fn operations(&self) -> Vec<Box<dyn Operation<Postgres>>> {
         vec_box![
             ExternalServiceTwitterToX,
             SourceTwitterToX,
@@ -31,8 +31,8 @@ impl Migration<Postgres, State> for V6Migration {
 struct ExternalServiceTwitterToX;
 
 #[async_trait]
-impl Operation<Postgres, State> for ExternalServiceTwitterToX {
-    async fn up(&self, connection: &mut PgConnection, _state: &State) -> Result<(), Error> {
+impl Operation<Postgres> for ExternalServiceTwitterToX {
+    async fn up(&self, connection: &mut PgConnection) -> Result<(), Error> {
         const OLD_SLUG: &str = "twitter";
         const NEW_SLUG: &str = "x";
 
@@ -80,7 +80,7 @@ impl Operation<Postgres, State> for ExternalServiceTwitterToX {
         Ok(())
     }
 
-    async fn down(&self, connection: &mut PgConnection, _state: &State) -> Result<(), Error> {
+    async fn down(&self, connection: &mut PgConnection) -> Result<(), Error> {
         const OLD_SLUG: &str = "x";
         const NEW_SLUG: &str = "twitter";
 
@@ -132,8 +132,8 @@ impl Operation<Postgres, State> for ExternalServiceTwitterToX {
 struct SourceTwitterToX;
 
 #[async_trait]
-impl Operation<Postgres, State> for SourceTwitterToX {
-    async fn up(&self, connection: &mut PgConnection, _state: &State) -> Result<(), Error> {
+impl Operation<Postgres> for SourceTwitterToX {
+    async fn up(&self, connection: &mut PgConnection) -> Result<(), Error> {
         const OLD_TYPE: &str = "twitter";
         const NEW_TYPE: &str = "x";
 
@@ -163,7 +163,7 @@ impl Operation<Postgres, State> for SourceTwitterToX {
         Ok(())
     }
 
-    async fn down(&self, connection: &mut PgConnection, _state: &State) -> Result<(), Error> {
+    async fn down(&self, connection: &mut PgConnection) -> Result<(), Error> {
         const OLD_TYPE: &str = "x";
         const NEW_TYPE: &str = "twitter";
 

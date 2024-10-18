@@ -3,11 +3,11 @@ use sea_query::{BinOper, Expr, PostgresQueryBuilder, Query};
 use sqlx::{PgConnection, Postgres};
 use sqlx_migrator::{error::Error, migration::Migration, operation::Operation, vec_box};
 
-use crate::{migrations::State, sources::PostgresSource};
+use crate::sources::PostgresSource;
 
 pub(super) struct V4Migration;
 
-impl Migration<Postgres, State> for V4Migration {
+impl Migration<Postgres> for V4Migration {
     fn app(&self) -> &str {
         "hoarder"
     }
@@ -16,11 +16,11 @@ impl Migration<Postgres, State> for V4Migration {
         "sources_external_metadata_camelcase"
     }
 
-    fn parents(&self) -> Vec<Box<dyn Migration<Postgres, State>>> {
+    fn parents(&self) -> Vec<Box<dyn Migration<Postgres>>> {
         vec_box![]
     }
 
-    fn operations(&self) -> Vec<Box<dyn Operation<Postgres, State>>> {
+    fn operations(&self) -> Vec<Box<dyn Operation<Postgres>>> {
         vec_box![SourceExternalMetadataOperation]
     }
 }
@@ -28,8 +28,8 @@ impl Migration<Postgres, State> for V4Migration {
 struct SourceExternalMetadataOperation;
 
 #[async_trait]
-impl Operation<Postgres, State> for SourceExternalMetadataOperation {
-    async fn up(&self, connection: &mut PgConnection, _state: &State) -> Result<(), Error> {
+impl Operation<Postgres> for SourceExternalMetadataOperation {
+    async fn up(&self, connection: &mut PgConnection) -> Result<(), Error> {
         const OLD_NAME: &str = "creator_id";
         const OLD_PATH: &str = "{creator_id}";
         const NEW_PATH: &str = "{creatorId}";
@@ -52,7 +52,7 @@ impl Operation<Postgres, State> for SourceExternalMetadataOperation {
         Ok(())
     }
 
-    async fn down(&self, connection: &mut PgConnection, _state: &State) -> Result<(), Error> {
+    async fn down(&self, connection: &mut PgConnection) -> Result<(), Error> {
         const OLD_NAME: &str = "creatorId";
         const OLD_PATH: &str = "{creatorId}";
         const NEW_PATH: &str = "{creator_id}";

@@ -3,11 +3,11 @@ use sea_query::{ColumnDef, PostgresQueryBuilder, Query, Table};
 use sqlx::{PgConnection, Postgres};
 use sqlx_migrator::{error::Error, migration::Migration, operation::Operation, vec_box};
 
-use crate::{migrations::State, tag_types::PostgresTagType};
+use crate::tag_types::PostgresTagType;
 
 pub(super) struct V7Migration;
 
-impl Migration<Postgres, State> for V7Migration {
+impl Migration<Postgres> for V7Migration {
     fn app(&self) -> &str {
         "hoarder"
     }
@@ -16,11 +16,11 @@ impl Migration<Postgres, State> for V7Migration {
         "tag_types_kana"
     }
 
-    fn parents(&self) -> Vec<Box<dyn Migration<Postgres, State>>> {
+    fn parents(&self) -> Vec<Box<dyn Migration<Postgres>>> {
         vec_box![]
     }
 
-    fn operations(&self) -> Vec<Box<dyn Operation<Postgres, State>>> {
+    fn operations(&self) -> Vec<Box<dyn Operation<Postgres>>> {
         vec_box![TagTypeKanaOperation]
     }
 }
@@ -28,8 +28,8 @@ impl Migration<Postgres, State> for V7Migration {
 struct TagTypeKanaOperation;
 
 #[async_trait]
-impl Operation<Postgres, State> for TagTypeKanaOperation {
-    async fn up(&self, connection: &mut PgConnection, _state: &State) -> Result<(), Error> {
+impl Operation<Postgres> for TagTypeKanaOperation {
+    async fn up(&self, connection: &mut PgConnection) -> Result<(), Error> {
         let sql = Table::alter()
             .table(PostgresTagType::Table)
             .add_column(ColumnDef::new(PostgresTagType::Kana).text())
@@ -54,7 +54,7 @@ impl Operation<Postgres, State> for TagTypeKanaOperation {
         Ok(())
     }
 
-    async fn down(&self, connection: &mut PgConnection, _state: &State) -> Result<(), Error> {
+    async fn down(&self, connection: &mut PgConnection) -> Result<(), Error> {
         let sql = Table::alter()
             .table(PostgresTagType::Table)
             .drop_column(PostgresTagType::Kana)

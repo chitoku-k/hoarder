@@ -3,13 +3,13 @@ use sea_query::{extension::postgres::PgExpr, BinOper, ColumnDef, Expr, Iden, Pos
 use sqlx::{PgConnection, Postgres};
 use sqlx_migrator::{error::Error, migration::Migration, operation::Operation, vec_box};
 
-use crate::{migrations::State, sources::PostgresSource};
+use crate::sources::PostgresSource;
 
 const EXTERNAL_SERVICE_EXTRA_FIELD_KINDS: [&str; 2] = ["threads", "twitter"];
 
 pub(super) struct V5Migration;
 
-impl Migration<Postgres, State> for V5Migration {
+impl Migration<Postgres> for V5Migration {
     fn app(&self) -> &str {
         "hoarder"
     }
@@ -18,11 +18,11 @@ impl Migration<Postgres, State> for V5Migration {
         "sources_external_metadata_extra"
     }
 
-    fn parents(&self) -> Vec<Box<dyn Migration<Postgres, State>>> {
+    fn parents(&self) -> Vec<Box<dyn Migration<Postgres>>> {
         vec_box![]
     }
 
-    fn operations(&self) -> Vec<Box<dyn Operation<Postgres, State>>> {
+    fn operations(&self) -> Vec<Box<dyn Operation<Postgres>>> {
         vec_box![SourceExternalMetadataExtraOperation]
     }
 }
@@ -36,8 +36,8 @@ enum PostgresSourceTemporary {
 }
 
 #[async_trait]
-impl Operation<Postgres, State> for SourceExternalMetadataExtraOperation {
-    async fn up(&self, connection: &mut PgConnection, _state: &State) -> Result<(), Error> {
+impl Operation<Postgres> for SourceExternalMetadataExtraOperation {
+    async fn up(&self, connection: &mut PgConnection) -> Result<(), Error> {
         let sql = Table::alter()
             .table(PostgresSource::Table)
             .rename_column(PostgresSource::CreatedAt, PostgresSourceTemporary::CreatedAtOld)
@@ -111,7 +111,7 @@ impl Operation<Postgres, State> for SourceExternalMetadataExtraOperation {
         Ok(())
     }
 
-    async fn down(&self, connection: &mut PgConnection, _state: &State) -> Result<(), Error> {
+    async fn down(&self, connection: &mut PgConnection) -> Result<(), Error> {
         let sql = Query::update()
             .table(PostgresSource::Table)
             .value(
