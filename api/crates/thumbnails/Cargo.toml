@@ -23,9 +23,6 @@ features = ["constructor"]
 [dependencies.image]
 version = "0.25.4"
 
-[dependencies.kamadak-exif]
-version = "0.5.5"
-
 [dependencies.tokio]
 version = "1.40.0"
 features = ["rt-multi-thread"]
