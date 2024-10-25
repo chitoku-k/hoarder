@@ -65,7 +65,7 @@
     "@graphql-codegen/typescript-resolvers": "^4.3.0",
     "@parcel/watcher": "^2.4.1",
     "eslint": "^9.12.0",
-    "eslint-config-next": "^14.2.15",
+    "eslint-config-next": "^15.0.1",
     "ts-node": "^10.9.2",
     "typescript-plugin-css-modules": "^5.1.0"
   }
