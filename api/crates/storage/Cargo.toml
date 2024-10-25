@@ -28,7 +28,7 @@ version = "1.5.0"
 version = "0.2.1"
 
 [dependencies.tokio]
-version = "1.40.0"
+version = "1.41.0"
 features = ["fs", "io-util", "rt-multi-thread"]
 
 [dependencies.tokio-stream]
