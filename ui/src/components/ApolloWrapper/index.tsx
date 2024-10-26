@@ -13,7 +13,6 @@ interface ApolloRequestInit extends RequestInit {
 }
 
 const makeClient = () => new ApolloClient({
-  ssrMode: true,
   cache: new InMemoryCache({
     typePolicies: {
       Query: {
