@@ -8,20 +8,23 @@ export const metadata: Metadata = {
   title: 'メディア',
 }
 
-const Page: FunctionComponent<PageProps> = ({
-  params: {
-    id,
-  },
-}) => (
-  <Content size={12}>
-    <MediumItem id={id} />
-  </Content>
-)
+const Page: FunctionComponent<PageProps> = async ({
+  params,
+}) => {
+  const { id } = await params
+  return (
+    <Content size={12}>
+      <MediumItem id={id} />
+    </Content>
+  )
+}
+
+export interface Params {
+  id: string
+}
 
 export interface PageProps {
-  params: {
-    id: string
-  }
+  params: Promise<Params>
 }
 
 export default Page
