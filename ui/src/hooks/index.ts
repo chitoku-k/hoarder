@@ -2,6 +2,7 @@ export * from './useBeforeUnload'
 export * from './useError'
 export * from './useFilesize'
 export * from './useFileSystemEntry'
+export * from './useHistorykana'
 
 export * from './useAllExternalServices'
 export * from './useCreateExternalService'
