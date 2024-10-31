@@ -2,7 +2,7 @@ use std::borrow::Cow;
 
 use phf::{Map, phf_map};
 
-static SOUND_MARKS: Map<char, &Map<char, &str>> = phf_map! {
+const SOUND_MARKS: Map<char, &Map<char, &str>> = phf_map! {
     '゙' => &VOICED,
     '゚' => &SEMI_VOICED,
     '゛' => &VOICED,
@@ -11,7 +11,7 @@ static SOUND_MARKS: Map<char, &Map<char, &str>> = phf_map! {
     'ﾟ' => &SEMI_VOICED_FULLWIDTH,
 };
 
-static VOICED: Map<char, &str> = phf_map! {
+const VOICED: Map<char, &str> = phf_map! {
     'う' => "ゔ",
     'か' => "が",
     'き' => "ぎ",
@@ -85,7 +85,7 @@ static VOICED: Map<char, &str> = phf_map! {
     'ｦ' => "ｦﾞ",
 };
 
-static VOICED_FULLWIDTH: Map<char, &str> = phf_map! {
+const VOICED_FULLWIDTH: Map<char, &str> = phf_map! {
     'う' => "ゔ",
     'か' => "が",
     'き' => "ぎ",
@@ -136,7 +136,7 @@ static VOICED_FULLWIDTH: Map<char, &str> = phf_map! {
     'ヽ' => "ヾ",
 };
 
-static SEMI_VOICED: Map<char, &str> = phf_map! {
+const SEMI_VOICED: Map<char, &str> = phf_map! {
     'は' => "ぱ",
     'ひ' => "ぴ",
     'ふ' => "ぷ",
@@ -154,7 +154,7 @@ static SEMI_VOICED: Map<char, &str> = phf_map! {
     'ﾎ' => "ﾎﾟ",
 };
 
-static SEMI_VOICED_FULLWIDTH: Map<char, &str> = phf_map! {
+const SEMI_VOICED_FULLWIDTH: Map<char, &str> = phf_map! {
     'は' => "ぱ",
     'ひ' => "ぴ",
     'ふ' => "ぷ",
