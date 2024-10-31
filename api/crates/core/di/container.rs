@@ -22,6 +22,7 @@ use icu_collator::{Collator, CollatorOptions};
 use icu_provider::DataLocale;
 use log::LevelFilter;
 use media::{FileMediaURLFactory, NoopMediaURLFactory};
+use normalizer::Normalizer;
 use objects::ObjectsService;
 use postgres::{
     external_services::PostgresExternalServicesRepository,
@@ -47,14 +48,15 @@ type SourcesRepositoryImpl = PostgresSourcesRepository;
 type TagsRepositoryImpl = PostgresTagsRepository;
 type TagTypesRepositoryImpl = PostgresTagTypesRepository;
 type ObjectsRepositoryImpl = FilesystemObjectsRepository;
+type NormalizerImpl = Normalizer;
 type ExternalServicesServiceImpl = ExternalServicesService<ExternalServicesRepositoryImpl>;
 type MediaServiceImpl = MediaService<MediaRepositoryImpl, ObjectsRepositoryImpl, ReplicasRepositoryImpl, SourcesRepositoryImpl, MediumImageProcessorImpl>;
 type TagsServiceImpl = TagsService<TagsRepositoryImpl, TagTypesRepositoryImpl>;
 type ObjectsServiceImpl = ObjectsService<MediaServiceImpl>;
 type ThumbnailsServiceImpl = ThumbnailsService<MediaServiceImpl>;
-type APISchemaImpl = APISchema<ExternalServicesServiceImpl, MediaServiceImpl, TagsServiceImpl>;
+type APISchemaImpl = APISchema<ExternalServicesServiceImpl, MediaServiceImpl, TagsServiceImpl, NormalizerImpl>;
 type MediumImageProcessorImpl = InMemoryImageProcessor;
-type GraphQLServiceImpl = GraphQLService<ExternalServicesServiceImpl, MediaServiceImpl, TagsServiceImpl>;
+type GraphQLServiceImpl = GraphQLService<ExternalServicesServiceImpl, MediaServiceImpl, TagsServiceImpl, NormalizerImpl>;
 
 async fn pg_pool() -> anyhow::Result<PgPool> {
     let pg_options = PgConnectOptions::new()
@@ -99,6 +101,10 @@ fn objects_repository(collator: Collator, root_dir: String) -> ObjectsRepository
     FilesystemObjectsRepository::new(Arc::new(collator), root_dir)
 }
 
+fn normalizer() -> NormalizerImpl {
+    Normalizer::new()
+}
+
 fn external_services_service(external_services_repository: ExternalServicesRepositoryImpl) -> ExternalServicesServiceImpl {
     ExternalServicesService::new(external_services_repository)
 }
@@ -123,6 +129,7 @@ fn schema(
     external_services_service: ExternalServicesServiceImpl,
     media_service: MediaServiceImpl,
     tags_service: TagsServiceImpl,
+    normalizer: Arc<NormalizerImpl>,
     media_url_factory: Arc<dyn MediaURLFactoryInterface>,
     thumbnail_url_factory: Arc<dyn ThumbnailURLFactoryInterface>,
 ) -> APISchemaImpl {
@@ -134,6 +141,7 @@ fn schema(
         .data(external_services_service)
         .data(media_service)
         .data(tags_service)
+        .data(normalizer)
         .data(media_url_factory)
         .data(thumbnail_url_factory)
         .finish()
@@ -193,6 +201,7 @@ impl Application {
                 let media_service = media_service(media_repository, objects_repository, replicas_repository, sources_repository, medium_image_processor);
                 let tags_service = tags_service(tags_repository, tag_types_repository);
 
+                let normalizer = Arc::new(normalizer());
                 let media_url_factory: Arc<dyn MediaURLFactoryInterface> = match serve.media_root_url {
                     Some(media_root_url) => Arc::new(file_media_url_factory(media_root_url)),
                     None => Arc::new(noop_media_url_factory()),
@@ -203,7 +212,7 @@ impl Application {
                 let thumbnail_url_factory = Arc::new(thumbnail_url_factory());
                 let thumbnails_service = thumbnails_service(media_service.clone());
 
-                let schema = schema(external_services_service, media_service, tags_service, media_url_factory, thumbnail_url_factory);
+                let schema = schema(external_services_service, media_service, tags_service, normalizer, media_url_factory, thumbnail_url_factory);
                 let graphql_service = graphql_service(schema);
 
                 let tls = Option::zip(serve.tls_cert, serve.tls_key);

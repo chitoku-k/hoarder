@@ -25,6 +25,7 @@ use domain::{
 use futures::future::ok;
 use graphql::query::Query;
 use indoc::indoc;
+use normalizer::MockNormalizerInterface;
 use ordermap::OrderMap;
 use pretty_assertions::assert_eq;
 use uuid::uuid;
@@ -325,7 +326,7 @@ async fn tags_asc_succeeds() {
 
     let tags_service = MockTagsServiceInterface::new();
 
-    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface>::new();
+    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface, MockNormalizerInterface>::new();
     let schema = Schema::build(query, EmptyMutation, EmptySubscription)
         .data(external_services_service)
         .data(media_service)
@@ -801,7 +802,7 @@ async fn replicas_asc_succeeds() {
         .withf(|thumbnail_id| thumbnail_id == &ThumbnailId::from(uuid!("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")))
         .returning(|_| "https://img.example.com/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa".to_string());
 
-    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface>::new();
+    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface, MockNormalizerInterface>::new();
     let schema = Schema::build(query, EmptyMutation, EmptySubscription)
         .data(external_services_service)
         .data(media_service)
@@ -1047,7 +1048,7 @@ async fn sources_asc_succeeds() {
 
     let tags_service = MockTagsServiceInterface::new();
 
-    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface>::new();
+    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface, MockNormalizerInterface>::new();
     let schema = Schema::build(query, EmptyMutation, EmptySubscription)
         .data(external_services_service)
         .data(media_service)

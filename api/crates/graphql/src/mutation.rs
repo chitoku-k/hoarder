@@ -1,4 +1,4 @@
-use std::marker::PhantomData;
+use std::{marker::PhantomData, sync::Arc};
 
 use async_graphql::{Context, Object, SimpleObject};
 use chrono::{DateTime, FixedOffset};
@@ -11,6 +11,7 @@ use domain::{
         tags::TagsServiceInterface,
     },
 };
+use normalizer::NormalizerInterface;
 use uuid::Uuid;
 
 use crate::{
@@ -37,10 +38,11 @@ impl From<repository::DeleteResult> for DeleteResult {
 }
 
 #[derive(Default)]
-pub struct Mutation<ExternalServicesService, MediaService, TagsService> {
+pub struct Mutation<ExternalServicesService, MediaService, TagsService, Normalizer> {
     external_services_service: PhantomData<fn() -> ExternalServicesService>,
     media_service: PhantomData<fn() -> MediaService>,
     tags_service: PhantomData<fn() -> TagsService>,
+    normalizer: PhantomData<fn() -> Normalizer>,
 }
 
 type Map<T, U, V> = std::iter::Map<T, fn(U) -> V>;
@@ -60,25 +62,32 @@ async fn create_medium_source(ctx: &Context<'_>, original_url: Option<String>, u
     }
 }
 
-impl<ExternalServicesService, MediaService, TagsService> Mutation<ExternalServicesService, MediaService, TagsService> {
+impl<ExternalServicesService, MediaService, TagsService, Normalizer> Mutation<ExternalServicesService, MediaService, TagsService, Normalizer> {
     pub fn new() -> Self {
         Self {
             external_services_service: PhantomData,
             media_service: PhantomData,
             tags_service: PhantomData,
+            normalizer: PhantomData,
         }
     }
 }
 
 #[Object]
-impl<ExternalServicesService, MediaService, TagsService> Mutation<ExternalServicesService, MediaService, TagsService>
+impl<ExternalServicesService, MediaService, TagsService, Normalizer> Mutation<ExternalServicesService, MediaService, TagsService, Normalizer>
 where
     ExternalServicesService: ExternalServicesServiceInterface,
     MediaService: MediaServiceInterface,
     TagsService: TagsServiceInterface,
+    Normalizer: NormalizerInterface,
 {
     async fn create_external_service(&self, ctx: &Context<'_>, slug: String, kind: String, name: String, base_url: Option<String>) -> Result<ExternalService> {
         let external_services_service = ctx.data_unchecked::<ExternalServicesService>();
+        let normalizer = ctx.data_unchecked::<Arc<Normalizer>>();
+
+        let slug = normalizer.normalize(slug);
+        let kind = normalizer.normalize(kind);
+        let name = normalizer.normalize(name);
 
         let service = external_services_service.create_external_service(&slug, &kind, &name, base_url.as_deref()).await?;
         Ok(service.into())
@@ -86,6 +95,10 @@ where
 
     async fn update_external_service(&self, ctx: &Context<'_>, id: Uuid, slug: Option<String>, name: Option<String>, base_url: Option<String>) -> Result<ExternalService> {
         let external_services_service = ctx.data_unchecked::<ExternalServicesService>();
+        let normalizer = ctx.data_unchecked::<Arc<Normalizer>>();
+
+        let slug = slug.map(|slug| normalizer.normalize(slug));
+        let name = name.map(|name| normalizer.normalize(name));
 
         let base_url = match &base_url {
             Some(base_url) if base_url.is_empty() => Some(None),
@@ -236,16 +249,27 @@ where
 
     async fn create_tag(&self, ctx: &Context<'_>, name: String, kana: String, aliases: Option<Vec<String>>, parent_id: Option<Uuid>) -> Result<Tag> {
         let tags_service = ctx.data_unchecked::<TagsService>();
+        let normalizer = ctx.data_unchecked::<Arc<Normalizer>>();
 
+        let name = normalizer.normalize(name);
+        let kana = normalizer.normalize(kana);
+        let aliases = aliases.unwrap_or_default().into_iter().map({
+            let normalizer = normalizer.clone();
+            move |alias| normalizer.normalize(alias)
+        });
         let depth = get_tag_depth(&ctx.look_ahead());
-        let aliases = aliases.unwrap_or_default();
 
-        let tag = tags_service.create_tag(&name, &kana, &aliases, parent_id.map(Into::into), depth).await?;
+        let tag = tags_service.create_tag(&name, &kana, aliases, parent_id.map(Into::into), depth).await?;
         Ok(tag.into())
     }
 
     async fn create_tag_type(&self, ctx: &Context<'_>, slug: String, name: String, kana: String) -> Result<TagType> {
         let tags_service = ctx.data_unchecked::<TagsService>();
+        let normalizer = ctx.data_unchecked::<Arc<Normalizer>>();
+
+        let slug = normalizer.normalize(slug);
+        let name = normalizer.normalize(name);
+        let kana = normalizer.normalize(kana);
 
         let tag_type = tags_service.create_tag_type(&slug, &name, &kana).await?;
         Ok(tag_type.into())
@@ -253,10 +277,20 @@ where
 
     async fn update_tag(&self, ctx: &Context<'_>, id: Uuid, name: Option<String>, kana: Option<String>, add_aliases: Option<Vec<String>>, remove_aliases: Option<Vec<String>>) -> Result<Tag> {
         let tags_service = ctx.data_unchecked::<TagsService>();
+        let normalizer = ctx.data_unchecked::<Arc<Normalizer>>();
+
+        let name = name.map(|name| normalizer.normalize(name));
+        let kana = kana.map(|kana| normalizer.normalize(kana));
+        let add_aliases = add_aliases.unwrap_or_default().into_iter().map({
+            let normalizer = normalizer.clone();
+            move |alias| normalizer.normalize(alias)
+        });
+        let remove_aliases = remove_aliases.unwrap_or_default().into_iter().map({
+            let normalizer = normalizer.clone();
+            move |alias| normalizer.normalize(alias)
+        });
 
         let depth = get_tag_depth(&ctx.look_ahead());
-        let add_aliases = add_aliases.unwrap_or_default();
-        let remove_aliases = remove_aliases.unwrap_or_default();
 
         let tag = tags_service.update_tag_by_id(id.into(), name, kana, add_aliases, remove_aliases, depth).await?;
         Ok(tag.into())
@@ -264,6 +298,11 @@ where
 
     async fn update_tag_type(&self, ctx: &Context<'_>, id: Uuid, slug: Option<String>, name: Option<String>, kana: Option<String>) -> Result<TagType> {
         let tags_service = ctx.data_unchecked::<TagsService>();
+        let normalizer = ctx.data_unchecked::<Arc<Normalizer>>();
+
+        let slug = slug.map(|slug| normalizer.normalize(slug));
+        let name = name.map(|name| normalizer.normalize(name));
+        let kana = kana.map(|kana| normalizer.normalize(kana));
 
         let tag_type = tags_service.update_tag_type_by_id(id.into(), slug.as_deref(), name.as_deref(), kana.as_deref()).await?;
         Ok(tag_type.into())

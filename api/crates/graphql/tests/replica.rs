@@ -17,6 +17,7 @@ use domain::{
 use futures::future::ok;
 use graphql::query::Query;
 use indoc::indoc;
+use normalizer::MockNormalizerInterface;
 use pretty_assertions::assert_eq;
 use uuid::uuid;
 
@@ -63,7 +64,7 @@ async fn succeeds() {
         .withf(|thumbnail_id| thumbnail_id == &ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888")))
         .returning(|_| "https://img.example.com/88888888-8888-8888-8888-888888888888".to_string());
 
-    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface>::new();
+    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface, MockNormalizerInterface>::new();
     let schema = Schema::build(query, EmptyMutation, EmptySubscription)
         .data(external_services_service)
         .data(media_service)

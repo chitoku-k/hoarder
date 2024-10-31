@@ -1,4 +1,4 @@
-use std::marker::PhantomData;
+use std::{marker::PhantomData, sync::Arc};
 
 use async_graphql::{
     connection::{query, Connection},
@@ -13,6 +13,7 @@ use domain::{
         tags::TagsServiceInterface,
     },
 };
+use normalizer::NormalizerInterface;
 use uuid::Uuid;
 
 use crate::{
@@ -27,30 +28,33 @@ use crate::{
 };
 
 #[derive(Default)]
-pub struct Query<ExternalServicesService, MediaService, TagsService> {
+pub struct Query<ExternalServicesService, MediaService, TagsService, Normalizer> {
     external_services_service: PhantomData<fn() -> ExternalServicesService>,
     media_service: PhantomData<fn() -> MediaService>,
     tags_service: PhantomData<fn() -> TagsService>,
+    normalizer: PhantomData<fn() -> Normalizer>,
 }
 
 type Map<T, U, V> = std::iter::Map<T, fn(U) -> V>;
 
-impl<ExternalServicesService, MediaService, TagsService> Query<ExternalServicesService, MediaService, TagsService> {
+impl<ExternalServicesService, MediaService, TagsService, Normalizer> Query<ExternalServicesService, MediaService, TagsService, Normalizer> {
     pub fn new() -> Self {
         Self {
             external_services_service: PhantomData,
             media_service: PhantomData,
             tags_service: PhantomData,
+            normalizer: PhantomData,
         }
     }
 }
 
 #[Object]
-impl<ExternalServicesService, MediaService, TagsService> Query<ExternalServicesService, MediaService, TagsService>
+impl<ExternalServicesService, MediaService, TagsService, Normalizer> Query<ExternalServicesService, MediaService, TagsService, Normalizer>
 where
     ExternalServicesService: ExternalServicesServiceInterface,
     MediaService: MediaServiceInterface,
     TagsService: TagsServiceInterface,
+    Normalizer: NormalizerInterface,
 {
     async fn all_external_services(&self, ctx: &Context<'_>) -> Result<Vec<ExternalService>> {
         let external_services_service = ctx.data_unchecked::<ExternalServicesService>();
@@ -268,7 +272,9 @@ where
         name_or_alias_like: String,
     ) -> Result<Vec<Tag>> {
         let tags_service = ctx.data_unchecked::<TagsService>();
+        let normalizer = ctx.data_unchecked::<Arc<Normalizer>>();
 
+        let name_or_alias_like = normalizer.normalize(name_or_alias_like);
         let depth = get_tag_depth(&ctx.look_ahead());
 
         let tags = tags_service.get_tags_by_name_or_alias_like(&name_or_alias_like, depth).await?;

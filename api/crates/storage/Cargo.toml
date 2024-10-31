@@ -24,6 +24,10 @@ default-features = false
 [dependencies.icu_collator]
 version = "1.5.0"
 
+[dependencies.icu_provider]
+version = "1.5.0"
+features = ["sync"]
+
 [dependencies.normalize-path]
 version = "0.2.1"
 

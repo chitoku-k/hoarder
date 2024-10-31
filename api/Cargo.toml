@@ -15,6 +15,7 @@ members = [
     "crates/domain",
     "crates/graphql",
     "crates/media",
+    "crates/normalizer",
     "crates/objects",
     "crates/postgres",
     "crates/storage",
@@ -37,6 +38,9 @@ path = "crates/graphql"
 
 [workspace.dependencies.media]
 path = "crates/media"
+
+[workspace.dependencies.normalizer]
+path = "crates/normalizer"
 
 [workspace.dependencies.objects]
 path = "crates/objects"
@@ -75,6 +79,9 @@ workspace = true
 [dependencies.media]
 workspace = true
 
+[dependencies.normalizer]
+workspace = true
+
 [dependencies.objects]
 workspace = true
 
@@ -102,11 +109,11 @@ version = "1.5.0"
 features = ["std"]
 
 [dependencies.icu_locid]
-version = "1.4.0"
+version = "1.5.0"
 features = ["std"]
 
 [dependencies.icu_provider]
-version = "1.4.0"
+version = "1.5.0"
 features = ["std", "sync"]
 
 [dependencies.jemallocator]
