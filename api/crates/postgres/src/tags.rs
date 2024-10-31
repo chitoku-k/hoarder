@@ -460,7 +460,10 @@ async fn detach_parent(tx: &mut Transaction<'_, Postgres>, id: TagId) -> Result<
 }
 
 impl TagsRepository for PostgresTagsRepository {
-    async fn create(&self, name: &str, kana: &str, aliases: &[String], parent_id: Option<TagId>, depth: TagDepth) -> Result<Tag> {
+    async fn create<T>(&self, name: &str, kana: &str, aliases: T, parent_id: Option<TagId>, depth: TagDepth) -> Result<Tag>
+    where
+        T: IntoIterator<Item = String> + Send + Sync + 'static,
+    {
         let mut tx = self.pool.begin().await.map_err(Error::other)?;
 
         let (sql, values) = Query::insert()
@@ -473,7 +476,7 @@ impl TagsRepository for PostgresTagsRepository {
             .values([
                 Expr::val(name).into(),
                 Expr::val(kana).into(),
-                aliases.to_vec().into(),
+                aliases.into_iter().collect::<Vec<_>>().into(),
             ])
             .map_err(Error::other)?
             .returning(

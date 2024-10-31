@@ -1,4 +1,4 @@
-use std::collections::BTreeSet;
+use std::{borrow::Cow, collections::BTreeSet, sync::Arc};
 
 use async_graphql::{Schema, EmptyMutation, EmptySubscription, value};
 use chrono::{TimeZone, Utc};
@@ -13,6 +13,7 @@ use domain::{
 use futures::future::ok;
 use graphql::query::Query;
 use indoc::indoc;
+use normalizer::MockNormalizerInterface;
 use pretty_assertions::assert_eq;
 use uuid::uuid;
 
@@ -83,11 +84,19 @@ async fn succeeds() {
             ]))
         });
 
-    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface>::new();
+    let mut normalizer = MockNormalizerInterface::new();
+    normalizer
+        .expect_normalize_str()
+        .times(1)
+        .withf(|text| text == "り")
+        .returning(|_| Cow::from("り"));
+
+    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface, MockNormalizerInterface>::new();
     let schema = Schema::build(query, EmptyMutation, EmptySubscription)
         .data(external_services_service)
         .data(media_service)
         .data(tags_service)
+        .data(Arc::new(normalizer))
         .finish();
 
     let req = indoc! {r#"

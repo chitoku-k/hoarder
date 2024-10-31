@@ -14,7 +14,9 @@ use crate::{
 #[cfg_attr(feature = "test-mock", mockall::automock)]
 pub trait TagsServiceInterface: Send + Sync + 'static {
     /// Creates a tag.
-    fn create_tag(&self, name: &str, kana: &str, aliases: &[String], parent_id: Option<TagId>, depth: TagDepth) -> impl Future<Output = Result<Tag>> + Send;
+    fn create_tag<T>(&self, name: &str, kana: &str, aliases: T, parent_id: Option<TagId>, depth: TagDepth) -> impl Future<Output = Result<Tag>> + Send
+    where
+        T: IntoIterator<Item = String> + Send + Sync + 'static;
 
     /// Creates a tag type.
     fn create_tag_type(&self, slug: &str, name: &str, kana: &str) -> impl Future<Output = Result<TagType>> + Send;
@@ -74,7 +76,10 @@ where
     TagsRepository: tags::TagsRepository,
     TagTypesRepository: tag_types::TagTypesRepository,
 {
-    async fn create_tag(&self, name: &str, kana: &str, aliases: &[String], parent_id: Option<TagId>, depth: TagDepth) -> Result<Tag> {
+    async fn create_tag<T>(&self, name: &str, kana: &str, aliases: T, parent_id: Option<TagId>, depth: TagDepth) -> Result<Tag>
+    where
+        T: IntoIterator<Item = String> + Send + Sync + 'static,
+    {
         match self.tags_repository.create(name, kana, aliases, parent_id, depth).await {
             Ok(tag) => Ok(tag),
             Err(e) => {

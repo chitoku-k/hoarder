@@ -9,7 +9,9 @@ use crate::{
 #[cfg_attr(feature = "test-mock", mockall::automock)]
 pub trait TagsRepository: Send + Sync + 'static {
     /// Creates a tag.
-    fn create(&self, name: &str, kana: &str, aliases: &[String], parent_id: Option<TagId>, depth: TagDepth) -> impl Future<Output = Result<Tag>> + Send;
+    fn create<T>(&self, name: &str, kana: &str, aliases: T, parent_id: Option<TagId>, depth: TagDepth) -> impl Future<Output = Result<Tag>> + Send
+    where
+        T: IntoIterator<Item = String> + Send + Sync + 'static;
 
     /// Fetches tags by their IDs.
     fn fetch_by_ids<T>(&self, ids: T, depth: TagDepth) -> impl Future<Output = Result<Vec<Tag>>> + Send

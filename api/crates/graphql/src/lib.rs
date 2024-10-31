@@ -19,6 +19,7 @@ use domain::{
     },
 };
 use futures::AsyncReadExt;
+use normalizer::NormalizerInterface;
 
 use crate::{
     error::{Error, ErrorKind, Result},
@@ -39,23 +40,24 @@ pub mod replicas;
 pub mod sources;
 pub mod tags;
 
-pub type APISchema<ExternalServicesService, MediaService, TagsService> = Schema<
-    Query<ExternalServicesService, MediaService, TagsService>,
-    Mutation<ExternalServicesService, MediaService, TagsService>,
+pub type APISchema<ExternalServicesService, MediaService, TagsService, Normalizer> = Schema<
+    Query<ExternalServicesService, MediaService, TagsService, Normalizer>,
+    Mutation<ExternalServicesService, MediaService, TagsService, Normalizer>,
     Subscription,
 >;
 
 #[derive(Clone, Constructor)]
-pub struct GraphQLService<ExternalServicesService, MediaService, TagsService> {
-    schema: APISchema<ExternalServicesService, MediaService, TagsService>,
+pub struct GraphQLService<ExternalServicesService, MediaService, TagsService, Normalizer> {
+    schema: APISchema<ExternalServicesService, MediaService, TagsService, Normalizer>,
     endpoint: &'static str,
 }
 
-impl<ExternalServicesService, MediaService, TagsService> GraphQLServiceInterface for GraphQLService<ExternalServicesService, MediaService, TagsService>
+impl<ExternalServicesService, MediaService, TagsService, Normalizer> GraphQLServiceInterface for GraphQLService<ExternalServicesService, MediaService, TagsService, Normalizer>
 where
     ExternalServicesService: ExternalServicesServiceInterface,
     MediaService: MediaServiceInterface,
     TagsService: TagsServiceInterface,
+    Normalizer: NormalizerInterface,
 {
     async fn execute(&self, req: Request<Body>) -> Response {
         let req: GraphQLRequest = match GraphQLRequest::from_request(req, &()).await {

@@ -29,7 +29,7 @@ async fn create_tag_succeeds() {
             (name, kana, aliases, parent_id, depth) == (
                 "赤座あかり",
                 "あかざあかり",
-                &["アッカリーン".to_string()],
+                &vec!["アッカリーン".to_string()],
                 &Some(TagId::from(uuid!("22222222-2222-2222-2222-222222222222"))),
                 &TagDepth::new(1, 1),
             )
@@ -62,7 +62,7 @@ async fn create_tag_succeeds() {
     let actual = service.create_tag(
         "赤座あかり",
         "あかざあかり",
-        &["アッカリーン".to_string()],
+        vec!["アッカリーン".to_string()],
         Some(TagId::from(uuid!("22222222-2222-2222-2222-222222222222"))),
         TagDepth::new(1, 1),
     ).await.unwrap();
@@ -111,7 +111,7 @@ async fn create_tag_fails() {
     let actual = service.create_tag(
         "赤座あかり",
         "あかざあかり",
-        &["アッカリーン".to_string()],
+        ["アッカリーン".to_string()],
         Some(TagId::from(uuid!("22222222-2222-2222-2222-222222222222"))),
         TagDepth::new(1, 1),
     ).await.unwrap_err();
@@ -653,7 +653,7 @@ async fn update_tag_by_id_succeeds() {
     mock_tags_repository
         .expect_update_by_id()
         .times(1)
-        .withf(|id, name, kana, add_aliases: &Vec<_>, remove_aliases: &Vec<_>, depth| {
+        .withf(|id, name, kana, add_aliases, remove_aliases, depth| {
             (id, name, kana, add_aliases, remove_aliases, depth) == (
                 &TagId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                 &Some("赤座あかり".to_string()),
@@ -724,7 +724,7 @@ async fn update_tag_by_id_fails() {
     mock_tags_repository
         .expect_update_by_id()
         .times(1)
-        .withf(|id, name, kana, add_aliases: &Vec<_>, remove_aliases: &Vec<_>, depth| {
+        .withf(|id, name, kana, add_aliases, remove_aliases, depth| {
             (id, name, kana, add_aliases, remove_aliases, depth) == (
                 &TagId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                 &Some("赤座あかり".to_string()),

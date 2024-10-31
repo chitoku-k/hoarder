@@ -42,6 +42,9 @@ version = "0.3.31"
 features = ["std"]
 default-features = false
 
+[dependencies.normalizer]
+workspace = true
+
 [dependencies.ordermap]
 version = "0.5.3"
 
@@ -68,6 +71,10 @@ features = ["test-mock"]
 
 [dev-dependencies.indoc]
 version = "2.0.5"
+
+[dev-dependencies.normalizer]
+workspace = true
+features = ["test-mock"]
 
 [dev-dependencies.pretty_assertions]
 version = "1.4.1"
