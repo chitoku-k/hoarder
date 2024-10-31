@@ -3,10 +3,8 @@
 import type { ChangeEvent, FunctionComponent, SyntheticEvent } from 'react'
 import { useCallback, useState } from 'react'
 import { useCollator } from '@react-aria/i18n'
-import historykana from 'historykana'
 import Autocomplete from '@mui/material/Autocomplete'
 import Button from '@mui/material/Button'
-import Chip from '@mui/material/Chip'
 import LoadingButton from '@mui/lab/LoadingButton'
 import Portal from '@mui/material/Portal'
 import Snackbar from '@mui/material/Snackbar'
@@ -14,14 +12,10 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 
 import TagBreadcrumbsList from '@/components/TagBreadcrumbsList'
-import { useBeforeUnload, useCreateTag } from '@/hooks'
+import { useBeforeUnload, useCreateTag, useHistorykana } from '@/hooks'
 import type { Tag } from '@/types'
 
 import styles from './styles.module.scss'
-
-const extractKana = (history: string[]): string => {
-  return historykana(history, { kanaRegexp: /^[ 　ぁ-ゔー]*[nｎ]?$/ }).replace(/[nｎ]$/, 'ん')
-}
 
 const hasChanges = (tag: TagCreate) => tag.name.length > 0 || tag.kana.length > 0 || tag.aliases.length > 0
 
@@ -33,6 +27,7 @@ const TagListColumnBodyCreate: FunctionComponent<TagListColumnBodyCreateProps> =
 }) => {
   const [ createTag, { error, loading } ] = useCreateTag()
   const collator = useCollator()
+  const extractKana = useHistorykana()
 
   const ref = useCallback((input: HTMLElement) => {
     input?.focus({

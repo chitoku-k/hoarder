@@ -2,7 +2,6 @@
 
 import type { ChangeEvent, FunctionComponent } from 'react'
 import { useCallback, useState } from 'react'
-import historykana from 'historykana'
 import Button from '@mui/material/Button'
 import LoadingButton from '@mui/lab/LoadingButton'
 import Portal from '@mui/material/Portal'
@@ -10,14 +9,10 @@ import Snackbar from '@mui/material/Snackbar'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 
-import { TAG_TYPE_SLUG_DUPLICATE, useBeforeUnload, useCreateTagType, useError } from '@/hooks'
+import { TAG_TYPE_SLUG_DUPLICATE, useBeforeUnload, useCreateTagType, useError, useHistorykana } from '@/hooks'
 import type { TagType } from '@/types'
 
 import styles from './styles.module.scss'
-
-const extractKana = (history: string[]): string => {
-  return historykana(history, { kanaRegexp: /^[ 　ぁ-ゔー]*[nｎ]?$/ }).replace(/[nｎ]$/, 'ん')
-}
 
 const hasChanges = (tagType: TagTypeCreate) => tagType.name.length > 0 || tagType.slug.length > 0 || tagType.kana.length > 0
 
@@ -26,6 +21,7 @@ const TagTypeListColumnBodyCreate: FunctionComponent<TagTypeListColumnBodyCreate
 }) => {
   const [ createTagType, { error, loading } ] = useCreateTagType()
   const { graphQLError } = useError()
+  const extractKana = useHistorykana()
 
   const ref = useCallback((input: HTMLElement) => {
     input?.focus({
