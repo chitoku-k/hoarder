@@ -5,12 +5,15 @@ import type { AxiosRequestConfig } from 'axios'
 import axios from 'axios'
 import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'
 import { buildAxiosFetch } from '@lifeomic/axios-fetch'
+import { disableFragmentWarnings } from '@apollo/client'
 import { relayStylePagination } from '@apollo/client/utilities'
 import { ApolloClient, ApolloNextAppProvider, InMemoryCache } from '@apollo/experimental-nextjs-app-support'
 
 interface ApolloRequestInit extends RequestInit {
   onUploadProgress?: AxiosRequestConfig['onUploadProgress']
 }
+
+disableFragmentWarnings()
 
 const makeClient = () => new ApolloClient({
   cache: new InMemoryCache({
