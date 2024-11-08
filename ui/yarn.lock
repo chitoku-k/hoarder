@@ -2551,9 +2551,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-date-pickers@npm:^7.22.1":
-  version: 7.22.1
-  resolution: "@mui/x-date-pickers@npm:7.22.1"
+"@mui/x-date-pickers@npm:^7.22.2":
+  version: 7.22.2
+  resolution: "@mui/x-date-pickers@npm:7.22.2"
   dependencies:
     "@babel/runtime": "npm:^7.25.7"
     "@mui/utils": "npm:^5.16.6 || ^6.0.0"
@@ -2572,7 +2572,7 @@ __metadata:
     dayjs: ^1.10.7
     luxon: ^3.0.2
     moment: ^2.29.4
-    moment-hijri: ^2.1.2
+    moment-hijri: ^2.1.2 || ^3.0.0
     moment-jalaali: ^0.7.4 || ^0.8.0 || ^0.9.0 || ^0.10.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
@@ -2595,7 +2595,7 @@ __metadata:
       optional: true
     moment-jalaali:
       optional: true
-  checksum: 10/422ad5dfdb311220573d2b4d5082da926c56db347fef7d49d80a60ca84855542e5369500f6d7fdbe0e5bccaafd0f80d5853fc1e986302ae2d4d2d11597127610
+  checksum: 10/c49ba39b51e08f2b061d62652cd342d8547e3d43ade51ea97bf0d0b5d2aa2e10385faf37f65eec944984a3738ec07ebdddd78b9590c60bb2741b0678aee1e36b
   languageName: node
   linkType: hard
 
@@ -6169,7 +6169,7 @@ __metadata:
     "@mui/lab": "npm:6.0.0-beta.14"
     "@mui/material": "npm:^6.1.6"
     "@mui/material-nextjs": "npm:^6.1.6"
-    "@mui/x-date-pickers": "npm:^7.22.1"
+    "@mui/x-date-pickers": "npm:^7.22.2"
     "@parcel/watcher": "npm:^2.4.1"
     "@react-aria/i18n": "npm:^3.12.3"
     "@types/apollo-upload-client": "npm:^18.0.0"
