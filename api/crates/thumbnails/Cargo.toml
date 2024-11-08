@@ -21,7 +21,7 @@ version = "1.0.0"
 features = ["constructor"]
 
 [dependencies.image]
-version = "0.25.4"
+version = "0.25.5"
 
 [dependencies.tokio]
 version = "1.41.0"
