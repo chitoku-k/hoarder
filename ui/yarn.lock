@@ -6322,6 +6322,7 @@ __metadata:
     "@mui/lab": "npm:6.0.0-beta.14"
     "@mui/material": "npm:^6.1.6"
     "@mui/material-nextjs": "npm:^6.1.6"
+    "@mui/system": "npm:^6.1.6"
     "@mui/x-date-pickers": "npm:^7.22.2"
     "@parcel/watcher": "npm:^2.5.0"
     "@react-aria/i18n": "npm:^3.12.3"
