@@ -29,15 +29,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/client-react-streaming@npm:0.11.5":
-  version: 0.11.5
-  resolution: "@apollo/client-react-streaming@npm:0.11.5"
+"@apollo/client-react-streaming@npm:0.11.6":
+  version: 0.11.6
+  resolution: "@apollo/client-react-streaming@npm:0.11.6"
   dependencies:
     ts-invariant: "npm:^0.10.3"
   peerDependencies:
     "@apollo/client": ^3.10.4
     react: ^18 || >=19.0.0-rc <19.0.0
-  checksum: 10/c2c09411bab0413763f6a164cc68fba2eb0ac06a2477a5925e19c03a92703805d930d1274ef57a22ba125941b1f5b0a50a78af0f548c9376801fb1af146d4252
+  checksum: 10/b11a1cd610f25e2fb44e855667060b299e88cba15c62caf7f756e488d46990eac88ad56e2d1c7d57341e327715bff87e55826d670d70e0a8beef73cd4cf01068
   languageName: node
   linkType: hard
 
@@ -78,16 +78,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/experimental-nextjs-app-support@npm:^0.11.5":
-  version: 0.11.5
-  resolution: "@apollo/experimental-nextjs-app-support@npm:0.11.5"
+"@apollo/experimental-nextjs-app-support@npm:^0.11.6":
+  version: 0.11.6
+  resolution: "@apollo/experimental-nextjs-app-support@npm:0.11.6"
   dependencies:
-    "@apollo/client-react-streaming": "npm:0.11.5"
+    "@apollo/client-react-streaming": "npm:0.11.6"
   peerDependencies:
     "@apollo/client": ^3.10.4
     next: ^13.4.1 || ^14.0.0 || ^15.0.0-rc.0
     react: ^18 || >=19.0.0-rc <19.0.0
-  checksum: 10/8570c2655ffa1800a427fffc73a5583c6578d8cd347bbbdf6c13f4a9068a13342beb333999fe26d7d9ed15a802c3289fbab30222160269ac27a4ac4531cf8327
+  checksum: 10/7c7b80181c1b941181ff40f77815c5b722c175ccdfc021761dcdef2c69324518041217ba651911dec3c727bc715c5fd52767e37377f2d5a1a59e32485496b23a
   languageName: node
   linkType: hard
 
@@ -6325,7 +6325,7 @@ __metadata:
   resolution: "hoarder-ui@workspace:."
   dependencies:
     "@apollo/client": "npm:^3.11.9"
-    "@apollo/experimental-nextjs-app-support": "npm:^0.11.5"
+    "@apollo/experimental-nextjs-app-support": "npm:^0.11.6"
     "@date-fns/tz": "npm:^1.2.0"
     "@emotion/cache": "npm:^11.13.1"
     "@emotion/react": "npm:^11.13.3"
