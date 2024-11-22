@@ -29,7 +29,7 @@
     "@mui/material-nextjs": "^6.1.8",
     "@mui/system": "^6.1.8",
     "@mui/x-date-pickers": "^7.22.3",
-    "@react-aria/i18n": "^3.12.3",
+    "@react-aria/i18n": "^3.12.4",
     "@types/apollo-upload-client": "^18.0.0",
     "@types/deep-equal": "^1.0.4",
     "@types/historykana": "^1.0.4",
