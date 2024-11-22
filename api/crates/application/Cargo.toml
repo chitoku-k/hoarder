@@ -15,7 +15,7 @@ test-mock = ["mockall"]
 workspace = true
 
 [dependencies.axum]
-version = "0.7.7"
+version = "0.7.9"
 
 [dependencies.axum-server]
 version = "0.7.1"
