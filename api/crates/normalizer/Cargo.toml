@@ -22,7 +22,7 @@ version = "1.5.0"
 features = ["sync"]
 
 [dependencies.mockall]
-version = "0.13.0"
+version = "0.13.1"
 optional = true
 
 [dependencies.phf]
