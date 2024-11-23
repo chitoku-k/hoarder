@@ -1,12 +1,11 @@
 {
   "compilerOptions": {
-    "target": "es2022",
+    "target": "es2024",
     "lib": [
       "dom",
       "dom.iterable",
-      "es2023",
+      "es2024",
       "esnext.array",
-      "esnext.promise",
       "webworker"
     ],
     "skipLibCheck": true,
