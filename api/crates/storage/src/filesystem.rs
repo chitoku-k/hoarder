@@ -85,8 +85,7 @@ impl ObjectsRepository for FilesystemObjectsRepository {
 
                 return Err(Error::new(ErrorKind::ObjectAlreadyExists { url: url.into_url().into_inner(), entry }, e))?;
             },
-            #[cfg(unix)]
-            Err(e) if e.raw_os_error().is_some_and(|errno| errno == libc::EISDIR) => {
+            Err(e) if e.kind() == io::ErrorKind::IsADirectory => {
                 return Err(Error::new(ErrorKind::ObjectAlreadyExists { url: url.into_url().into_inner(), entry: None }, e))?
             },
             Err(e) if e.kind() == io::ErrorKind::InvalidInput => {
