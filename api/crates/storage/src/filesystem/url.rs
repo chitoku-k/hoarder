@@ -19,7 +19,7 @@ impl FilesystemEntryUrl {
         let path = path
             .as_ref()
             .to_str()
-            .ok_or_else(|| ErrorKind::ObjectPathInvalid)?
+            .ok_or(ErrorKind::ObjectPathInvalid)?
             .cow_replace(MAIN_SEPARATOR_STR, "/");
 
         Self::try_from(EntryUrl::from_path_str(Self::URL_PREFIX, &path))
