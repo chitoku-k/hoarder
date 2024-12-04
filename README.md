@@ -64,7 +64,7 @@ To show GraphQL schema in SDL (Schema Definition Language):
 $ hoarder schema print
 ```
 
-#### Databse Migration
+#### Database Migration
 
 To execute database migration:
 
