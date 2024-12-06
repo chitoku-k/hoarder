@@ -27,7 +27,7 @@ version = "0.13.1"
 optional = true
 
 [dependencies.ordermap]
-version = "0.5.3"
+version = "0.5.4"
 
 [dependencies.percent-encoding]
 version = "2.3.1"
