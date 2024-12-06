@@ -44,7 +44,7 @@ version = "1.42.0"
 features = ["macros", "rt-multi-thread"]
 
 [dependencies.tokio-util]
-version = "0.7.12"
+version = "0.7.13"
 features = ["io", "io-util"]
 
 [dependencies.uuid]
