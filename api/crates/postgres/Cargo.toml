@@ -40,7 +40,7 @@ version = "0.5.3"
 features = ["serde"]
 
 [dependencies.sea-query]
-version = "0.32.0"
+version = "0.32.1"
 features = ["thread-safe"]
 
 [dependencies.sea-query-binder]
