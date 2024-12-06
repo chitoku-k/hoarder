@@ -29,15 +29,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/client-react-streaming@npm:0.11.6":
-  version: 0.11.6
-  resolution: "@apollo/client-react-streaming@npm:0.11.6"
+"@apollo/client-react-streaming@npm:0.11.7":
+  version: 0.11.7
+  resolution: "@apollo/client-react-streaming@npm:0.11.7"
   dependencies:
     ts-invariant: "npm:^0.10.3"
   peerDependencies:
     "@apollo/client": ^3.10.4
-    react: ^18 || >=19.0.0-rc <19.0.0
-  checksum: 10/b11a1cd610f25e2fb44e855667060b299e88cba15c62caf7f756e488d46990eac88ad56e2d1c7d57341e327715bff87e55826d670d70e0a8beef73cd4cf01068
+    react: ^18 || >=19.0.0-rc
+  checksum: 10/a249de127c52f90bd363e923ec4f5c6e5984a0a71504497e3b95876a979cf1584a7996de59f4e90757b037eeefbf38c1a9daba6e5c220bdeac9f3e146d1767d7
   languageName: node
   linkType: hard
 
@@ -78,16 +78,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/experimental-nextjs-app-support@npm:^0.11.6":
-  version: 0.11.6
-  resolution: "@apollo/experimental-nextjs-app-support@npm:0.11.6"
+"@apollo/experimental-nextjs-app-support@npm:^0.11.7":
+  version: 0.11.7
+  resolution: "@apollo/experimental-nextjs-app-support@npm:0.11.7"
   dependencies:
-    "@apollo/client-react-streaming": "npm:0.11.6"
+    "@apollo/client-react-streaming": "npm:0.11.7"
   peerDependencies:
     "@apollo/client": ^3.10.4
     next: ^13.4.1 || ^14.0.0 || ^15.0.0-rc.0
-    react: ^18 || >=19.0.0-rc <19.0.0
-  checksum: 10/7c7b80181c1b941181ff40f77815c5b722c175ccdfc021761dcdef2c69324518041217ba651911dec3c727bc715c5fd52767e37377f2d5a1a59e32485496b23a
+    react: ^18 || >=19.0.0-rc
+  checksum: 10/e922afc3ec79a8bb8ccfd5af8877635b61e42b30befe5f46b3d56a66818f35ff71717b7504226dbe8343221c4ba42b0b45b532a1e875e955fa1db7b526cddb6a
   languageName: node
   linkType: hard
 
@@ -6294,7 +6294,7 @@ __metadata:
   resolution: "hoarder-ui@workspace:."
   dependencies:
     "@apollo/client": "npm:^3.11.10"
-    "@apollo/experimental-nextjs-app-support": "npm:^0.11.6"
+    "@apollo/experimental-nextjs-app-support": "npm:^0.11.7"
     "@date-fns/tz": "npm:^1.2.0"
     "@emotion/cache": "npm:^11.13.5"
     "@emotion/react": "npm:^11.13.5"
