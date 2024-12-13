@@ -37,7 +37,7 @@ version = "7.0.0"
 version = "1.0.215"
 
 [dependencies.thiserror]
-version = "2.0.4"
+version = "2.0.6"
 
 [dependencies.tokio]
 version = "1.42.0"
