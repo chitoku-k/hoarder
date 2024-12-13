@@ -29,7 +29,7 @@ features = ["default", "http2"]
 version = "0.22.1"
 
 [dependencies.chrono]
-version = "0.4.38"
+version = "0.4.39"
 features = ["clock", "serde", "std"]
 default-features = false
 
