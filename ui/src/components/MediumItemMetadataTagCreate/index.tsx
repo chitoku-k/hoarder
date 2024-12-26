@@ -76,35 +76,29 @@ const MediumItemMetadataTagCreate: FunctionComponent<MediumItemMetadataTagCreate
   const addTag = useCallback((type: TagType, tag: Tag) => {
     setFocusedTagType(type)
 
-    setAddingTags(addingTags => {
-      const newTags = addingTags.get(type.id) ?? []
-      if (newTags.some(({ id }) => id === tag.id)) {
-        return addingTags
-      }
+    const newTags = addingTags.get(type.id) ?? []
+    if (newTags.some(({ id }) => id === tag.id)) {
+      return
+    }
 
-      newTags.push(tag)
-
-      const newAddingTags = new Map(addingTags).set(type.id, newTags)
-      setTagTagTypeIDs(() => resolveTagTagTypeIDs(newAddingTags))
-      return newAddingTags
-    })
-  }, [ setTagTagTypeIDs ])
+    const newAddingTags = new Map(addingTags).set(type.id, [ ...newTags, tag ])
+    setAddingTags(newAddingTags)
+    setTagTagTypeIDs(() => resolveTagTagTypeIDs(newAddingTags))
+  }, [ addingTags, setTagTagTypeIDs ])
 
   const removeTag = useCallback((type: TagType, tag: Tag) => {
     setFocusedTagType(null)
 
-    setAddingTags(addingTags => {
-      const newTags = addingTags.get(type.id) ?? []
-      const idx = newTags.findIndex(({ id }) => id === tag.id)
-      if (idx < 0) {
-        return addingTags
-      }
+    const newTags = addingTags.get(type.id) ?? []
+    const idx = newTags.findIndex(({ id }) => id === tag.id)
+    if (idx < 0) {
+      return
+    }
 
-      const newAddingTags = new Map(addingTags).set(type.id, newTags.toSpliced(idx, 1))
-      setTagTagTypeIDs(() => resolveTagTagTypeIDs(newAddingTags))
-      return newAddingTags
-    })
-  }, [ setTagTagTypeIDs ])
+    const newAddingTags = new Map(addingTags).set(type.id, newTags.toSpliced(idx, 1))
+    setAddingTags(newAddingTags)
+    setTagTagTypeIDs(() => resolveTagTagTypeIDs(newAddingTags))
+  }, [ addingTags, setTagTagTypeIDs ])
 
   const restoreTag = useCallback(() => {}, [])
 

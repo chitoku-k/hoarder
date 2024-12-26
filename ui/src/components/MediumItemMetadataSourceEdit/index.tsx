@@ -132,8 +132,7 @@ const MediumItemMetadataSourceEdit: FunctionComponent<MediumItemMetadataSourceEd
         return addingSources
       }
 
-      newSources.push(source)
-      return new Map(addingSources).set(externalService.id, newSources)
+      return new Map(addingSources).set(externalService.id, [ ...newSources, source ])
     })
 
     setRemovingSources(removingSources => {
@@ -174,8 +173,7 @@ const MediumItemMetadataSourceEdit: FunctionComponent<MediumItemMetadataSourceEd
         return removingSources
       }
 
-      newSources.push(source)
-      return new Map(removingSources).set(externalService.id, newSources)
+      return new Map(removingSources).set(externalService.id, [ ...newSources, source ])
     })
   }, [ groups ])
 
