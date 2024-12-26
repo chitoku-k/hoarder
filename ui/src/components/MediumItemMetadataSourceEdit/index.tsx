@@ -52,7 +52,6 @@ const MediumItemMetadataSourceEdit: FunctionComponent<MediumItemMetadataSourceEd
   const { graphQLError } = useError()
 
   const [ focusedExternalService, setFocusedExternalService ] = useState<ExternalService | null>(null)
-  const [ newExternalService, setNewExternalService ] = useState<ExternalService | null>(null)
   const [ newExternalServiceInput, setNewExternalServiceInput ] = useState('')
 
   const [ addingExternalServices, setAddingExternalServices ] = useState<ExternalService[]>([])
@@ -80,7 +79,6 @@ const MediumItemMetadataSourceEdit: FunctionComponent<MediumItemMetadataSourceEd
       return
     }
 
-    setNewExternalService(null)
     setNewExternalServiceInput('')
 
     setFocusedExternalService(type)
@@ -319,7 +317,7 @@ const MediumItemMetadataSourceEdit: FunctionComponent<MediumItemMetadataSourceEd
             placeholder="サービスの追加..."
             disabled={loading}
             renderOption={renderExternalServiceOption}
-            value={newExternalService}
+            value={null}
             inputValue={newExternalServiceInput}
             getOptionDisabled={({ id }) => groups.some(group => group.externalService.id === id) || addingExternalServices.some(externalService => externalService.id === id)}
             icon={({ ...props }) => <FolderSpecialIcon {...props} />}

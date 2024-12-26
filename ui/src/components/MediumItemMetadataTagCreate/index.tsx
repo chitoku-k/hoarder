@@ -33,7 +33,6 @@ const MediumItemMetadataTagCreate: FunctionComponent<MediumItemMetadataTagCreate
   setTagTagTypeIDs,
 }) => {
   const [ focusedTagType, setFocusedTagType ] = useState<TagType | null>(null)
-  const [ newTagType, setNewTagType ] = useState<TagType | null>(null)
   const [ newTagTypeInput, setNewTagTypeInput ] = useState('')
 
   const [ addingTagTypes, setAddingTagTypes ] = useState<TagType[]>([])
@@ -44,7 +43,6 @@ const MediumItemMetadataTagCreate: FunctionComponent<MediumItemMetadataTagCreate
       return
     }
 
-    setNewTagType(null)
     setNewTagTypeInput('')
 
     setFocusedTagType(type)
@@ -155,7 +153,7 @@ const MediumItemMetadataTagCreate: FunctionComponent<MediumItemMetadataTagCreate
             placeholder="タイプの追加..."
             disabled={loading}
             renderOption={renderTagTypeOption}
-            value={newTagType}
+            value={null}
             inputValue={newTagTypeInput}
             getOptionDisabled={({ id }) => addingTagTypes.some(type => type.id === id)}
             icon={({ ...props }) => <LabelIcon {...props} />}
