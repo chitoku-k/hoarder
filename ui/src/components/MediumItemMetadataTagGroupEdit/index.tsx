@@ -16,7 +16,7 @@ import type { Tag, TagType } from '@/types'
 
 import styles from './styles.module.scss'
 
-const MediumItemMetadataTagEditGroup: FunctionComponent<MediumItemMetadataTagEditGroupProps> = ({
+const MediumItemMetadataTagGroupEdit: FunctionComponent<MediumItemMetadataTagGroupEditProps> = ({
   loading,
   type,
   tags,
@@ -165,7 +165,7 @@ const MediumItemMetadataTagEditGroup: FunctionComponent<MediumItemMetadataTagEdi
   )
 }
 
-export interface MediumItemMetadataTagEditGroupProps {
+export interface MediumItemMetadataTagGroupEditProps {
   loading: boolean
   type: TagType
   tags: Tag[]
@@ -180,4 +180,4 @@ export interface MediumItemMetadataTagEditGroupProps {
   restoreTag: (type: TagType, tag: Tag) => void
 }
 
-export default MediumItemMetadataTagEditGroup
+export default MediumItemMetadataTagGroupEdit

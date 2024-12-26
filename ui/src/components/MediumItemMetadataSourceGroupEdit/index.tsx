@@ -20,7 +20,7 @@ import type { ExternalService, Source } from '@/types'
 
 import styles from './styles.module.scss'
 
-const MetadataSourceGroupEdit: FunctionComponent<MetadataSourceGroupEditProps> = ({
+const MediumItemMetadataSourceGroupEdit: FunctionComponent<MediumItemMetadataSourceGroupEditProps> = ({
   loading,
   externalService,
   sources,
@@ -191,7 +191,7 @@ const MetadataSourceGroupEdit: FunctionComponent<MetadataSourceGroupEditProps> =
   )
 }
 
-export interface MetadataSourceGroupEditProps {
+export interface MediumItemMetadataSourceGroupEditProps {
   loading: boolean
   externalService: ExternalService
   sources: Source[]
@@ -206,4 +206,4 @@ export interface MetadataSourceGroupEditProps {
   restoreSource: (externalService: ExternalService, source: Source) => void
 }
 
-export default MetadataSourceGroupEdit
+export default MediumItemMetadataSourceGroupEdit
