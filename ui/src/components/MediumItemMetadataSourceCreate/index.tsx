@@ -117,35 +117,29 @@ const MediumItemMetadataSourceCreate: FunctionComponent<MediumItemMetadataSource
   const addSource = useCallback((externalService: ExternalService, source: Source | SourceCreate) => {
     setFocusedExternalService(externalService)
 
-    setAddingSources(addingSources => {
-      const newSources = addingSources.get(externalService.id) ?? []
-      if (newSources.some(newSource => deepEqual(newSource.externalMetadata, source.externalMetadata))) {
-        return addingSources
-      }
+    const newSources = addingSources.get(externalService.id) ?? []
+    if (newSources.some(newSource => deepEqual(newSource.externalMetadata, source.externalMetadata))) {
+      return
+    }
 
-      newSources.push(source)
-
-      const newAddingSources = new Map(addingSources).set(externalService.id, newSources)
-      setResolveSourceIDs(() => resolveSourceIDs(newAddingSources))
-      return newAddingSources
-    })
-  }, [ setResolveSourceIDs, resolveSourceIDs ])
+    const newAddingSources = new Map(addingSources).set(externalService.id, [ ...newSources, source ])
+    setAddingSources(newAddingSources)
+    setResolveSourceIDs(() => resolveSourceIDs(newAddingSources))
+  }, [ addingSources, setResolveSourceIDs, resolveSourceIDs ])
 
   const removeSource = useCallback((externalService: ExternalService, source: Source | SourceCreate) => {
     setFocusedExternalService(null)
 
-    setAddingSources(addingSources => {
-      const newSources = addingSources.get(externalService.id) ?? []
-      const idx = newSources.findIndex(newSource => deepEqual(newSource.externalMetadata, source.externalMetadata))
-      if (idx < 0) {
-        return addingSources
-      }
+    const newSources = addingSources.get(externalService.id) ?? []
+    const idx = newSources.findIndex(newSource => deepEqual(newSource.externalMetadata, source.externalMetadata))
+    if (idx < 0) {
+      return
+    }
 
-      const newAddingSources = new Map(addingSources).set(externalService.id, newSources.toSpliced(idx, 1))
-      setResolveSourceIDs(() => resolveSourceIDs(newAddingSources))
-      return newAddingSources
-    })
-  }, [ setResolveSourceIDs, resolveSourceIDs ])
+    const newAddingSources = new Map(addingSources).set(externalService.id, newSources.toSpliced(idx, 1))
+    setAddingSources(newAddingSources)
+    setResolveSourceIDs(() => resolveSourceIDs(newAddingSources))
+  }, [ addingSources, setResolveSourceIDs, resolveSourceIDs ])
 
   const renderExternalServiceOption = useCallback(({ key, ...props }: ComponentPropsWithoutRef<'li'>, option: ExternalService) => (
     <li key={key} {...props}>

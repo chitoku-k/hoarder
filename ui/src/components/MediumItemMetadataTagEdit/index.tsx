@@ -124,8 +124,7 @@ const MediumItemMetadataTagEdit: FunctionComponent<MediumItemMetadataTagEditProp
         return addingTags
       }
 
-      newTags.push(tag)
-      return new Map(addingTags).set(type.id, newTags)
+      return new Map(addingTags).set(type.id, [ ...newTags, tag ])
     })
 
     setRemovingTags(removingTags => {
@@ -162,8 +161,7 @@ const MediumItemMetadataTagEdit: FunctionComponent<MediumItemMetadataTagEditProp
         return removingTags
       }
 
-      newTags.push(tag)
-      return new Map(removingTags).set(type.id, newTags)
+      return new Map(removingTags).set(type.id, [ ...newTags, tag ])
     })
   }, [ groups ])
 
