@@ -16,8 +16,8 @@ import ArrowOutwardIcon from '@mui/icons-material/ArrowOutward'
 import debounce from '@mui/material/utils/debounce'
 
 import TagSelectDialog from '@/components/TagSelectDialog'
-import { Tag } from '@/types'
 import { useTagsLike, useTagsLikeSkip } from '@/hooks'
+import type { Tag } from '@/types'
 
 import styles from './styles.module.scss'
 
