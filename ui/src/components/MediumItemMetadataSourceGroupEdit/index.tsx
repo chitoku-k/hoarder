@@ -1,7 +1,7 @@
 'use client'
 
 import type { ComponentPropsWithoutRef, FunctionComponent } from 'react'
-import { useCallback, useState } from 'react'
+import { useCallback } from 'react'
 import deepEqual from 'deep-equal'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
@@ -34,14 +34,11 @@ const MetadataSourceGroupEdit: FunctionComponent<MetadataSourceGroupEditProps> =
   removeSource,
   restoreSource,
 }) => {
-  const [ newSource, setNewSource ] = useState<Source | SourceCreate | null>(null)
-
   const handleChangeNewSource = useCallback((source: Source | SourceCreate | null) => {
     if (!source) {
       return
     }
 
-    setNewSource(null)
     restoreExternalService(externalService)
     addSource(externalService, source)
   }, [ restoreExternalService, externalService, addSource ])
@@ -175,7 +172,7 @@ const MetadataSourceGroupEdit: FunctionComponent<MetadataSourceGroupEditProps> =
             externalService={externalService}
             disabled={loading}
             renderOption={renderSourceOption}
-            value={newSource}
+            value={null}
             getOptionDisabled={option => isSource(option)
               ? sources.some(source => source.id === option.id)
               : addingSources.some(source => deepEqual(source.externalMetadata, option.externalMetadata))}

@@ -1,7 +1,7 @@
 'use client'
 
 import type { ComponentPropsWithoutRef, FunctionComponent } from 'react'
-import { useCallback, useState } from 'react'
+import { useCallback } from 'react'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Tooltip from '@mui/material/Tooltip'
@@ -30,14 +30,11 @@ const MediumItemMetadataTagEditGroup: FunctionComponent<MediumItemMetadataTagEdi
   removeTag,
   restoreTag,
 }) => {
-  const [ newTag, setNewTag ] = useState<Tag | null>(null)
-
   const handleChangeNewTag = useCallback((tag: Tag | null) => {
     if (!tag) {
       return
     }
 
-    setNewTag(null)
     restoreTagType(type)
     addTag(type, tag)
   }, [ restoreTagType, type, addTag ])
@@ -151,7 +148,7 @@ const MediumItemMetadataTagEditGroup: FunctionComponent<MediumItemMetadataTagEdi
             placeholder="タグの追加..."
             disabled={loading}
             renderOption={renderTagOption}
-            value={newTag}
+            value={null}
             getOptionDisabled={({ id }) => tags.some(tag => tag.id === id) || addingTags.some(tag => tag.id === id)}
             icon={({ ...props }) => <SellIcon {...props} />}
             onChange={handleChangeNewTag}
