@@ -55,7 +55,7 @@ features = ["derive"]
 version = "1.0.133"
 
 [dependencies.serde_with]
-version = "3.11.0"
+version = "3.12.0"
 
 [dependencies.sqlx]
 version = "0.8.2"
