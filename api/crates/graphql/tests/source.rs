@@ -41,6 +41,7 @@ async fn succeeds() {
                     kind: "x".to_string(),
                     name: "X".to_string(),
                     base_url: Some("https://x.com".to_string()),
+                    url_pattern: Some(r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$".to_string()),
                 },
                 external_metadata: external_services::ExternalMetadata::X { id: 727620202049900544, creator_id: Some("_namori_".to_string()) },
                 created_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 0).unwrap(),
@@ -75,6 +76,7 @@ async fn succeeds() {
                     kind
                     name
                     baseUrl
+                    urlPattern
                 }
                 externalMetadata
                 createdAt
@@ -93,6 +95,7 @@ async fn succeeds() {
                 "kind": "x",
                 "name": "X",
                 "baseUrl": "https://x.com",
+                "urlPattern": r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$",
             },
             "externalMetadata": {
                 "x": {
@@ -149,6 +152,7 @@ async fn not_found() {
                     kind
                     name
                     baseUrl
+                    urlPattern
                 }
                 externalMetadata
                 createdAt

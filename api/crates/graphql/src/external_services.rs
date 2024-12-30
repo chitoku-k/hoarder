@@ -9,6 +9,7 @@ pub(crate) struct ExternalService {
     kind: String,
     name: String,
     base_url: Option<String>,
+    url_pattern: Option<String>,
 }
 
 impl From<external_services::ExternalService> for ExternalService {
@@ -19,6 +20,7 @@ impl From<external_services::ExternalService> for ExternalService {
             kind: external_service.kind,
             name: external_service.name,
             base_url: external_service.base_url,
+            url_pattern: external_service.url_pattern,
         }
     }
 }

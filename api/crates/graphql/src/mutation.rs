@@ -81,7 +81,7 @@ where
     TagsService: TagsServiceInterface,
     Normalizer: NormalizerInterface,
 {
-    async fn create_external_service(&self, ctx: &Context<'_>, slug: String, kind: String, name: String, base_url: Option<String>) -> Result<ExternalService> {
+    async fn create_external_service(&self, ctx: &Context<'_>, slug: String, kind: String, name: String, base_url: Option<String>, url_pattern: Option<String>) -> Result<ExternalService> {
         let external_services_service = ctx.data_unchecked::<ExternalServicesService>();
         let normalizer = ctx.data_unchecked::<Arc<Normalizer>>();
 
@@ -89,11 +89,11 @@ where
         let kind = normalizer.normalize(kind);
         let name = normalizer.normalize(name);
 
-        let service = external_services_service.create_external_service(&slug, &kind, &name, base_url.as_deref()).await?;
+        let service = external_services_service.create_external_service(&slug, &kind, &name, base_url.as_deref(), url_pattern.as_deref()).await?;
         Ok(service.into())
     }
 
-    async fn update_external_service(&self, ctx: &Context<'_>, id: Uuid, slug: Option<String>, name: Option<String>, base_url: Option<String>) -> Result<ExternalService> {
+    async fn update_external_service(&self, ctx: &Context<'_>, id: Uuid, slug: Option<String>, name: Option<String>, base_url: Option<String>, url_pattern: Option<String>) -> Result<ExternalService> {
         let external_services_service = ctx.data_unchecked::<ExternalServicesService>();
         let normalizer = ctx.data_unchecked::<Arc<Normalizer>>();
 
@@ -105,8 +105,13 @@ where
             Some(base_url) => Some(Some(base_url.as_str())),
             None => None,
         };
+        let url_pattern = match &url_pattern {
+            Some(url_pattern) if url_pattern.is_empty() => Some(None),
+            Some(url_pattern) => Some(Some(url_pattern.as_str())),
+            None => None,
+        };
 
-        let service = external_services_service.update_external_service_by_id(id.into(), slug.as_deref(), name.as_deref(), base_url).await?;
+        let service = external_services_service.update_external_service_by_id(id.into(), slug.as_deref(), name.as_deref(), base_url, url_pattern).await?;
         Ok(service.into())
     }
 

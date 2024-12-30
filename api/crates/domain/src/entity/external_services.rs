@@ -12,6 +12,7 @@ pub struct ExternalService {
     pub kind: String,
     pub name: String,
     pub base_url: Option<String>,
+    pub url_pattern: Option<String>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]

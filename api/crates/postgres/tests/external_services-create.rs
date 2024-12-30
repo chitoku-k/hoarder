@@ -15,14 +15,21 @@ use common::DatabaseContext;
 #[cfg_attr(not(feature = "test-postgres"), ignore)]
 async fn succeeds(ctx: &DatabaseContext) {
     let repository = PostgresExternalServicesRepository::new(ctx.pool.clone());
-    let actual = repository.create("foobar", "foobar", "FooBar", Some("https://foobar.example.com")).await.unwrap();
+    let actual = repository.create(
+        "foobar",
+        "foobar",
+        "FooBar",
+        Some("https://foobar.example.com"),
+        Some(r"^https?://foobar\.example\.com/(?<id>\d+)(?:[/?#].*)?$"),
+    ).await.unwrap();
 
     assert_eq!(actual.slug, "foobar".to_string());
     assert_eq!(actual.kind, "foobar".to_string());
     assert_eq!(actual.name, "FooBar".to_string());
     assert_eq!(actual.base_url, Some("https://foobar.example.com".to_string()));
+    assert_eq!(actual.url_pattern, Some(r"^https?://foobar\.example\.com/(?<id>\d+)(?:[/?#].*)?$".to_string()));
 
-    let actual = sqlx::query(r#"SELECT "id", "slug", "kind", "name", "base_url" FROM "external_services" WHERE "id" = $1"#)
+    let actual = sqlx::query(r#"SELECT "id", "slug", "kind", "name", "base_url", "url_pattern" FROM "external_services" WHERE "id" = $1"#)
         .bind(*actual.id)
         .fetch_one(&ctx.pool)
         .await
@@ -32,6 +39,7 @@ async fn succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual.get::<&str, &str>("kind"), "foobar");
     assert_eq!(actual.get::<&str, &str>("name"), "FooBar");
     assert_eq!(actual.get::<Option<&str>, &str>("base_url"), Some("https://foobar.example.com"));
+    assert_eq!(actual.get::<Option<&str>, &str>("url_pattern"), Some(r"^https?://foobar\.example\.com/(?<id>\d+)(?:[/?#].*)?$"));
 }
 
 #[test_context(DatabaseContext)]
@@ -39,7 +47,13 @@ async fn succeeds(ctx: &DatabaseContext) {
 #[cfg_attr(not(feature = "test-postgres"), ignore)]
 async fn fails(ctx: &DatabaseContext) {
     let repository = PostgresExternalServicesRepository::new(ctx.pool.clone());
-    let actual = repository.create("x", "x", "X", Some("https://x.com")).await.unwrap_err();
+    let actual = repository.create(
+        "x",
+        "x",
+        "X",
+        Some("https://x.com"),
+        Some(r"^https?://foobar\.example\.com/(?<id>\d+)(?:[/?#].*)?$"),
+    ).await.unwrap_err();
 
     assert_matches!(actual.kind(), ErrorKind::ExternalServiceSlugDuplicate { slug } if slug == "x");
 }

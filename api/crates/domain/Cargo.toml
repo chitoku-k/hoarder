@@ -32,6 +32,9 @@ version = "0.5.4"
 [dependencies.percent-encoding]
 version = "2.3.1"
 
+[dependencies.regex]
+version = "1.11.1"
+
 [dependencies.serde]
 version = "1.0.216"
 features = ["derive"]

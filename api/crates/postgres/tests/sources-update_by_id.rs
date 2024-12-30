@@ -37,6 +37,7 @@ async fn with_external_metadata_succeeds(ctx: &DatabaseContext) {
             kind: "pixiv".to_string(),
             name: "pixiv".to_string(),
             base_url: Some("https://www.pixiv.net".to_string()),
+            url_pattern: Some(r"^https?://www\.pixiv\.net/(?:artworks/|member_illust\.php\?(?:|.+&)illust_id=)(?<id>\d+)(?:[?&#].*)?$".to_string()),
         },
     );
     assert_eq!(actual.external_metadata, ExternalMetadata::Pixiv { id: 123456789 });
@@ -85,6 +86,7 @@ async fn with_external_service_and_external_metadata_succeeds(ctx: &DatabaseCont
             kind: "skeb".to_string(),
             name: "Skeb".to_string(),
             base_url: Some("https://skeb.jp".to_string()),
+            url_pattern: Some(r"^https?://skeb\.jp/@(?<creatorId>[^/]+)/works/(?<id>\d+)(?:[?#].*)?$".to_string()),
         },
     );
     assert_eq!(

@@ -28,6 +28,7 @@ async fn succeeds() {
                     kind: "pixiv".to_string(),
                     name: "pixiv".to_string(),
                     base_url: Some("https://www.pixiv.net".to_string()),
+                    url_pattern: Some(r"^https?://www\.pixiv\.net/(?:artworks/|member_illust\.php\?(?:|.+&)illust_id=)(?<id>\d+)(?:[?&#].*)?$".to_string()),
                 },
                 ExternalService {
                     id: ExternalServiceId::from(uuid!("22222222-2222-2222-2222-222222222222")),
@@ -35,6 +36,7 @@ async fn succeeds() {
                     kind: "skeb".to_string(),
                     name: "Skeb".to_string(),
                     base_url: Some("https://skeb.jp".to_string()),
+                    url_pattern: Some(r"^https?://skeb\.jp/@(?<creatorId>[^/]+)/works/(?<id>\d+)(?:[?#].*)?$".to_string()),
                 },
                 ExternalService {
                     id: ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
@@ -42,6 +44,7 @@ async fn succeeds() {
                     kind: "x".to_string(),
                     name: "X".to_string(),
                     base_url: Some("https://x.com".to_string()),
+                    url_pattern: Some(r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$".to_string()),
                 },
             ]))
         });
@@ -64,6 +67,7 @@ async fn succeeds() {
                 kind
                 name
                 baseUrl
+                urlPattern
             }
         }
     "#};
@@ -77,6 +81,7 @@ async fn succeeds() {
                 "kind": "pixiv",
                 "name": "pixiv",
                 "baseUrl": "https://www.pixiv.net",
+                "urlPattern": r"^https?://www\.pixiv\.net/(?:artworks/|member_illust\.php\?(?:|.+&)illust_id=)(?<id>\d+)(?:[?&#].*)?$",
             },
             {
                 "id": "22222222-2222-2222-2222-222222222222",
@@ -84,6 +89,7 @@ async fn succeeds() {
                 "kind": "skeb",
                 "name": "Skeb",
                 "baseUrl": "https://skeb.jp",
+                "urlPattern": r"^https?://skeb\.jp/@(?<creatorId>[^/]+)/works/(?<id>\d+)(?:[?#].*)?$",
             },
             {
                 "id": "33333333-3333-3333-3333-333333333333",
@@ -91,6 +97,7 @@ async fn succeeds() {
                 "kind": "x",
                 "name": "X",
                 "baseUrl": "https://x.com",
+                "urlPattern": r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$",
             },
         ],
     }));

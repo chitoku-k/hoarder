@@ -26,6 +26,7 @@ pub(crate) struct PostgresExternalServiceRow {
     kind: String,
     name: String,
     base_url: Option<String>,
+    url_pattern: Option<String>,
 }
 
 #[derive(Iden)]
@@ -37,6 +38,7 @@ pub(crate) enum PostgresExternalService {
     Kind,
     Name,
     BaseUrl,
+    UrlPattern,
 }
 
 sea_query_uuid_value!(PostgresExternalServiceId, ExternalServiceId);
@@ -49,12 +51,13 @@ impl From<PostgresExternalServiceRow> for ExternalService {
             kind: row.kind,
             name: row.name,
             base_url: row.base_url,
+            url_pattern: row.url_pattern,
         }
     }
 }
 
 impl ExternalServicesRepository for PostgresExternalServicesRepository {
-    async fn create<'a>(&self, slug: &str, kind: &str, name: &str, base_url: Option<&'a str>) -> Result<ExternalService> {
+    async fn create<'a>(&self, slug: &str, kind: &str, name: &str, base_url: Option<&'a str>, url_pattern: Option<&'a str>) -> Result<ExternalService> {
         let (sql, values) = Query::insert()
             .into_table(PostgresExternalService::Table)
             .columns([
@@ -62,12 +65,14 @@ impl ExternalServicesRepository for PostgresExternalServicesRepository {
                 PostgresExternalService::Kind,
                 PostgresExternalService::Name,
                 PostgresExternalService::BaseUrl,
+                PostgresExternalService::UrlPattern,
             ])
             .values([
                 slug.into(),
                 kind.into(),
                 name.into(),
                 base_url.into(),
+                url_pattern.into(),
             ])
             .map_err(Error::other)?
             .returning(
@@ -78,6 +83,7 @@ impl ExternalServicesRepository for PostgresExternalServicesRepository {
                         PostgresExternalService::Kind,
                         PostgresExternalService::Name,
                         PostgresExternalService::BaseUrl,
+                        PostgresExternalService::UrlPattern,
                     ])
             )
             .build_sqlx(PostgresQueryBuilder);
@@ -100,6 +106,7 @@ impl ExternalServicesRepository for PostgresExternalServicesRepository {
                 PostgresExternalService::Kind,
                 PostgresExternalService::Name,
                 PostgresExternalService::BaseUrl,
+                PostgresExternalService::UrlPattern,
             ])
             .from(PostgresExternalService::Table)
             .and_where(Expr::col(PostgresExternalService::Id).is_in(ids.into_iter().map(PostgresExternalServiceId::from)))
@@ -124,6 +131,7 @@ impl ExternalServicesRepository for PostgresExternalServicesRepository {
                 PostgresExternalService::Kind,
                 PostgresExternalService::Name,
                 PostgresExternalService::BaseUrl,
+                PostgresExternalService::UrlPattern,
             ])
             .from(PostgresExternalService::Table)
             .order_by(PostgresExternalService::Slug, Order::Asc)
@@ -139,7 +147,7 @@ impl ExternalServicesRepository for PostgresExternalServicesRepository {
         Ok(external_services)
     }
 
-    async fn update_by_id<'a>(&self, id: ExternalServiceId, slug: Option<&'a str>, name: Option<&'a str>, base_url: Option<Option<&'a str>>) -> Result<ExternalService> {
+    async fn update_by_id<'a>(&self, id: ExternalServiceId, slug: Option<&'a str>, name: Option<&'a str>, base_url: Option<Option<&'a str>>, url_pattern: Option<Option<&'a str>>) -> Result<ExternalService> {
         let mut tx = self.pool.begin().await.map_err(Error::other)?;
 
         let (sql, values) = Query::select()
@@ -149,6 +157,7 @@ impl ExternalServicesRepository for PostgresExternalServicesRepository {
                 PostgresExternalService::Kind,
                 PostgresExternalService::Name,
                 PostgresExternalService::BaseUrl,
+                PostgresExternalService::UrlPattern,
             ])
             .from(PostgresExternalService::Table)
             .and_where(Expr::col(PostgresExternalService::Id).eq(PostgresExternalServiceId::from(id)))
@@ -164,12 +173,14 @@ impl ExternalServicesRepository for PostgresExternalServicesRepository {
         let slug = slug.unwrap_or(&external_service.slug);
         let name = name.unwrap_or(&external_service.name);
         let base_url = base_url.unwrap_or(external_service.base_url.as_deref());
+        let url_pattern = url_pattern.unwrap_or(external_service.url_pattern.as_deref());
 
         let (sql, values) = Query::update()
             .table(PostgresExternalService::Table)
             .value(PostgresExternalService::Slug, slug)
             .value(PostgresExternalService::Name, name)
             .value(PostgresExternalService::BaseUrl, base_url)
+            .value(PostgresExternalService::UrlPattern, url_pattern)
             .and_where(Expr::col(PostgresExternalService::Id).eq(PostgresExternalServiceId::from(id)))
             .returning(
                 Query::returning()
@@ -179,6 +190,7 @@ impl ExternalServicesRepository for PostgresExternalServicesRepository {
                         PostgresExternalService::Kind,
                         PostgresExternalService::Name,
                         PostgresExternalService::BaseUrl,
+                        PostgresExternalService::UrlPattern,
                     ])
             )
             .build_sqlx(PostgresQueryBuilder);
