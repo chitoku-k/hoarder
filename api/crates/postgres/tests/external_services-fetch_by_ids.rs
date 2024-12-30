@@ -27,6 +27,7 @@ async fn succeeds(ctx: &DatabaseContext) {
             kind: "pixiv".to_string(),
             name: "pixiv".to_string(),
             base_url: Some("https://www.pixiv.net".to_string()),
+            url_pattern: Some(r"^https?://www\.pixiv\.net/(?:artworks/|member_illust\.php\?(?:|.+&)illust_id=)(?<id>\d+)(?:[?&#].*)?$".to_string()),
         },
         ExternalService {
             id: ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")),
@@ -34,6 +35,7 @@ async fn succeeds(ctx: &DatabaseContext) {
             kind: "x".to_string(),
             name: "X".to_string(),
             base_url: Some("https://x.com".to_string()),
+            url_pattern: Some(r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$".to_string()),
         },
     ]);
 }

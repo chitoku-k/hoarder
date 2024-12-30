@@ -36,6 +36,9 @@ pub(crate) enum ErrorKind {
     #[error("the external service with the same slug is already registered")]
     ExternalServiceSlugDuplicate { slug: String },
 
+    #[error("the external service url pattern is invalid")]
+    ExternalServiceUrlPatternInvalid { url_pattern: String },
+
     #[error("the medium was not found")]
     MediumNotFound { id: MediumId },
 
@@ -169,6 +172,7 @@ impl From<domain::error::ErrorKind> for ErrorKind {
         match kind {
             ExternalServiceNotFound { id } => ErrorKind::ExternalServiceNotFound { id },
             ExternalServiceSlugDuplicate { slug } => ErrorKind::ExternalServiceSlugDuplicate { slug },
+            ExternalServiceUrlPatternInvalid { url_pattern } => ErrorKind::ExternalServiceUrlPatternInvalid { url_pattern },
             MediumNotFound { id } => ErrorKind::MediumNotFound { id },
             MediumReplicaDecodeFailed => ErrorKind::MediumReplicaDecodeFailed,
             MediumReplicaEncodeFailed => ErrorKind::MediumReplicaEncodeFailed,

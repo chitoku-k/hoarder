@@ -30,6 +30,7 @@ async fn succeeds_with_default(ctx: &DatabaseContext) {
             kind: "pixiv".to_string(),
             name: "pixiv".to_string(),
             base_url: Some("https://www.pixiv.net".to_string()),
+            url_pattern: Some(r"^https?://www\.pixiv\.net/(?:artworks/|member_illust\.php\?(?:|.+&)illust_id=)(?<id>\d+)(?:[?&#].*)?$".to_string()),
         },
     );
     assert_eq!(actual.external_metadata, ExternalMetadata::Pixiv { id: 123456789 });
@@ -74,6 +75,7 @@ async fn succeeds_with_extra(ctx: &DatabaseContext) {
             kind: "x".to_string(),
             name: "X".to_string(),
             base_url: Some("https://x.com".to_string()),
+            url_pattern: Some(r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$".to_string()),
         },
     );
     assert_eq!(actual.external_metadata, ExternalMetadata::X { id: 123456789, creator_id: Some("creator_01".to_string()) });
@@ -119,6 +121,7 @@ async fn succeeds_with_custom_object(ctx: &DatabaseContext) {
             kind: "custom".to_string(),
             name: "Custom".to_string(),
             base_url: None,
+            url_pattern: None,
         },
     );
     assert_eq!(actual.external_metadata, ExternalMetadata::Custom(r#"{"id":123456789}"#.to_string()));
@@ -160,6 +163,7 @@ async fn succeeds_with_custom_string(ctx: &DatabaseContext) {
             kind: "custom".to_string(),
             name: "Custom".to_string(),
             base_url: None,
+            url_pattern: None,
         },
     );
     assert_eq!(actual.external_metadata, ExternalMetadata::Custom(r#""123456789abcdefg""#.to_string()));
@@ -199,6 +203,7 @@ async fn succeeds_with_custom_number(ctx: &DatabaseContext) {
             kind: "custom".to_string(),
             name: "Custom".to_string(),
             base_url: None,
+            url_pattern: None,
         },
     );
     assert_eq!(actual.external_metadata, ExternalMetadata::Custom("123456789".to_string()));

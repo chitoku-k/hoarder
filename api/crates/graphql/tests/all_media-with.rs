@@ -981,6 +981,7 @@ async fn sources_asc_succeeds() {
                                 kind: "x".to_string(),
                                 name: "X".to_string(),
                                 base_url: Some("https://x.com".to_string()),
+                                url_pattern: Some(r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$".to_string()),
                             },
                             external_metadata: ExternalMetadata::X { id: 727620202049900544, creator_id: Some("_namori_".to_string()) },
                             created_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 0).unwrap(),
@@ -994,6 +995,7 @@ async fn sources_asc_succeeds() {
                                 kind: "pixiv".to_string(),
                                 name: "pixiv".to_string(),
                                 base_url: Some("https://www.pixiv.net".to_string()),
+                                url_pattern: Some(r"^https?://www\.pixiv\.net/(?:artworks/|member_illust\.php\?(?:|.+&)illust_id=)(?<id>\d+)(?:[?&#].*)?$".to_string()),
                             },
                             external_metadata: ExternalMetadata::Pixiv { id: 56736941 },
                             created_at: Utc.with_ymd_and_hms(2016, 5, 6, 5, 14, 0).unwrap(),
@@ -1016,6 +1018,7 @@ async fn sources_asc_succeeds() {
                                 kind: "pixiv".to_string(),
                                 name: "pixiv".to_string(),
                                 base_url: Some("https://www.pixiv.net".to_string()),
+                                url_pattern: Some(r"^https?://www\.pixiv\.net/(?:artworks/|member_illust\.php\?(?:|.+&)illust_id=)(?<id>\d+)(?:[?&#].*)?$".to_string()),
                             },
                             external_metadata: ExternalMetadata::Pixiv { id: 1234 },
                             created_at: Utc.with_ymd_and_hms(2016, 5, 5, 7, 6, 0).unwrap(),
@@ -1073,6 +1076,7 @@ async fn sources_asc_succeeds() {
                                 kind
                                 name
                                 baseUrl
+                                urlPattern
                             }
                             externalMetadata
                             createdAt
@@ -1106,6 +1110,7 @@ async fn sources_asc_succeeds() {
                                     "kind": "x",
                                     "name": "X",
                                     "baseUrl": "https://x.com",
+                                    "urlPattern": r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$",
                                 },
                                 "externalMetadata": {
                                     "x": {
@@ -1124,6 +1129,7 @@ async fn sources_asc_succeeds() {
                                     "kind": "pixiv",
                                     "name": "pixiv",
                                     "baseUrl": "https://www.pixiv.net",
+                                    "urlPattern": r"^https?://www\.pixiv\.net/(?:artworks/|member_illust\.php\?(?:|.+&)illust_id=)(?<id>\d+)(?:[?&#].*)?$",
                                 },
                                 "externalMetadata": {
                                     "pixiv": {
@@ -1150,6 +1156,7 @@ async fn sources_asc_succeeds() {
                                     "kind": "pixiv",
                                     "name": "pixiv",
                                     "baseUrl": "https://www.pixiv.net",
+                                    "urlPattern": r"^https?://www\.pixiv\.net/(?:artworks/|member_illust\.php\?(?:|.+&)illust_id=)(?<id>\d+)(?:[?&#].*)?$",
                                 },
                                 "externalMetadata": {
                                     "pixiv": {

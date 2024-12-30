@@ -35,6 +35,7 @@ async fn succeeds() {
                     kind: "pixiv".to_string(),
                     name: "pixiv".to_string(),
                     base_url: Some("https://www.pixiv.net".to_string()),
+                    url_pattern: Some(r"^https?://www\.pixiv\.net/(?:artworks/|member_illust\.php\?(?:|.+&)illust_id=)(?<id>\d+)(?:[?&#].*)?$".to_string()),
                 },
                 ExternalService {
                     id: ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
@@ -42,6 +43,7 @@ async fn succeeds() {
                     kind: "x".to_string(),
                     name: "X".to_string(),
                     base_url: Some("https://x.com".to_string()),
+                    url_pattern: Some(r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$".to_string()),
                 },
             ]))
         });
@@ -62,6 +64,8 @@ async fn succeeds() {
                 id
                 slug
                 name
+                baseUrl
+                urlPattern
             }
         }
     "#};
@@ -73,11 +77,15 @@ async fn succeeds() {
                 "id": "11111111-1111-1111-1111-111111111111",
                 "slug": "pixiv",
                 "name": "pixiv",
+                "baseUrl": "https://www.pixiv.net",
+                "urlPattern": r"^https?://www\.pixiv\.net/(?:artworks/|member_illust\.php\?(?:|.+&)illust_id=)(?<id>\d+)(?:[?&#].*)?$",
             },
             {
                 "id": "33333333-3333-3333-3333-333333333333",
                 "slug": "x",
                 "name": "X",
+                "baseUrl": "https://x.com",
+                "urlPattern": r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$",
             },
         ],
     }));

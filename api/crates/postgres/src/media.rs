@@ -66,6 +66,7 @@ struct PostgresMediumSourceExternalServiceRow {
     external_service_kind: String,
     external_service_name: String,
     external_service_base_url: Option<String>,
+    external_service_url_pattern: Option<String>,
 }
 
 #[derive(Debug, FromRow)]
@@ -148,6 +149,7 @@ impl TryFrom<PostgresMediumSourceExternalServiceRow> for (MediumId, Source) {
                     kind: row.external_service_kind,
                     name: row.external_service_name,
                     base_url: row.external_service_base_url,
+                    url_pattern: row.external_service_url_pattern,
                 },
                 external_metadata,
                 created_at: row.source_created_at,
@@ -348,6 +350,7 @@ where
         .expr_as(Expr::col((PostgresExternalService::Table, PostgresExternalService::Kind)), PostgresSourceExternalService::ExternalServiceKind)
         .expr_as(Expr::col((PostgresExternalService::Table, PostgresExternalService::Name)), PostgresSourceExternalService::ExternalServiceName)
         .expr_as(Expr::col((PostgresExternalService::Table, PostgresExternalService::BaseUrl)), PostgresSourceExternalService::ExternalServiceBaseUrl)
+        .expr_as(Expr::col((PostgresExternalService::Table, PostgresExternalService::UrlPattern)), PostgresSourceExternalService::ExternalServiceUrlPattern)
         .from(PostgresMediumSource::Table)
         .join(
             JoinType::InnerJoin,

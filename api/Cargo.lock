@@ -911,6 +911,7 @@ dependencies = [
  "ordermap",
  "percent-encoding",
  "pretty_assertions",
+ "regex",
  "serde",
  "serial_test",
  "thiserror 2.0.9",

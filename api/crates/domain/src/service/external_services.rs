@@ -1,8 +1,9 @@
 use std::future::Future;
 
-use crate::error::Result;
+use crate::error::{Error, ErrorKind, Result};
 
 use derive_more::Constructor;
+use regex::Regex;
 
 use crate::{
     entity::external_services::{ExternalService, ExternalServiceId},
@@ -12,7 +13,7 @@ use crate::{
 #[cfg_attr(feature = "test-mock", mockall::automock)]
 pub trait ExternalServicesServiceInterface: Send + Sync + 'static {
     /// Creates an external service.
-    fn create_external_service<'a>(&self, slug: &str, kind: &str, name: &str, base_url: Option<&'a str>) -> impl Future<Output = Result<ExternalService>> + Send;
+    fn create_external_service<'a>(&self, slug: &str, kind: &str, name: &str, base_url: Option<&'a str>, url_pattern: Option<&'a str>) -> impl Future<Output = Result<ExternalService>> + Send;
 
     /// Gets external services.
     fn get_external_services(&self) -> impl Future<Output = Result<Vec<ExternalService>>> + Send;
@@ -23,7 +24,7 @@ pub trait ExternalServicesServiceInterface: Send + Sync + 'static {
         T: IntoIterator<Item = ExternalServiceId> + Send + Sync + 'static;
 
     /// Updates the external service by ID.
-    fn update_external_service_by_id<'a>(&self, id: ExternalServiceId, slug: Option<&'a str>, name: Option<&'a str>, base_url: Option<Option<&'a str>>) -> impl Future<Output = Result<ExternalService>> + Send;
+    fn update_external_service_by_id<'a>(&self, id: ExternalServiceId, slug: Option<&'a str>, name: Option<&'a str>, base_url: Option<Option<&'a str>>, url_pattern: Option<Option<&'a str>>) -> impl Future<Output = Result<ExternalService>> + Send;
 
     /// Deletes the external service by ID.
     fn delete_external_service_by_id(&self, id: ExternalServiceId) -> impl Future<Output = Result<DeleteResult>> + Send;
@@ -38,8 +39,12 @@ impl<ExternalServicesRepository> ExternalServicesServiceInterface for ExternalSe
 where
     ExternalServicesRepository: external_services::ExternalServicesRepository,
 {
-    async fn create_external_service<'a>(&self, slug: &str, kind: &str, name: &str, base_url: Option<&'a str>) -> Result<ExternalService> {
-        match self.external_services_repository.create(slug, kind, name, base_url).await {
+    async fn create_external_service<'a>(&self, slug: &str, kind: &str, name: &str, base_url: Option<&'a str>, url_pattern: Option<&'a str>) -> Result<ExternalService> {
+        if let Some(e) = url_pattern.and_then(|url_pattern| Regex::new(url_pattern).err()) {
+            return Err(Error::new(ErrorKind::ExternalServiceUrlPatternInvalid { url_pattern: url_pattern.unwrap().to_string() }, e));
+        }
+
+        match self.external_services_repository.create(slug, kind, name, base_url, url_pattern).await {
             Ok(service) => Ok(service),
             Err(e) => {
                 log::error!("failed to create an external service\nError: {e:?}");
@@ -71,8 +76,12 @@ where
         }
     }
 
-    async fn update_external_service_by_id<'a>(&self, id: ExternalServiceId, slug: Option<&'a str>, name: Option<&'a str>, base_url: Option<Option<&'a str>>) -> Result<ExternalService> {
-        match self.external_services_repository.update_by_id(id, slug, name, base_url).await {
+    async fn update_external_service_by_id<'a>(&self, id: ExternalServiceId, slug: Option<&'a str>, name: Option<&'a str>, base_url: Option<Option<&'a str>>, url_pattern: Option<Option<&'a str>>) -> Result<ExternalService> {
+        if let Some(e) = url_pattern.flatten().and_then(|url_pattern| Regex::new(url_pattern).err()) {
+            return Err(Error::new(ErrorKind::ExternalServiceUrlPatternInvalid { url_pattern: url_pattern.flatten().unwrap().to_string() }, e));
+        }
+
+        match self.external_services_repository.update_by_id(id, slug, name, base_url, url_pattern).await {
             Ok(service) => Ok(service),
             Err(e) => {
                 log::error!("failed to update the external service\nError: {e:?}");
