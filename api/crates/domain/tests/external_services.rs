@@ -92,7 +92,7 @@ async fn create_external_service_fails_url_pattern_invalid() {
         Some("("),
     ).await.unwrap_err();
 
-    assert_matches!(actual.kind(), ErrorKind::ExternalServiceUrlPatternInvalid { url_pattern } if url_pattern == "(");
+    assert_matches!(actual.kind(), ErrorKind::ExternalServiceUrlPatternInvalid { url_pattern, description } if url_pattern == "(" && !description.as_ref().unwrap().is_empty());
 }
 
 #[tokio::test]
@@ -336,7 +336,7 @@ async fn update_external_service_by_id_fails_url_pattern_invalid() {
         Some(Some("(")),
     ).await.unwrap_err();
 
-    assert_matches!(actual.kind(), ErrorKind::ExternalServiceUrlPatternInvalid { url_pattern } if url_pattern == "(");
+    assert_matches!(actual.kind(), ErrorKind::ExternalServiceUrlPatternInvalid { url_pattern, description } if url_pattern == "(" && !description.as_ref().unwrap().is_empty());
 }
 
 #[tokio::test]
