@@ -23,6 +23,7 @@ RUN --mount=type=cache,id=api:/usr/local/cargo/registry,target=/usr/local/cargo/
     cp -r target/release/hoarder /usr/local/bin/hoarder
 
 FROM base AS dev
+ENV JEMALLOC_OVERRIDE=/usr/lib/x86_64-linux-gnu/libjemalloc.so
 COPY --from=docker:cli /usr/local/bin/docker /usr/bin/docker
 RUN rustup component add clippy && \
     cargo install cargo-make
