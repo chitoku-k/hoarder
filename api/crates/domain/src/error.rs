@@ -68,7 +68,7 @@ pub enum ErrorKind {
     ExternalServiceSlugDuplicate { slug: String },
 
     #[error("the external service url pattern is invalid")]
-    ExternalServiceUrlPatternInvalid { url_pattern: String },
+    ExternalServiceUrlPatternInvalid { url_pattern: String, description: Option<String> },
 
     #[error("the medium was not found")]
     MediumNotFound { id: MediumId },
