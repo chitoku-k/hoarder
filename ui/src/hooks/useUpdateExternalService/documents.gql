@@ -4,10 +4,11 @@ fragment externalServiceNode on ExternalService {
   kind
   name
   baseUrl
+  urlPattern
 }
 
-mutation UpdateExternalService($id: UUID!, $slug: String, $name: String, $baseUrl: String) {
-  updateExternalService(id: $id, slug: $slug, name: $name, baseUrl: $baseUrl) {
+mutation UpdateExternalService($id: UUID!, $slug: String, $name: String, $baseUrl: String, $urlPattern: String) {
+  updateExternalService(id: $id, slug: $slug, name: $name, baseUrl: $baseUrl, urlPattern: $urlPattern) {
     ...externalServiceNode
   }
 }

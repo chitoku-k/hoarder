@@ -4,6 +4,7 @@ fragment externalServiceNode on ExternalService {
   kind
   name
   baseUrl
+  urlPattern
 }
 
 fragment mediumCreateNode on Medium {

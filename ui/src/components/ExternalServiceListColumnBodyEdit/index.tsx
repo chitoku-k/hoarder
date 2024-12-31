@@ -1,15 +1,16 @@
 'use client'
 
 import type { ChangeEvent, FunctionComponent } from 'react'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import Button from '@mui/material/Button'
+import Chip from '@mui/material/Chip'
 import LoadingButton from '@mui/lab/LoadingButton'
 import Portal from '@mui/material/Portal'
 import Snackbar from '@mui/material/Snackbar'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 
-import { useUpdateExternalService } from '@/hooks'
+import { EXTERNAL_SERVICE_URL_PATTERN_INVALID, useError, useUpdateExternalService } from '@/hooks'
 import type { ExternalService } from '@/types'
 
 import styles from './styles.module.scss'
@@ -20,12 +21,16 @@ const ExternalServiceListColumnBodyEdit: FunctionComponent<ExternalServiceListCo
   onEdit,
 }) => {
   const [ updateExternalService, { error, loading } ] = useUpdateExternalService()
+  const { graphQLError } = useError()
 
   const ref = useCallback((input: HTMLElement) => {
     input?.focus({
       preventScroll: true,
     })
   }, [])
+
+  const urlPatternRef = useRef<HTMLInputElement>(null)
+  const [ urlPatternSelection, setUrlPatternSelection ] = useState<[number, number] | [null, null]>([null, null])
 
   const [ externalService, setExternalService ] = useState(current)
 
@@ -53,17 +58,59 @@ const ExternalServiceListColumnBodyEdit: FunctionComponent<ExternalServiceListCo
     }))
   }, [])
 
+  const handleChangeUrlPattern = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    const urlPattern = e.currentTarget.value
+    setExternalService(externalService => ({
+      ...externalService,
+      urlPattern,
+    }))
+    setUrlPatternSelection([null, null])
+  }, [])
+
+  const handleClickInsertCaptureGroup = useCallback((name: string) => {
+    const { current } = urlPatternRef
+    if (!current) {
+      return
+    }
+
+    const prefix = `(?<${name}>`
+    const suffix = ')'
+    const selectionStart = current.selectionStart ?? 0
+    const selectionEnd = current.selectionEnd ?? 0
+    const urlPattern = current.value.slice(0, selectionStart)
+      + prefix
+      + current.value.slice(selectionStart, selectionEnd)
+      + suffix
+      + current.value.slice(selectionEnd)
+
+    setExternalService(externalService => ({
+      ...externalService,
+      urlPattern,
+    }))
+    setUrlPatternSelection([selectionStart + prefix.length, selectionEnd + prefix.length])
+  }, [ urlPatternRef ])
+
+  useEffect(() => {
+    const { current } = urlPatternRef
+    if (!current) {
+      return
+    }
+
+    const [ selectionStart, selectionEnd ] = urlPatternSelection
+    if (selectionStart === null || selectionEnd === null) {
+      return
+    }
+
+    current.setSelectionRange(selectionStart, selectionEnd)
+    current.focus()
+  }, [ urlPatternRef, urlPatternSelection ])
+
   const handleClickCancel = useCallback(() => {
     close()
   }, [ close ])
 
   const handleClickSubmit = useCallback(() => {
-    updateExternalService({
-      id: externalService.id,
-      slug: externalService.slug,
-      name: externalService.name,
-      baseUrl: externalService.baseUrl,
-    }).then(
+    updateExternalService(externalService).then(
       newExternalService => {
         close()
         onEdit(newExternalService)
@@ -73,6 +120,10 @@ const ExternalServiceListColumnBodyEdit: FunctionComponent<ExternalServiceListCo
       },
     )
   }, [ externalService, updateExternalService, onEdit, close ])
+
+  const externalServiceUrlPatternInvalid = graphQLError(error, EXTERNAL_SERVICE_URL_PATTERN_INVALID)
+  const externalServiceUrlPatternInvalidDescription = externalServiceUrlPatternInvalid?.extensions.details.data.description
+  const isUrlPatternInvalid = externalServiceUrlPatternInvalid?.extensions.details.data.urlPattern === externalService.urlPattern
 
   return (
     <Stack className={styles.container} direction="column-reverse" justifyContent="flex-end">
@@ -111,6 +162,63 @@ const ExternalServiceListColumnBodyEdit: FunctionComponent<ExternalServiceListCo
           value={externalService.baseUrl}
           onChange={handleChangeBaseUrl}
         />
+        {isUrlPatternInvalid ? (
+          <TextField
+            error
+            margin="normal"
+            label="URL 正規表現"
+            helperText={
+              <Stack>
+                パターンが正しくありません
+                {externalServiceUrlPatternInvalidDescription ? (
+                  <Stack overflow="auto" whiteSpace="pre">
+                    <code>
+                      {externalServiceUrlPatternInvalidDescription}
+                    </code>
+                  </Stack>
+                ) : null}
+              </Stack>
+            }
+            slotProps={{
+              formHelperText: {
+                component: 'div',
+              },
+            }}
+            disabled={loading}
+            value={externalService.urlPattern}
+            onChange={handleChangeUrlPattern}
+          />
+        ) : (
+          <TextField
+            margin="normal"
+            label="URL 正規表現"
+            helperText={
+              <Stack spacing={0.5}>
+                パターンに名前付きキャプチャーグループを使用してソースを検索対象にします
+                <Stack direction="row" spacing={0.5}>
+                  {['id', 'creatorId'].map(name => (
+                    <Chip
+                      key={name}
+                      label={`(?<${name}>)`}
+                      size="small"
+                      variant="outlined"
+                      onClick={() => handleClickInsertCaptureGroup(name)}
+                    />
+                  ))}
+                </Stack>
+              </Stack>
+            }
+            slotProps={{
+              formHelperText: {
+                component: 'div',
+              },
+            }}
+            disabled={loading}
+            value={externalService.urlPattern}
+            onChange={handleChangeUrlPattern}
+            inputRef={urlPatternRef}
+          />
+        )}
       </Stack>
       <Stack direction="row" justifyContent="flex-end">
         <Stack className={styles.buttons} spacing={1} direction="row-reverse">

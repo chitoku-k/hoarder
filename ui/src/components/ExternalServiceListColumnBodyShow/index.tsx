@@ -65,6 +65,17 @@ const ExternalServiceListColumnBodyShow: FunctionComponent<ExternalServiceListCo
             },
           }}
         />
+        <TextField
+          margin="normal"
+          label="URL 正規表現"
+          value={externalService.urlPattern}
+          onDoubleClick={handleClickEdit}
+          slotProps={{
+            htmlInput: {
+              readOnly: true,
+            },
+          }}
+        />
       </Stack>
       <Stack direction="row" justifyContent="flex-end">
         <Stack spacing={1} direction="row-reverse">
