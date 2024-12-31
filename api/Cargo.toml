@@ -64,7 +64,7 @@ opt-level = 3
 
 [features]
 default = ["jemallocator", "tls"]
-jemallocator = ["tikv-jemallocator"]
+jemallocator = ["tikv-jemallocator", "tikv-jemallocator/unprefixed_malloc_on_supported_platforms"]
 tls = ["application/tls"]
 test-postgres = []
 
