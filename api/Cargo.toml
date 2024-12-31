@@ -64,6 +64,7 @@ opt-level = 3
 
 [features]
 default = ["jemallocator", "tls"]
+jemallocator = ["tikv-jemallocator"]
 tls = ["application/tls"]
 test-postgres = []
 
@@ -116,12 +117,12 @@ features = ["std"]
 version = "1.5.0"
 features = ["std", "sync"]
 
-[dependencies.jemallocator]
-version = "0.5.4"
-optional = true
-
 [dependencies.log]
 version = "0.4.22"
+
+[dependencies.tikv-jemallocator]
+version = "0.6.0"
+optional = true
 
 [dependencies.tokio]
 version = "1.42.0"
