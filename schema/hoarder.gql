@@ -52,6 +52,7 @@ type ExternalService {
 	kind: String!
 	name: String!
 	baseUrl: String
+	urlPattern: String
 }
 
 
@@ -101,8 +102,8 @@ type MediumEdge {
 }
 
 type Mutation {
-	createExternalService(slug: String!, kind: String!, name: String!, baseUrl: String): ExternalService!
-	updateExternalService(id: UUID!, slug: String, name: String, baseUrl: String): ExternalService!
+	createExternalService(slug: String!, kind: String!, name: String!, baseUrl: String, urlPattern: String): ExternalService!
+	updateExternalService(id: UUID!, slug: String, name: String, baseUrl: String, urlPattern: String): ExternalService!
 	deleteExternalService(id: UUID!): DeleteResult!
 	createMedium(sourceIds: [UUID!], createdAt: DateTime, tagIds: [TagTagTypeInput!]): Medium!
 	createReplica(mediumId: UUID!, originalUrl: String, upload: ReplicaInput): Replica!
