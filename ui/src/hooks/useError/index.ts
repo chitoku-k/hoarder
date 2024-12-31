@@ -3,6 +3,7 @@ import type { GraphQLFormattedError } from 'graphql'
 
 import type { ExternalServiceNotFound, EXTERNAL_SERVICE_NOT_FOUND } from './ExternalServiceNotFound'
 import type { ExternalServiceSlugDuplicate, EXTERNAL_SERVICE_SLUG_DUPLICATE } from './ExternalServiceSlugDuplicate'
+import type { ExternalServiceUrlPatternInvalid, EXTERNAL_SERVICE_URL_PATTERN_INVALID } from './ExternalServiceUrlPatternInvalid'
 import type { MediumNotFound, MEDIUM_NOT_FOUND } from './MediumNotFound'
 import type { MediumReplicaDecodeFailed, MEDIUM_REPLICA_DECODE_FAILED } from './MediumReplicaDecodeFailed'
 import type { MediumReplicaEncodeFailed, MEDIUM_REPLICA_ENCODE_FAILED } from './MediumReplicaEncodeFailed'
@@ -37,6 +38,7 @@ import type { ThumbnailNotFound, THUMBNAIL_NOT_FOUND } from './ThumbnailNotFound
 
 export * from './ExternalServiceNotFound'
 export * from './ExternalServiceSlugDuplicate'
+export * from './ExternalServiceUrlPatternInvalid'
 export * from './MediumNotFound'
 export * from './MediumReplicaDecodeFailed'
 export * from './MediumReplicaEncodeFailed'
@@ -71,6 +73,7 @@ export * from './ThumbnailNotFound'
 
 function graphQLError(e: unknown, code: typeof EXTERNAL_SERVICE_NOT_FOUND): ExternalServiceNotFound | undefined;
 function graphQLError(e: unknown, code: typeof EXTERNAL_SERVICE_SLUG_DUPLICATE): ExternalServiceSlugDuplicate | undefined;
+function graphQLError(e: unknown, code: typeof EXTERNAL_SERVICE_URL_PATTERN_INVALID): ExternalServiceUrlPatternInvalid | undefined;
 function graphQLError(e: unknown, code: typeof MEDIUM_NOT_FOUND): MediumNotFound | undefined;
 function graphQLError(e: unknown, code: typeof MEDIUM_REPLICA_DECODE_FAILED): MediumReplicaDecodeFailed | undefined;
 function graphQLError(e: unknown, code: typeof MEDIUM_REPLICA_ENCODE_FAILED): MediumReplicaEncodeFailed | undefined;

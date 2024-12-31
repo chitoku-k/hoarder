@@ -4,4 +4,5 @@ export interface ExternalService {
   kind: string
   name: string
   baseUrl?: string | null
+  urlPattern?: string | null
 }
