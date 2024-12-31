@@ -21,7 +21,7 @@ use sea_query_binder::SqlxBinder;
 use sqlx::{types::Json, FromRow, PgConnection, PgPool};
 
 use crate::{
-    expr::{array::ArrayExpr, distinct::Distinct},
+    expr::array::ArrayExpr,
     external_services::{PostgresExternalService, PostgresExternalServiceId},
     replicas::{PostgresMediumReplica, PostgresReplica, PostgresReplicaId, PostgresReplicaThumbnail, PostgresReplicaThumbnailRow, PostgresThumbnail},
     sea_query_uuid_value,
@@ -692,14 +692,10 @@ impl MediaRepository for PostgresMediaRepository {
             )
             .group_by_col(PostgresMedium::Id)
             .and_having(
-                Expr::expr(
-                    Distinct::arg(
-                        Expr::tuple([
-                            Expr::col(PostgresTagPath::AncestorId).into(),
-                            Expr::col(PostgresMediumTag::TagTypeId).into(),
-                        ]),
-                    ),
-                ).count().eq(Expr::val(tag_tag_type_ids_len))
+                Expr::tuple([
+                    Expr::col(PostgresTagPath::AncestorId).into(),
+                    Expr::col(PostgresMediumTag::TagTypeId).into(),
+                ]).count_distinct().eq(Expr::val(tag_tag_type_ids_len))
             )
             .order_by((PostgresMedium::Table, PostgresMedium::CreatedAt), order.clone())
             .order_by((PostgresMedium::Table, PostgresMedium::Id), order)
