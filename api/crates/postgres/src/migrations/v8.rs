@@ -132,7 +132,7 @@ impl Operation<Postgres> for ExternalServiceUrlPatternOperation {
             .table(PostgresExternalService::Table)
             .value(
                 PostgresExternalService::UrlPattern,
-                r"^https?://(?:(?:[^.]+)\.fanbox\.cc|www\.fanbox\.cc/@(?<creatorId>[^.]+))/posts/(?<id>\d+)(?:[?#].*)?$",
+                r"^https?://(?:(?<creatorId>[^.]+)\.fanbox\.cc|www\.fanbox\.cc/@(?:[^.]+))/posts/(?<id>\d+)(?:[?#].*)?$",
             )
             .and_where(Expr::col(PostgresExternalService::Kind).eq("pixiv_fanbox"))
             .to_string(PostgresQueryBuilder);
