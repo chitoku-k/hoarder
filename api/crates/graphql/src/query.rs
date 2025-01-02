@@ -13,6 +13,7 @@ use domain::{
         tags::TagsServiceInterface,
     },
 };
+use futures::future::try_join_all;
 use normalizer::NormalizerInterface;
 use uuid::Uuid;
 
@@ -22,7 +23,7 @@ use crate::{
     media::{Medium, MediumCursor},
     objects::{ObjectEntry, ObjectKind},
     replicas::Replica,
-    sources::{ExternalMetadata, Source},
+    sources::{ExternalMetadata, ExternalMetadataLike, Source},
     tags::{get_tag_depth, Tag, TagCursor, TagTagTypeInput, TagType},
     Order,
 };
@@ -176,6 +177,36 @@ where
 
         let replica = media_service.get_replica_by_original_url(&original_url).await?;
         Ok(replica.into())
+    }
+
+    async fn all_sources_like(&self, ctx: &Context<'_>, external_metadata_like: ExternalMetadataLike) -> Result<Vec<Source>> {
+        let external_services_service = ctx.data_unchecked::<ExternalServicesService>();
+        let media_service = ctx.data_unchecked::<MediaService>();
+
+        match external_metadata_like {
+            ExternalMetadataLike::Id(id) => {
+                media_service
+                    .get_sources_by_external_metadata_like_id(&id)
+                    .await?
+                    .into_iter()
+                    .map(|source| source.try_into().map_err(Error::new))
+                    .collect()
+            },
+            ExternalMetadataLike::Url(url) => {
+                let sources = external_services_service
+                    .get_external_services_by_url(&url)
+                    .await?
+                    .into_iter()
+                    .map(|(external_service, external_metadata)| media_service.get_source_by_external_metadata(external_service.id, external_metadata));
+
+                try_join_all(sources)
+                    .await?
+                    .into_iter()
+                    .flatten()
+                    .map(|source| source.try_into().map_err(Error::new))
+                    .collect()
+            },
+        }
     }
 
     async fn source(&self, ctx: &Context<'_>, external_service_id: Uuid, external_metadata: ExternalMetadata) -> Result<Option<Source>> {

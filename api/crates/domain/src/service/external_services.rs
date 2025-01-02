@@ -1,6 +1,6 @@
 use std::future::Future;
 
-use crate::error::{Error, ErrorKind, Result};
+use crate::{entity::external_services::ExternalMetadata, error::{Error, ErrorKind, Result}};
 
 use derive_more::Constructor;
 use regex::Regex;
@@ -22,6 +22,9 @@ pub trait ExternalServicesServiceInterface: Send + Sync + 'static {
     fn get_external_services_by_ids<T>(&self, ids: T) -> impl Future<Output = Result<Vec<ExternalService>>> + Send
     where
         T: IntoIterator<Item = ExternalServiceId> + Send + Sync + 'static;
+
+    /// Gets the external services and metadata by URL.
+    fn get_external_services_by_url(&self, url: &str) -> impl Future<Output = Result<Vec<(ExternalService, ExternalMetadata)>>> + Send;
 
     /// Updates the external service by ID.
     fn update_external_service_by_id<'a>(&self, id: ExternalServiceId, slug: Option<&'a str>, name: Option<&'a str>, base_url: Option<Option<&'a str>>, url_pattern: Option<Option<&'a str>>) -> impl Future<Output = Result<ExternalService>> + Send;
@@ -83,6 +86,25 @@ where
     {
         match self.external_services_repository.fetch_by_ids(ids).await {
             Ok(services) => Ok(services),
+            Err(e) => {
+                log::error!("failed to get external services\nError: {e:?}");
+                Err(e)
+            },
+        }
+    }
+
+    async fn get_external_services_by_url(&self, url: &str) -> Result<Vec<(ExternalService, ExternalMetadata)>> {
+        match self.external_services_repository.fetch_all().await {
+            Ok(external_services) => {
+                let external_metadata = external_services
+                    .into_iter()
+                    .filter_map(|external_service| external_service
+                        .metadata_by_url(url)
+                        .map(|external_metadata| (external_service, external_metadata)))
+                    .collect();
+
+                Ok(external_metadata)
+            },
             Err(e) => {
                 log::error!("failed to get external services\nError: {e:?}");
                 Err(e)

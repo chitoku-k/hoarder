@@ -17,6 +17,9 @@ pub trait SourcesRepository: Send + Sync + 'static {
     /// Fetches the source by its external metadata.
     fn fetch_by_external_metadata(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> impl Future<Output = Result<Option<Source>>> + Send;
 
+    /// Fetches the sources by ID field of their external metadata.
+    fn fetch_by_external_metadata_like_id(&self, id: &str) -> impl Future<Output = Result<Vec<Source>>> + Send;
+
     /// Updates the source by ID.
     fn update_by_id(&self, id: SourceId, external_service_id: Option<ExternalServiceId>, external_metadata: Option<ExternalMetadata>) -> impl Future<Output = Result<Source>> + Send;
 

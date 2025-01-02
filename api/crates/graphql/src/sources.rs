@@ -40,6 +40,13 @@ pub(crate) enum ExternalMetadata {
     Custom(serde_json::Value),
 }
 
+#[derive(Debug, Eq, OneofObject, PartialEq, Serialize)]
+#[graphql(name = "ExternalMetadataLikeInput")]
+pub(crate) enum ExternalMetadataLike {
+    Id(String),
+    Url(String),
+}
+
 #[derive(Debug, Eq, InputObject, PartialEq, Serialize)]
 #[graphql(name = "ExternalMetadataIdInput")]
 pub(crate) struct ExternalMetadataId {
