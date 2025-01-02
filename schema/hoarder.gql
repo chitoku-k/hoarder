@@ -213,6 +213,7 @@ type Source {
 	id: UUID!
 	externalService: ExternalService!
 	externalMetadata: JSON!
+	url: String
 	createdAt: DateTime!
 	updatedAt: DateTime!
 }
