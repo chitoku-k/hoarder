@@ -1079,6 +1079,7 @@ async fn sources_asc_succeeds() {
                                 urlPattern
                             }
                             externalMetadata
+                            url
                             createdAt
                             updatedAt
                         }
@@ -1118,6 +1119,7 @@ async fn sources_asc_succeeds() {
                                         "creatorId": "_namori_",
                                     },
                                 },
+                                "url": "https://x.com/_namori_/status/727620202049900544",
                                 "createdAt": "2016-05-04T07:05:00+00:00",
                                 "updatedAt": "2016-05-04T07:05:01+00:00",
                             },
@@ -1136,6 +1138,7 @@ async fn sources_asc_succeeds() {
                                         "id": "56736941",
                                     },
                                 },
+                                "url": "https://www.pixiv.net/artworks/56736941",
                                 "createdAt": "2016-05-06T05:14:00+00:00",
                                 "updatedAt": "2016-05-06T05:14:01+00:00",
                             },
@@ -1163,6 +1166,7 @@ async fn sources_asc_succeeds() {
                                         "id": "1234",
                                     },
                                 },
+                                "url": "https://www.pixiv.net/artworks/1234",
                                 "createdAt": "2016-05-05T07:06:00+00:00",
                                 "updatedAt": "2016-05-05T07:06:01+00:00",
                             },

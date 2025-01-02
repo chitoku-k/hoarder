@@ -79,6 +79,7 @@ async fn succeeds() {
                     urlPattern
                 }
                 externalMetadata
+                url
                 createdAt
                 updatedAt
             }
@@ -103,6 +104,7 @@ async fn succeeds() {
                     "creatorId": "_namori_",
                 },
             },
+            "url": "https://x.com/_namori_/status/727620202049900544",
             "createdAt": "2016-05-04T07:05:00+00:00",
             "updatedAt": "2016-05-04T07:05:01+00:00",
         },
@@ -155,6 +157,7 @@ async fn not_found() {
                     urlPattern
                 }
                 externalMetadata
+                url
                 createdAt
                 updatedAt
             }

@@ -14,6 +14,7 @@ pub(crate) struct Source {
     id: Uuid,
     external_service: ExternalService,
     external_metadata: serde_json::Value,
+    url: Option<String>,
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
 }
@@ -129,12 +130,14 @@ impl TryFrom<sources::Source> for Source {
     type Error = ErrorKind;
 
     fn try_from(source: sources::Source) -> Result<Self, Self::Error> {
+        let url = source.url();
         let external_metadata = ExternalMetadata::try_from(source.external_metadata)?;
 
         Ok(Self {
             id: *source.id,
             external_service: source.external_service.into(),
             external_metadata: serde_json::to_value(external_metadata).map_err(|_| ErrorKind::SourceMetadataInvalid)?,
+            url,
             created_at: source.created_at,
             updated_at: source.updated_at,
         })
