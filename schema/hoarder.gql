@@ -42,6 +42,11 @@ input ExternalMetadataInput @oneOf {
 	custom: JSON
 }
 
+input ExternalMetadataLikeInput @oneOf {
+	id: String
+	url: String
+}
+
 input ExternalMetadataUrlInput {
 	url: String!
 }
@@ -177,6 +182,7 @@ type Query {
 	allMedia(sourceIds: [UUID!], tagIds: [TagTagTypeInput!], order: Order! = ASC, after: String, before: String, first: Int, last: Int): MediumConnection!
 	media(ids: [UUID!]!): [Medium!]!
 	replica(originalUrl: String!): Replica!
+	allSourcesLike(externalMetadataLike: ExternalMetadataLikeInput!): [Source!]!
 	source(externalServiceId: UUID!, externalMetadata: ExternalMetadataInput!): Source
 	objects(prefix: String!, kind: ObjectKind): [ObjectEntry!]!
 	allTags(root: Boolean! = false, after: String, before: String, first: Int, last: Int): TagConnection!
