@@ -25,6 +25,10 @@ pub enum SourceError {
 }
 
 impl Source {
+    pub fn url(&self) -> Option<String> {
+        self.external_metadata.url(self.external_service.base_url.as_deref())
+    }
+
     pub fn validate(&self) -> Result<()> {
         if self.external_metadata.kind().is_none_or(|kind| kind == self.external_service.kind) {
             Ok(())
@@ -43,6 +47,27 @@ mod tests {
     use uuid::uuid;
 
     use super::*;
+
+    #[test]
+    fn url_succeeds() {
+        let source = Source {
+            id: SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
+            external_service: ExternalService {
+                id: ExternalServiceId::from(uuid!("22222222-2222-2222-2222-222222222222")),
+                slug: "x".to_string(),
+                kind: "x".to_string(),
+                name: "X".to_string(),
+                base_url: Some("https://x.com".to_string()),
+                url_pattern: Some(r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$".to_string()),
+            },
+            external_metadata: ExternalMetadata::X { id: 727620202049900544, creator_id: Some("_namori_".to_string()) },
+            created_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 0).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2016, 5, 4, 7, 5, 1).unwrap(),
+        };
+
+        let actual = source.url().unwrap();
+        assert_eq!(actual, "https://x.com/_namori_/status/727620202049900544");
+    }
 
     #[test]
     fn validate_succeeds() {
