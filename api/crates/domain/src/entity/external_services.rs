@@ -69,21 +69,21 @@ impl ExternalMetadata {
     const KIND_XFOLIO: &str = "xfolio";
 
     pub fn from_metadata(kind: &str, url: &str, id: Option<&str>, creator_id: Option<&str>) -> Option<Self> {
-        match (kind, url, id, creator_id) {
-            (Self::KIND_BLUESKY, _, Some(id), Some(creator_id)) => Some(Self::Bluesky { id: id.to_string(), creator_id: creator_id.to_string() }),
-            (Self::KIND_FANTIA, _, Some(id), _) => Some(Self::Fantia { id: id.parse().ok()? }),
-            (Self::KIND_MASTODON, _, Some(id), Some(creator_id)) => Some(Self::Mastodon { id: id.parse().ok()?, creator_id: creator_id.to_string() }),
-            (Self::KIND_MISSKEY, _, Some(id), _) => Some(Self::Misskey { id: id.to_string() }),
-            (Self::KIND_NIJIE, _, Some(id), _) => Some(Self::Nijie { id: id.parse().ok()? }),
-            (Self::KIND_PIXIV, _, Some(id), _) => Some(Self::Pixiv { id: id.parse().ok()? }),
-            (Self::KIND_PIXIV_FANBOX, _, Some(id), Some(creator_id)) => Some(Self::PixivFanbox { id: id.parse().ok()?, creator_id: creator_id.to_string() }),
-            (Self::KIND_PLEROMA, _, Some(id), _) => Some(Self::Pleroma { id: id.to_string() }),
-            (Self::KIND_SEIGA, _, Some(id), _) => Some(Self::Seiga { id: id.parse().ok()? }),
-            (Self::KIND_SKEB, _, Some(id), Some(creator_id)) => Some(Self::Skeb { id: id.parse().ok()?, creator_id: creator_id.to_string() }),
-            (Self::KIND_THREADS, _, Some(id), creator_id) => Some(Self::Threads { id: id.to_string(), creator_id: creator_id.map(Into::into) }),
-            (Self::KIND_WEBSITE, url, _, _) => Some(Self::Website { url: url.to_string() }),
-            (Self::KIND_X, _, Some(id), creator_id) => Some(Self::X { id: id.parse().ok()?, creator_id: creator_id.map(Into::into) }),
-            (Self::KIND_XFOLIO, _, Some(id), Some(creator_id)) => Some(Self::Xfolio { id: id.parse().ok()?, creator_id: creator_id.to_string() }),
+        match kind {
+            Self::KIND_BLUESKY => Some(Self::Bluesky { id: id?.to_string(), creator_id: creator_id?.to_string() }),
+            Self::KIND_FANTIA => Some(Self::Fantia { id: id?.parse().ok()? }),
+            Self::KIND_MASTODON => Some(Self::Mastodon { id: id?.parse().ok()?, creator_id: creator_id?.to_string() }),
+            Self::KIND_MISSKEY => Some(Self::Misskey { id: id?.to_string() }),
+            Self::KIND_NIJIE => Some(Self::Nijie { id: id?.parse().ok()? }),
+            Self::KIND_PIXIV => Some(Self::Pixiv { id: id?.parse().ok()? }),
+            Self::KIND_PIXIV_FANBOX => Some(Self::PixivFanbox { id: id?.parse().ok()?, creator_id: creator_id?.to_string() }),
+            Self::KIND_PLEROMA => Some(Self::Pleroma { id: id?.to_string() }),
+            Self::KIND_SEIGA => Some(Self::Seiga { id: id?.parse().ok()? }),
+            Self::KIND_SKEB => Some(Self::Skeb { id: id?.parse().ok()?, creator_id: creator_id?.to_string() }),
+            Self::KIND_THREADS => Some(Self::Threads { id: id?.to_string(), creator_id: creator_id.map(Into::into) }),
+            Self::KIND_WEBSITE => Some(Self::Website { url: url.to_string() }),
+            Self::KIND_X => Some(Self::X { id: id?.parse().ok()?, creator_id: creator_id.map(Into::into) }),
+            Self::KIND_XFOLIO => Some(Self::Xfolio { id: id?.parse().ok()?, creator_id: creator_id?.to_string() }),
             _ => None,
         }
     }
