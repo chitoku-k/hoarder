@@ -8,9 +8,10 @@ use domain::{
     error::{Error, ErrorKind, Result},
     repository::{sources::SourcesRepository, DeleteResult},
 };
+use futures::{future::ready, TryStreamExt};
 use sea_query::{
     extension::postgres::PgExpr,
-    Expr, Iden, JoinType, LockType, PostgresQueryBuilder, Query,
+    Expr, Iden, JoinType, LockType, Order, PostgresQueryBuilder, Query
 };
 use sea_query_binder::SqlxBinder;
 use serde::{Deserialize, Serialize};
@@ -348,6 +349,41 @@ impl SourcesRepository for PostgresSourcesRepository {
             .transpose()?;
 
         Ok(source)
+    }
+
+    async fn fetch_by_external_metadata_like_id(&self, id: &str) -> Result<Vec<Source>> {
+        let (sql, values) = Query::select()
+            .expr_as(Expr::col((PostgresSource::Table, PostgresSource::Id)), PostgresSourceExternalService::SourceId)
+            .expr_as(Expr::col((PostgresSource::Table, PostgresSource::ExternalMetadata)), PostgresSourceExternalService::SourceExternalMetadata)
+            .expr_as(Expr::col((PostgresSource::Table, PostgresSource::ExternalMetadataExtra)), PostgresSourceExternalService::SourceExternalMetadataExtra)
+            .expr_as(Expr::col((PostgresSource::Table, PostgresSource::CreatedAt)), PostgresSourceExternalService::SourceCreatedAt)
+            .expr_as(Expr::col((PostgresSource::Table, PostgresSource::UpdatedAt)), PostgresSourceExternalService::SourceUpdatedAt)
+            .expr_as(Expr::col((PostgresExternalService::Table, PostgresExternalService::Id)), PostgresSourceExternalService::ExternalServiceId)
+            .expr_as(Expr::col((PostgresExternalService::Table, PostgresExternalService::Slug)), PostgresSourceExternalService::ExternalServiceSlug)
+            .expr_as(Expr::col((PostgresExternalService::Table, PostgresExternalService::Kind)), PostgresSourceExternalService::ExternalServiceKind)
+            .expr_as(Expr::col((PostgresExternalService::Table, PostgresExternalService::Name)), PostgresSourceExternalService::ExternalServiceName)
+            .expr_as(Expr::col((PostgresExternalService::Table, PostgresExternalService::BaseUrl)), PostgresSourceExternalService::ExternalServiceBaseUrl)
+            .expr_as(Expr::col((PostgresExternalService::Table, PostgresExternalService::UrlPattern)), PostgresSourceExternalService::ExternalServiceUrlPattern)
+            .from(PostgresSource::Table)
+            .join(
+                JoinType::InnerJoin,
+                PostgresExternalService::Table,
+                Expr::col((PostgresExternalService::Table, PostgresExternalService::Id))
+                    .equals((PostgresSource::Table, PostgresSource::ExternalServiceId)),
+            )
+            .and_where(Expr::col(PostgresSource::ExternalMetadata).cast_json_field("id").eq(id))
+            .order_by((PostgresExternalService::Table, PostgresExternalService::Slug), Order::Asc)
+            .order_by((PostgresSource::Table, PostgresSource::ExternalMetadata), Order::Asc)
+            .build_sqlx(PostgresQueryBuilder);
+
+        let sources = sqlx::query_as_with::<_, PostgresSourceExternalServiceRow, _>(&sql, values)
+            .fetch(&self.pool)
+            .map_err(Error::other)
+            .and_then(|row| ready(row.try_into()))
+            .try_collect()
+            .await?;
+
+        Ok(sources)
     }
 
     async fn update_by_id(&self, id: SourceId, external_service_id: Option<ExternalServiceId>, external_metadata: Option<ExternalMetadata>) -> Result<Source> {

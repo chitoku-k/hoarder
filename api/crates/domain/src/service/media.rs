@@ -113,6 +113,9 @@ pub trait MediaServiceInterface: Send + Sync + 'static {
     /// Gets the source by its external metadata.
     fn get_source_by_external_metadata(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> impl Future<Output = Result<Option<Source>>> + Send;
 
+    /// Gets the sources by ID field of their external metadata.
+    fn get_sources_by_external_metadata_like_id(&self, id: &str) -> impl Future<Output = Result<Vec<Source>>> + Send;
+
     /// Gets the by ID.
     fn get_thumbnail_by_id(&self, id: ThumbnailId) -> impl Future<Output = Result<Vec<u8>>> + Send;
 
@@ -402,6 +405,16 @@ where
             Ok(source) => Ok(source),
             Err(e) => {
                 log::error!("failed to get the source\nError: {e:?}");
+                Err(e)
+            },
+        }
+    }
+
+    async fn get_sources_by_external_metadata_like_id(&self, id: &str) -> Result<Vec<Source>> {
+        match self.sources_repository.fetch_by_external_metadata_like_id(id).await {
+            Ok(sources) => Ok(sources),
+            Err(e) => {
+                log::error!("failed to get the sources\nError: {e:?}");
                 Err(e)
             },
         }
