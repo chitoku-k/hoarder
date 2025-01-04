@@ -68,6 +68,7 @@ fragment sourceNode on Source {
     ...externalServiceNode
   }
   externalMetadata
+  url
   createdAt
   updatedAt
 }

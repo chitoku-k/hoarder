@@ -4,6 +4,7 @@ export interface Source {
   id: string
   externalService: ExternalService
   externalMetadata: ExternalMetadata
+  url?: string | null
   createdAt: string
   updatedAt: string
 }

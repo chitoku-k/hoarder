@@ -1,12 +1,3 @@
-'use client'
-
-import type { FunctionComponent } from 'react'
-import clsx from 'clsx'
-import Link from '@mui/material/Link'
-import Stack from '@mui/material/Stack'
-import LaunchIcon from '@mui/icons-material/Launch'
-import LinkIcon from '@mui/icons-material/Link'
-
 import type {
   ExternalMetadata,
   ExternalMetadataBluesky,
@@ -24,10 +15,7 @@ import type {
   ExternalMetadataX,
   ExternalMetadataXfolio,
   ExternalService,
-  Source,
 } from '@/types'
-
-import styles from './styles.module.scss'
 
 const builders: Builder[] = [
   {
@@ -149,54 +137,7 @@ export const buildURL = (externalService: ExternalService, externalMetadata: Ext
   return null
 }
 
-export const displayURL = (url: string): string => url.replace(/^https?:\/\/(?:www\.)?/, '')
-
-const MediumItemMetadataSourceItem: FunctionComponent<MediumItemMetadataSourceItemProps> = ({
-  source,
-  noLink,
-  noLaunch,
-}) => {
-  const url = buildURL(source.externalService, source.externalMetadata)
-
-  return (
-    <Stack direction="row" alignItems="start">
-      <LinkIcon className={styles.icon} fontSize="small" />
-      {noLink && url ? (
-        <span className={clsx(styles.item, styles.noLink)}>
-          <span className={styles.text}>{displayURL(url)}</span>
-          {!noLaunch ? (
-            <Link href={url} target="_blank" rel="noopener noreferrer" underline="none">
-              <LaunchIcon className={styles.launch} fontSize="inherit" />
-            </Link>
-          ) : null}
-        </span>
-      ) : url ? (
-        <Link className={styles.item} href={url} target="_blank" rel="noopener noreferrer" underline="none">
-          <span className={styles.text}>{displayURL(url)}</span>
-          {!noLaunch ? (
-            <LaunchIcon className={styles.launch} fontSize="inherit" />
-          ) : null}
-        </Link>
-      ) : source.externalMetadata && typeof source.externalMetadata === 'object' && 'custom' in source.externalMetadata ? (
-        <span className={clsx(styles.item, styles.noLink)}>
-          <span className={styles.text}>
-            {typeof source.externalMetadata.custom === 'string' ? source.externalMetadata.custom : JSON.stringify(source.externalMetadata)}
-          </span>
-        </span>
-      ) : JSON.stringify(source.externalMetadata)}
-    </Stack>
-  )
-}
-
-export interface MediumItemMetadataSourceItemProps {
-  source: Source
-  noLink?: boolean
-  noLaunch?: boolean
-}
-
 interface Builder {
   kind: string
   build: (externalService: ExternalService, params: unknown) => string | null,
 }
-
-export default MediumItemMetadataSourceItem

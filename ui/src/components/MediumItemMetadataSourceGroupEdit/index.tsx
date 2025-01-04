@@ -14,8 +14,7 @@ import AddLinkIcon from '@mui/icons-material/AddLink'
 import type { SourceCreate } from '@/components/AutocompleteSourceBody'
 import { isSource } from '@/components/AutocompleteSourceBody'
 import AutocompleteSource from '@/components/AutocompleteSource'
-import MediumItemMetadataSourceItem from '@/components/MediumItemMetadataSourceItem'
-import MediumItemMetadataSourceItemNew from '@/components/MediumItemMetadataSourceItemNew'
+import SourceURL from '@/components/SourceURL'
 import type { ExternalService, Source } from '@/types'
 
 import styles from './styles.module.scss'
@@ -75,17 +74,9 @@ const MediumItemMetadataSourceGroupEdit: FunctionComponent<MediumItemMetadataSou
   const renderSourceOption = useCallback(({ key, ...props }: ComponentPropsWithoutRef<'li'>, option: Source | SourceCreate) => (
     <li key={key} {...props}>
       {isSource(option) ? (
-        <MediumItemMetadataSourceItem
-          source={option}
-          noLink
-          noLaunch
-        />
+        <SourceURL source={option} noLink noLaunch />
       ) : (
-        <MediumItemMetadataSourceItemNew
-          externalService={option.externalService}
-          externalMetadata={option.externalMetadata}
-          noLaunch
-        />
+        <SourceURL icon={AddLinkIcon} externalService={option.externalService} externalMetadata={option.externalMetadata} noLink noLaunch />
       )}
     </li>
   ), [])
@@ -128,7 +119,7 @@ const MediumItemMetadataSourceGroupEdit: FunctionComponent<MediumItemMetadataSou
           <Stack key={isSource(source) ? source.id : i} direction="row" alignItems="center" justifyContent="space-between">
             {isSource(source) && removingSources.some(({ id }) => id === source.id) ? (
               <>
-                <del><MediumItemMetadataSourceItem source={source} noLink /></del>
+                <del><SourceURL source={source} noLink /></del>
                 <Tooltip title="元に戻す" placement="right">
                   <IconButton size="small" disabled={loading} onClick={() => handleClickRestoreSource(source)}>
                     <AddCircleOutlineIcon fontSize="inherit" />
@@ -137,7 +128,7 @@ const MediumItemMetadataSourceGroupEdit: FunctionComponent<MediumItemMetadataSou
               </>
             ) : isSource(source) ? (
               <>
-                <MediumItemMetadataSourceItem source={source} noLink />
+                <SourceURL source={source} noLink />
                 <Tooltip title="削除" placement="right">
                   <IconButton size="small" disabled={loading} onClick={() => handleClickRemoveSource(source)} >
                     <RemoveCircleOutlineIcon fontSize="inherit" />
@@ -146,7 +137,7 @@ const MediumItemMetadataSourceGroupEdit: FunctionComponent<MediumItemMetadataSou
               </>
             ) : (
               <>
-                <MediumItemMetadataSourceItemNew {...source} />
+                <SourceURL icon={AddLinkIcon} externalService={source.externalService} externalMetadata={source.externalMetadata} noLink />
                 <Tooltip title="削除" placement="right">
                   <IconButton size="small" disabled={loading} onClick={() => handleClickRemoveSource(source)} >
                     <RemoveCircleOutlineIcon fontSize="inherit" />
