@@ -7,7 +7,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 
 import MediumItemMetadataHeader from '@/components/MediumItemMetadataHeader'
-import MediumItemMetadataSourceItem from '@/components/MediumItemMetadataSourceItem'
+import SourceURL from '@/components/SourceURL'
 import type { ExternalService, Medium, Source } from '@/types'
 
 import styles from './styles.module.scss'
@@ -48,7 +48,7 @@ const MediumItemMetadataSourceList: FunctionComponent<MediumItemMetadataSourceLi
             <Stack spacing={0.5}>
               {sources.map(source => (
                 <Stack key={source.id} direction="row" alignItems="center">
-                  <MediumItemMetadataSourceItem source={source} />
+                  <SourceURL source={source} />
                   <Stack className={styles.buttonArea} />
                 </Stack>
               ))}
