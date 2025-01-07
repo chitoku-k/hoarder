@@ -209,6 +209,15 @@ where
         }
     }
 
+    async fn sources(&self, ctx: &Context<'_>, ids: Vec<Uuid>) -> Result<Vec<Source>> {
+        let media_service = ctx.data_unchecked::<MediaService>();
+
+        let ids: Map<_, _, _> = ids.into_iter().map(Into::into);
+
+        let sources = media_service.get_sources_by_ids(ids).await?;
+        sources.into_iter().map(|source| source.try_into().map_err(Error::new)).collect()
+    }
+
     async fn source(&self, ctx: &Context<'_>, external_service_id: Uuid, external_metadata: ExternalMetadata) -> Result<Option<Source>> {
         let media_service = ctx.data_unchecked::<MediaService>();
 
