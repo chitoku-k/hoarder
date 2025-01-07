@@ -85,6 +85,32 @@ impl TagTypesRepository for PostgresTagTypesRepository {
         Ok(tag_type)
     }
 
+    async fn fetch_by_ids<T>(&self, ids: T) -> Result<Vec<TagType>>
+    where
+        T: IntoIterator<Item = TagTypeId> + Send + Sync + 'static,
+    {
+        let (sql, values) = Query::select()
+            .columns([
+                PostgresTagType::Id,
+                PostgresTagType::Slug,
+                PostgresTagType::Name,
+                PostgresTagType::Kana,
+            ])
+            .from(PostgresTagType::Table)
+            .and_where(Expr::col(PostgresTagType::Id).is_in(ids.into_iter().map(PostgresTagTypeId::from)))
+            .order_by(PostgresTagType::Kana, Order::Asc)
+            .build_sqlx(PostgresQueryBuilder);
+
+        let tag_types = sqlx::query_as_with::<_, PostgresTagTypeRow, _>(&sql, values)
+            .fetch(&self.pool)
+            .map_ok(Into::into)
+            .try_collect()
+            .await
+            .map_err(Error::other)?;
+
+        Ok(tag_types)
+    }
+
     async fn fetch_all(&self) -> Result<Vec<TagType>> {
         let (sql, values) = Query::select()
             .columns([

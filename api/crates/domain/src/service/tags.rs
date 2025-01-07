@@ -43,6 +43,11 @@ pub trait TagsServiceInterface: Send + Sync + 'static {
     /// Gets tag types.
     fn get_tag_types(&self) -> impl Future<Output = Result<Vec<TagType>>> + Send;
 
+    /// Gets the tag types by their IDs.
+    fn get_tag_types_by_ids<T>(&self, ids: T) -> impl Future<Output = Result<Vec<TagType>>> + Send
+    where
+        T: IntoIterator<Item = TagTypeId> + Send + Sync + 'static;
+
     /// Updates the tag by ID.
     fn update_tag_by_id<T, U>(&self, id: TagId, name: Option<String>, kana: Option<String>, add_aliases: T, remove_aliases: U, depth: TagDepth) -> impl Future<Output = Result<Tag>> + Send
     where
@@ -111,7 +116,7 @@ where
         match self.tags_repository.fetch_all(depth, root, cursor, order, direction, limit).await {
             Ok(tags) => Ok(tags),
             Err(e) => {
-                log::error!("failed to get tags\nError: {e:?}");
+                log::error!("failed to get the tags\nError: {e:?}");
                 Err(e)
             },
         }
@@ -124,7 +129,7 @@ where
         match self.tags_repository.fetch_by_ids(ids, depth).await {
             Ok(tags) => Ok(tags),
             Err(e) => {
-                log::error!("failed to get tags\nError: {e:?}");
+                log::error!("failed to get the tags\nError: {e:?}");
                 Err(e)
             },
         }
@@ -134,7 +139,7 @@ where
         match self.tags_repository.fetch_by_name_or_alias_like(name_or_alias_like, depth).await {
             Ok(tags) => Ok(tags),
             Err(e) => {
-                log::error!("failed to get tags\nError: {e:?}");
+                log::error!("failed to get the tags\nError: {e:?}");
                 Err(e)
             },
         }
@@ -144,7 +149,20 @@ where
         match self.tag_types_repository.fetch_all().await {
             Ok(tag_types) => Ok(tag_types),
             Err(e) => {
-                log::error!("failed to get tag types\nError: {e:?}");
+                log::error!("failed to get the tag types\nError: {e:?}");
+                Err(e)
+            },
+        }
+    }
+
+    async fn get_tag_types_by_ids<T>(&self, ids: T) -> Result<Vec<TagType>>
+    where
+        T: IntoIterator<Item = TagTypeId> + Send + Sync + 'static,
+    {
+        match self.tag_types_repository.fetch_by_ids(ids).await {
+            Ok(tag_types) => Ok(tag_types),
+            Err(e) => {
+                log::error!("failed to get the tag types\nError: {e:?}");
                 Err(e)
             },
         }

@@ -11,6 +11,11 @@ pub trait TagTypesRepository: Send + Sync + 'static {
     /// Creates a tag type.
     fn create(&self, slug: &str, name: &str, kana: &str) -> impl Future<Output = Result<TagType>> + Send;
 
+    /// Fetches the tag types by their IDs.
+    fn fetch_by_ids<T>(&self, ids: T) -> impl Future<Output = Result<Vec<TagType>>> + Send
+    where
+        T: IntoIterator<Item = TagTypeId> + Send + Sync + 'static;
+
     /// Fetches all tag types.
     fn fetch_all(&self) -> impl Future<Output = Result<Vec<TagType>>> + Send;
 
