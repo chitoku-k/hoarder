@@ -110,6 +110,11 @@ pub trait MediaServiceInterface: Send + Sync + 'static {
     /// Gets the replica by original URL.
     fn get_replica_by_original_url(&self, original_url: &str) -> impl Future<Output = Result<Replica>> + Send;
 
+    /// Gets the sourecs by their IDs.
+    fn get_sources_by_ids<T>(&self, ids: T) -> impl Future<Output = Result<Vec<Source>>> + Send
+    where
+        T: IntoIterator<Item = SourceId> + Send + Sync + 'static;
+
     /// Gets the source by its external metadata.
     fn get_source_by_external_metadata(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> impl Future<Output = Result<Option<Source>>> + Send;
 
@@ -395,6 +400,19 @@ where
             Ok(replica) => Ok(replica),
             Err(e) => {
                 log::error!("failed to get the replica\nError: {e:?}");
+                Err(e)
+            },
+        }
+    }
+
+    async fn get_sources_by_ids<T>(&self, ids: T) -> Result<Vec<Source>>
+    where
+        T: IntoIterator<Item = SourceId> + Send + Sync + 'static,
+    {
+        match self.sources_repository.fetch_by_ids(ids).await {
+            Ok(sources) => Ok(sources),
+            Err(e) => {
+                log::error!("failed to get the sources\nError: {e:?}");
                 Err(e)
             },
         }

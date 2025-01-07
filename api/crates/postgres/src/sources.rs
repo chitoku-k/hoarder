@@ -310,6 +310,44 @@ impl SourcesRepository for PostgresSourcesRepository {
         Ok(source)
     }
 
+    async fn fetch_by_ids<T>(&self, ids: T) -> Result<Vec<Source>>
+    where
+        T: IntoIterator<Item = SourceId> + Send + Sync + 'static,
+    {
+        let (sql, values) = Query::select()
+            .expr_as(Expr::col((PostgresSource::Table, PostgresSource::Id)), PostgresSourceExternalService::SourceId)
+            .expr_as(Expr::col((PostgresSource::Table, PostgresSource::ExternalMetadata)), PostgresSourceExternalService::SourceExternalMetadata)
+            .expr_as(Expr::col((PostgresSource::Table, PostgresSource::ExternalMetadataExtra)), PostgresSourceExternalService::SourceExternalMetadataExtra)
+            .expr_as(Expr::col((PostgresSource::Table, PostgresSource::CreatedAt)), PostgresSourceExternalService::SourceCreatedAt)
+            .expr_as(Expr::col((PostgresSource::Table, PostgresSource::UpdatedAt)), PostgresSourceExternalService::SourceUpdatedAt)
+            .expr_as(Expr::col((PostgresExternalService::Table, PostgresExternalService::Id)), PostgresSourceExternalService::ExternalServiceId)
+            .expr_as(Expr::col((PostgresExternalService::Table, PostgresExternalService::Slug)), PostgresSourceExternalService::ExternalServiceSlug)
+            .expr_as(Expr::col((PostgresExternalService::Table, PostgresExternalService::Kind)), PostgresSourceExternalService::ExternalServiceKind)
+            .expr_as(Expr::col((PostgresExternalService::Table, PostgresExternalService::Name)), PostgresSourceExternalService::ExternalServiceName)
+            .expr_as(Expr::col((PostgresExternalService::Table, PostgresExternalService::BaseUrl)), PostgresSourceExternalService::ExternalServiceBaseUrl)
+            .expr_as(Expr::col((PostgresExternalService::Table, PostgresExternalService::UrlPattern)), PostgresSourceExternalService::ExternalServiceUrlPattern)
+            .from(PostgresSource::Table)
+            .join(
+                JoinType::InnerJoin,
+                PostgresExternalService::Table,
+                Expr::col((PostgresExternalService::Table, PostgresExternalService::Id))
+                    .equals((PostgresSource::Table, PostgresSource::ExternalServiceId)),
+            )
+            .and_where(Expr::col((PostgresSource::Table, PostgresSource::Id)).is_in(ids.into_iter().map(PostgresSourceId::from)))
+            .order_by((PostgresExternalService::Table, PostgresExternalService::Slug), Order::Asc)
+            .order_by((PostgresSource::Table, PostgresSource::ExternalMetadata), Order::Asc)
+            .build_sqlx(PostgresQueryBuilder);
+
+        let sources = sqlx::query_as_with::<_, PostgresSourceExternalServiceRow, _>(&sql, values)
+            .fetch(&self.pool)
+            .map_err(Error::other)
+            .and_then(|row| ready(row.try_into()))
+            .try_collect()
+            .await?;
+
+        Ok(sources)
+    }
+
     async fn fetch_by_external_metadata(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> Result<Option<Source>> {
         let (external_metadata, _) = PostgresExternalServiceMetadataFull::try_from(external_metadata)
             .map_err(|e| Error::new(ErrorKind::SourceMetadataInvalid, e))?
