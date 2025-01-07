@@ -337,4 +337,13 @@ where
         let tag_types = tags_service.get_tag_types().await?;
         Ok(tag_types.into_iter().map(Into::into).collect())
     }
+
+    async fn tag_types(&self, ctx: &Context<'_>, ids: Vec<Uuid>) -> Result<Vec<TagType>> {
+        let tags_service = ctx.data_unchecked::<TagsService>();
+
+        let ids: Map<_, _, _> = ids.into_iter().map(Into::into);
+
+        let tag_types = tags_service.get_tag_types_by_ids(ids).await?;
+        Ok(tag_types.into_iter().map(Into::into).collect())
+    }
 }
