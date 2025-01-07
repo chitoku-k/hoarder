@@ -183,12 +183,14 @@ type Query {
 	media(ids: [UUID!]!): [Medium!]!
 	replica(originalUrl: String!): Replica!
 	allSourcesLike(externalMetadataLike: ExternalMetadataLikeInput!): [Source!]!
+	sources(ids: [UUID!]!): [Source!]!
 	source(externalServiceId: UUID!, externalMetadata: ExternalMetadataInput!): Source
 	objects(prefix: String!, kind: ObjectKind): [ObjectEntry!]!
 	allTags(root: Boolean! = false, after: String, before: String, first: Int, last: Int): TagConnection!
 	allTagsLike(nameOrAliasLike: String!): [Tag!]!
 	tags(ids: [UUID!]!): [Tag!]!
 	allTagTypes: [TagType!]!
+	tagTypes(ids: [UUID!]!): [TagType!]!
 }
 
 type Replica {
