@@ -1,19 +1,17 @@
 use std::future::Future;
 
-use crate::{entity::external_services::ExternalMetadata, error::{Error, ErrorKind, Result}};
+use crate::{
+    entity::external_services::{ExternalMetadata, ExternalService, ExternalServiceId},
+    error::{Error, ErrorKind, Result},
+    repository::{external_services, DeleteResult},
+};
 
 use derive_more::Constructor;
 use regex::Regex;
 
-use crate::{
-    entity::external_services::{ExternalService, ExternalServiceId},
-    repository::{external_services, DeleteResult},
-};
-
-#[cfg_attr(feature = "test-mock", mockall::automock)]
 pub trait ExternalServicesServiceInterface: Send + Sync + 'static {
     /// Creates an external service.
-    fn create_external_service<'a>(&self, slug: &str, kind: &str, name: &str, base_url: Option<&'a str>, url_pattern: Option<&'a str>) -> impl Future<Output = Result<ExternalService>> + Send;
+    fn create_external_service(&self, slug: &str, kind: &str, name: &str, base_url: Option<&str>, url_pattern: Option<&str>) -> impl Future<Output = Result<ExternalService>> + Send;
 
     /// Gets external services.
     fn get_external_services(&self) -> impl Future<Output = Result<Vec<ExternalService>>> + Send;
@@ -21,13 +19,13 @@ pub trait ExternalServicesServiceInterface: Send + Sync + 'static {
     /// Gets the external services by their IDs.
     fn get_external_services_by_ids<T>(&self, ids: T) -> impl Future<Output = Result<Vec<ExternalService>>> + Send
     where
-        T: IntoIterator<Item = ExternalServiceId> + Send + Sync + 'static;
+        for<'a> T: IntoIterator<Item = ExternalServiceId> + Send + Sync + 'a;
 
     /// Gets the external services and metadata by URL.
     fn get_external_services_by_url(&self, url: &str) -> impl Future<Output = Result<Vec<(ExternalService, ExternalMetadata)>>> + Send;
 
     /// Updates the external service by ID.
-    fn update_external_service_by_id<'a>(&self, id: ExternalServiceId, slug: Option<&'a str>, name: Option<&'a str>, base_url: Option<Option<&'a str>>, url_pattern: Option<Option<&'a str>>) -> impl Future<Output = Result<ExternalService>> + Send;
+    fn update_external_service_by_id(&self, id: ExternalServiceId, slug: Option<&str>, name: Option<&str>, base_url: Option<Option<&str>>, url_pattern: Option<Option<&str>>) -> impl Future<Output = Result<ExternalService>> + Send;
 
     /// Deletes the external service by ID.
     fn delete_external_service_by_id(&self, id: ExternalServiceId) -> impl Future<Output = Result<DeleteResult>> + Send;
@@ -56,7 +54,7 @@ impl<ExternalServicesRepository> ExternalServicesServiceInterface for ExternalSe
 where
     ExternalServicesRepository: external_services::ExternalServicesRepository,
 {
-    async fn create_external_service<'a>(&self, slug: &str, kind: &str, name: &str, base_url: Option<&'a str>, url_pattern: Option<&'a str>) -> Result<ExternalService> {
+    async fn create_external_service(&self, slug: &str, kind: &str, name: &str, base_url: Option<&str>, url_pattern: Option<&str>) -> Result<ExternalService> {
         if let Some(url_pattern) = url_pattern {
             validate_url_pattern(url_pattern)?;
         }
@@ -82,7 +80,7 @@ where
 
     async fn get_external_services_by_ids<T>(&self, ids: T) -> Result<Vec<ExternalService>>
     where
-        T: IntoIterator<Item = ExternalServiceId> + Send + Sync + 'static,
+        for<'a> T: IntoIterator<Item = ExternalServiceId> + Send + Sync + 'a,
     {
         match self.external_services_repository.fetch_by_ids(ids).await {
             Ok(services) => Ok(services),
@@ -112,7 +110,7 @@ where
         }
     }
 
-    async fn update_external_service_by_id<'a>(&self, id: ExternalServiceId, slug: Option<&'a str>, name: Option<&'a str>, base_url: Option<Option<&'a str>>, url_pattern: Option<Option<&'a str>>) -> Result<ExternalService> {
+    async fn update_external_service_by_id(&self, id: ExternalServiceId, slug: Option<&str>, name: Option<&str>, base_url: Option<Option<&str>>, url_pattern: Option<Option<&str>>) -> Result<ExternalService> {
         if let Some(Some(url_pattern)) = url_pattern {
             validate_url_pattern(url_pattern)?;
         }

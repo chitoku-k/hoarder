@@ -8,19 +8,23 @@ use domain::{
         tags::TagId,
     },
     repository::{Direction, Order},
-    service::{
-        external_services::MockExternalServicesServiceInterface,
-        media::MockMediaServiceInterface,
-        tags::MockTagsServiceInterface,
-    },
 };
 use futures::future::ok;
 use graphql::{query::Query, tags::TagTagTypeInput};
 use indoc::indoc;
-use normalizer::MockNormalizerInterface;
 use ordermap::OrderMap;
 use pretty_assertions::assert_eq;
 use uuid::{uuid, Uuid};
+
+mod mocks;
+use mocks::{
+    domain::service::{
+        external_services::MockExternalServicesServiceInterface,
+        media::MockMediaServiceInterface,
+        tags::MockTagsServiceInterface,
+    },
+    normalizer::MockNormalizerInterface,
+};
 
 // Concrete type is required both in implementation and expectation.
 type IntoIterMap<T, U> = std::iter::Map<std::vec::IntoIter<T>, fn(T) -> U>;

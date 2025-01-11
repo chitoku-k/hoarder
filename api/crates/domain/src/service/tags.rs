@@ -11,12 +11,11 @@ use crate::{
     repository::{tag_types, tags, DeleteResult, Direction, Order},
 };
 
-#[cfg_attr(feature = "test-mock", mockall::automock)]
 pub trait TagsServiceInterface: Send + Sync + 'static {
     /// Creates a tag.
     fn create_tag<T>(&self, name: &str, kana: &str, aliases: T, parent_id: Option<TagId>, depth: TagDepth) -> impl Future<Output = Result<Tag>> + Send
     where
-        T: IntoIterator<Item = String> + Send + Sync + 'static;
+        for<'a> T: IntoIterator<Item = String> + Send + Sync + 'a;
 
     /// Creates a tag type.
     fn create_tag_type(&self, slug: &str, name: &str, kana: &str) -> impl Future<Output = Result<TagType>> + Send;
@@ -35,7 +34,7 @@ pub trait TagsServiceInterface: Send + Sync + 'static {
     /// Gets the tags by their IDs.
     fn get_tags_by_ids<T>(&self, ids: T, depth: TagDepth) -> impl Future<Output = Result<Vec<Tag>>> + Send
     where
-        T: IntoIterator<Item = TagId> + Send + Sync + 'static;
+        for<'a> T: IntoIterator<Item = TagId> + Send + Sync + 'a;
 
     /// Gets the tags by their name or alias.
     fn get_tags_by_name_or_alias_like(&self, name_or_alias_like: &str, depth: TagDepth) -> impl Future<Output = Result<Vec<Tag>>> + Send;
@@ -46,16 +45,16 @@ pub trait TagsServiceInterface: Send + Sync + 'static {
     /// Gets the tag types by their IDs.
     fn get_tag_types_by_ids<T>(&self, ids: T) -> impl Future<Output = Result<Vec<TagType>>> + Send
     where
-        T: IntoIterator<Item = TagTypeId> + Send + Sync + 'static;
+        for<'a> T: IntoIterator<Item = TagTypeId> + Send + Sync + 'a;
 
     /// Updates the tag by ID.
     fn update_tag_by_id<T, U>(&self, id: TagId, name: Option<String>, kana: Option<String>, add_aliases: T, remove_aliases: U, depth: TagDepth) -> impl Future<Output = Result<Tag>> + Send
     where
-        T: IntoIterator<Item = String> + Send + Sync + 'static,
-        U: IntoIterator<Item = String> + Send + Sync + 'static;
+        for<'a> T: IntoIterator<Item = String> + Send + Sync + 'a,
+        for<'a> U: IntoIterator<Item = String> + Send + Sync + 'a;
 
     /// Updates the tag type by ID.
-    fn update_tag_type_by_id<'a, 'b, 'c>(&self, id: TagTypeId, slug: Option<&'a str>, name: Option<&'b str>, kana: Option<&'c str>) -> impl Future<Output = Result<TagType>> + Send;
+    fn update_tag_type_by_id(&self, id: TagTypeId, slug: Option<&str>, name: Option<&str>, kana: Option<&str>) -> impl Future<Output = Result<TagType>> + Send;
 
     /// Attaches the tag by ID.
     fn attach_tag_by_id(&self, id: TagId, parent_id: TagId, depth: TagDepth) -> impl Future<Output = Result<Tag>> + Send;
@@ -83,7 +82,7 @@ where
 {
     async fn create_tag<T>(&self, name: &str, kana: &str, aliases: T, parent_id: Option<TagId>, depth: TagDepth) -> Result<Tag>
     where
-        T: IntoIterator<Item = String> + Send + Sync + 'static,
+        for<'a> T: IntoIterator<Item = String> + Send + Sync + 'a,
     {
         match self.tags_repository.create(name, kana, aliases, parent_id, depth).await {
             Ok(tag) => Ok(tag),
@@ -124,7 +123,7 @@ where
 
     async fn get_tags_by_ids<T>(&self, ids: T, depth: TagDepth) -> Result<Vec<Tag>>
     where
-        T: IntoIterator<Item = TagId> + Send + Sync + 'static,
+        for<'a> T: IntoIterator<Item = TagId> + Send + Sync + 'a,
     {
         match self.tags_repository.fetch_by_ids(ids, depth).await {
             Ok(tags) => Ok(tags),
@@ -157,7 +156,7 @@ where
 
     async fn get_tag_types_by_ids<T>(&self, ids: T) -> Result<Vec<TagType>>
     where
-        T: IntoIterator<Item = TagTypeId> + Send + Sync + 'static,
+        for<'a> T: IntoIterator<Item = TagTypeId> + Send + Sync + 'a,
     {
         match self.tag_types_repository.fetch_by_ids(ids).await {
             Ok(tag_types) => Ok(tag_types),
@@ -170,8 +169,8 @@ where
 
     async fn update_tag_by_id<T, U>(&self, id: TagId, name: Option<String>, kana: Option<String>, add_aliases: T, remove_aliases: U, depth: TagDepth) -> Result<Tag>
     where
-        T: IntoIterator<Item = String> + Send + Sync + 'static,
-        U: IntoIterator<Item = String> + Send + Sync + 'static,
+        for<'a> T: IntoIterator<Item = String> + Send + Sync + 'a,
+        for<'a> U: IntoIterator<Item = String> + Send + Sync + 'a,
     {
         match self.tags_repository.update_by_id(id, name, kana, add_aliases, remove_aliases, depth).await {
             Ok(tag) => Ok(tag),
@@ -182,7 +181,7 @@ where
         }
     }
 
-    async fn update_tag_type_by_id<'a, 'b, 'c>(&self, id: TagTypeId, slug: Option<&'a str>, name: Option<&'b str>, kana: Option<&'c str>) -> Result<TagType> {
+    async fn update_tag_type_by_id(&self, id: TagTypeId, slug: Option<&str>, name: Option<&str>, kana: Option<&str>) -> Result<TagType> {
         match self.tag_types_repository.update_by_id(id, slug, name, kana).await {
             Ok(tag_type) => Ok(tag_type),
             Err(e) => {

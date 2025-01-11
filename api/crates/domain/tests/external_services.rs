@@ -2,12 +2,15 @@ use anyhow::anyhow;
 use domain::{
     entity::external_services::{ExternalMetadata, ExternalService, ExternalServiceId},
     error::{Error, ErrorKind},
-    repository::{external_services::MockExternalServicesRepository, DeleteResult},
+    repository::DeleteResult,
     service::external_services::{ExternalServicesService, ExternalServicesServiceInterface},
 };
 use futures::future::{err, ok};
 use pretty_assertions::{assert_eq, assert_matches};
 use uuid::uuid;
+
+mod mocks;
+use mocks::domain::repository::external_services::MockExternalServicesRepository;
 
 #[tokio::test]
 async fn create_external_service_succeeds() {

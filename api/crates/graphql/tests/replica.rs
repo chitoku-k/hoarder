@@ -1,25 +1,25 @@
 use std::sync::Arc;
 
-use application::service::{
-    media::{MediaURLFactoryInterface, MockMediaURLFactoryInterface},
-    thumbnails::{MockThumbnailURLFactoryInterface, ThumbnailURLFactoryInterface},
-};
+use application::service::{media::MediaURLFactoryInterface, thumbnails::ThumbnailURLFactoryInterface};
 use async_graphql::{Schema, EmptyMutation, EmptySubscription, value};
 use chrono::{TimeZone, Utc};
-use domain::{
-    entity::replicas::{Replica, ReplicaId, Size, Thumbnail, ThumbnailId},
-    service::{
+use domain::entity::replicas::{Replica, ReplicaId, Size, Thumbnail, ThumbnailId};
+use futures::future::ok;
+use graphql::query::Query;
+use indoc::indoc;
+use pretty_assertions::assert_eq;
+use uuid::uuid;
+
+mod mocks;
+use mocks::{
+    application::service::{media::MockMediaURLFactoryInterface, thumbnails::MockThumbnailURLFactoryInterface},
+    domain::service::{
         external_services::MockExternalServicesServiceInterface,
         media::MockMediaServiceInterface,
         tags::MockTagsServiceInterface,
     },
+    normalizer::MockNormalizerInterface,
 };
-use futures::future::ok;
-use graphql::query::Query;
-use indoc::indoc;
-use normalizer::MockNormalizerInterface;
-use pretty_assertions::assert_eq;
-use uuid::uuid;
 
 #[tokio::test]
 async fn succeeds() {

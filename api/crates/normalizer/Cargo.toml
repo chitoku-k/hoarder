@@ -7,9 +7,6 @@ license.workspace = true
 [lib]
 doctest = false
 
-[features]
-test-mock = ["mockall"]
-
 [dependencies.derive_more]
 version = "1.0.0"
 features = ["constructor"]
@@ -20,10 +17,6 @@ version = "1.5.0"
 [dependencies.icu_provider]
 version = "1.5.0"
 features = ["sync"]
-
-[dependencies.mockall]
-version = "0.13.1"
-optional = true
 
 [dependencies.phf]
 version = "0.11.3"

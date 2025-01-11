@@ -1,18 +1,20 @@
 use async_graphql::{Schema, EmptyMutation, EmptySubscription, value};
-use domain::{
-    entity::external_services::{ExternalService, ExternalServiceId},
-    service::{
+use domain::entity::external_services::{ExternalService, ExternalServiceId};
+use futures::future::ok;
+use graphql::query::Query;
+use indoc::indoc;
+use pretty_assertions::assert_eq;
+use uuid::uuid;
+
+mod mocks;
+use mocks::{
+    domain::service::{
         external_services::MockExternalServicesServiceInterface,
         media::MockMediaServiceInterface,
         tags::MockTagsServiceInterface,
     },
+    normalizer::MockNormalizerInterface,
 };
-use futures::future::ok;
-use graphql::query::Query;
-use indoc::indoc;
-use normalizer::MockNormalizerInterface;
-use pretty_assertions::assert_eq;
-use uuid::uuid;
 
 #[tokio::test]
 async fn succeeds() {

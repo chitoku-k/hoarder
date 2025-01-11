@@ -2,20 +2,22 @@ use std::collections::BTreeSet;
 
 use async_graphql::{Schema, EmptyMutation, EmptySubscription, value};
 use chrono::{TimeZone, Utc};
-use domain::{
-    entity::tags::{AliasSet, Tag, TagDepth, TagId},
-    service::{
+use domain::entity::tags::{AliasSet, Tag, TagDepth, TagId};
+use futures::future::ok;
+use graphql::query::Query;
+use indoc::indoc;
+use pretty_assertions::assert_eq;
+use uuid::{uuid, Uuid};
+
+mod mocks;
+use mocks::{
+    domain::service::{
         external_services::MockExternalServicesServiceInterface,
         media::MockMediaServiceInterface,
         tags::MockTagsServiceInterface,
     },
+    normalizer::MockNormalizerInterface,
 };
-use futures::future::ok;
-use graphql::query::Query;
-use indoc::indoc;
-use normalizer::MockNormalizerInterface;
-use pretty_assertions::assert_eq;
-use uuid::{uuid, Uuid};
 
 // Concrete type is required both in implementation and expectation.
 type IntoIterMap<T, U> = std::iter::Map<std::vec::IntoIter<T>, fn(T) -> U>;

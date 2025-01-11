@@ -87,7 +87,7 @@ impl TagTypesRepository for PostgresTagTypesRepository {
 
     async fn fetch_by_ids<T>(&self, ids: T) -> Result<Vec<TagType>>
     where
-        T: IntoIterator<Item = TagTypeId> + Send + Sync + 'static,
+        T: IntoIterator<Item = TagTypeId> + Send + Sync,
     {
         let (sql, values) = Query::select()
             .columns([
@@ -133,7 +133,7 @@ impl TagTypesRepository for PostgresTagTypesRepository {
         Ok(tag_types)
     }
 
-    async fn update_by_id<'a>(&self, id: TagTypeId, slug: Option<&'a str>, name: Option<&'a str>, kana: Option<&'a str>) -> Result<TagType> {
+    async fn update_by_id(&self, id: TagTypeId, slug: Option<&str>, name: Option<&str>, kana: Option<&str>) -> Result<TagType> {
         let mut tx = self.pool.begin().await.map_err(Error::other)?;
 
         let (sql, values) = Query::select()

@@ -9,7 +9,6 @@ use crate::{
     repository::DeleteResult,
 };
 
-#[cfg_attr(feature = "test-mock", mockall::automock)]
 pub trait SourcesRepository: Send + Sync + 'static {
     /// Creates a source.
     fn create(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> impl Future<Output = Result<Source>> + Send;
@@ -17,7 +16,7 @@ pub trait SourcesRepository: Send + Sync + 'static {
     /// Fetches the sources by their IDs.
     fn fetch_by_ids<T>(&self, ids: T) -> impl Future<Output = Result<Vec<Source>>> + Send
     where
-        T: IntoIterator<Item = SourceId> + Send + Sync + 'static;
+        for<'a> T: IntoIterator<Item = SourceId> + Send + Sync + 'a;
 
     /// Fetches the source by its external metadata.
     fn fetch_by_external_metadata(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> impl Future<Output = Result<Option<Source>>> + Send;

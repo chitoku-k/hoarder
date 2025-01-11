@@ -8,16 +8,15 @@ use domain::{
         tags::{AliasSet, Tag, TagDepth, TagId},
     },
     error::{Error, ErrorKind},
-    repository::{
-        tag_types::MockTagTypesRepository,
-        tags::MockTagsRepository,
-        DeleteResult, Direction, Order,
-    },
+    repository::{DeleteResult, Direction, Order},
     service::tags::{TagsService, TagsServiceInterface},
 };
 use futures::future::{err, ok};
 use pretty_assertions::{assert_eq, assert_matches};
 use uuid::uuid;
+
+mod mocks;
+use mocks::domain::repository::{tag_types::MockTagTypesRepository, tags::MockTagsRepository};
 
 #[tokio::test]
 async fn create_tag_succeeds() {

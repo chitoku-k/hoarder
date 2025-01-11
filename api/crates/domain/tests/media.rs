@@ -13,14 +13,7 @@ use domain::{
         tags::{Tag, TagDepth, TagId},
     },
     error::{Error, ErrorKind},
-    processor::media::MockMediumImageProcessor,
-    repository::{
-        media::MockMediaRepository,
-        objects::{MockObjectsRepository, ObjectOverwriteBehavior},
-        replicas::MockReplicasRepository,
-        sources::MockSourcesRepository,
-        DeleteResult, Direction, Order,
-    },
+    repository::{objects::ObjectOverwriteBehavior, DeleteResult, Direction, Order},
     service::media::{MediaService, MediaServiceInterface, MediumOverwriteBehavior, MediumSource},
 };
 use futures::future::{err, ok};
@@ -30,6 +23,17 @@ use serial_test::serial;
 use tokio::io::BufReader;
 use tokio_util::io::SyncIoBridge;
 use uuid::uuid;
+
+mod mocks;
+use mocks::domain::{
+    processor::media::MockMediumImageProcessor,
+    repository::{
+        media::MockMediaRepository,
+        objects::MockObjectsRepository,
+        replicas::MockReplicasRepository,
+        sources::MockSourcesRepository,
+    },
+};
 
 #[tokio::test]
 async fn create_medium_succeeds() {

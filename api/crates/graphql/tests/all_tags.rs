@@ -5,18 +5,22 @@ use chrono::{TimeZone, Utc};
 use domain::{
     entity::tags::{AliasSet, Tag, TagDepth, TagId},
     repository::{Direction, Order},
-    service::{
-        external_services::MockExternalServicesServiceInterface,
-        media::MockMediaServiceInterface,
-        tags::MockTagsServiceInterface,
-    },
 };
 use futures::future::ok;
 use graphql::query::Query;
 use indoc::indoc;
-use normalizer::MockNormalizerInterface;
 use pretty_assertions::assert_eq;
 use uuid::uuid;
+
+mod mocks;
+use mocks::{
+    domain::service::{
+        external_services::MockExternalServicesServiceInterface,
+        media::MockMediaServiceInterface,
+        tags::MockTagsServiceInterface,
+    },
+    normalizer::MockNormalizerInterface,
+};
 
 #[tokio::test]
 async fn root_first_succeeds() {
