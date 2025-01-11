@@ -57,7 +57,7 @@ impl From<PostgresExternalServiceRow> for ExternalService {
 }
 
 impl ExternalServicesRepository for PostgresExternalServicesRepository {
-    async fn create<'a>(&self, slug: &str, kind: &str, name: &str, base_url: Option<&'a str>, url_pattern: Option<&'a str>) -> Result<ExternalService> {
+    async fn create(&self, slug: &str, kind: &str, name: &str, base_url: Option<&str>, url_pattern: Option<&str>) -> Result<ExternalService> {
         let (sql, values) = Query::insert()
             .into_table(PostgresExternalService::Table)
             .columns([
@@ -147,7 +147,7 @@ impl ExternalServicesRepository for PostgresExternalServicesRepository {
         Ok(external_services)
     }
 
-    async fn update_by_id<'a>(&self, id: ExternalServiceId, slug: Option<&'a str>, name: Option<&'a str>, base_url: Option<Option<&'a str>>, url_pattern: Option<Option<&'a str>>) -> Result<ExternalService> {
+    async fn update_by_id(&self, id: ExternalServiceId, slug: Option<&str>, name: Option<&str>, base_url: Option<Option<&str>>, url_pattern: Option<Option<&str>>) -> Result<ExternalService> {
         let mut tx = self.pool.begin().await.map_err(Error::other)?;
 
         let (sql, values) = Query::select()

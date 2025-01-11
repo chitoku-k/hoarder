@@ -1,33 +1,33 @@
 use std::{collections::BTreeSet, sync::Arc};
 
-use application::service::{
-    media::{MediaURLFactoryInterface, MockMediaURLFactoryInterface},
-    thumbnails::{MockThumbnailURLFactoryInterface, ThumbnailURLFactoryInterface},
-};
+use application::service::{media::MediaURLFactoryInterface, thumbnails::ThumbnailURLFactoryInterface};
 use async_graphql::{Schema, EmptyMutation, EmptySubscription, value};
 use chrono::{TimeZone, Utc};
-use domain::{
-    entity::{
-        external_services::{ExternalService, ExternalServiceId, ExternalMetadata},
-        media::{Medium, MediumId},
-        replicas::{Replica, ReplicaId, Size, Thumbnail, ThumbnailId},
-        sources::{Source, SourceId},
-        tag_types::{TagType, TagTypeId},
-        tags::{Tag, AliasSet, TagDepth, TagId},
-    },
-    service::{
-        external_services::MockExternalServicesServiceInterface,
-        media::MockMediaServiceInterface,
-        tags::MockTagsServiceInterface,
-    },
+use domain::entity::{
+    external_services::{ExternalService, ExternalServiceId, ExternalMetadata},
+    media::{Medium, MediumId},
+    replicas::{Replica, ReplicaId, Size, Thumbnail, ThumbnailId},
+    sources::{Source, SourceId},
+    tag_types::{TagType, TagTypeId},
+    tags::{Tag, AliasSet, TagDepth, TagId},
 };
 use futures::future::ok;
 use graphql::query::Query;
 use indoc::indoc;
-use normalizer::MockNormalizerInterface;
 use ordermap::OrderMap;
 use pretty_assertions::assert_eq;
 use uuid::{uuid, Uuid};
+
+mod mocks;
+use mocks::{
+    application::service::{media::MockMediaURLFactoryInterface, thumbnails::MockThumbnailURLFactoryInterface},
+    domain::service::{
+        external_services::MockExternalServicesServiceInterface,
+        media::MockMediaServiceInterface,
+        tags::MockTagsServiceInterface,
+    },
+    normalizer::MockNormalizerInterface,
+};
 
 // Concrete type is required both in implementation and expectation.
 type IntoIterMap<T, U> = std::iter::Map<std::vec::IntoIter<T>, fn(T) -> U>;

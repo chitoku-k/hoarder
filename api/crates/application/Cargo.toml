@@ -9,7 +9,6 @@ doctest = false
 
 [features]
 tls = ["axum-server/tls-openssl"]
-test-mock = ["mockall"]
 
 [dependencies.domain]
 workspace = true
@@ -25,10 +24,6 @@ version = "1.0.0"
 
 [dependencies.log]
 version = "0.4.22"
-
-[dependencies.mockall]
-version = "0.13.1"
-optional = true
 
 [dependencies.notify]
 version = "8.0.0"
@@ -51,6 +46,9 @@ version = "1.5.2"
 
 [dev-dependencies.indoc]
 version = "2.0.5"
+
+[dev-dependencies.mockall]
+version = "0.13.1"
 
 [dev-dependencies.pretty_assertions]
 version = "1.4.1"

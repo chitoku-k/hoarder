@@ -1,9 +1,6 @@
 use std::{collections::BTreeSet, sync::Arc};
 
-use application::service::{
-    media::{MediaURLFactoryInterface, MockMediaURLFactoryInterface},
-    thumbnails::{MockThumbnailURLFactoryInterface, ThumbnailURLFactoryInterface},
-};
+use application::service::{media::MediaURLFactoryInterface, thumbnails::ThumbnailURLFactoryInterface};
 use async_graphql::{Schema, EmptyMutation, EmptySubscription, value};
 use chrono::{TimeZone, Utc};
 use domain::{
@@ -16,19 +13,24 @@ use domain::{
         tags::{AliasSet, Tag, TagDepth, TagId},
     },
     repository::{Direction, Order},
-    service::{
-        external_services::MockExternalServicesServiceInterface,
-        media::MockMediaServiceInterface,
-        tags::MockTagsServiceInterface,
-    },
 };
 use futures::future::ok;
 use graphql::query::Query;
 use indoc::indoc;
-use normalizer::MockNormalizerInterface;
 use ordermap::OrderMap;
 use pretty_assertions::assert_eq;
 use uuid::uuid;
+
+mod mocks;
+use mocks::{
+    application::service::{media::MockMediaURLFactoryInterface, thumbnails::MockThumbnailURLFactoryInterface},
+    domain::service::{
+        external_services::MockExternalServicesServiceInterface,
+        media::MockMediaServiceInterface,
+        tags::MockTagsServiceInterface,
+    },
+    normalizer::MockNormalizerInterface,
+};
 
 #[tokio::test]
 async fn tags_asc_succeeds() {

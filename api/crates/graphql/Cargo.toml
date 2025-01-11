@@ -63,18 +63,12 @@ version = "1.11.1"
 
 [dev-dependencies.application]
 workspace = true
-features = ["test-mock"]
-
-[dev-dependencies.domain]
-workspace = true
-features = ["test-mock"]
 
 [dev-dependencies.indoc]
 version = "2.0.5"
 
-[dev-dependencies.normalizer]
-workspace = true
-features = ["test-mock"]
+[dev-dependencies.mockall]
+version = "0.13.1"
 
 [dev-dependencies.pretty_assertions]
 version = "1.4.1"

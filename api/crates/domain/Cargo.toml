@@ -7,9 +7,6 @@ license.workspace = true
 [lib]
 doctest = false
 
-[features]
-test-mock = ["mockall"]
-
 [dependencies.chrono]
 version = "0.4.39"
 default-features = false
@@ -21,10 +18,6 @@ features = ["constructor", "deref", "display", "from"]
 
 [dependencies.log]
 version = "0.4.22"
-
-[dependencies.mockall]
-version = "0.13.1"
-optional = true
 
 [dependencies.ordermap]
 version = "0.5.4"
@@ -60,13 +53,12 @@ version = "1.0.95"
 [dev-dependencies.futures]
 version = "0.3.31"
 
+[dev-dependencies.mockall]
+version = "0.13.1"
+
 [dev-dependencies.pretty_assertions]
 version = "1.4.1"
 features = ["unstable"]
 
 [dev-dependencies.serial_test]
 version = "3.2.0"
-
-[dev-dependencies.domain]
-path = "."
-features = ["test-mock"]

@@ -5,14 +5,6 @@ use derive_more::derive::Constructor;
 mod kana;
 mod unicode;
 
-#[cfg(feature = "test-mock")]
-mockall::mock! {
-    pub NormalizerInterface {}
-    impl NormalizerInterface for NormalizerInterface {
-        fn normalize_str(&self, text: &str) -> Cow<'static, str>;
-    }
-}
-
 pub trait NormalizerInterface: Send + Sync + 'static {
     fn normalize<T>(&self, text: T) -> String
     where

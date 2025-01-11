@@ -6,12 +6,10 @@ use axum::{
 };
 use domain::entity::replicas::ThumbnailId;
 
-#[cfg_attr(feature = "test-mock", mockall::automock)]
 pub trait ThumbnailURLFactoryInterface: Send + Sync + 'static {
     fn get(&self, id: ThumbnailId) -> String;
 }
 
-#[cfg_attr(feature = "test-mock", mockall::automock)]
 pub trait ThumbnailsServiceInterface: Send + Sync + 'static {
     fn show(&self, id: ThumbnailId) -> impl Future<Output = Response> + Send;
 }

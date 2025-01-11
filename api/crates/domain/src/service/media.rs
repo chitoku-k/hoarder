@@ -41,13 +41,12 @@ impl From<MediumOverwriteBehavior> for objects::ObjectOverwriteBehavior {
     }
 }
 
-#[cfg_attr(feature = "test-mock", mockall::automock)]
 pub trait MediaServiceInterface: Send + Sync + 'static {
     /// Creates a medium.
     fn create_medium<T, U>(&self, source_ids: T, created_at: Option<DateTime<Utc>>, tag_tag_type_ids: U, tag_depth: Option<TagDepth>, sources: bool) -> impl Future<Output = Result<Medium>> + Send
     where
-        T: IntoIterator<Item = SourceId> + Send + Sync + 'static,
-        U: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'static;
+        for<'a> T: IntoIterator<Item = SourceId> + Send + Sync + 'a,
+        for<'a> U: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'a;
 
     /// Creates a replica.
     fn create_replica(&self, medium_id: MediumId, medium_source: MediumSource) -> impl Future<Output = Result<Replica>> + Send;
@@ -70,7 +69,7 @@ pub trait MediaServiceInterface: Send + Sync + 'static {
     /// Gets the media by their IDs.
     fn get_media_by_ids<T>(&self, ids: T, tag_depth: Option<TagDepth>, replicas: bool, sources: bool) -> impl Future<Output = Result<Vec<Medium>>> + Send
     where
-        T: IntoIterator<Item = MediumId> + Send + Sync + 'static;
+        for<'a> T: IntoIterator<Item = MediumId> + Send + Sync + 'a;
 
     /// Gets the media by their source IDs.
     fn get_media_by_source_ids<T>(
@@ -85,7 +84,7 @@ pub trait MediaServiceInterface: Send + Sync + 'static {
         limit: u64,
     ) -> impl Future<Output = Result<Vec<Medium>>> + Send
     where
-        T: IntoIterator<Item = SourceId> + Send + Sync + 'static;
+        for<'a> T: IntoIterator<Item = SourceId> + Send + Sync + 'a;
 
     /// Gets the media by their tag IDs.
     fn get_media_by_tag_ids<T>(
@@ -100,12 +99,12 @@ pub trait MediaServiceInterface: Send + Sync + 'static {
         limit: u64,
     ) -> impl Future<Output = Result<Vec<Medium>>> + Send
     where
-        T: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'static;
+        for<'a> T: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'a;
 
     /// Gets the replicas by their IDs.
     fn get_replicas_by_ids<T>(&self, ids: T) -> impl Future<Output = Result<Vec<Replica>>> + Send
     where
-        T: IntoIterator<Item = ReplicaId> + Send + Sync + 'static;
+        for<'a> T: IntoIterator<Item = ReplicaId> + Send + Sync + 'a;
 
     /// Gets the replica by original URL.
     fn get_replica_by_original_url(&self, original_url: &str) -> impl Future<Output = Result<Replica>> + Send;
@@ -113,7 +112,7 @@ pub trait MediaServiceInterface: Send + Sync + 'static {
     /// Gets the sourecs by their IDs.
     fn get_sources_by_ids<T>(&self, ids: T) -> impl Future<Output = Result<Vec<Source>>> + Send
     where
-        T: IntoIterator<Item = SourceId> + Send + Sync + 'static;
+        for<'a> T: IntoIterator<Item = SourceId> + Send + Sync + 'a;
 
     /// Gets the source by its external metadata.
     fn get_source_by_external_metadata(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> impl Future<Output = Result<Option<Source>>> + Send;
@@ -145,11 +144,11 @@ pub trait MediaServiceInterface: Send + Sync + 'static {
         sources: bool,
     ) -> impl Future<Output = Result<Medium>> + Send
     where
-        T: IntoIterator<Item = SourceId> + Send + Sync + 'static,
-        U: IntoIterator<Item = SourceId> + Send + Sync + 'static,
-        V: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'static,
-        W: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'static,
-        X: IntoIterator<Item = ReplicaId> + Send + Sync + 'static;
+        for<'a> T: IntoIterator<Item = SourceId> + Send + Sync + 'a,
+        for<'a> U: IntoIterator<Item = SourceId> + Send + Sync + 'a,
+        for<'a> V: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'a,
+        for<'a> W: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'a,
+        for<'a> X: IntoIterator<Item = ReplicaId> + Send + Sync + 'a;
 
     /// Updates the replica by ID.
     fn update_replica_by_id(&self, id: ReplicaId, medium_source: MediumSource) -> impl Future<Output = Result<Replica>> + Send;
@@ -271,8 +270,8 @@ where
 {
     async fn create_medium<T, U>(&self, source_ids: T, created_at: Option<DateTime<Utc>>, tag_tag_type_ids: U, tag_depth: Option<TagDepth>, sources: bool) -> Result<Medium>
     where
-        T: IntoIterator<Item = SourceId> + Send + Sync + 'static,
-        U: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'static,
+        for<'a> T: IntoIterator<Item = SourceId> + Send + Sync + 'a,
+        for<'a> U: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'a,
     {
         match self.media_repository.create(source_ids, created_at, tag_tag_type_ids, tag_depth, sources).await {
             Ok(medium) => Ok(medium),
@@ -325,7 +324,7 @@ where
 
     async fn get_media_by_ids<T>(&self, ids: T, tag_depth: Option<TagDepth>, replicas: bool, sources: bool) -> Result<Vec<Medium>>
     where
-        T: IntoIterator<Item = MediumId> + Send + Sync + 'static,
+        for<'a> T: IntoIterator<Item = MediumId> + Send + Sync + 'a,
     {
         match self.media_repository.fetch_by_ids(ids, tag_depth, replicas, sources).await {
             Ok(media) => Ok(media),
@@ -348,7 +347,7 @@ where
         limit: u64,
     ) -> Result<Vec<Medium>>
     where
-        T: IntoIterator<Item = SourceId> + Send + Sync + 'static,
+        for<'a> T: IntoIterator<Item = SourceId> + Send + Sync + 'a,
     {
         match self.media_repository.fetch_by_source_ids(source_ids, tag_depth, replicas, sources, cursor, order, direction, limit).await {
             Ok(media) => Ok(media),
@@ -371,7 +370,7 @@ where
         limit: u64,
     ) -> Result<Vec<Medium>>
     where
-        T: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'static,
+        for<'a> T: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'a,
     {
         match self.media_repository.fetch_by_tag_ids(tag_tag_type_ids, tag_depth, replicas, sources, cursor, order, direction, limit).await {
             Ok(media) => Ok(media),
@@ -384,7 +383,7 @@ where
 
     async fn get_replicas_by_ids<T>(&self, ids: T) -> Result<Vec<Replica>>
     where
-        T: IntoIterator<Item = ReplicaId> + Send + Sync + 'static,
+        for<'a> T: IntoIterator<Item = ReplicaId> + Send + Sync + 'a,
     {
         match self.replicas_repository.fetch_by_ids(ids).await {
             Ok(replicas) => Ok(replicas),
@@ -407,7 +406,7 @@ where
 
     async fn get_sources_by_ids<T>(&self, ids: T) -> Result<Vec<Source>>
     where
-        T: IntoIterator<Item = SourceId> + Send + Sync + 'static,
+        for<'a> T: IntoIterator<Item = SourceId> + Send + Sync + 'a,
     {
         match self.sources_repository.fetch_by_ids(ids).await {
             Ok(sources) => Ok(sources),
@@ -488,11 +487,11 @@ where
         sources: bool,
     ) -> Result<Medium>
     where
-        T: IntoIterator<Item = SourceId> + Send + Sync + 'static,
-        U: IntoIterator<Item = SourceId> + Send + Sync + 'static,
-        V: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'static,
-        W: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'static,
-        X: IntoIterator<Item = ReplicaId> + Send + Sync + 'static,
+        for<'a> T: IntoIterator<Item = SourceId> + Send + Sync + 'a,
+        for<'a> U: IntoIterator<Item = SourceId> + Send + Sync + 'a,
+        for<'a> V: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'a,
+        for<'a> W: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'a,
+        for<'a> X: IntoIterator<Item = ReplicaId> + Send + Sync + 'a,
     {
         match self.media_repository.update_by_id(id, add_source_ids, remove_source_ids, add_tag_tag_type_ids, remove_tag_tag_type_ids, replica_orders, created_at, tag_depth, replicas, sources).await {
             Ok(medium) => Ok(medium),

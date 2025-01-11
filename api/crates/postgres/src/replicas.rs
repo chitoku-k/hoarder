@@ -323,7 +323,7 @@ impl ReplicasRepository for PostgresReplicasRepository {
 
     async fn fetch_by_ids<T>(&self, ids: T) -> Result<Vec<Replica>>
     where
-        T: IntoIterator<Item = ReplicaId> + Send + Sync + 'static,
+        T: IntoIterator<Item = ReplicaId> + Send + Sync,
     {
         let (sql, values) = Query::select()
             .expr_as(Expr::col((PostgresReplica::Table, PostgresReplica::Id)), PostgresReplicaThumbnail::ReplicaId)
@@ -416,7 +416,7 @@ impl ReplicasRepository for PostgresReplicasRepository {
         Ok(thumbnail)
     }
 
-    async fn update_by_id<'a>(&self, id: ReplicaId, thumbnail_image: Option<ThumbnailImage>, original_url: Option<&'a str>, original_image: Option<OriginalImage>) -> Result<Replica> {
+    async fn update_by_id(&self, id: ReplicaId, thumbnail_image: Option<ThumbnailImage>, original_url: Option<&str>, original_image: Option<OriginalImage>) -> Result<Replica> {
         let mut tx = self.pool.begin().await.map_err(Error::other)?;
 
         let (sql, values) = Query::select()

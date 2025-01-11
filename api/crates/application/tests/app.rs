@@ -1,11 +1,4 @@
-use application::{
-    server::Engine,
-    service::{
-        graphql::MockGraphQLServiceInterface,
-        objects::MockObjectsServiceInterface,
-        thumbnails::MockThumbnailsServiceInterface,
-    },
-};
+use application::server::Engine;
 use axum::{
     body::{self, Body},
     http::{Method, Request},
@@ -17,6 +10,13 @@ use indoc::indoc;
 use pretty_assertions::assert_eq;
 use serde_json::json;
 use tower::ServiceExt;
+
+mod mocks;
+use mocks::application::service::{
+    graphql::MockGraphQLServiceInterface,
+    objects::MockObjectsServiceInterface,
+    thumbnails::MockThumbnailsServiceInterface,
+};
 
 #[tokio::test]
 async fn graphql() {
