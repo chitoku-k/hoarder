@@ -33,11 +33,13 @@ jobs:
         env:
           TAG: ${{ github.ref_name }}
         with:
+          source: .
           files: docker-bake.hcl
           push: true
           set: |
             *.cache-from=type=gha
             *.cache-to=type=gha,mode=max
+
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
