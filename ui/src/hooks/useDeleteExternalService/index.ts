@@ -2,11 +2,9 @@ import { useCallback } from 'react'
 import type { ApolloError } from '@apollo/client'
 import { useMutation } from '@apollo/client'
 
-import { AllExternalServicesDocument } from '@/hooks'
-
-import type { DeleteExternalServiceMutation, DeleteExternalServiceMutationVariables } from './documents.generated'
-import { DeleteExternalServiceDocument } from './documents.generated'
-export { DeleteExternalServiceDocument } from './documents.generated'
+import { AllExternalServicesDocument } from '@/graphql/AllExternalServices'
+import type { DeleteExternalServiceMutation, DeleteExternalServiceMutationVariables } from '@/graphql/DeleteExternalService'
+import { DeleteExternalServiceDocument } from '@/graphql/DeleteExternalService'
 
 type DeleteExternalService = DeleteExternalServiceMutation['deleteExternalService']
 

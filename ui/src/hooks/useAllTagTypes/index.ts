@@ -1,8 +1,7 @@
 import { skipToken, useSuspenseQuery } from '@apollo/client'
 
-import type { AllTagTypesQuery } from './documents.generated'
-import { AllTagTypesDocument } from './documents.generated'
-export { AllTagTypesDocument } from './documents.generated'
+import type { AllTagTypesQuery } from '@/graphql/AllTagTypes'
+import { AllTagTypesDocument } from '@/graphql/AllTagTypes'
 
 type AllTagTypes = AllTagTypesQuery['allTagTypes']
 

@@ -1,8 +1,7 @@
 import { skipToken, useSuspenseQuery } from '@apollo/client'
 
-import type { TagQuery, TagQueryVariables } from './documents.generated'
-import { TagDocument } from './documents.generated'
-export { TagDocument } from './documents.generated'
+import type { TagQuery, TagQueryVariables } from '@/graphql/Tag'
+import { TagDocument } from '@/graphql/Tag'
 
 type Tag = TagQuery['tags'][number]
 

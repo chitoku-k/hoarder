@@ -2,11 +2,9 @@ import { useCallback } from 'react'
 import type { ApolloError } from '@apollo/client'
 import { useMutation } from '@apollo/client'
 
-import { AllTagTypesDocument } from '@/hooks'
-
-import type { UpdateTagTypeMutation, UpdateTagTypeMutationVariables } from './documents.generated'
-import { UpdateTagTypeDocument } from './documents.generated'
-export { UpdateTagTypeDocument } from './documents.generated'
+import { AllTagTypesDocument } from '@/graphql/AllTagTypes'
+import type { UpdateTagTypeMutation, UpdateTagTypeMutationVariables } from '@/graphql/UpdateTagType'
+import { UpdateTagTypeDocument } from '@/graphql/UpdateTagType'
 
 type UpdateTagType = UpdateTagTypeMutation['updateTagType']
 

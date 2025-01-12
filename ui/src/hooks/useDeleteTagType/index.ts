@@ -2,11 +2,9 @@ import { useCallback } from 'react'
 import type { ApolloError } from '@apollo/client'
 import { useMutation } from '@apollo/client'
 
-import { AllTagTypesDocument } from '@/hooks'
-
-import type { DeleteTagTypeMutation, DeleteTagTypeMutationVariables } from './documents.generated'
-import { DeleteTagTypeDocument } from './documents.generated'
-export { DeleteTagTypeDocument } from './documents.generated'
+import { AllTagTypesDocument } from '@/graphql/AllTagTypes'
+import type { DeleteTagTypeMutation, DeleteTagTypeMutationVariables } from '@/graphql/DeleteTagType'
+import { DeleteTagTypeDocument } from '@/graphql/DeleteTagType'
 
 type DeleteTagType = DeleteTagTypeMutation['deleteTagType']
 

@@ -2,9 +2,8 @@ import { useCallback } from 'react'
 import type { ApolloError } from '@apollo/client'
 import { useMutation } from '@apollo/client'
 
-import type { DeleteMediumMutation, DeleteMediumMutationVariables } from './documents.generated'
-import { DeleteMediumDocument } from './documents.generated'
-export { DeleteMediumDocument } from './documents.generated'
+import type { DeleteMediumMutation, DeleteMediumMutationVariables } from '@/graphql/DeleteMedium'
+import { DeleteMediumDocument } from '@/graphql/DeleteMedium'
 
 type DeleteMedium = DeleteMediumMutation['deleteMedium']
 

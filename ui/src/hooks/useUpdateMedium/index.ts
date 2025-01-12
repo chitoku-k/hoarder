@@ -2,11 +2,9 @@ import { useCallback } from 'react'
 import type { ApolloError } from '@apollo/client'
 import { useMutation } from '@apollo/client'
 
-import { MediumDocument } from '@/hooks'
-
-import type { UpdateMediumMutation, UpdateMediumMutationVariables } from './documents.generated'
-import { UpdateMediumDocument } from './documents.generated'
-export { UpdateMediumDocument } from './documents.generated'
+import { MediumDocument } from '@/graphql/Medium'
+import type { UpdateMediumMutation, UpdateMediumMutationVariables } from '@/graphql/UpdateMedium'
+import { UpdateMediumDocument } from '@/graphql/UpdateMedium'
 
 type UpdateMedium = UpdateMediumMutation['updateMedium']
 

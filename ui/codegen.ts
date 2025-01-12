@@ -13,11 +13,11 @@ const config: CodegenConfig = {
     strictScalars: true,
   },
   documents: [
-    'src/hooks/**/*.gql',
+    'src/graphql/**/*.gql',
   ],
   ignoreNoDocuments: true,
   generates: {
-    'src/hooks/': {
+    'src/graphql/': {
       preset: 'near-operation-file',
       presetConfig: {
         baseTypesPath: 'types.generated.ts',
@@ -27,7 +27,7 @@ const config: CodegenConfig = {
         'typed-document-node',
       ],
     },
-    'src/hooks/types.generated.ts': {
+    'src/graphql/types.generated.ts': {
       plugins: [
         'typescript',
       ],

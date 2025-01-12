@@ -12,7 +12,8 @@ import type { TextFieldVariants } from '@mui/material/TextField'
 import TextField from '@mui/material/TextField'
 import debounce from '@mui/material/utils/debounce'
 
-import { ObjectKind, useObjects, useObjectsSkip } from '@/hooks'
+import { ObjectKind } from '@/graphql/types.generated'
+import { useObjects, useObjectsSkip } from '@/hooks'
 
 import styles from './styles.module.scss'
 

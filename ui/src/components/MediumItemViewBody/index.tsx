@@ -23,8 +23,8 @@ import MediumItemMetadataSummaryShow from '@/components/MediumItemMetadataSummar
 import MediumItemMetadataTagEdit from '@/components/MediumItemMetadataTagEdit'
 import MediumItemMetadataTagList from '@/components/MediumItemMetadataTagList'
 import MediumItemReplicaDeleteDialog from '@/components/MediumItemReplicaDeleteDialog'
+import type { TagTagTypeInput } from '@/graphql/types.generated'
 import { useBeforeUnload, useDeleteReplica, useMedium, useUpdateMedium } from '@/hooks'
-import type { TagTagTypeInput } from '@/hooks/types.generated'
 import type { Medium, Replica } from '@/types'
 
 import styles from './styles.module.scss'

@@ -2,11 +2,10 @@ import { useCallback } from 'react'
 import type { ApolloError } from '@apollo/client'
 import { useMutation } from '@apollo/client'
 
-import { AllTagsDocument, TagDocument, TagsDocument } from '@/hooks'
-
-import type { CreateTagMutation, CreateTagMutationVariables } from './documents.generated'
-import { CreateTagDocument } from './documents.generated'
-export { CreateTagDocument } from './documents.generated'
+import type { CreateTagMutation, CreateTagMutationVariables } from '@/graphql/CreateTag'
+import { CreateTagDocument } from '@/graphql/CreateTag'
+import { TagDocument } from '@/graphql/Tag'
+import { AllTagsDocument, TagsDocument } from '@/graphql/Tags'
 
 type CreateTag = CreateTagMutation['createTag']
 

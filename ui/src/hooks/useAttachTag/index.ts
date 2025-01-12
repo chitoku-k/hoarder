@@ -2,11 +2,10 @@ import { useCallback } from 'react'
 import type { ApolloError } from '@apollo/client'
 import { useMutation } from '@apollo/client'
 
-import { AllTagsDocument, TagDocument, TagsDocument } from '@/hooks'
-
-import type { AttachTagMutation, AttachTagMutationVariables } from './documents.generated'
-import { AttachTagDocument } from './documents.generated'
-export { AttachTagDocument } from './documents.generated'
+import type { AttachTagMutation, AttachTagMutationVariables } from '@/graphql/AttachTag'
+import { AttachTagDocument } from '@/graphql/AttachTag'
+import { TagDocument } from '@/graphql/Tag'
+import { AllTagsDocument, TagsDocument } from '@/graphql/Tags'
 
 type AttachTag = AttachTagMutation['attachTag']
 

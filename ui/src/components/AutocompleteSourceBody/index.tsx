@@ -11,8 +11,8 @@ import type { TextFieldVariants } from '@mui/material/TextField'
 import TextField from '@mui/material/TextField'
 import debounce from '@mui/material/utils/debounce'
 
+import type { ExternalMetadataInput } from '@/graphql/types.generated'
 import { useSource, useSourceSkip } from '@/hooks'
-import type { ExternalMetadataInput } from '@/hooks/types.generated'
 import type { ExternalService, Source } from '@/types'
 
 import styles from './styles.module.scss'

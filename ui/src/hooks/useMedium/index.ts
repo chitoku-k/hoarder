@@ -1,8 +1,7 @@
 import { useSuspenseQuery } from '@apollo/client'
 
-import type { MediumQuery, MediumQueryVariables } from './documents.generated'
-import { MediumDocument } from './documents.generated'
-export { MediumDocument } from './documents.generated'
+import type { MediumQuery, MediumQueryVariables } from '@/graphql/Medium'
+import { MediumDocument } from '@/graphql/Medium'
 
 type Medium = MediumQuery['media'][number]
 
