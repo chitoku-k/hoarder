@@ -1,10 +1,8 @@
 import { useCallback } from 'react'
 import { useSuspenseQuery } from '@apollo/client'
 
-import type { AllMediaQuery } from './documents.generated'
-export type { AllMediaQuery } from './documents.generated'
-import { AllMediaDocument } from './documents.generated'
-export { AllMediaDocument } from './documents.generated'
+import type { AllMediaQuery } from '@/graphql/Media'
+import { AllMediaDocument } from '@/graphql/Media'
 
 type Media = AllMediaQuery['allMedia']['edges'][number]['node'][]
 

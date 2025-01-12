@@ -2,11 +2,9 @@ import { useCallback } from 'react'
 import type { ApolloError } from '@apollo/client'
 import { useMutation } from '@apollo/client'
 
-import { SourceDocument } from '@/hooks'
-
-import type { CreateSourceMutation, CreateSourceMutationVariables } from './documents.generated'
-import { CreateSourceDocument } from './documents.generated'
-export { CreateSourceDocument } from './documents.generated'
+import type { CreateSourceMutation, CreateSourceMutationVariables } from '@/graphql/CreateSource'
+import { CreateSourceDocument } from '@/graphql/CreateSource'
+import { SourceDocument } from '@/graphql/Source'
 
 type CreateSource = CreateSourceMutation['createSource']
 

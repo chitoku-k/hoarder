@@ -1,9 +1,8 @@
 import { useCallback } from 'react'
 import { skipToken, useSuspenseQuery } from '@apollo/client'
 
-import type { AllTagsQuery, AllTagsLikeQuery, TagsQuery, AllTagsLikeQueryVariables } from './documents.generated'
-import { AllTagsDocument, AllTagsLikeDocument, TagsDocument } from './documents.generated'
-export { AllTagsDocument, AllTagsLikeDocument, TagsDocument } from './documents.generated'
+import type { AllTagsQuery, AllTagsLikeQuery, TagsQuery, AllTagsLikeQueryVariables } from '@/graphql/Tags'
+import { AllTagsDocument, AllTagsLikeDocument, TagsDocument } from '@/graphql/Tags'
 
 type RootTags = AllTagsQuery['allTags']['edges'][number]['node'][]
 type TagsLike = AllTagsLikeQuery['allTagsLike']

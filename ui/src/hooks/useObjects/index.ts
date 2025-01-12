@@ -1,9 +1,7 @@
 import { skipToken, useSuspenseQuery } from '@apollo/client'
 
-import type { ObjectsQuery, ObjectsQueryVariables } from './documents.generated'
-import { ObjectsDocument } from './documents.generated'
-export { ObjectsDocument } from './documents.generated'
-export { ObjectKind } from '@/hooks/types.generated'
+import type { ObjectsQuery, ObjectsQueryVariables } from '@/graphql/Objects'
+import { ObjectsDocument } from '@/graphql/Objects'
 
 type Objects = ObjectsQuery['objects']
 

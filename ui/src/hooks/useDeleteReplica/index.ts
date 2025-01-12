@@ -2,9 +2,8 @@ import { useCallback } from 'react'
 import type { ApolloError } from '@apollo/client'
 import { useMutation } from '@apollo/client'
 
-import type { DeleteReplicaMutation, DeleteReplicaMutationVariables } from './documents.generated'
-import { DeleteReplicaDocument } from './documents.generated'
-export { DeleteReplicaDocument } from './documents.generated'
+import type { DeleteReplicaMutation, DeleteReplicaMutationVariables } from '@/graphql/DeleteReplica'
+import { DeleteReplicaDocument } from '@/graphql/DeleteReplica'
 
 type DeleteReplica = DeleteReplicaMutation['deleteReplica']
 

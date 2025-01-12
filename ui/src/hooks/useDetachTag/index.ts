@@ -2,11 +2,10 @@ import { useCallback } from 'react'
 import type { ApolloError } from '@apollo/client'
 import { useMutation } from '@apollo/client'
 
-import { AllTagsDocument, TagDocument, TagsDocument } from '@/hooks'
-
-import type { DetachTagMutation, DetachTagMutationVariables } from './documents.generated'
-import { DetachTagDocument } from './documents.generated'
-export { DetachTagDocument } from './documents.generated'
+import type { DetachTagMutation, DetachTagMutationVariables } from '@/graphql/DetachTag'
+import { DetachTagDocument } from '@/graphql/DetachTag'
+import { TagDocument } from '@/graphql/Tag'
+import { AllTagsDocument, TagsDocument } from '@/graphql/Tags'
 
 type DetachTag = DetachTagMutation['detachTag']
 

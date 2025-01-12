@@ -2,9 +2,8 @@ import { useCallback } from 'react'
 import type { ApolloError } from '@apollo/client'
 import { useMutation } from '@apollo/client'
 
-import type { CreateReplicaMutation, CreateReplicaMutationVariables } from './documents.generated'
-import { CreateReplicaDocument } from './documents.generated'
-export { CreateReplicaDocument } from './documents.generated'
+import type { CreateReplicaMutation, CreateReplicaMutationVariables } from '@/graphql/CreateReplica'
+import { CreateReplicaDocument } from '@/graphql/CreateReplica'
 
 type CreateReplica = CreateReplicaMutation['createReplica']
 

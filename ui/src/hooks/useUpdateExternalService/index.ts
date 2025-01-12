@@ -2,11 +2,9 @@ import { useCallback } from 'react'
 import type { ApolloError } from '@apollo/client'
 import { useMutation } from '@apollo/client'
 
-import { AllExternalServicesDocument } from '@/hooks'
-
-import type { UpdateExternalServiceMutation, UpdateExternalServiceMutationVariables } from './documents.generated'
-import { UpdateExternalServiceDocument } from './documents.generated'
-export { UpdateExternalServiceDocument } from './documents.generated'
+import { AllExternalServicesDocument } from '@/graphql/AllExternalServices'
+import type { UpdateExternalServiceMutation, UpdateExternalServiceMutationVariables } from '@/graphql/UpdateExternalService'
+import { UpdateExternalServiceDocument } from '@/graphql/UpdateExternalService'
 
 type UpdateExternalService = UpdateExternalServiceMutation['updateExternalService']
 

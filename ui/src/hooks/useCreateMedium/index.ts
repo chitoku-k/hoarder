@@ -2,12 +2,10 @@ import { useCallback } from 'react'
 import type { ApolloError, Reference } from '@apollo/client'
 import { useMutation } from '@apollo/client'
 
-import type { AllMediaQuery } from '@/hooks'
-import { MediumDocument } from '@/hooks'
-
-import type { CreateMediumMutation, CreateMediumMutationVariables } from './documents.generated'
-import { CreateMediumDocument } from './documents.generated'
-export { CreateMediumDocument } from './documents.generated'
+import type { CreateMediumMutation, CreateMediumMutationVariables } from '@/graphql/CreateMedium'
+import { CreateMediumDocument } from '@/graphql/CreateMedium'
+import type { AllMediaQuery } from '@/graphql/Media'
+import { MediumDocument } from '@/graphql/Medium'
 
 type CreateMedium = CreateMediumMutation['createMedium']
 type MediumNode = AllMediaQuery['allMedia']['edges'][number]['node']
