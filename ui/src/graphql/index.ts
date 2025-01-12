@@ -17,8 +17,8 @@ export const makeClient = () => new ApolloClient({
     typePolicies: {
       Query: {
         fields: {
-          allMedia: relayStylePagination(),
-          allTags: relayStylePagination(),
+          allMedia: relayStylePagination(['sourceIds', 'tagIds', 'order']),
+          allTags: relayStylePagination(['root']),
         },
       },
     },
