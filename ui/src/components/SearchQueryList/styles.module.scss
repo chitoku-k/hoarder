@@ -1,0 +1,28 @@
+.search {
+  &:global(.MuiToolbar-root) {
+    min-height: 0;
+  }
+}
+
+.queries {
+  &:global(.MuiStack-root) {
+    padding: 16px 0;
+
+    &:not(:empty) {
+      padding: 24px 0;
+    }
+  }
+}
+
+.tagTypeIcon {
+  &:global(.MuiSvgIcon-root) {
+    margin-top: 2px;
+    margin-right: 6px;
+    color: #666;
+  }
+}
+
+.tagTypeText {
+  color: #666;
+  font-size: 0.95rem;
+}

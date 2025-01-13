@@ -6,6 +6,7 @@ import Header from '@/components/Header'
 import ApolloWrapper from '@/components/ApolloWrapper'
 import ThemeRegistry from '@/components/ThemeRegistry'
 import LocalizationWrapper from '@/components/LocalizationWrapper'
+import { SearchProvider } from '@/contexts'
 
 import './global.scss'
 
@@ -26,14 +27,16 @@ const RootLayout: FunctionComponent<RootLayoutProps> = ({
       <LocalizationWrapper>
         <ApolloWrapper>
           <ThemeRegistry>
-            <Grid container direction="column" height="100%" flexWrap="nowrap">
-              <Grid size={12}>
-                <Header />
+            <SearchProvider>
+              <Grid container direction="column" height="100%" flexWrap="nowrap">
+                <Grid size={12}>
+                  <Header />
+                </Grid>
+                <Grid size={12} flexGrow={1}>
+                  {children}
+                </Grid>
               </Grid>
-              <Grid size={12} flexGrow={1}>
-                {children}
-              </Grid>
-            </Grid>
+            </SearchProvider>
           </ThemeRegistry>
         </ApolloWrapper>
       </LocalizationWrapper>

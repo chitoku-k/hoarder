@@ -27,8 +27,8 @@ fragment replicaNode on Replica {
   updatedAt
 }
 
-query AllMedia($number: Int!, $after: String) {
-  allMedia(first: $number, after: $after, order: DESC) {
+query AllMedia($number: Int!, $after: String, $sourceIDs: [UUID!], $tagTagTypeIDs: [TagTagTypeInput!]) {
+  allMedia(first: $number, after: $after, sourceIds: $sourceIDs, tagIds: $tagTagTypeIDs, order: DESC) {
     pageInfo {
       hasNextPage
       endCursor

@@ -6,10 +6,12 @@ import { AllMediaDocument } from '@/graphql/Media'
 
 type Media = AllMediaQuery['allMedia']['edges'][number]['node'][]
 
-export function useMedia(number: number): [ Media, boolean, () => Promise<void> ] {
+export function useMedia(number: number, options?: UseMediaOptions): [ Media, boolean, () => Promise<void> ] {
   const { data, fetchMore } = useSuspenseQuery(AllMediaDocument, {
     variables: {
       number,
+      sourceIDs: options?.sourceIDs,
+      tagTagTypeIDs: options?.tagTagTypeIDs?.map(({ tagID: tagId, typeID: tagTypeId }) => ({ tagId, tagTypeId })),
     },
   })
 
@@ -28,3 +30,10 @@ export function useMedia(number: number): [ Media, boolean, () => Promise<void> 
   ]
 }
 
+export interface UseMediaOptions {
+  sourceIDs?: string[]
+  tagTagTypeIDs?: {
+    tagID: string
+    typeID: string
+  }[]
+}

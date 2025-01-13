@@ -5,18 +5,27 @@ import { useCallback, useTransition } from 'react'
 import ImageList from '@mui/material/ImageList'
 import LoadingButton from '@mui/lab/LoadingButton'
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import CollectionsIcon from '@mui/icons-material/Collections'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 
 import MediumListItem from '@/components/MediumListItem'
 import { useMedia } from '@/hooks'
+import type { Source, Tag, TagType } from '@/types'
 
 import styles from './styles.module.scss'
 
 const MediumListViewBody: FunctionComponent<MediumListViewBodyProps> = ({
   number,
+  sources,
+  tagTagTypes,
 }) => {
   const [ loading, startTransition ] = useTransition()
-  const [ media, hasNextPage, fetchMore ] = useMedia(number)
+
+  const sourceIDs = sources?.map(({ id }) => id)
+  const tagTagTypeIDs = tagTagTypes?.map(({ tag, type }) => ({ tagID: tag.id, typeID: type.id }))
+
+  const [ media, hasNextPage, fetchMore ] = useMedia(number, { sourceIDs, tagTagTypeIDs })
 
   const handleClickMore = useCallback(() => {
     startTransition(() => {
@@ -24,7 +33,7 @@ const MediumListViewBody: FunctionComponent<MediumListViewBodyProps> = ({
     })
   }, [ fetchMore ])
 
-  return (
+  return media.length ? (
     <Stack>
       <ImageList className={styles.container} gap={40}>
         {media.map(medium => (
@@ -45,11 +54,23 @@ const MediumListViewBody: FunctionComponent<MediumListViewBodyProps> = ({
         ) : null}
       </Stack>
     </Stack>
+  ) : (
+    <Stack className={styles.noMedia} flexGrow={1} alignItems="center" justifyContent="center" spacing={2}>
+      <CollectionsIcon className={styles.icon} />
+      <Typography className={styles.text}>
+        メディアがありません
+      </Typography>
+    </Stack>
   )
 }
 
 export interface MediumListViewBodyProps {
   number: number
+  sources?: Source[]
+  tagTagTypes?: {
+    tag: Tag
+    type: TagType
+  }[]
 }
 
 export default MediumListViewBody

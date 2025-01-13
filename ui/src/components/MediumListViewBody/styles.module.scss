@@ -1,7 +1,10 @@
 .container {
   &:global(.MuiImageList-root) {
     grid-template-columns: repeat(3, 1fr) !important;
-    padding: 16px;
+    margin: 0;
+    padding-right: 16px;
+    padding-bottom: 16px;
+    padding-left: 16px;
 
     @media (min-width: 900px) {
       grid-template-columns: repeat(4, 1fr) !important;
@@ -16,5 +19,24 @@
 .pagination {
   &:global(.MuiStack-root) {
     margin: 48px auto;
+  }
+}
+
+.noMedia {
+  &:global(.MuiStack-root) {
+    padding-bottom: 48px;
+  }
+}
+
+.icon {
+  &:global(.MuiSvgIcon-root) {
+    font-size: 4rem;
+    color: rgba(0, 0, 0, 0.54);
+  }
+}
+
+.text {
+  &:global(.MuiTypography-root) {
+    color: rgba(0, 0, 0, 0.54);
   }
 }

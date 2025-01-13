@@ -1,3 +1,16 @@
+.toolbar {
+  &:global(.MuiToolbar-root) {
+    justify-content: space-between;
+  }
+}
+
+.inner {
+  &:global(.MuiStack-root) {
+    flex-grow: 1;
+    width: 0;
+  }
+}
+
 .nav {
   &:global(.MuiStack-root) {
     margin-left: 24px;

@@ -1,0 +1,63 @@
+fragment externalServiceNode on ExternalService {
+  id
+  slug
+  kind
+  name
+  baseUrl
+  urlPattern
+}
+
+fragment sourceNode on Source {
+  id
+  externalService {
+    ...externalServiceNode
+  }
+  externalMetadata
+  url
+  createdAt
+  updatedAt
+}
+
+fragment tagTypeNode on TagType {
+  id
+  slug
+  name
+  kana
+}
+
+fragment tagNode on Tag {
+  id
+  name
+  kana
+  aliases
+}
+
+query MetadataLike($like: String!) {
+  allSourcesLikeId: allSourcesLike(externalMetadataLike: {id: $like}) {
+    ...sourceNode
+  }
+  allSourcesLikeUrl: allSourcesLike(externalMetadataLike: {url: $like}) {
+    ...sourceNode
+  }
+  allTagsLike(nameOrAliasLike: $like) {
+    ...tagNode
+    parent {
+      ...tagNode
+      parent {
+        ...tagNode
+        parent {
+          ...tagNode
+          parent {
+            ...tagNode
+            parent {
+              ...tagNode
+            }
+          }
+        }
+      }
+    }
+    children {
+      ...tagNode
+    }
+  }
+}
