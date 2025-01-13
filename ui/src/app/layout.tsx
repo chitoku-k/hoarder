@@ -26,11 +26,11 @@ const RootLayout: FunctionComponent<RootLayoutProps> = ({
       <LocalizationWrapper>
         <ApolloWrapper>
           <ThemeRegistry>
-            <Grid container>
+            <Grid container direction="column" height="100%" flexWrap="nowrap">
               <Grid size={12}>
                 <Header />
               </Grid>
-              <Grid size={12}>
+              <Grid size={12} flexGrow={1}>
                 {children}
               </Grid>
             </Grid>

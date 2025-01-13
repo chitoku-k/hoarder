@@ -2,6 +2,11 @@
   scroll-padding-top: 64px;
 }
 
+html,
+body {
+  height: 100%;
+}
+
 body {
   overflow-x: hidden;
 

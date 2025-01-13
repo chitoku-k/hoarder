@@ -3,10 +3,12 @@ import Container from '@mui/material/Container'
 
 import MediumListView from '@/components/MediumListView'
 
+import styles from './styles.module.scss'
+
 const MediumList: FunctionComponent<MediumListProps> = ({
   number,
 }) => (
-  <Container disableGutters>
+  <Container className={styles.container} disableGutters>
     <MediumListView number={number} />
   </Container>
 )
