@@ -34,7 +34,7 @@ const MediumListViewBody: FunctionComponent<MediumListViewBodyProps> = ({
   }, [ fetchMore ])
 
   return media.length ? (
-    <Stack>
+    <Stack flexGrow={1}>
       <ImageList className={styles.container} gap={40}>
         {media.map(medium => (
           <MediumListItem key={medium.id} medium={medium} size={160} />
