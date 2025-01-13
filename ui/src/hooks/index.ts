@@ -15,6 +15,8 @@ export * from './useMedia'
 export * from './useMedium'
 export * from './useUpdateMedium'
 
+export * from './useMetadataLike'
+
 export * from './useObjects'
 
 export * from './useCreateReplica'

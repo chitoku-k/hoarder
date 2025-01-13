@@ -1,0 +1,81 @@
+.container {
+  &:global(.MuiStack-root) {
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.15);
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.25);
+    }
+  }
+}
+
+.option {
+  &:global(.MuiStack-root) {
+    padding: 0 8px;
+    color: #666;
+  }
+}
+
+.chip {
+  &:global(.MuiStack-root) {
+    color: rgba(255, 255, 255, 0.54);
+  }
+}
+
+.input {
+  &:global(.MuiAutocomplete-root .MuiInputBase-root) {
+    padding-top: 0;
+    color: inherit;
+
+    &::before,
+    &::after {
+      border: none;
+    }
+  }
+
+  &:global(.MuiAutocomplete-root .MuiAutocomplete-endAdornment .MuiIconButton-root) {
+    color: rgba(255, 255, 255, 0.54);
+  }
+
+  &:not(:global(.Mui-expanded)) {
+    .tag {
+      &:global(.MuiChip-root) {
+        max-width: 75%;
+      }
+    }
+  }
+
+  .icon {
+    &:global(.MuiSvgIcon-root) {
+      color: inherit;
+      opacity: 0.42;
+    }
+  }
+}
+
+.tagTypeIcon {
+  &:global(.MuiSvgIcon-root) {
+    margin-top: 2px;
+    margin-right: 6px;
+    color: inherit;
+  }
+}
+
+.tagTypeText {
+  color: inherit;
+}
+
+.searchPopper {
+  &:global(.MuiAutocomplete-popper .MuiAutocomplete-loading),
+  &:global(.MuiAutocomplete-popper .MuiAutocomplete-noOptions) {
+    display: none;
+  }
+
+  &:global(.MuiAutocomplete-popper .MuiAutocomplete-groupLabel) {
+    line-height: 36px;
+  }
+
+  &:global(.MuiAutocomplete-popper .MuiAutocomplete-option) {
+    padding-left: 8px;
+  }
+}

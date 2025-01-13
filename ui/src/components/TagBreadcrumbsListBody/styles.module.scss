@@ -13,6 +13,7 @@
     width: 64px;
     background: linear-gradient(to left, white, rgba(255, 255, 255, 0.001));
   }
+  color: #666;
 }
 
 .breadcrumbs {
@@ -27,12 +28,13 @@
   }
   &:global(.MuiBreadcrumbs-root) {
     margin-left: 0;
+    color: inherit;
   }
 }
 
 .icon,
 .name {
-  color: #666;
+  color: inherit;
 }
 
 .icon {

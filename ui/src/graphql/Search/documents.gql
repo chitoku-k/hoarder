@@ -1,0 +1,62 @@
+fragment externalServiceNode on ExternalService {
+  id
+  slug
+  kind
+  name
+  baseUrl
+  urlPattern
+}
+
+fragment sourceNode on Source {
+  id
+  externalService {
+    ...externalServiceNode
+  }
+  externalMetadata
+  url
+  createdAt
+  updatedAt
+}
+
+fragment tagNode on Tag {
+  id
+  name
+  kana
+  aliases
+}
+
+fragment tagTypeNode on TagType {
+  id
+  slug
+  name
+  kana
+}
+
+query Search($sourceIDs: [UUID!]!, $tagIDs: [UUID!]!, $tagTypeIDs: [UUID!]!) {
+  sources(ids: $sourceIDs) {
+    ...sourceNode
+  }
+
+  tags(ids: $tagIDs) {
+    ...tagNode
+    parent {
+      ...tagNode
+      parent {
+        ...tagNode
+        parent {
+          ...tagNode
+          parent {
+            ...tagNode
+            parent {
+              ...tagNode
+            }
+          }
+        }
+      }
+    }
+  }
+
+  tagTypes(ids: $tagTypeIDs) {
+    ...tagTypeNode
+  }
+}
