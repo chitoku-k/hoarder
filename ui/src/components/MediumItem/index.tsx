@@ -3,10 +3,12 @@ import Container from '@mui/material/Container'
 
 import MediumItemView from '@/components/MediumItemView'
 
+import styles from './styles.module.scss'
+
 const MediumItem: FunctionComponent<MediumItemProps> = ({
   id,
 }) => (
-  <Container>
+  <Container className={styles.container}>
     <MediumItemView id={id} />
   </Container>
 )

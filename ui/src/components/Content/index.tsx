@@ -9,12 +9,10 @@ const Content: FunctionComponent<ContentProps> = ({
   children,
   ...props
 }) => (
-  <Grid container>
-    <Grid className={styles.main} {...props}>
-      <Toolbar />
-      <main>
-        {children}
-      </main>
+  <Grid className={styles.content} container direction="column" {...props}>
+    <Toolbar />
+    <Grid component="main" container direction="column" flexGrow={1}>
+      {children}
     </Grid>
   </Grid>
 )

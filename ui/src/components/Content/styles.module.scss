@@ -1,3 +1,5 @@
-.main {
-  flex-grow: 1;
+.content {
+  &:global(.MuiGrid2-root) {
+    height: 100%;
+  }
 }

@@ -1,0 +1,6 @@
+.container {
+  &:global(.MuiContainer-root) {
+    display: flex;
+    flex-grow: 1;
+  }
+}
