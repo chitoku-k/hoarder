@@ -1,7 +1,7 @@
 'use client'
 
 import type { FunctionComponent } from 'react'
-import { useState, useCallback, startTransition } from 'react'
+import { useState, useCallback } from 'react'
 import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
 import DialogActions from '@mui/material/DialogActions'

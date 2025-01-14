@@ -32,12 +32,14 @@ const TagListColumnBodyListItem: FunctionComponent<TagListColumnBodyListItemProp
     <ListItemText
       className={styles.text}
       primary={primary}
-      primaryTypographyProps={{
-        noWrap: true,
-      }}
       secondary={secondary}
-      secondaryTypographyProps={{
-        noWrap: true,
+      slotProps={{
+        primary: {
+          noWrap: true,
+        },
+        secondary: {
+          noWrap: true,
+        },
       }}
     />
     {children}
