@@ -304,13 +304,13 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
               icon={({ ...props }) => <FolderIcon {...props} />}
               onChange={handleChangeContainer}
               slotProps={{
+                listbox: {
+                  sx: {
+                    maxHeight: '300px',
+                  },
+                },
                 popper: {
                   className: styles.containerPopper,
-                },
-              }}
-              ListboxProps={{
-                sx: {
-                  maxHeight: '300px',
                 },
               }}
             />

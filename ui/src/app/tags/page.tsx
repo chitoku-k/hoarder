@@ -8,8 +8,7 @@ export const metadata: Metadata = {
   title: 'タグ',
 }
 
-const Page: FunctionComponent = ({
-}) => (
+const Page: FunctionComponent = () => (
   <Content>
     <TagList />
   </Content>
