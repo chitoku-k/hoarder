@@ -136,7 +136,7 @@ const SearchBar: FunctionComponent<SearchBarProps> = ({
         renderTags={renderMetadataTags}
         value={value}
         inputValue={inputValue}
-        icon={({ className, ...props }) => <SearchIcon className={clsx(className, styles.icon)} fontSize="small" {...props} />}
+        icon={({ ...props }) => <SearchIcon fontSize="small" {...props} />}
         onChange={handleChange}
         onInputChange={handleInputChange}
         noSources={tagType !== null}
