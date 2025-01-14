@@ -66,8 +66,7 @@
 }
 
 .searchPopper {
-  &:global(.MuiAutocomplete-popper .MuiAutocomplete-loading),
-  &:global(.MuiAutocomplete-popper .MuiAutocomplete-noOptions) {
+  &:global(.MuiAutocomplete-popper .MuiAutocomplete-loading) {
     display: none;
   }
 
