@@ -138,9 +138,9 @@ type ObjectEntry {
 
 type ObjectEntryMetadata {
 	size: Int!
-	createdAt: DateTime!
-	updatedAt: DateTime!
-	accessedAt: DateTime!
+	createdAt: DateTime
+	updatedAt: DateTime
+	accessedAt: DateTime
 }
 
 enum ObjectKind {
