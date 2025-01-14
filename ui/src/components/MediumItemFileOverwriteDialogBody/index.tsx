@@ -42,10 +42,14 @@ const MediumItemFileOverwriteDialogBody: FunctionComponent<MediumItemFileOverwri
                 </Image>
                 <Stack>
                   <Typography component="strong" fontWeight="bold">{existing.name}</Typography>
-                  <Typography className={styles.description}>サイズ: {filesize(existing.size)}</Typography>
-                  <Typography className={styles.description}>
-                    更新日時: <DateTime date={existing.lastModified} format="Pp" />
-                  </Typography>
+                  {typeof existing.size === 'number' ? (
+                    <Typography className={styles.description}>サイズ: {filesize(existing.size)}</Typography>
+                  ) : null}
+                  {existing.lastModified ? (
+                    <Typography className={styles.description}>
+                      更新日時: <DateTime date={existing.lastModified} format="Pp" />
+                    </Typography>
+                  ) : null}
                 </Stack>
               </Stack>
             </Stack>
@@ -86,8 +90,8 @@ export interface MediumItemFileOverwriteDialogBodyProps {
   }
   existing: {
     name: string
-    size: number
-    lastModified: Date
+    size: number | null
+    lastModified: Date | null
     url: string
   } | null
   overwrite: () => void

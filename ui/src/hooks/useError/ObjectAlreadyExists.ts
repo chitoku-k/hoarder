@@ -14,10 +14,10 @@ export interface ObjectAlreadyExists extends GraphQLError {
           kind: string
           metadata: {
             size: number
-            createdAt: string
-            updatedAt: string
-            accessedAt: string
-          }
+            createdAt: string | null
+            updatedAt: string | null
+            accessedAt: string | null
+          } | null
         } | null
       }
     }

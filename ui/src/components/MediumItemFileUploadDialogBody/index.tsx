@@ -141,8 +141,8 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
         const entry = objectAlreadyExists.extensions.details.data.entry
         const existing = entry ? {
           name: entry.name,
-          size: entry.metadata.size,
-          lastModified: new Date(entry.metadata.updatedAt),
+          size: entry.metadata?.size ?? null,
+          lastModified: entry.metadata?.updatedAt ? new Date(entry.metadata.updatedAt) : null,
           url: (() => {
             const url = new URL('/objects', location.href)
             url.searchParams.set('url', entry.url)
@@ -375,8 +375,8 @@ interface ReplicaUploadOverwrite {
 
 interface ReplicaUploadOverwritingFile {
   name: string
-  size: number
-  lastModified: Date
+  size: number | null
+  lastModified: Date | null
   url: string
 }
 
