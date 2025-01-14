@@ -340,9 +340,9 @@ async fn create_replica_from_url_succeeds() {
                     EntryKind::Object,
                     Some(EntryMetadata::new(
                         4096,
-                        Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
-                        Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 1).unwrap(),
-                        Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 2).unwrap(),
+                        Some(Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap()),
+                        Some(Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 1).unwrap()),
+                        Some(Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 2).unwrap()),
                     )),
                 ),
                 Cursor::new(&[0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08][..]),
@@ -437,9 +437,9 @@ async fn create_replica_from_content_succeeds() {
                 EntryKind::Object,
                 Some(EntryMetadata::new(
                     4096,
-                    Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
-                    Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 1).unwrap(),
-                    Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 2).unwrap(),
+                    Some(Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap()),
+                    Some(Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 1).unwrap()),
+                    Some(Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 2).unwrap()),
                 )),
             )))
         });
@@ -535,9 +535,9 @@ async fn create_replica_fails() {
                     EntryKind::Object,
                     Some(EntryMetadata::new(
                         4096,
-                        Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
-                        Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 1).unwrap(),
-                        Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 2).unwrap(),
+                        Some(Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap()),
+                        Some(Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 1).unwrap()),
+                        Some(Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 2).unwrap()),
                     )),
                 ),
                 Cursor::new(&[0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08][..]),
@@ -2135,9 +2135,9 @@ async fn update_replica_by_id_from_url_succeeds() {
                     EntryKind::Object,
                     Some(EntryMetadata::new(
                         4096,
-                        Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
-                        Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 1).unwrap(),
-                        Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 2).unwrap(),
+                        Some(Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap()),
+                        Some(Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 1).unwrap()),
+                        Some(Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 2).unwrap()),
                     )),
                 ),
                 Cursor::new(&[0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08][..]),
@@ -2233,9 +2233,9 @@ async fn update_replica_by_id_from_content_succeeds() {
                     EntryKind::Object,
                     Some(EntryMetadata::new(
                         4096,
-                        Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
-                        Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 1).unwrap(),
-                        Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 2).unwrap(),
+                        Some(Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap()),
+                        Some(Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 1).unwrap()),
+                        Some(Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 2).unwrap()),
                     )),
                 ),
             ))
@@ -2332,9 +2332,9 @@ async fn update_replica_by_id_fails() {
                     EntryKind::Object,
                     Some(EntryMetadata::new(
                         4096,
-                        Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
-                        Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 1).unwrap(),
-                        Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 2).unwrap(),
+                        Some(Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap()),
+                        Some(Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 1).unwrap()),
+                        Some(Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 2).unwrap()),
                     )),
                 ),
                 Cursor::new(&[0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08][..]),

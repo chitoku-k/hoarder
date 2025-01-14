@@ -22,9 +22,9 @@ pub struct Entry {
 #[derive(Clone, Constructor, Debug, Eq, PartialEq)]
 pub struct EntryMetadata {
     pub size: u64,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
-    pub accessed_at: DateTime<Utc>,
+    pub created_at: Option<DateTime<Utc>>,
+    pub updated_at: Option<DateTime<Utc>>,
+    pub accessed_at: Option<DateTime<Utc>>,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]

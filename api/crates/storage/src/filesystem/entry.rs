@@ -5,7 +5,7 @@ use std::{
 
 use domain::{
     entity::objects::{Entry, EntryMetadata, EntryKind},
-    error::{Error, Result},
+    error::Result,
 };
 use tokio::fs::{DirEntry, File};
 
@@ -44,7 +44,7 @@ impl FilesystemEntry {
             .await
             .map(|metadata| {
                 let kind = Self::kind(metadata.file_type());
-                let metadata = Self::metadata(&metadata).ok();
+                let metadata = Some(Self::metadata(&metadata));
                 (kind, metadata)
             })
             .unwrap_or((EntryKind::Unknown, None));
@@ -60,12 +60,12 @@ impl FilesystemEntry {
         }
     }
 
-    fn metadata(metadata: &Metadata) -> Result<EntryMetadata> {
+    fn metadata(metadata: &Metadata) -> EntryMetadata {
         let len = metadata.len();
-        let created = metadata.created().map_err(Error::other)?;
-        let modified = metadata.modified().map_err(Error::other)?;
-        let accessed = metadata.accessed().map_err(Error::other)?;
-        Ok(EntryMetadata::new(len, created.into(), modified.into(), accessed.into()))
+        let created = metadata.created().map(Into::into).ok();
+        let modified = metadata.modified().map(Into::into).ok();
+        let accessed = metadata.accessed().map(Into::into).ok();
+        EntryMetadata::new(len, created, modified, accessed)
     }
 }
 
