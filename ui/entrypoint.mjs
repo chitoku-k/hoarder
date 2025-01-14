@@ -31,7 +31,7 @@ const envs = [
         throw new Error('API_URL must be set')
       }
       return s.replace(
-        /https:\/\/__HOARDER_API_URL__/giu,
+        /https?:\/\/__HOARDER_API_URL__/giu,
         process.env.API_URL,
       )
     },
