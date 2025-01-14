@@ -7,11 +7,14 @@ import clsx from 'clsx'
 import type { AutocompleteInputChangeReason, AutocompleteProps } from '@mui/material/Autocomplete'
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete'
 import CircularProgress from '@mui/material/CircularProgress'
+import IconButton from '@mui/material/IconButton'
 import type { SvgIconProps } from '@mui/material/SvgIcon'
 import type { TextFieldVariants } from '@mui/material/TextField'
 import TextField from '@mui/material/TextField'
+import ArrowOutwardIcon from '@mui/icons-material/ArrowOutward'
 import debounce from '@mui/material/utils/debounce'
 
+import TagSelectDialog from '@/components/TagSelectDialog'
 import { useMetadataLike, useMetadataLikeSkip, useAllTagTypes } from '@/hooks'
 import type { MetadataLike } from '@/hooks'
 import type { Source, Tag, TagType } from '@/types'
@@ -82,6 +85,7 @@ const AutocompleteMetadataBody: FunctionComponent<AutocompleteMetadataBodyProps>
   ...props
 }) => {
   const [ value, setValue ] = useState('')
+  const [ selecting, setSelecting ] = useState(false)
 
   const [ loading, startTransition ] = useTransition()
 
@@ -202,6 +206,23 @@ const AutocompleteMetadataBody: FunctionComponent<AutocompleteMetadataBodyProps>
     onChangeMetadata?.(metadata)
   }, [ onChangeMetadata ])
 
+  const handleSelect = useCallback((tag: Tag) => {
+    onChangeMetadata?.([ { tag } ])
+  }, [ onChangeMetadata ])
+
+  const handleMouseDownSelect = useCallback((e: SyntheticEvent) => {
+    e.stopPropagation()
+  }, [])
+
+  const openSelectDialog = useCallback((e: SyntheticEvent) => {
+    setSelecting(true)
+    e.stopPropagation()
+  }, [])
+
+  const closeSelectDialog = useCallback(() => {
+    setSelecting(false)
+  }, [])
+
   const tagTypes = useAllTagTypes()
   const { sources, tags } = value.length
     ? useMetadataLike(value)
@@ -245,7 +266,13 @@ const AutocompleteMetadataBody: FunctionComponent<AutocompleteMetadataBodyProps>
                 ),
                 endAdornment: (
                   <>
-                    {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                    {loading ? (
+                      <CircularProgress color="inherit" size={20} />
+                    ) : !noTags ? (
+                      <IconButton className={styles.selectButton} size="small" disabled={disabled} onMouseDown={handleMouseDownSelect} onClick={openSelectDialog} title="参照...">
+                        <ArrowOutwardIcon fontSize="inherit" />
+                      </IconButton>
+                    ) : null}
                     {params.InputProps.endAdornment}
                   </>
                 ),
@@ -254,6 +281,9 @@ const AutocompleteMetadataBody: FunctionComponent<AutocompleteMetadataBodyProps>
           />
         )}
       />
+      {selecting ? (
+        <TagSelectDialog close={closeSelectDialog} onSelect={handleSelect} />
+      ) : null}
     </>
   )
 }

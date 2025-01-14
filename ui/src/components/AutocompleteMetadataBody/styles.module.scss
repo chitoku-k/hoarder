@@ -1,6 +1,34 @@
 .autocomplete {
+  &:global(.MuiAutocomplete-root .MuiInputBase-root) {
+    min-height: 42px;
+  }
+
   &:global(.MuiAutocomplete-root .MuiInputBase-inputSizeSmall) {
     padding-left: 6px;
+  }
+
+  &:global(.MuiAutocomplete-root.Mui-focused) {
+    .selectButton {
+      &:global(.MuiIconButton-root) {
+        visibility: visible;
+      }
+    }
+  }
+
+  @media (pointer: fine) {
+    &:hover {
+      .selectButton {
+        &:global(.MuiIconButton-root) {
+          visibility: visible;
+        }
+      }
+    }
+  }
+}
+
+.selectButton {
+  &:global(.MuiIconButton-root) {
+    visibility: hidden;
   }
 }
 
