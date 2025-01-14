@@ -22,6 +22,7 @@ const getRemotePatterns = env => {
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  productionBrowserSourceMaps: true,
   reactStrictMode: true,
   experimental: {
     proxyTimeout: 300_000,
