@@ -261,7 +261,7 @@ const MediumItemViewBody: FunctionComponent<MediumItemViewBodyProps> = ({
   useBeforeUnload(changed)
 
   return (
-    <Grid className={styles.container} container spacing={4}>
+    <Grid className={styles.container} container spacing={4} flexGrow={1}>
       <Grid size={9}>
         {editingSummary ? (
           <MediumItemImageEdit
