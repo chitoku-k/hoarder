@@ -15,9 +15,9 @@ pub(crate) struct ObjectEntry {
 #[serde(rename_all = "camelCase")]
 pub(crate) struct ObjectEntryMetadata {
     size: u64,
-    created_at: DateTime<Utc>,
-    updated_at: DateTime<Utc>,
-    accessed_at: DateTime<Utc>,
+    created_at: Option<DateTime<Utc>>,
+    updated_at: Option<DateTime<Utc>>,
+    accessed_at: Option<DateTime<Utc>>,
 }
 
 #[derive(Enum, Copy, Clone, Debug, Eq, PartialEq, Serialize)]
