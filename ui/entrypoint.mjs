@@ -31,19 +31,8 @@ const envs = [
         throw new Error('API_URL must be set')
       }
       return s.replace(
-        /https?:\/\/__HOARDER_API_URL__/giu,
+        /https:\/\/__HOARDER_API_URL__/giu,
         process.env.API_URL,
-      )
-    },
-  },
-  {
-    substitute(s) {
-      if (!process.env.PUBLIC_URL) {
-        throw new Error('PUBLIC_URL must be set')
-      }
-      return s.replace(
-        /__HOARDER_PUBLIC_URL__/giu,
-        process.env.PUBLIC_URL.replace(/^https?:\/\//, ''),
       )
     },
   },

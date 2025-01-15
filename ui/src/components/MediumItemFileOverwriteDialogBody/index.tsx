@@ -37,7 +37,7 @@ const MediumItemFileOverwriteDialogBody: FunctionComponent<MediumItemFileOverwri
               <Stack spacing={2} direction="row">
                 <Image className={styles.imageWrapper}>
                   <Stack className={styles.imageWrapper} alignItems="center" justifyContent="center" flexShrink={0}>
-                    <ImageBodyNext className={styles.image} src={existing.url} fill sizes="128px" alt="" />
+                    <ImageBodyNext className={styles.image} src={existing.url} fill unoptimized alt="" />
                   </Stack>
                 </Image>
                 <Stack>

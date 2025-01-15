@@ -79,7 +79,6 @@ $ hoarder migration [OPTIONS] (apply | drop | list | revert)
 The following environment variables can be used to configure UI:
 
 - `API_URL`: URL for API (**required**)
-- `PUBLIC_URL`: Public URL for UI (**required**)
 - `BASE_URL`: Base URL for UI (**required**)
 
 ## Testing

@@ -19,7 +19,6 @@ COPY . ./
 RUN --mount=type=bind,from=schema,target=/usr/schema \
     yarn codegen
 ENV API_URL=https://__HOARDER_API_URL__
-ENV PUBLIC_URL=https://__HOARDER_PUBLIC_URL__
 RUN --mount=type=tmpfs,target=/tmp \
     yarn build
 
