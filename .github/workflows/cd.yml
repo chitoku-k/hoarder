@@ -30,13 +30,13 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and push
         uses: docker/bake-action@v6
-        env:
-          TAG: ${{ github.ref_name }}
         with:
           source: .
           files: docker-bake.hcl
           push: true
           set: |
+            api.tags=ghcr.io/chitoku-k/hoarder/api:${{ github.ref_name }}
+            ui.tags=ghcr.io/chitoku-k/hoarder/ui:${{ github.ref_name }}
             *.cache-from=type=gha
             *.cache-to=type=gha,mode=max
 

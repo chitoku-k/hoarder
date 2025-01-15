@@ -58,7 +58,10 @@ jobs:
         with:
           source: .
           files: docker-bake.hcl
+          push: ${{ github.ref_name == 'master' }}
           set: |
+            api.tags=ghcr.io/chitoku-k/hoarder/api:latest
+            ui.tags=ghcr.io/chitoku-k/hoarder/ui:latest
             *.cache-from=type=gha
             *.cache-to=type=gha,mode=max
 
