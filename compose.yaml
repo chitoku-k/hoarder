@@ -60,13 +60,13 @@ services:
 
   database:
     image: postgres:17.2
+    ports:
+      - '5432:5432'
     environment:
       PGUSER: hoarder
       POSTGRES_DB: hoarder
       POSTGRES_USER: hoarder
       POSTGRES_PASSWORD: hoarder
-    ports:
-      - '5432:5432'
     volumes:
       - type: volume
         source: database
