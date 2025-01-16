@@ -14,7 +14,7 @@ mockall::mock! {
 
         fn fetch_by_ids<T>(&self, ids: T) -> impl Future<Output = Result<Vec<ExternalService>>> + Send
         where
-            T: IntoIterator<Item = ExternalServiceId> + Send + Sync + 'static;
+            T: IntoIterator<Item = ExternalServiceId> + Send + 'static;
 
         fn fetch_all(&self) -> impl Future<Output = Result<Vec<ExternalService>>> + Send;
 

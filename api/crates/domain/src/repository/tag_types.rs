@@ -13,7 +13,7 @@ pub trait TagTypesRepository: Send + Sync + 'static {
     /// Fetches the tag types by their IDs.
     fn fetch_by_ids<T>(&self, ids: T) -> impl Future<Output = Result<Vec<TagType>>> + Send
     where
-        for<'a> T: IntoIterator<Item = TagTypeId> + Send + Sync + 'a;
+        for<'a> T: IntoIterator<Item = TagTypeId> + Send + 'a;
 
     /// Fetches all tag types.
     fn fetch_all(&self) -> impl Future<Output = Result<Vec<TagType>>> + Send;

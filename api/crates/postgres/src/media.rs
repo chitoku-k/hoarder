@@ -420,8 +420,8 @@ async fn eager_load(conn: &mut PgConnection, media: &mut [Medium], tag_depth: Op
 impl MediaRepository for PostgresMediaRepository {
     async fn create<T, U>(&self, source_ids: T, created_at: Option<DateTime<Utc>>, tag_tag_type_ids: U, tag_depth: Option<TagDepth>, sources: bool) -> Result<Medium>
     where
-        T: IntoIterator<Item = SourceId> + Send + Sync,
-        U: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync,
+        T: IntoIterator<Item = SourceId> + Send,
+        U: IntoIterator<Item = (TagId, TagTypeId)> + Send,
     {
         let mut tx = self.pool.begin().await.map_err(Error::other)?;
 
@@ -532,7 +532,7 @@ impl MediaRepository for PostgresMediaRepository {
 
     async fn fetch_by_ids<T>(&self, ids: T, tag_depth: Option<TagDepth>, replicas: bool, sources: bool) -> Result<Vec<Medium>>
     where
-        T: IntoIterator<Item = MediumId> + Send + Sync,
+        T: IntoIterator<Item = MediumId> + Send,
     {
         let mut conn = self.pool.acquire().await.map_err(Error::other)?;
 
@@ -570,7 +570,7 @@ impl MediaRepository for PostgresMediaRepository {
         limit: u64,
     ) -> Result<Vec<Medium>>
     where
-        T: IntoIterator<Item = SourceId> + Send + Sync,
+        T: IntoIterator<Item = SourceId> + Send,
     {
         let mut conn = self.pool.acquire().await.map_err(Error::other)?;
 
@@ -639,7 +639,7 @@ impl MediaRepository for PostgresMediaRepository {
         limit: u64,
     ) -> Result<Vec<Medium>>
     where
-        T: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync,
+        T: IntoIterator<Item = (TagId, TagTypeId)> + Send,
     {
         let tag_tag_type_ids: Vec<_> = tag_tag_type_ids
             .into_iter()
@@ -791,11 +791,11 @@ impl MediaRepository for PostgresMediaRepository {
         sources: bool,
     ) -> Result<Medium>
     where
-        T: IntoIterator<Item = SourceId> + Send + Sync,
-        U: IntoIterator<Item = SourceId> + Send + Sync,
-        V: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync,
-        W: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync,
-        X: IntoIterator<Item = ReplicaId> + Send + Sync,
+        T: IntoIterator<Item = SourceId> + Send,
+        U: IntoIterator<Item = SourceId> + Send,
+        V: IntoIterator<Item = (TagId, TagTypeId)> + Send,
+        W: IntoIterator<Item = (TagId, TagTypeId)> + Send,
+        X: IntoIterator<Item = ReplicaId> + Send,
     {
         let mut tx = self.pool.begin().await.map_err(Error::other)?;
 

@@ -87,7 +87,7 @@ impl TagTypesRepository for PostgresTagTypesRepository {
 
     async fn fetch_by_ids<T>(&self, ids: T) -> Result<Vec<TagType>>
     where
-        T: IntoIterator<Item = TagTypeId> + Send + Sync,
+        T: IntoIterator<Item = TagTypeId> + Send,
     {
         let (sql, values) = Query::select()
             .columns([

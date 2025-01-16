@@ -22,8 +22,8 @@ mockall::mock! {
     impl MediaServiceInterface for MediaServiceInterface {
         fn create_medium<T, U>(&self, source_ids: T, created_at: Option<DateTime<Utc>>, tag_tag_type_ids: U, tag_depth: Option<TagDepth>, sources: bool) -> impl Future<Output = Result<Medium>> + Send
         where
-            T: IntoIterator<Item = SourceId> + Send + Sync + 'static,
-            U: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'static;
+            T: IntoIterator<Item = SourceId> + Send + 'static,
+            U: IntoIterator<Item = (TagId, TagTypeId)> + Send + 'static;
 
         fn create_replica(&self, medium_id: MediumId, medium_source: MediumSource) -> impl Future<Output = Result<Replica>> + Send;
 
@@ -42,7 +42,7 @@ mockall::mock! {
 
         fn get_media_by_ids<T>(&self, ids: T, tag_depth: Option<TagDepth>, replicas: bool, sources: bool) -> impl Future<Output = Result<Vec<Medium>>> + Send
         where
-            T: IntoIterator<Item = MediumId> + Send + Sync + 'static;
+            T: IntoIterator<Item = MediumId> + Send + 'static;
 
         fn get_media_by_source_ids<T>(
             &self,
@@ -56,7 +56,7 @@ mockall::mock! {
             limit: u64,
         ) -> impl Future<Output = Result<Vec<Medium>>> + Send
         where
-            T: IntoIterator<Item = SourceId> + Send + Sync + 'static;
+            T: IntoIterator<Item = SourceId> + Send + 'static;
 
         fn get_media_by_tag_ids<T>(
             &self,
@@ -70,17 +70,17 @@ mockall::mock! {
             limit: u64,
         ) -> impl Future<Output = Result<Vec<Medium>>> + Send
         where
-            T: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'static;
+            T: IntoIterator<Item = (TagId, TagTypeId)> + Send + 'static;
 
         fn get_replicas_by_ids<T>(&self, ids: T) -> impl Future<Output = Result<Vec<Replica>>> + Send
         where
-            T: IntoIterator<Item = ReplicaId> + Send + Sync + 'static;
+            T: IntoIterator<Item = ReplicaId> + Send + 'static;
 
         fn get_replica_by_original_url(&self, original_url: &str) -> impl Future<Output = Result<Replica>> + Send;
 
         fn get_sources_by_ids<T>(&self, ids: T) -> impl Future<Output = Result<Vec<Source>>> + Send
         where
-            T: IntoIterator<Item = SourceId> + Send + Sync + 'static;
+            T: IntoIterator<Item = SourceId> + Send + 'static;
 
         fn get_source_by_external_metadata(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> impl Future<Output = Result<Option<Source>>> + Send;
 
@@ -106,11 +106,11 @@ mockall::mock! {
             sources: bool,
         ) -> impl Future<Output = Result<Medium>> + Send
         where
-            T: IntoIterator<Item = SourceId> + Send + Sync + 'static,
-            U: IntoIterator<Item = SourceId> + Send + Sync + 'static,
-            V: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'static,
-            W: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'static,
-            X: IntoIterator<Item = ReplicaId> + Send + Sync + 'static;
+            T: IntoIterator<Item = SourceId> + Send + 'static,
+            U: IntoIterator<Item = SourceId> + Send + 'static,
+            V: IntoIterator<Item = (TagId, TagTypeId)> + Send + 'static,
+            W: IntoIterator<Item = (TagId, TagTypeId)> + Send + 'static,
+            X: IntoIterator<Item = ReplicaId> + Send + 'static;
 
         fn update_replica_by_id(&self, id: ReplicaId, medium_source: MediumSource) -> impl Future<Output = Result<Replica>> + Send;
 

@@ -12,11 +12,11 @@ mockall::mock! {
     impl TagsRepository for TagsRepository {
         fn create<T>(&self, name: &str, kana: &str, aliases: T, parent_id: Option<TagId>, depth: TagDepth) -> impl Future<Output = Result<Tag>> + Send
         where
-            T: IntoIterator<Item = String> + Send + Sync + 'static;
+            T: IntoIterator<Item = String> + Send + 'static;
 
         fn fetch_by_ids<T>(&self, ids: T, depth: TagDepth) -> impl Future<Output = Result<Vec<Tag>>> + Send
         where
-            T: IntoIterator<Item = TagId> + Send + Sync + 'static;
+            T: IntoIterator<Item = TagId> + Send + 'static;
 
         fn fetch_by_name_or_alias_like(&self, name_or_alias_like: &str, depth: TagDepth) -> impl Future<Output = Result<Vec<Tag>>> + Send;
 
@@ -32,8 +32,8 @@ mockall::mock! {
             depth: TagDepth,
         ) -> impl Future<Output = Result<Tag>> + Send
         where
-            T: IntoIterator<Item = String> + Send + Sync + 'static,
-            U: IntoIterator<Item = String> + Send + Sync + 'static;
+            T: IntoIterator<Item = String> + Send + 'static,
+            U: IntoIterator<Item = String> + Send + 'static;
 
         fn attach_by_id(&self, id: TagId, parent_id: TagId, depth: TagDepth) -> impl Future<Output = Result<Tag>> + Send;
 

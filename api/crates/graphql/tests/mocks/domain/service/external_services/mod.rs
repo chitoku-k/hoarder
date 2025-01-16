@@ -17,7 +17,7 @@ mockall::mock! {
 
         fn get_external_services_by_ids<T>(&self, ids: T) -> impl Future<Output = Result<Vec<ExternalService>>> + Send
         where
-            T: IntoIterator<Item = ExternalServiceId> + Send + Sync + 'static;
+            T: IntoIterator<Item = ExternalServiceId> + Send + 'static;
 
         fn get_external_services_by_url(&self, url: &str) -> impl Future<Output = Result<Vec<(ExternalService, ExternalMetadata)>>> + Send;
 

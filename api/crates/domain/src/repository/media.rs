@@ -18,13 +18,13 @@ pub trait MediaRepository: Send + Sync + 'static {
     /// Creates a medium.
     fn create<T, U>(&self, source_ids: T, created_at: Option<DateTime<Utc>>, tag_tag_type_ids: U, tag_depth: Option<TagDepth>, sources: bool) -> impl Future<Output = Result<Medium>> + Send
     where
-        for<'a> T: IntoIterator<Item = SourceId> + Send + Sync + 'a,
-        for<'a> U: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'a;
+        for<'a> T: IntoIterator<Item = SourceId> + Send + 'a,
+        for<'a> U: IntoIterator<Item = (TagId, TagTypeId)> + Send + 'a;
 
     /// Fetches media by IDs.
     fn fetch_by_ids<T>(&self, ids: T, tag_depth: Option<TagDepth>, replicas: bool, sources: bool) -> impl Future<Output = Result<Vec<Medium>>> + Send
     where
-        for<'a> T: IntoIterator<Item = MediumId> + Send + Sync + 'a;
+        for<'a> T: IntoIterator<Item = MediumId> + Send + 'a;
 
     /// Fetches media by their associated source IDs.
     fn fetch_by_source_ids<T>(
@@ -39,7 +39,7 @@ pub trait MediaRepository: Send + Sync + 'static {
         limit: u64,
     ) -> impl Future<Output = Result<Vec<Medium>>> + Send
     where
-        for<'a> T: IntoIterator<Item = SourceId> + Send + Sync + 'a;
+        for<'a> T: IntoIterator<Item = SourceId> + Send + 'a;
 
     /// Fetches media by their associated tag IDs.
     fn fetch_by_tag_ids<T>(
@@ -54,7 +54,7 @@ pub trait MediaRepository: Send + Sync + 'static {
         limit: u64,
     ) -> impl Future<Output = Result<Vec<Medium>>> + Send
     where
-        for<'a> T: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'a;
+        for<'a> T: IntoIterator<Item = (TagId, TagTypeId)> + Send + 'a;
 
     /// Fetches all media.
     fn fetch_all(
@@ -83,11 +83,11 @@ pub trait MediaRepository: Send + Sync + 'static {
         sources: bool,
     ) -> impl Future<Output = Result<Medium>> + Send
     where
-        for<'a> T: IntoIterator<Item = SourceId> + Send + Sync + 'a,
-        for<'a> U: IntoIterator<Item = SourceId> + Send + Sync + 'a,
-        for<'a> V: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'a,
-        for<'a> W: IntoIterator<Item = (TagId, TagTypeId)> + Send + Sync + 'a,
-        for<'a> X: IntoIterator<Item = ReplicaId> + Send + Sync + 'a;
+        for<'a> T: IntoIterator<Item = SourceId> + Send + 'a,
+        for<'a> U: IntoIterator<Item = SourceId> + Send + 'a,
+        for<'a> V: IntoIterator<Item = (TagId, TagTypeId)> + Send + 'a,
+        for<'a> W: IntoIterator<Item = (TagId, TagTypeId)> + Send + 'a,
+        for<'a> X: IntoIterator<Item = ReplicaId> + Send + 'a;
 
     /// Deletes the medium by ID.
     fn delete_by_id(&self, id: MediumId) -> impl Future<Output = Result<DeleteResult>> + Send;
