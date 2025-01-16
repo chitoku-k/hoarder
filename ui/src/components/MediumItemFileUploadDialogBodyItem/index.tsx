@@ -14,7 +14,7 @@ import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined'
 
 import Image from '@/components/Image'
 import ImageBodyBlob from '@/components/ImageBodyBlob'
-import { MEDIUM_REPLICA_DECODE_FAILED, MEDIUM_REPLICA_UNSUPPORTED, useError, useFilesize } from '@/hooks'
+import { MEDIUM_REPLICA_DECODE_FAILED, MEDIUM_REPLICA_UNSUPPORTED, REPLICA_ORIGINAL_URL_DUPLICATE, useError, useFilesize } from '@/hooks'
 import type { ReplicaUploadProgress, ReplicaUploadStatus } from '@/components/MediumItemFileUploadDialogBody'
 import type { ReplicaCreate } from '@/components/MediumItemImageEdit'
 
@@ -37,6 +37,7 @@ const MediumItemFileUploadDialogBodyItem: FunctionComponent<MediumItemFileUpload
 
   const mediumReplicaDecodeFailed = graphQLError(error, MEDIUM_REPLICA_DECODE_FAILED)
   const mediumReplicaUnsupported = graphQLError(error, MEDIUM_REPLICA_UNSUPPORTED)
+  const replicaOriginalUrlDuplicate = graphQLError(error, REPLICA_ORIGINAL_URL_DUPLICATE)
 
   return (
     <>
@@ -103,6 +104,8 @@ const MediumItemFileUploadDialogBodyItem: FunctionComponent<MediumItemFileUpload
                   <Typography>エラー: メディアが読み込めません</Typography>
                 ) : mediumReplicaUnsupported ? (
                   <Typography>エラー: サポートされていません</Typography>
+                ) : replicaOriginalUrlDuplicate ? (
+                  <Typography>エラー: 登録済みのメディア</Typography>
                 ) : (
                   <Typography>エラー</Typography>
                 )}
