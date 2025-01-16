@@ -128,7 +128,7 @@ pub enum ErrorKind {
     ReplicaNotFoundByUrl { original_url: String },
 
     #[error("the replica with the same original_url is already registered")]
-    ReplicaOriginalUrlDuplicate { original_url: String },
+    ReplicaOriginalUrlDuplicate { original_url: String, entry: Option<Box<Entry>> },
 
     #[error("the source with the same metadata is already registered")]
     SourceMetadataDuplicate { id: Option<SourceId> },
