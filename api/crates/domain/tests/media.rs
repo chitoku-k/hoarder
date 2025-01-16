@@ -444,6 +444,11 @@ async fn create_replica_from_content_succeeds() {
             )))
         });
 
+    let mock_objects_repository_scheme = MockObjectsRepository::scheme_context();
+    mock_objects_repository_scheme
+        .expect()
+        .return_const("file");
+
     let mut mock_replicas_repository = MockReplicasRepository::new();
     mock_replicas_repository
         .expect_create()
@@ -474,11 +479,6 @@ async fn create_replica_from_content_succeeds() {
             }))
         });
 
-    let mock_objects_repository_scheme = MockObjectsRepository::scheme_context();
-    mock_objects_repository_scheme
-        .expect()
-        .return_const("file");
-
     let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.create_replica(
         MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
@@ -504,6 +504,71 @@ async fn create_replica_from_content_succeeds() {
         created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
         updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 1, 0).unwrap(),
     });
+}
+
+#[tokio::test]
+#[serial]
+async fn create_replica_from_content_fails_with_replica_already_exists() {
+    let mock_media_repository = MockMediaRepository::new();
+    let mock_sources_repository = MockSourcesRepository::new();
+    let mock_medium_image_processor = MockMediumImageProcessor::new();
+
+    let mut mock_objects_repository = MockObjectsRepository::new();
+    mock_objects_repository
+        .expect_put()
+        .times(1)
+        .withf(|path, _read, overwrite| {
+            (path, overwrite) == (
+                &EntryUrl::from("file:///77777777-7777-7777-7777-777777777777.png".to_string()),
+                &ObjectOverwriteBehavior::Fail,
+            )
+        })
+        .returning(|_, _, _| {
+            Box::pin(err(Error::new(
+                ErrorKind::ObjectAlreadyExists { url: "file:///77777777-7777-7777-7777-777777777777.png".to_string(), entry: None },
+                anyhow!("File exists"),
+            )))
+        });
+
+    let mock_objects_repository_scheme = MockObjectsRepository::scheme_context();
+    mock_objects_repository_scheme
+        .expect()
+        .return_const("file");
+
+    let mut mock_replicas_repository = MockReplicasRepository::new();
+    mock_replicas_repository
+        .expect_fetch_by_original_url()
+        .times(1)
+        .withf(|url| url == "file:///77777777-7777-7777-7777-777777777777.png")
+        .returning(|_| {
+            Box::pin(ok(Replica {
+                id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
+                display_order: 1,
+                thumbnail: Some(Thumbnail {
+                    id: ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888")),
+                    size: Size::new(240, 240),
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 2, 0).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 3, 0).unwrap(),
+                }),
+                original_url: "file:///77777777-7777-7777-7777-777777777777.png".to_string(),
+                mime_type: "image/png".to_string(),
+                size: Size::new(720, 720),
+                created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
+                updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 1, 0).unwrap(),
+            }))
+        });
+
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
+    let actual = service.create_replica(
+        MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
+        MediumSource::Content(
+            EntryUrlPath::from("/77777777-7777-7777-7777-777777777777.png".to_string()),
+            vec![0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08],
+            MediumOverwriteBehavior::Fail,
+        ),
+    ).await.unwrap_err();
+
+    assert_matches!(actual.kind(), ErrorKind::ReplicaOriginalUrlDuplicate { original_url, .. } if original_url == "file:///77777777-7777-7777-7777-777777777777.png");
 }
 
 #[tokio::test]
@@ -2301,6 +2366,71 @@ async fn update_replica_by_id_from_content_succeeds() {
         created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
         updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 1, 0).unwrap(),
     });
+}
+
+#[tokio::test]
+#[serial]
+async fn update_replica_by_id_from_content_fails_with_replica_already_exists() {
+    let mock_media_repository = MockMediaRepository::new();
+    let mock_sources_repository = MockSourcesRepository::new();
+    let mock_medium_image_processor = MockMediumImageProcessor::new();
+
+    let mut mock_objects_repository = MockObjectsRepository::new();
+    mock_objects_repository
+        .expect_put()
+        .times(1)
+        .withf(|path, _read, overwrite| {
+            (path, overwrite) == (
+                &EntryUrl::from("file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string()),
+                &ObjectOverwriteBehavior::Fail,
+            )
+        })
+        .returning(|_, _, _| {
+            Box::pin(err(Error::new(
+                ErrorKind::ObjectAlreadyExists { url: "file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string(), entry: None },
+                anyhow!("File exists"),
+            )))
+        });
+
+    let mock_objects_repository_scheme = MockObjectsRepository::scheme_context();
+    mock_objects_repository_scheme
+        .expect()
+        .return_const("file");
+
+    let mut mock_replicas_repository = MockReplicasRepository::new();
+    mock_replicas_repository
+        .expect_fetch_by_original_url()
+        .times(1)
+        .withf(|url| url == "file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg")
+        .returning(|_| {
+            Box::pin(ok(Replica {
+                id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
+                display_order: 1,
+                thumbnail: Some(Thumbnail {
+                    id: ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888")),
+                    size: Size::new(240, 240),
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 2, 0).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 3, 0).unwrap(),
+                }),
+                original_url: "file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string(),
+                mime_type: "image/jpeg".to_string(),
+                size: Size::new(720, 720),
+                created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
+                updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 1, 0).unwrap(),
+            }))
+        });
+
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
+    let actual = service.update_replica_by_id(
+        ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
+        MediumSource::Content(
+            EntryUrlPath::from("/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string()),
+            vec![0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08],
+            MediumOverwriteBehavior::Fail,
+        ),
+    ).await.unwrap_err();
+
+    assert_matches!(actual.kind(), ErrorKind::ReplicaOriginalUrlDuplicate { original_url, .. } if original_url == "file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg");
 }
 
 #[tokio::test]

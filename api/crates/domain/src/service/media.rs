@@ -15,7 +15,7 @@ use crate::{
         tag_types::TagTypeId,
         tags::{TagDepth, TagId},
     },
-    error::{ErrorKind, Result},
+    error::{Error, ErrorKind, Result},
     processor,
     repository::{media, objects, replicas, sources, DeleteResult, Direction, Order},
 };
@@ -260,6 +260,33 @@ where
     }
 }
 
+impl<MediaRepository, ObjectsRepository, ReplicasRepository, SourcesRepository, MediumImageProcessor> MediaService<MediaRepository, ObjectsRepository, ReplicasRepository, SourcesRepository, MediumImageProcessor>
+where
+    MediumImageProcessor: processor::media::MediumImageProcessor,
+    ReplicasRepository: replicas::ReplicasRepository,
+    ObjectsRepository: objects::ObjectsRepository,
+{
+    async fn create_replica_source(&self, medium_source: MediumSource) -> Result<(EntryUrl, OriginalImage, ThumbnailImage)> {
+        match self.extract_medium_source(medium_source).await {
+            Ok((url, original_image, thumbnail_image)) => Ok((url, original_image, thumbnail_image)),
+            Err(e) => {
+                let ErrorKind::ObjectAlreadyExists { url, entry } = e.kind() else {
+                    log::error!("failed to process a medium\nError: {e:?}");
+                    return Err(e);
+                };
+                match self.replicas_repository.fetch_by_original_url(url).await {
+                    Ok(replica) => {
+                        let original_url = replica.original_url;
+                        let entry = entry.clone();
+                        Err(Error::new(ErrorKind::ReplicaOriginalUrlDuplicate { original_url, entry }, e))
+                    },
+                    Err(_) => Err(e),
+                }
+            },
+        }
+    }
+}
+
 impl<MediaRepository, ObjectsRepository, ReplicasRepository, SourcesRepository, MediumImageProcessor> MediaServiceInterface for MediaService<MediaRepository, ObjectsRepository, ReplicasRepository, SourcesRepository, MediumImageProcessor>
 where
     MediaRepository: media::MediaRepository,
@@ -283,7 +310,7 @@ where
     }
 
     async fn create_replica(&self, medium_id: MediumId, medium_source: MediumSource) -> Result<Replica> {
-        let (url, original_image, thumbnail_image) = self.extract_medium_source(medium_source).await?;
+        let (url, original_image, thumbnail_image) = self.create_replica_source(medium_source).await?;
         match self.replicas_repository.create(medium_id, Some(thumbnail_image), &url, original_image).await {
             Ok(replica) => Ok(replica),
             Err(e) => {
@@ -503,7 +530,7 @@ where
     }
 
     async fn update_replica_by_id(&self, id: ReplicaId, medium_source: MediumSource) -> Result<Replica> {
-        let (url, original_image, thumbnail_image) = self.extract_medium_source(medium_source).await?;
+        let (url, original_image, thumbnail_image) = self.create_replica_source(medium_source).await?;
         match self.replicas_repository.update_by_id(id, Some(thumbnail_image), Some(&url), Some(original_image)).await {
             Ok(replica) => Ok(replica),
             Err(e) => {
