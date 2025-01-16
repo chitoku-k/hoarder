@@ -19,7 +19,7 @@ pub trait ExternalServicesServiceInterface: Send + Sync + 'static {
     /// Gets the external services by their IDs.
     fn get_external_services_by_ids<T>(&self, ids: T) -> impl Future<Output = Result<Vec<ExternalService>>> + Send
     where
-        for<'a> T: IntoIterator<Item = ExternalServiceId> + Send + Sync + 'a;
+        for<'a> T: IntoIterator<Item = ExternalServiceId> + Send + 'a;
 
     /// Gets the external services and metadata by URL.
     fn get_external_services_by_url(&self, url: &str) -> impl Future<Output = Result<Vec<(ExternalService, ExternalMetadata)>>> + Send;
@@ -80,7 +80,7 @@ where
 
     async fn get_external_services_by_ids<T>(&self, ids: T) -> Result<Vec<ExternalService>>
     where
-        for<'a> T: IntoIterator<Item = ExternalServiceId> + Send + Sync + 'a,
+        for<'a> T: IntoIterator<Item = ExternalServiceId> + Send + 'a,
     {
         match self.external_services_repository.fetch_by_ids(ids).await {
             Ok(services) => Ok(services),

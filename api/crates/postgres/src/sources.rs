@@ -312,7 +312,7 @@ impl SourcesRepository for PostgresSourcesRepository {
 
     async fn fetch_by_ids<T>(&self, ids: T) -> Result<Vec<Source>>
     where
-        T: IntoIterator<Item = SourceId> + Send + Sync,
+        T: IntoIterator<Item = SourceId> + Send,
     {
         let (sql, values) = Query::select()
             .expr_as(Expr::col((PostgresSource::Table, PostgresSource::Id)), PostgresSourceExternalService::SourceId)

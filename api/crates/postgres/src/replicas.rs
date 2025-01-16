@@ -323,7 +323,7 @@ impl ReplicasRepository for PostgresReplicasRepository {
 
     async fn fetch_by_ids<T>(&self, ids: T) -> Result<Vec<Replica>>
     where
-        T: IntoIterator<Item = ReplicaId> + Send + Sync,
+        T: IntoIterator<Item = ReplicaId> + Send,
     {
         let (sql, values) = Query::select()
             .expr_as(Expr::col((PostgresReplica::Table, PostgresReplica::Id)), PostgresReplicaThumbnail::ReplicaId)

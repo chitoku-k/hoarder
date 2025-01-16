@@ -13,7 +13,7 @@ pub trait ExternalServicesRepository: Send + Sync + 'static {
     /// Fetches the external services by their IDs.
     fn fetch_by_ids<T>(&self, ids: T) -> impl Future<Output = Result<Vec<ExternalService>>> + Send
     where
-        for<'a> T: IntoIterator<Item = ExternalServiceId> + Send + Sync + 'a;
+        for<'a> T: IntoIterator<Item = ExternalServiceId> + Send + 'a;
 
     /// Fetches all external services.
     fn fetch_all(&self) -> impl Future<Output = Result<Vec<ExternalService>>> + Send;

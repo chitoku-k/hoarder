@@ -97,7 +97,7 @@ impl ExternalServicesRepository for PostgresExternalServicesRepository {
 
     async fn fetch_by_ids<T>(&self, ids: T) -> Result<Vec<ExternalService>>
     where
-        T: IntoIterator<Item = ExternalServiceId> + Send + Sync,
+        T: IntoIterator<Item = ExternalServiceId> + Send,
     {
         let (sql, values) = Query::select()
             .columns([

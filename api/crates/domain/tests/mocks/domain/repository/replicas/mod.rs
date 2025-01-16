@@ -17,7 +17,7 @@ mockall::mock! {
 
         fn fetch_by_ids<T>(&self, ids: T) -> impl Future<Output = Result<Vec<Replica>>> + Send
         where
-            T: IntoIterator<Item = ReplicaId> + Send + Sync + 'static;
+            T: IntoIterator<Item = ReplicaId> + Send + 'static;
 
         fn fetch_by_original_url(&self, original_url: &str) -> impl Future<Output = Result<Replica>> + Send;
 

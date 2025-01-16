@@ -16,7 +16,7 @@ pub trait ReplicasRepository: Send + Sync + 'static {
     /// Fetches the replicas by IDs.
     fn fetch_by_ids<T>(&self, ids: T) -> impl Future<Output = Result<Vec<Replica>>> + Send
     where
-        for<'a> T: IntoIterator<Item = ReplicaId> + Send + Sync + 'a;
+        for<'a> T: IntoIterator<Item = ReplicaId> + Send + 'a;
 
     /// Fetches the replica by its original URL.
     fn fetch_by_original_url(&self, original_url: &str) -> impl Future<Output = Result<Replica>> + Send;
