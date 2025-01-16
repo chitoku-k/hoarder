@@ -21,7 +21,7 @@ pub struct InMemoryImageProcessor {
 impl MediumImageProcessor for InMemoryImageProcessor {
     async fn generate_thumbnail<R>(&self, read: R) -> Result<(OriginalImage, ThumbnailImage)>
     where
-        R: BufRead + Seek + Send + 'static,
+        for<'a> R: BufRead + Seek + Send + 'a,
     {
         let thumbnail_size = self.thumbnail_size;
         let thumbnail_filter = self.thumbnail_filter;

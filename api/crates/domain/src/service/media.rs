@@ -221,7 +221,7 @@ where
 {
     async fn generate_thumbnail_image<R>(&self, read: R) -> Result<(OriginalImage, ThumbnailImage)>
     where
-        R: BufRead + Seek + Send + 'static,
+        for<'a> R: BufRead + Seek + Send + 'a,
     {
         match self.medium_image_processor.generate_thumbnail(read).await {
             Ok((original_image, thumbnail_image)) => Ok((original_image, thumbnail_image)),
