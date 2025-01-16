@@ -27,9 +27,15 @@ const MediumItemFileOverwriteDialogBody: FunctionComponent<MediumItemFileOverwri
   return (
     <>
       <DialogContent>
-        <DialogContentText>
-          同じファイル名のメディアを置き換えますか？
-        </DialogContentText>
+        {overwrite ? (
+          <DialogContentText>
+            同じファイル名のメディアを置き換えますか？
+          </DialogContentText>
+        ) : (
+          <DialogContentText>
+            同じファイル名のメディアがすでに登録されています
+          </DialogContentText>
+        )}
         <Stack className={styles.files} spacing={2}>
           {existing ? (
             <Stack spacing={1}>
@@ -73,10 +79,16 @@ const MediumItemFileOverwriteDialogBody: FunctionComponent<MediumItemFileOverwri
           </Stack>
         </Stack>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={close} autoFocus>キャンセル</Button>
-        <Button onClick={overwrite}>置き換える</Button>
-      </DialogActions>
+      {overwrite ? (
+        <DialogActions>
+          <Button onClick={close} autoFocus>キャンセル</Button>
+          <Button onClick={overwrite}>置き換える</Button>
+        </DialogActions>
+      ) : (
+        <DialogActions>
+          <Button onClick={close} autoFocus>閉じる</Button>
+        </DialogActions>
+      )}
     </>
   )
 }
@@ -94,7 +106,7 @@ export interface MediumItemFileOverwriteDialogBodyProps {
     lastModified: Date | null
     url: string
   } | null
-  overwrite: () => void
+  overwrite?: () => void
   close: () => void
 }
 

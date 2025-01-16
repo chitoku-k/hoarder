@@ -30,13 +30,34 @@ import MediumItemFileOverwriteDialog from '@/components/MediumItemFileOverwriteD
 import MediumItemFileUploadDialogBodyItem from '@/components/MediumItemFileUploadDialogBodyItem'
 import type { ReplicaCreate } from '@/components/MediumItemImageEdit'
 import { isReplica } from '@/components/MediumItemImageEdit'
-import { OBJECT_ALREADY_EXISTS, useCreateReplica, useError } from '@/hooks'
+import type { ObjectAlreadyExists, ReplicaOriginalUrlDuplicate } from '@/hooks'
+import { OBJECT_ALREADY_EXISTS, REPLICA_ORIGINAL_URL_DUPLICATE, useCreateReplica, useError } from '@/hooks'
 import type { Medium, Replica } from '@/types'
 
 import styles from './styles.module.scss'
 
 const isValidName = (name: string) => name.length > 0
 const isUniqueName = (name: string, replicas: (Replica | ReplicaCreate)[]) => replicas.reduce((total, replica) => total + Number(!isReplica(replica) && replica.name === name), 0) === 1
+
+const extractEntry = (e: ReplicaOriginalUrlDuplicate | ObjectAlreadyExists): ReplicaUploadOverwritingFile | null => {
+  const entry = e.extensions.details.data.entry
+  if (!entry) {
+    return null
+  }
+
+  const name = entry.name
+  const size = entry.metadata?.size ?? null
+  const lastModified = entry.metadata?.updatedAt ? new Date(entry.metadata.updatedAt) : null
+  const url = new URL('/objects', location.href)
+  url.searchParams.set('url', entry.url)
+
+  return {
+    name,
+    size,
+    lastModified,
+    url: url.toString(),
+  }
+}
 
 const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDialogBodyProps> = ({
   abortSignal,
@@ -135,20 +156,24 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
       handleUploadProgress(replica, { status: 'done' })
       return newReplica
     } catch (e) {
+      const replicaOriginalUrlDuplicate = graphQLError(e, REPLICA_ORIGINAL_URL_DUPLICATE)
+      if (replicaOriginalUrlDuplicate) {
+        const uploading = replica
+        const existing = extractEntry(replicaOriginalUrlDuplicate)
+
+        setOverwriting(overwriting => [
+          ...overwriting,
+          {
+            uploading,
+            existing,
+          },
+        ])
+      }
+
       const objectAlreadyExists = graphQLError(e, OBJECT_ALREADY_EXISTS)
       if (objectAlreadyExists && !overwrite) {
         const uploading = replica
-        const entry = objectAlreadyExists.extensions.details.data.entry
-        const existing = entry ? {
-          name: entry.name,
-          size: entry.metadata?.size ?? null,
-          lastModified: entry.metadata?.updatedAt ? new Date(entry.metadata.updatedAt) : null,
-          url: (() => {
-            const url = new URL('/objects', location.href)
-            url.searchParams.set('url', entry.url)
-            return url.toString()
-          })(),
-        } : null
+        const existing = extractEntry(objectAlreadyExists)
 
         const { promise: confirm, resolve: onConfirm, reject: onCancel } = Promise.withResolvers<void>()
 
@@ -326,13 +351,13 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
           uploading={currentOverwrite.uploading}
           existing={currentOverwrite.existing}
           close={() => {
-            currentOverwrite.onCancel()
+            currentOverwrite.onCancel?.()
             setOverwriting(overwriting => overwriting.toSpliced(0, 1))
           }}
-          overwrite={() => {
-            currentOverwrite.onConfirm()
+          overwrite={currentOverwrite.onConfirm && (() => {
+            currentOverwrite.onConfirm?.()
             setOverwriting(overwriting => overwriting.toSpliced(0, 1))
-          }}
+          })}
         />
       ) : null}
       {error ? (
@@ -369,8 +394,8 @@ interface ReplicaUpload {
 interface ReplicaUploadOverwrite {
   uploading: ReplicaCreate
   existing: ReplicaUploadOverwritingFile | null
-  onConfirm: () => void
-  onCancel: () => void
+  onConfirm?: () => void
+  onCancel?: () => void
 }
 
 interface ReplicaUploadOverwritingFile {
