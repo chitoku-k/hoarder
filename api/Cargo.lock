@@ -3489,15 +3489,15 @@ dependencies = [
 
 [[package]]
 name = "sqlx_migrator"
-version = "0.16.1"
+version = "0.16.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d491a11d4b9b5fc6967d14397bb9449fb3ac67ccf749512a42276faa6fcc5825"
+checksum = "f640b957a779c0807fa02e62e8e7d522061c1f962264a9466722fce050b12ec4"
 dependencies = [
  "async-trait",
  "clap",
  "crc32fast",
  "sqlx",
- "thiserror 1.0.68",
+ "thiserror 2.0.10",
  "tracing",
 ]
 

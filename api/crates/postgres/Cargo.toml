@@ -62,7 +62,7 @@ version = "0.8.3"
 features = ["chrono", "json", "postgres", "runtime-tokio", "tls-native-tls", "uuid"]
 
 [dependencies.sqlx_migrator]
-version = "0.16.1"
+version = "0.16.2"
 features = ["postgres"]
 
 [dependencies.uuid]
