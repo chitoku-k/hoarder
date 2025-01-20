@@ -26,7 +26,7 @@ const MediumItemImageItem: FunctionComponent<MediumItemImageItemProps> = ({
 
   const style: CSSProperties = { aspectRatio }
 
-  return (
+  return typeof replica.width === 'number' && typeof replica.height === 'number' ? (
     <Image
       className={clsx(styles.item, className)}
       width={replica.width}
@@ -60,7 +60,7 @@ const MediumItemImageItem: FunctionComponent<MediumItemImageItemProps> = ({
         {children}
       </Stack>
     </Image>
-  )
+  ) : null
 }
 
 export interface MediumItemImageItemProps {

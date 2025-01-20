@@ -12,7 +12,7 @@ import styles from './styles.module.scss'
 const MediumListItemThumbnail: FunctionComponent<MediumListItemThumbnailProps> = ({
   replica,
   size,
-}) => replica?.thumbnail ? (
+}) => replica?.thumbnail && typeof replica.width === 'number' && typeof replica.height === 'number' ? (
   <Image
     className={styles.image}
     src={replica.thumbnail.url}
