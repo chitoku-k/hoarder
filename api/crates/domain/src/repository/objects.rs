@@ -1,6 +1,6 @@
 use std::future::Future;
 
-use tokio::io::{AsyncRead, AsyncSeek};
+use tokio::io::{AsyncRead, AsyncSeek, AsyncWrite};
 
 use crate::{
     entity::objects::{Entry, EntryUrl},
@@ -15,23 +15,22 @@ pub enum ObjectOverwriteBehavior {
 }
 
 impl ObjectOverwriteBehavior {
-    pub fn is_allowed(&self) -> bool {
+    pub const fn is_allowed(&self) -> bool {
         matches!(self, ObjectOverwriteBehavior::Overwrite)
     }
 
-    pub fn is_denied(&self) -> bool {
+    pub const fn is_denied(&self) -> bool {
         matches!(self, ObjectOverwriteBehavior::Fail)
     }
 }
 
 pub trait ObjectsRepository: Send + Sync + 'static {
     type Read: AsyncRead + AsyncSeek + Send + Unpin + 'static;
+    type Write: AsyncWrite + AsyncSeek + Send + Unpin + 'static;
 
     fn scheme() -> &'static str;
 
-    fn put<T>(&self, url: EntryUrl, content: T, overwrite: ObjectOverwriteBehavior) -> impl Future<Output = Result<Entry>> + Send
-    where
-        T: AsyncRead + Send + Unpin;
+    fn put(&self, url: EntryUrl, overwrite: ObjectOverwriteBehavior) -> impl Future<Output = Result<(Entry, Self::Write)>> + Send;
 
     fn get(&self, url: EntryUrl) -> impl Future<Output = Result<(Entry, Self::Read)>> + Send;
 

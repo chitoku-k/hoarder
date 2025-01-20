@@ -38,6 +38,7 @@ use thumbnails::{
     processor::{FilterType, ImageFormat, InMemoryImageProcessor},
     ThumbnailURLFactory, ThumbnailsService,
 };
+use tokio_util::task::TaskTracker;
 
 use crate::env::{self, commands::{Commands, SchemaCommand, SchemaCommands}};
 
@@ -71,6 +72,10 @@ async fn pg_pool() -> anyhow::Result<PgPool> {
         .context("error connecting to database")?;
 
     Ok(pg_pool)
+}
+
+fn task_tracker() -> TaskTracker {
+    TaskTracker::new()
 }
 
 fn external_services_repository(pg_pool: PgPool) -> ExternalServicesRepositoryImpl {
@@ -109,8 +114,8 @@ fn external_services_service(external_services_repository: ExternalServicesRepos
     ExternalServicesService::new(external_services_repository)
 }
 
-fn media_service(media_repository: MediaRepositoryImpl, objects_repository: ObjectsRepositoryImpl, replicas_repository: ReplicasRepositoryImpl, sources_repository: SourcesRepositoryImpl, medium_image_processor: MediumImageProcessorImpl) -> MediaServiceImpl {
-    MediaService::new(media_repository, objects_repository, replicas_repository, sources_repository, medium_image_processor)
+fn media_service(media_repository: MediaRepositoryImpl, objects_repository: ObjectsRepositoryImpl, replicas_repository: ReplicasRepositoryImpl, sources_repository: SourcesRepositoryImpl, medium_image_processor: MediumImageProcessorImpl, task_tracker: TaskTracker) -> MediaServiceImpl {
+    MediaService::new(media_repository, objects_repository, replicas_repository, sources_repository, medium_image_processor, task_tracker)
 }
 
 fn tags_service(tags_repository: TagsRepositoryImpl, tag_types_repository: TagTypesRepositoryImpl) -> TagsServiceImpl {
@@ -186,6 +191,7 @@ impl Application {
         match config.command {
             Commands::Serve(serve) => {
                 let pg_pool = pg_pool().await?;
+                let task_tracker = task_tracker();
 
                 let external_services_repository = external_services_repository(pg_pool.clone());
                 let media_repository = media_repository(pg_pool.clone());
@@ -198,7 +204,7 @@ impl Application {
                 let medium_image_processor = medium_image_processor();
 
                 let external_services_service = external_services_service(external_services_repository);
-                let media_service = media_service(media_repository, objects_repository, replicas_repository, sources_repository, medium_image_processor);
+                let media_service = media_service(media_repository, objects_repository, replicas_repository, sources_repository, medium_image_processor, task_tracker.clone());
                 let tags_service = tags_service(tags_repository, tag_types_repository);
 
                 let normalizer = Arc::new(normalizer());
@@ -219,6 +225,9 @@ impl Application {
                 Engine::new(graphql_service, objects_service, thumbnails_service)
                     .start(serve.port, tls)
                     .await?;
+
+                task_tracker.close();
+                task_tracker.wait().await;
             },
             Commands::Schema(SchemaCommand { command: SchemaCommands::Print(..) }) => {
                 let schema = noop_schema();

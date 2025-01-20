@@ -126,3 +126,7 @@ optional = true
 
 [dependencies.tokio]
 version = "1.43.0"
+
+[dependencies.tokio-util]
+version = "0.7.13"
+features = ["rt"]

@@ -4,9 +4,10 @@ use application::service::{
     media::MediaURLFactoryInterface,
     thumbnails::ThumbnailURLFactoryInterface,
 };
-use async_graphql::{ComplexObject, Context, InputObject, SimpleObject, Upload};
+use async_graphql::{ComplexObject, Context, Enum, InputObject, SimpleObject, Upload};
 use chrono::{DateTime, Utc};
 use domain::{entity::replicas, service::media::MediumOverwriteBehavior};
+use serde::Serialize;
 use uuid::Uuid;
 
 #[derive(SimpleObject)]
@@ -16,11 +17,24 @@ pub(crate) struct Replica {
     display_order: u32,
     thumbnail: Option<Thumbnail>,
     original_url: String,
-    mime_type: String,
-    width: u32,
-    height: u32,
+    mime_type: Option<String>,
+    width: Option<u32>,
+    height: Option<u32>,
+    status: ReplicaStatus,
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
+}
+
+#[derive(Debug, Serialize, SimpleObject)]
+pub(crate) struct ReplicaStatus {
+    phase: ReplicaPhase,
+}
+
+#[derive(Enum, Copy, Clone, Debug, Eq, PartialEq, Serialize)]
+pub(crate) enum ReplicaPhase {
+    Ready,
+    Processing,
+    Error,
 }
 
 #[derive(Clone, Copy, InputObject)]
@@ -47,10 +61,24 @@ impl From<replicas::Replica> for Replica {
             thumbnail: replica.thumbnail.map(Into::into),
             original_url: replica.original_url,
             mime_type: replica.mime_type,
-            width: replica.size.width,
-            height: replica.size.height,
+            width: replica.size.map(|size| size.width),
+            height: replica.size.map(|size| size.height),
+            status: replica.status.into(),
             created_at: replica.created_at,
             updated_at: replica.updated_at,
+        }
+    }
+}
+
+impl From<replicas::ReplicaStatus> for ReplicaStatus {
+    fn from(value: replicas::ReplicaStatus) -> Self {
+        use replicas::ReplicaStatus::*;
+        Self {
+            phase: match value {
+                Ready => ReplicaPhase::Ready,
+                Processing => ReplicaPhase::Processing,
+                Error => ReplicaPhase::Error,
+            },
         }
     }
 }

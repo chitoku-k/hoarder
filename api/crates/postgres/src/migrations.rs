@@ -9,6 +9,7 @@ mod v5;
 mod v6;
 mod v7;
 mod v8;
+mod v9;
 
 pub struct Migrator(migrator::Migrator<Postgres>);
 
@@ -24,6 +25,7 @@ impl Migrator {
             v6::V6Migration,
             v7::V7Migration,
             v8::V8Migration,
+            v9::V9Migration,
         ]);
 
         Self(migrator)
