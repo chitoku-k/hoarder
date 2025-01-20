@@ -14,4 +14,8 @@ mockall::mock! {
         where
             R: BufRead + Seek + Send + 'static;
     }
+
+    impl Clone for MediumImageProcessor {
+        fn clone(&self) -> Self;
+    }
 }

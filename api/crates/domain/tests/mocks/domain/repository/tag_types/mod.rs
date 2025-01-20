@@ -22,4 +22,8 @@ mockall::mock! {
 
         fn delete_by_id(&self, id: TagTypeId) -> impl Future<Output = Result<DeleteResult>> + Send;
     }
+
+    impl Clone for TagTypesRepository {
+        fn clone(&self) -> Self;
+    }
 }

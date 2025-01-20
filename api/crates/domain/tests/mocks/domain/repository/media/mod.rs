@@ -87,4 +87,8 @@ mockall::mock! {
 
         fn delete_by_id(&self, id: MediumId) -> impl Future<Output = Result<DeleteResult>> + Send;
     }
+
+    impl Clone for MediaRepository {
+        fn clone(&self) -> Self;
+    }
 }

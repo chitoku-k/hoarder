@@ -27,4 +27,8 @@ mockall::mock! {
 
         fn delete_by_id(&self, id: ReplicaId) -> impl Future<Output = Result<DeleteResult>> + Send;
     }
+
+    impl Clone for ReplicasRepository {
+        fn clone(&self) -> Self;
+    }
 }

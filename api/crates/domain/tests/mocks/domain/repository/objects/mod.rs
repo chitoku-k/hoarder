@@ -26,4 +26,8 @@ mockall::mock! {
 
         fn delete(&self, url: EntryUrl) -> impl Future<Output = Result<DeleteResult>> + Send;
     }
+
+    impl Clone for ObjectsRepository {
+        fn clone(&self) -> Self;
+    }
 }

@@ -41,4 +41,8 @@ mockall::mock! {
 
         fn delete_by_id(&self, id: TagId, recursive: bool) -> impl Future<Output = Result<DeleteResult>> + Send;
     }
+
+    impl Clone for TagsRepository {
+        fn clone(&self) -> Self;
+    }
 }

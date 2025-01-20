@@ -22,4 +22,8 @@ mockall::mock! {
 
         fn delete_by_id(&self, id: ExternalServiceId) -> impl Future<Output = Result<DeleteResult>> + Send;
     }
+
+    impl Clone for ExternalServicesRepository {
+        fn clone(&self) -> Self;
+    }
 }
