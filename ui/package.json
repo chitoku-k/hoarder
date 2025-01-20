@@ -44,6 +44,7 @@
     "date-fns": "^4.1.0",
     "deep-equal": "^2.2.3",
     "graphql": "^16.10.0",
+    "graphql-ws": "^6.0.1",
     "historykana": "^1.0.6",
     "image-size": "^2.0.0-beta.4",
     "next": "^15.1.5",

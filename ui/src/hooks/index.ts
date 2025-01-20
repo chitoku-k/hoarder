@@ -13,6 +13,7 @@ export * from './useCreateMedium'
 export * from './useDeleteMedium'
 export * from './useMedia'
 export * from './useMedium'
+export * from './useWatchMedium'
 export * from './useUpdateMedium'
 
 export * from './useMetadataLike'

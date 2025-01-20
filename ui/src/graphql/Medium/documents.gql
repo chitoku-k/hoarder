@@ -95,3 +95,9 @@ query Medium($id: UUID!) {
     ...mediumItemNode
   }
 }
+
+subscription WatchMedium($id: UUID!) {
+  medium(id: $id) {
+    ...mediumItemNode
+  }
+}
