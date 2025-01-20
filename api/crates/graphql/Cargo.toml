@@ -58,6 +58,12 @@ version = "1.0.135"
 [dependencies.thiserror]
 version = "2.0.11"
 
+[dependencies.tokio-stream]
+version = "0.1.17"
+
+[dependencies.tower-service]
+version = "0.3.3"
+
 [dependencies.uuid]
 version = "1.12.0"
 

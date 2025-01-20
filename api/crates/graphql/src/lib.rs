@@ -1,11 +1,10 @@
 #![allow(clippy::too_many_arguments)]
 
-use application::service::graphql::GraphQLServiceInterface;
+use application::service::graphql::{GraphQLEndpoints, GraphQLServiceInterface};
 use async_graphql::{http::GraphiQLSource, Enum, Schema, UploadValue};
-use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
+use async_graphql_axum::{GraphQL, GraphQLSubscription};
 use axum::{
     body::Body,
-    extract::FromRequest,
     http::Request,
     response::{IntoResponse, Html, Response},
 };
@@ -20,6 +19,7 @@ use domain::{
 };
 use futures::AsyncReadExt;
 use normalizer::NormalizerInterface;
+use tower_service::Service;
 
 use crate::{
     error::{Error, ErrorKind, Result},
@@ -43,13 +43,14 @@ pub mod tags;
 pub type APISchema<ExternalServicesService, MediaService, TagsService, Normalizer> = Schema<
     Query<ExternalServicesService, MediaService, TagsService, Normalizer>,
     Mutation<ExternalServicesService, MediaService, TagsService, Normalizer>,
-    Subscription,
+    Subscription<MediaService>,
 >;
 
 #[derive(Clone, Constructor)]
 pub struct GraphQLService<ExternalServicesService, MediaService, TagsService, Normalizer> {
     schema: APISchema<ExternalServicesService, MediaService, TagsService, Normalizer>,
-    endpoint: &'static str,
+    graphql_endpoint: &'static str,
+    subscriptions_endpoint: &'static str,
 }
 
 impl<ExternalServicesService, MediaService, TagsService, Normalizer> GraphQLServiceInterface for GraphQLService<ExternalServicesService, MediaService, TagsService, Normalizer>
@@ -60,23 +61,22 @@ where
     Normalizer: NormalizerInterface,
 {
     async fn execute(&self, req: Request<Body>) -> Response {
-        let req: GraphQLRequest = match GraphQLRequest::from_request(req, &()).await {
-            Ok(req) => req,
-            Err(rejection) => return rejection.into_response(),
-        };
-        let req = req.into_inner();
-
-        let res = self.schema.execute(req).await;
-        let res = GraphQLResponse::from(res);
-        res.into_response()
+        GraphQL::new(self.schema.clone()).call(req).await.unwrap()
     }
 
-    fn endpoint(&self) -> &str {
-        self.endpoint
+    async fn subscriptions(&self, req: Request<Body>) -> Response {
+        GraphQLSubscription::new(self.schema.clone()).call(req).await.unwrap()
+    }
+
+    fn endpoints(&self) -> GraphQLEndpoints<'_> {
+        GraphQLEndpoints::new(self.graphql_endpoint, self.subscriptions_endpoint)
     }
 
     fn graphiql(&self) -> Response {
-        let res = GraphiQLSource::build().endpoint(self.endpoint).finish();
+        let res = GraphiQLSource::build()
+            .endpoint(self.graphql_endpoint)
+            .subscription_endpoint(self.subscriptions_endpoint)
+            .finish();
         let res = Html(res);
         res.into_response()
     }

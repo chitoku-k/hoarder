@@ -12,6 +12,7 @@ use domain::{
     error::Result,
     repository::{media::MediaRepository, DeleteResult, Direction, Order},
 };
+use futures::stream::BoxStream;
 
 mockall::mock! {
     pub MediaRepository {}
@@ -64,6 +65,8 @@ mockall::mock! {
             direction: Direction,
             limit: u64,
         ) -> impl Future<Output = Result<Vec<Medium>>> + Send;
+
+        fn watch_by_id(&self, id: MediumId, tag_depth: Option<TagDepth>, replicas: bool, sources: bool) -> impl Future<Output = Result<BoxStream<'static, Result<Medium>>>> + Send;
 
         fn update_by_id<T, U, V, W, X>(
             &self,

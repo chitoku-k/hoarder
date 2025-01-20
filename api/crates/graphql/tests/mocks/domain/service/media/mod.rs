@@ -15,6 +15,7 @@ use domain::{
     repository::{DeleteResult, Direction, Order},
     service::media::{MediaServiceInterface, MediumSource},
 };
+use futures::stream::BoxStream;
 
 mockall::mock! {
     pub MediaServiceInterface {}
@@ -91,6 +92,8 @@ mockall::mock! {
         fn get_object(&self, url: EntryUrl) -> impl Future<Output = Result<Entry>> + Send;
 
         fn get_objects(&self, prefix: EntryUrlPath, kind: Option<EntryKind>) -> impl Future<Output = Result<Vec<Entry>>> + Send;
+
+        fn watch_medium_by_id(&self, id: MediumId, tag_depth: Option<TagDepth>, replicas: bool, sources: bool) -> impl Future<Output = Result<BoxStream<'static, Result<Medium>>>> + Send;
 
         fn update_medium_by_id<T, U, V, W, X>(
             &self,

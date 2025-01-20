@@ -140,7 +140,7 @@ fn schema(
 ) -> APISchemaImpl {
     let query = Query::new();
     let mutation = Mutation::new();
-    let subscription = Subscription;
+    let subscription = Subscription::new();
 
     APISchema::build(query, mutation, subscription)
         .data(external_services_service)
@@ -155,7 +155,7 @@ fn schema(
 fn noop_schema() -> APISchemaImpl {
     let query = Query::new();
     let mutation = Mutation::new();
-    let subscription = Subscription;
+    let subscription = Subscription::new();
 
     APISchema::new(query, mutation, subscription)
 }
@@ -165,7 +165,7 @@ fn medium_image_processor() -> MediumImageProcessorImpl {
 }
 
 fn graphql_service(schema: APISchemaImpl) -> GraphQLServiceImpl {
-    GraphQLService::new(schema, "/graphql")
+    GraphQLService::new(schema, "/graphql", "/graphql/subscriptions")
 }
 
 fn file_media_url_factory(root_url: String) -> FileMediaURLFactory {

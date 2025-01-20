@@ -4,9 +4,11 @@ use domain::{
     error::ErrorKind,
     repository::replicas::ReplicasRepository,
 };
+use futures::{pin_mut, TryStreamExt};
 use postgres::replicas::PostgresReplicasRepository;
 use pretty_assertions::{assert_eq, assert_matches};
-use sqlx::Row;
+use serde_json::json;
+use sqlx::{postgres::PgListener, Row};
 use test_context::test_context;
 use uuid::{uuid, Uuid};
 
@@ -17,6 +19,12 @@ use common::DatabaseContext;
 #[tokio::test]
 #[cfg_attr(not(feature = "test-postgres"), ignore)]
 async fn succeeds(ctx: &DatabaseContext) {
+    let mut listener = PgListener::connect_with(&ctx.pool).await.unwrap();
+    listener.listen("replicas").await.unwrap();
+
+    let stream = listener.into_stream();
+    pin_mut!(stream);
+
     let repository = PostgresReplicasRepository::new(ctx.pool.clone());
     let actual_replica = repository.update_by_id(
         ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be")),
@@ -60,6 +68,12 @@ async fn succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual.get::<Vec<u8>, &str>("data"), vec![0x01, 0x02, 0x03, 0x04]);
     assert_eq!(actual.get::<i32, &str>("width"), 1);
     assert_eq!(actual.get::<i32, &str>("height"), 1);
+
+    let actual = stream.try_next().await.unwrap();
+    let actual: serde_json::Value = serde_json::from_str(actual.unwrap().payload()).unwrap();
+
+    assert_eq!(actual.get("id"), Some(&json!("1706c7bb-4152-44b2-9bbb-1179d09a19be")));
+    assert_eq!(actual.get("medium_id"), Some(&json!("6356503d-6ab6-4e39-bb86-3311219c7fd1")));
 }
 
 #[test_context(DatabaseContext)]

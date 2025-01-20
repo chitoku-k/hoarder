@@ -1,7 +1,7 @@
 use std::{net::Ipv6Addr, sync::Arc};
 
 use axum::{
-    routing::{get, post},
+    routing::{any, get, post},
     Router,
 };
 use axum_server::Handle;
@@ -44,9 +44,10 @@ impl Engine {
         let health = Router::new()
             .route("/", get(|| async { "OK" }));
 
-        let graphql_endpoint = graphql_service.endpoint();
+        let endpoints = graphql_service.endpoints();
         let graphql = Router::new()
-            .route(graphql_endpoint, post(graphql::execute::<GraphQLService>))
+            .route(endpoints.graphql, post(graphql::execute::<GraphQLService>))
+            .route(endpoints.subscriptions, any(graphql::subscriptions::<GraphQLService>))
             .route("/", get(graphql::graphiql::<GraphQLService>))
             .with_state(Arc::new(graphql_service));
 
