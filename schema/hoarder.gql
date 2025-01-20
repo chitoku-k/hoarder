@@ -198,9 +198,10 @@ type Replica {
 	displayOrder: Int!
 	thumbnail: Thumbnail
 	originalUrl: String!
-	mimeType: String!
-	width: Int!
-	height: Int!
+	mimeType: String
+	width: Int
+	height: Int
+	status: ReplicaStatus!
 	createdAt: DateTime!
 	updatedAt: DateTime!
 	url: String
@@ -209,6 +210,16 @@ type Replica {
 input ReplicaInput {
 	file: Upload!
 	overwrite: Boolean!
+}
+
+enum ReplicaPhase {
+	READY
+	PROCESSING
+	ERROR
+}
+
+type ReplicaStatus {
+	phase: ReplicaPhase!
 }
 
 type Source {
