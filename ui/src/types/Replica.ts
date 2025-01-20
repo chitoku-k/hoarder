@@ -11,9 +11,12 @@ export interface Replica {
   } | null
   originalUrl: string
   url?: string | null
-  mimeType: string
-  width: number
-  height: number
+  mimeType?: string | null
+  width?: number | null
+  height?: number | null
+  status: {
+    phase: string
+  }
   createdAt: string
   updatedAt: string
 }

@@ -58,6 +58,9 @@ fragment replicaNode on Replica {
   mimeType
   width
   height
+  status {
+    phase
+  }
   createdAt
   updatedAt
 }
