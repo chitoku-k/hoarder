@@ -232,6 +232,10 @@ type Source {
 }
 
 
+type Subscription {
+	medium(id: UUID!): Medium!
+}
+
 type Tag {
 	id: UUID!
 	name: String!
@@ -319,4 +323,5 @@ directive @specifiedBy(url: String!) on SCALAR
 schema {
 	query: Query
 	mutation: Mutation
+	subscription: Subscription
 }
