@@ -5,7 +5,7 @@ import { forwardRef, useCallback, useMemo, useState } from 'react'
 import type { TableComponents } from 'react-virtuoso'
 import { TableVirtuoso } from 'react-virtuoso'
 import strictUriEncode from 'strict-uri-encode'
-import { ApolloError } from '@apollo/client'
+import { ApolloError, Observable } from '@apollo/client'
 import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
 import DialogActions from '@mui/material/DialogActions'
@@ -30,8 +30,9 @@ import MediumItemFileOverwriteDialog from '@/components/MediumItemFileOverwriteD
 import MediumItemFileUploadDialogBodyItem from '@/components/MediumItemFileUploadDialogBodyItem'
 import type { ReplicaCreate } from '@/components/MediumItemImageEdit'
 import { isReplica } from '@/components/MediumItemImageEdit'
+import { ReplicaPhase } from '@/graphql/types.generated'
 import type { ObjectAlreadyExists, ReplicaOriginalUrlDuplicate } from '@/hooks'
-import { OBJECT_ALREADY_EXISTS, REPLICA_ORIGINAL_URL_DUPLICATE, useCreateReplica, useError } from '@/hooks'
+import { OBJECT_ALREADY_EXISTS, REPLICA_ORIGINAL_URL_DUPLICATE, useCreateReplica, useError, useWatchMedium } from '@/hooks'
 import type { Medium, Replica } from '@/types'
 
 import styles from './styles.module.scss'
@@ -69,6 +70,7 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
   onComplete,
 }) => {
   const [ createReplica ] = useCreateReplica()
+  const [ watchMedium ] = useWatchMedium()
   const { graphQLError } = useError()
 
   const [ uploading, setUploading ] = useState(false)
@@ -129,7 +131,7 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
     close()
   }, [ close ])
 
-  const processReplicaUpload = useCallback(async (medium: Medium, replica: ReplicaCreate, overwrite?: boolean): Promise<Replica> => {
+  const processReplicaUpload = useCallback(async (medium: Medium, replica: ReplicaCreate, observable: Observable<Replica>, overwrite?: boolean): Promise<Replica> => {
     const path = container ? `/${container}` : ''
     const url = `${path}/${replica.name}`.split('/').map(strictUriEncode).join('/')
     const file = new File([ replica.blob ], url)
@@ -152,6 +154,26 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
           },
         },
       )
+
+      const { promise, resolve, reject } = Promise.withResolvers<void>()
+      const subscription = observable
+        .filter(({ id }) => id === newReplica.id)
+        .subscribe(replica => {
+          switch (replica.status.phase) {
+            case ReplicaPhase.Ready: {
+              return resolve()
+            }
+            case ReplicaPhase.Error: {
+              return reject()
+            }
+          }
+        })
+
+      try {
+        await promise
+      } finally {
+        subscription.unsubscribe()
+      }
 
       handleUploadProgress(replica, { status: 'done' })
       return newReplica
@@ -194,7 +216,7 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
           handleUploadProgress(replica, { status: 'aborted' })
           throw new Error('the uploading file already exists', { cause: e })
         }
-        return await processReplicaUpload(medium, replica, true)
+        return await processReplicaUpload(medium, replica, observable, true)
       }
 
       if (e instanceof ApolloError && e.networkError?.name === 'CanceledError') {
@@ -219,10 +241,13 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
 
     onProgress?.('uploading')
 
+    const observable = watchMedium({ id: medium.id })
+      .flatMap(({ data }) => Observable.from(data?.medium.replicas ?? []))
+
     await Promise.allSettled(
       replicas.map(replica => isReplica(replica)
         ? Promise.resolve(replica)
-        : processReplicaUpload(medium, replica),
+        : processReplicaUpload(medium, replica, observable)
       ),
     ).then(results => {
       const newReplicas: (Replica | ReplicaCreate)[] = []
@@ -244,8 +269,13 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
       onComplete(medium, newReplicas)
 
       setUploading(false)
+    }).finally(() => {
+      // This seems to be a redundant subscription, but it is here to ensure that it
+      // unsubscribes from the medium when no subscriptions were created.
+      const subscription = observable.subscribe(() => {})
+      subscription.unsubscribe()
     })
-  }, [ resolveMedium, replicas, processReplicaUpload, onComplete ])
+  }, [ resolveMedium, watchMedium, replicas, processReplicaUpload, onComplete ])
 
   const tableComputeItemKey = useCallback((_index: number, replica: ReplicaCreate) => replica.tempid, [])
 
