@@ -1,17 +1,17 @@
 use chrono::{DateTime, Utc};
-use derive_more::{Constructor, From, Into};
+use derive_more::{derive::Display, Constructor, From, Into};
 use futures::{future::ready, TryFutureExt, TryStreamExt};
 use domain::{
     entity::{
         media::MediumId,
-        replicas::{OriginalImage, Replica, ReplicaId, Size, Thumbnail, ThumbnailId, ThumbnailImage},
+        replicas::{OriginalImage, Replica, ReplicaId, ReplicaStatus, Size, Thumbnail, ThumbnailId, ThumbnailImage},
     },
     error::{Error, ErrorKind, Result},
     repository::{replicas::ReplicasRepository, DeleteResult},
 };
-use sea_query::{Alias, Asterisk, Expr, Iden, JoinType, Keyword, LockType, OnConflict, Order, PostgresQueryBuilder, Query};
+use sea_query::{Alias, Asterisk, Expr, Iden, JoinType, Keyword, LockType, OnConflict, Order, PostgresQueryBuilder, Query, Value};
 use sea_query_binder::SqlxBinder;
-use sqlx::{FromRow, PgPool, Row};
+use sqlx::{FromRow, PgPool, Row, Type};
 
 use crate::{
     media::{PostgresMedium, PostgresMediumId},
@@ -34,9 +34,10 @@ struct PostgresReplicaRow {
     id: PostgresReplicaId,
     display_order: i32,
     original_url: String,
-    mime_type: String,
-    width: i32,
-    height: i32,
+    mime_type: Option<String>,
+    width: Option<i32>,
+    height: Option<i32>,
+    phase: PostgresReplicaPhase,
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
 }
@@ -47,9 +48,10 @@ pub(crate) struct PostgresReplicaThumbnailRow {
     replica_medium_id: PostgresMediumId,
     replica_display_order: i32,
     replica_original_url: String,
-    replica_mime_type: String,
-    replica_width: i32,
-    replica_height: i32,
+    replica_mime_type: Option<String>,
+    replica_width: Option<i32>,
+    replica_height: Option<i32>,
+    replica_phase: PostgresReplicaPhase,
     replica_created_at: DateTime<Utc>,
     replica_updated_at: DateTime<Utc>,
     thumbnail_id: Option<PostgresThumbnailId>,
@@ -84,8 +86,17 @@ pub(crate) enum PostgresReplica {
     MimeType,
     Width,
     Height,
+    Phase,
     CreatedAt,
     UpdatedAt,
+}
+
+#[derive(Debug, Display, Type)]
+#[sqlx(type_name = "text", rename_all = "lowercase")]
+pub(crate) enum PostgresReplicaPhase {
+    Ready,
+    Processing,
+    Error,
 }
 
 #[derive(Iden)]
@@ -110,6 +121,7 @@ pub(crate) enum PostgresReplicaThumbnail {
     ReplicaMimeType,
     ReplicaWidth,
     ReplicaHeight,
+    ReplicaPhase,
     ReplicaCreatedAt,
     ReplicaUpdatedAt,
     ThumbnailId,
@@ -127,6 +139,15 @@ pub(crate) enum PostgresMediumReplica {
 sea_query_uuid_value!(PostgresReplicaId, ReplicaId);
 sea_query_uuid_value!(PostgresThumbnailId, ThumbnailId);
 
+impl From<PostgresReplicaPhase> for Value {
+    fn from(value: PostgresReplicaPhase) -> Self {
+        let mut phase = value.to_string();
+        phase.make_ascii_lowercase();
+
+        Self::String(Some(Box::new(phase)))
+    }
+}
+
 impl From<PostgresReplicaRow> for Replica {
     fn from(row: PostgresReplicaRow) -> Self {
         Self {
@@ -135,9 +156,32 @@ impl From<PostgresReplicaRow> for Replica {
             thumbnail: None,
             original_url: row.original_url,
             mime_type: row.mime_type,
-            size: Size::new(row.width as u32, row.height as u32),
+            size: Option::zip(row.width, row.height).map(|(width, height)| Size::new(width as u32, height as u32)),
+            status: row.phase.into(),
             created_at: row.created_at,
             updated_at: row.updated_at,
+        }
+    }
+}
+
+impl From<PostgresReplicaPhase> for ReplicaStatus {
+    fn from(value: PostgresReplicaPhase) -> Self {
+        use PostgresReplicaPhase::*;
+        match value {
+            Ready => Self::Ready,
+            Processing => Self::Processing,
+            Error => Self::Error,
+        }
+    }
+}
+
+impl From<ReplicaStatus> for PostgresReplicaPhase {
+    fn from(value: ReplicaStatus) -> Self {
+        use ReplicaStatus::*;
+        match value {
+            Ready => Self::Ready,
+            Processing => Self::Processing,
+            Error => Self::Error,
         }
     }
 }
@@ -177,7 +221,8 @@ impl From<PostgresReplicaThumbnailRow> for (MediumId, Replica) {
                 thumbnail,
                 original_url: row.replica_original_url,
                 mime_type: row.replica_mime_type,
-                size: Size::new(row.replica_width as u32, row.replica_height as u32),
+                size: Option::zip(row.replica_width, row.replica_height).map(|(width, height)| Size::new(width as u32, height as u32)),
+                status: row.replica_phase.into(),
                 created_at: row.replica_created_at,
                 updated_at: row.replica_updated_at,
             },
@@ -203,7 +248,7 @@ impl From<PostgresThumbnailDataRow> for Vec<u8> {
 }
 
 impl ReplicasRepository for PostgresReplicasRepository {
-    async fn create(&self, medium_id: MediumId, thumbnail_image: Option<ThumbnailImage>, original_url: &str, original_image: OriginalImage) -> Result<Replica> {
+    async fn create(&self, medium_id: MediumId, thumbnail_image: Option<ThumbnailImage>, original_url: &str, original_image: Option<OriginalImage>, status: ReplicaStatus) -> Result<Replica> {
         let mut tx = self.pool.begin().map_err(Error::other).await?;
 
         let (sql, values) = Query::select()
@@ -247,14 +292,16 @@ impl ReplicasRepository for PostgresReplicasRepository {
                 PostgresReplica::MimeType,
                 PostgresReplica::Width,
                 PostgresReplica::Height,
+                PostgresReplica::Phase,
             ])
             .values([
                 PostgresMediumId::from(medium_id).into(),
                 order.into(),
                 original_url.into(),
-                original_image.mime_type.into(),
-                original_image.size.width.into(),
-                original_image.size.height.into(),
+                original_image.as_ref().map(|original_image| original_image.mime_type).into(),
+                original_image.as_ref().map(|original_image| original_image.size.width).into(),
+                original_image.as_ref().map(|original_image| original_image.size.height).into(),
+                PostgresReplicaPhase::from(status).into(),
             ])
             .map_err(Error::other)?
             .returning(
@@ -267,6 +314,7 @@ impl ReplicasRepository for PostgresReplicasRepository {
                         Expr::col(PostgresReplica::MimeType),
                         Expr::col(PostgresReplica::Width),
                         Expr::col(PostgresReplica::Height),
+                        Expr::col(PostgresReplica::Phase),
                         Expr::col(PostgresReplica::CreatedAt),
                         Expr::col(PostgresReplica::UpdatedAt),
                     ])
@@ -333,6 +381,7 @@ impl ReplicasRepository for PostgresReplicasRepository {
             .expr_as(Expr::col((PostgresReplica::Table, PostgresReplica::MimeType)), PostgresReplicaThumbnail::ReplicaMimeType)
             .expr_as(Expr::col((PostgresReplica::Table, PostgresReplica::Width)), PostgresReplicaThumbnail::ReplicaWidth)
             .expr_as(Expr::col((PostgresReplica::Table, PostgresReplica::Height)), PostgresReplicaThumbnail::ReplicaHeight)
+            .expr_as(Expr::col((PostgresReplica::Table, PostgresReplica::Phase)), PostgresReplicaThumbnail::ReplicaPhase)
             .expr_as(Expr::col((PostgresReplica::Table, PostgresReplica::CreatedAt)), PostgresReplicaThumbnail::ReplicaCreatedAt)
             .expr_as(Expr::col((PostgresReplica::Table, PostgresReplica::UpdatedAt)), PostgresReplicaThumbnail::ReplicaUpdatedAt)
             .expr_as(Expr::col((PostgresThumbnail::Table, PostgresThumbnail::Id)), PostgresReplicaThumbnail::ThumbnailId)
@@ -372,6 +421,7 @@ impl ReplicasRepository for PostgresReplicasRepository {
             .expr_as(Expr::col((PostgresReplica::Table, PostgresReplica::MimeType)), PostgresReplicaThumbnail::ReplicaMimeType)
             .expr_as(Expr::col((PostgresReplica::Table, PostgresReplica::Width)), PostgresReplicaThumbnail::ReplicaWidth)
             .expr_as(Expr::col((PostgresReplica::Table, PostgresReplica::Height)), PostgresReplicaThumbnail::ReplicaHeight)
+            .expr_as(Expr::col((PostgresReplica::Table, PostgresReplica::Phase)), PostgresReplicaThumbnail::ReplicaPhase)
             .expr_as(Expr::col((PostgresReplica::Table, PostgresReplica::CreatedAt)), PostgresReplicaThumbnail::ReplicaCreatedAt)
             .expr_as(Expr::col((PostgresReplica::Table, PostgresReplica::UpdatedAt)), PostgresReplicaThumbnail::ReplicaUpdatedAt)
             .expr_as(Expr::col((PostgresThumbnail::Table, PostgresThumbnail::Id)), PostgresReplicaThumbnail::ThumbnailId)
@@ -416,7 +466,7 @@ impl ReplicasRepository for PostgresReplicasRepository {
         Ok(thumbnail)
     }
 
-    async fn update_by_id(&self, id: ReplicaId, thumbnail_image: Option<ThumbnailImage>, original_url: Option<&str>, original_image: Option<OriginalImage>) -> Result<Replica> {
+    async fn update_by_id(&self, id: ReplicaId, thumbnail_image: Option<ThumbnailImage>, original_url: Option<&str>, original_image: Option<OriginalImage>, status: Option<ReplicaStatus>) -> Result<Replica> {
         let mut tx = self.pool.begin().await.map_err(Error::other)?;
 
         let (sql, values) = Query::select()
@@ -427,6 +477,7 @@ impl ReplicasRepository for PostgresReplicasRepository {
                 PostgresReplica::MimeType,
                 PostgresReplica::Width,
                 PostgresReplica::Height,
+                PostgresReplica::Phase,
                 PostgresReplica::CreatedAt,
                 PostgresReplica::UpdatedAt,
             ])
@@ -455,6 +506,7 @@ impl ReplicasRepository for PostgresReplicasRepository {
                         Expr::col(PostgresReplica::MimeType),
                         Expr::col(PostgresReplica::Width),
                         Expr::col(PostgresReplica::Height),
+                        Expr::col(PostgresReplica::Phase),
                         Expr::col(PostgresReplica::CreatedAt),
                         Expr::col(PostgresReplica::UpdatedAt),
                     ])
@@ -467,6 +519,9 @@ impl ReplicasRepository for PostgresReplicasRepository {
             query.value(PostgresReplica::MimeType, original_image.mime_type);
             query.value(PostgresReplica::Width, original_image.size.width);
             query.value(PostgresReplica::Height, original_image.size.height);
+        }
+        if let Some(status) = status {
+            query.value(PostgresReplica::Phase, PostgresReplicaPhase::from(status));
         }
 
         let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
@@ -545,6 +600,7 @@ impl ReplicasRepository for PostgresReplicasRepository {
                 (siblings.clone(), PostgresReplica::MimeType),
                 (siblings.clone(), PostgresReplica::Width),
                 (siblings.clone(), PostgresReplica::Height),
+                (siblings.clone(), PostgresReplica::Phase),
                 (siblings.clone(), PostgresReplica::CreatedAt),
                 (siblings.clone(), PostgresReplica::UpdatedAt),
             ])

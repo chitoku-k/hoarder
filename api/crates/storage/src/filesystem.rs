@@ -8,10 +8,7 @@ use domain::{
 };
 use futures::{TryFutureExt, TryStreamExt};
 use icu_collator::Collator;
-use tokio::{
-    fs::{canonicalize, read_dir, remove_file, DirBuilder, File},
-    io::{self, copy, AsyncRead},
-};
+use tokio::{fs::{canonicalize, read_dir, remove_file, DirBuilder, File}, io};
 use tokio_stream::wrappers::ReadDirStream;
 
 use crate::{filesystem::{entry::FilesystemEntry, url::FilesystemEntryUrl}, StorageEntry, StorageEntryUrl};
@@ -36,15 +33,13 @@ impl FilesystemObjectsRepository {
 
 impl ObjectsRepository for FilesystemObjectsRepository {
     type Read = File;
+    type Write = File;
 
     fn scheme() -> &'static str {
         "file"
     }
 
-    async fn put<R>(&self, url: EntryUrl, mut content: R, overwrite: ObjectOverwriteBehavior) -> Result<Entry>
-    where
-        R: AsyncRead + Send + Unpin,
-    {
+    async fn put(&self, url: EntryUrl, overwrite: ObjectOverwriteBehavior) -> Result<(Entry, Self::Write)> {
         let url = FilesystemEntryUrl::try_from(url)?;
         let fullpath = self.fullpath(url.as_path());
 
@@ -67,7 +62,7 @@ impl ObjectsRepository for FilesystemObjectsRepository {
             .open(&fullpath)
             .await;
 
-        let mut file = match result {
+        let file = match result {
             Ok(file) => file,
             Err(e) if e.kind() == io::ErrorKind::AlreadyExists => {
                 let entry = File::open(&fullpath)
@@ -96,10 +91,8 @@ impl ObjectsRepository for FilesystemObjectsRepository {
             },
         };
 
-        copy(&mut content, &mut file).await.map_err(Error::other)?;
-
         let entry = FilesystemEntry::from_file(url.as_path(), &file).await?;
-        Ok(entry.into_entry())
+        Ok((entry.into_entry(), file))
     }
 
     async fn get(&self, url: EntryUrl) -> Result<(Entry, Self::Read)> {

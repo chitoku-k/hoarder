@@ -3,7 +3,7 @@ use std::sync::Arc;
 use application::service::{media::MediaURLFactoryInterface, thumbnails::ThumbnailURLFactoryInterface};
 use async_graphql::{Schema, EmptyMutation, EmptySubscription, value};
 use chrono::{TimeZone, Utc};
-use domain::entity::replicas::{Replica, ReplicaId, Size, Thumbnail, ThumbnailId};
+use domain::entity::replicas::{Replica, ReplicaId, ReplicaStatus, Size, Thumbnail, ThumbnailId};
 use futures::future::ok;
 use graphql::query::Query;
 use indoc::indoc;
@@ -41,8 +41,9 @@ async fn succeeds() {
                     updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 3, 0).unwrap(),
                 }),
                 original_url: "file:///77777777-7777-7777-7777-777777777777.png".to_string(),
-                mime_type: "image/png".to_string(),
-                size: Size::new(720, 720),
+                mime_type: Some("image/png".to_string()),
+                size: Some(Size::new(720, 720)),
+                status: ReplicaStatus::Ready,
                 created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
                 updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 1, 0).unwrap(),
             }))
@@ -91,6 +92,9 @@ async fn succeeds() {
                 mimeType
                 width
                 height
+                status {
+                    phase
+                }
                 createdAt
                 updatedAt
             }
@@ -115,6 +119,9 @@ async fn succeeds() {
             "mimeType": "image/png",
             "width": 720,
             "height": 720,
+            "status": {
+                "phase": "READY",
+            },
             "createdAt": "2022-06-02T00:00:00+00:00",
             "updatedAt": "2022-06-02T00:01:00+00:00",
         },

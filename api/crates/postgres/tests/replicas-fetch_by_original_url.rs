@@ -1,6 +1,6 @@
 use chrono::{TimeZone, Utc};
 use domain::{
-    entity::replicas::{Replica, ReplicaId, Size, Thumbnail, ThumbnailId},
+    entity::replicas::{Replica, ReplicaId, ReplicaStatus, Size, Thumbnail, ThumbnailId},
     error::ErrorKind,
     repository::replicas::ReplicasRepository,
 };
@@ -29,8 +29,9 @@ async fn succeeds(ctx: &DatabaseContext) {
             updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap(),
         }),
         original_url: "file:///1706c7bb-4152-44b2-9bbb-1179d09a19be.png".to_string(),
-        mime_type: "image/png".to_string(),
-        size: Size::new(1920, 1600),
+        mime_type: Some("image/png".to_string()),
+        size: Some(Size::new(1920, 1600)),
+        status: ReplicaStatus::Ready,
         created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 10).unwrap(),
         updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap(),
     });

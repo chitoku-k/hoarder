@@ -25,7 +25,6 @@ impl Migration<Postgres> for V8Migration {
     }
 }
 
-
 struct ExternalServiceUrlPatternOperation;
 
 #[async_trait]

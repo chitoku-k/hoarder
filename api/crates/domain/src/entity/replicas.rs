@@ -15,10 +15,18 @@ pub struct Replica {
     pub display_order: u32,
     pub thumbnail: Option<Thumbnail>,
     pub original_url: String,
-    pub mime_type: String,
-    pub size: Size,
+    pub mime_type: Option<String>,
+    pub size: Option<Size>,
+    pub status: ReplicaStatus,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum ReplicaStatus {
+    Ready,
+    Processing,
+    Error,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
