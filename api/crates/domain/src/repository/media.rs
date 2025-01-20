@@ -1,6 +1,7 @@
 use std::future::Future;
 
 use chrono::{DateTime, Utc};
+use futures::Stream;
 
 use crate::{
     entity::{
@@ -67,6 +68,9 @@ pub trait MediaRepository: Send + Sync + 'static {
         direction: Direction,
         limit: u64,
     ) -> impl Future<Output = Result<Vec<Medium>>> + Send;
+
+    /// Watches the medium by ID.
+    fn watch_by_id(&self, id: MediumId, tag_depth: Option<TagDepth>, replicas: bool, sources: bool) -> impl Future<Output = Result<impl Stream<Item = Result<Medium>> + Send>> + Send;
 
     /// Updates the medium by ID.
     fn update_by_id<T, U, V, W, X>(

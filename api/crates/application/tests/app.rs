@@ -1,4 +1,4 @@
-use application::server::Engine;
+use application::{server::Engine, service::graphql::GraphQLEndpoints};
 use axum::{
     body::{self, Body},
     http::{Method, Request},
@@ -52,9 +52,9 @@ async fn graphql() {
 
     let mut mock_graphql_service = MockGraphQLServiceInterface::new();
     mock_graphql_service
-        .expect_endpoint()
+        .expect_endpoints()
         .times(1)
-        .return_const("/graphql".to_string());
+        .returning(|| GraphQLEndpoints::new("/graphql", "/graphql/subscriptions"));
 
     mock_graphql_service
         .expect_execute()
@@ -120,9 +120,9 @@ async fn graphiql() {
 
     let mut mock_graphql_service = MockGraphQLServiceInterface::new();
     mock_graphql_service
-        .expect_endpoint()
+        .expect_endpoints()
         .times(1)
-        .return_const("/graphql".to_string());
+        .returning(|| GraphQLEndpoints::new("/graphql", "/graphql/subscriptions"));
 
     mock_graphql_service
         .expect_graphiql()
@@ -171,9 +171,9 @@ async fn thumbnail_show() {
 
     let mut mock_graphql_service = MockGraphQLServiceInterface::new();
     mock_graphql_service
-        .expect_endpoint()
+        .expect_endpoints()
         .times(1)
-        .return_const("/graphql".to_string());
+        .returning(|| GraphQLEndpoints::new("/graphql", "/graphql/subscriptions"));
 
     let mut mock_thumbnails_service = MockThumbnailsServiceInterface::new();
     mock_thumbnails_service

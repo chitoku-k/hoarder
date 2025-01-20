@@ -2,7 +2,7 @@ use std::{future::Future, io::Cursor};
 
 use chrono::{DateTime, Utc};
 use derive_more::Constructor;
-use futures::future::BoxFuture;
+use futures::{future::BoxFuture, Stream};
 use tokio::io::{copy, BufReader};
 use tokio_util::{io::SyncIoBridge, task::TaskTracker};
 
@@ -129,6 +129,9 @@ pub trait MediaServiceInterface: Send + Sync + 'static {
 
     /// Gets objects.
     fn get_objects(&self, prefix: EntryUrlPath, kind: Option<EntryKind>) -> impl Future<Output = Result<Vec<Entry>>> + Send;
+
+    /// Watches the medium by ID.
+    fn watch_medium_by_id(&self, id: MediumId, tag_depth: Option<TagDepth>, replicas: bool, sources: bool) -> impl Future<Output = Result<impl Stream<Item = Result<Medium>> + Send>> + Send;
 
     /// Updates the medium by ID.
     fn update_medium_by_id<T, U, V, W, X>(
@@ -509,6 +512,16 @@ where
             },
             Err(e) => {
                 log::error!("failed to get objects\nError: {e:?}");
+                Err(e)
+            },
+        }
+    }
+
+    async fn watch_medium_by_id(&self, id: MediumId, tag_depth: Option<TagDepth>, replicas: bool, sources: bool) -> Result<impl Stream<Item = Result<Medium>> + Send> {
+        match self.media_repository.watch_by_id(id, tag_depth, replicas, sources).await {
+            Ok(stream) => Ok(stream),
+            Err(e) => {
+                log::error!("failed to watch the medium\nError: {e:?}");
                 Err(e)
             },
         }

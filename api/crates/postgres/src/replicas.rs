@@ -1,3 +1,5 @@
+use std::fmt;
+
 use chrono::{DateTime, Utc};
 use derive_more::{derive::Display, Constructor, From, Into};
 use futures::{future::ready, TryFutureExt, TryStreamExt};
@@ -11,9 +13,12 @@ use domain::{
 };
 use sea_query::{Alias, Asterisk, Expr, Iden, JoinType, Keyword, LockType, OnConflict, Order, PostgresQueryBuilder, Query, Value};
 use sea_query_binder::SqlxBinder;
+use serde::{Deserialize, Serialize};
+use serde_json::json;
 use sqlx::{FromRow, PgPool, Row, Type};
 
 use crate::{
+    expr::notify::NotifyExpr,
     media::{PostgresMedium, PostgresMediumId},
     sea_query_uuid_value,
 };
@@ -32,6 +37,7 @@ pub(crate) struct PostgresThumbnailId(ThumbnailId);
 #[derive(Debug, FromRow)]
 struct PostgresReplicaRow {
     id: PostgresReplicaId,
+    medium_id: PostgresMediumId,
     display_order: i32,
     original_url: String,
     mime_type: Option<String>,
@@ -73,6 +79,12 @@ struct PostgresThumbnailRow {
 #[derive(Debug, FromRow)]
 struct PostgresThumbnailDataRow {
     data: Vec<u8>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub(crate) struct PostgresReplicaNotification {
+    pub id: ReplicaId,
+    pub medium_id: MediumId,
 }
 
 #[derive(Iden)]
@@ -247,6 +259,12 @@ impl From<PostgresThumbnailDataRow> for Vec<u8> {
     }
 }
 
+impl fmt::Display for PostgresReplicaNotification {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        json!(self).fmt(f)
+    }
+}
+
 impl ReplicasRepository for PostgresReplicasRepository {
     async fn create(&self, medium_id: MediumId, thumbnail_image: Option<ThumbnailImage>, original_url: &str, original_image: Option<OriginalImage>, status: ReplicaStatus) -> Result<Replica> {
         let mut tx = self.pool.begin().map_err(Error::other).await?;
@@ -365,6 +383,12 @@ impl ReplicasRepository for PostgresReplicasRepository {
             replica.thumbnail = Some(thumbnail);
         }
 
+        let (sql, values) = Query::select()
+            .expr(NotifyExpr::notify(PostgresReplica::Table.to_string(), PostgresReplicaNotification { id: replica.id, medium_id }))
+            .build_sqlx(PostgresQueryBuilder);
+
+        sqlx::query_with(&sql, values).execute(&mut *tx).await.map_err(Error::other)?;
+
         tx.commit().await.map_err(Error::other)?;
         Ok(replica)
     }
@@ -472,6 +496,7 @@ impl ReplicasRepository for PostgresReplicasRepository {
         let (sql, values) = Query::select()
             .columns([
                 PostgresReplica::Id,
+                PostgresReplica::MediumId,
                 PostgresReplica::DisplayOrder,
                 PostgresReplica::OriginalUrl,
                 PostgresReplica::MimeType,
@@ -486,11 +511,11 @@ impl ReplicasRepository for PostgresReplicasRepository {
             .lock(LockType::Update)
             .build_sqlx(PostgresQueryBuilder);
 
-        match sqlx::query_as_with::<_, PostgresReplicaRow, _>(&sql, values).fetch_one(&mut *tx).await {
-            Ok(_) => (),
+        let medium_id = match sqlx::query_as_with::<_, PostgresReplicaRow, _>(&sql, values).fetch_one(&mut *tx).await {
+            Ok(row) => MediumId::from(row.medium_id),
             Err(sqlx::Error::RowNotFound) => return Err(ErrorKind::ReplicaNotFound { id })?,
             Err(e) => return Err(Error::other(e)),
-        }
+        };
 
         let mut query = Query::update();
         query
@@ -501,6 +526,7 @@ impl ReplicasRepository for PostgresReplicasRepository {
                 Query::returning()
                     .exprs([
                         Expr::col(PostgresReplica::Id),
+                        Expr::col(PostgresReplica::MediumId),
                         Expr::col(PostgresReplica::DisplayOrder),
                         Expr::col(PostgresReplica::OriginalUrl),
                         Expr::col(PostgresReplica::MimeType),
@@ -582,6 +608,12 @@ impl ReplicasRepository for PostgresReplicasRepository {
 
             replica.thumbnail = Some(thumbnail);
         }
+
+        let (sql, values) = Query::select()
+            .expr(NotifyExpr::notify(PostgresReplica::Table.to_string(), PostgresReplicaNotification { id: replica.id, medium_id }))
+            .build_sqlx(PostgresQueryBuilder);
+
+        sqlx::query_with(&sql, values).execute(&mut *tx).await.map_err(Error::other)?;
 
         tx.commit().await.map_err(Error::other)?;
         Ok(replica)

@@ -14,16 +14,16 @@ use domain::{
     error::{Error, ErrorKind, Result},
     repository::{self, media::MediaRepository, DeleteResult},
 };
-use futures::{future::ready, TryStreamExt};
+use futures::{future::ready, stream, Stream, StreamExt, TryStreamExt};
 use ordermap::{OrderMap, OrderSet};
 use sea_query::{Alias, BinOper, Expr, Iden, JoinType, Keyword, LockType, OnConflict, Order, PostgresQueryBuilder, Query};
 use sea_query_binder::SqlxBinder;
-use sqlx::{types::Json, FromRow, PgConnection, PgPool};
+use sqlx::{postgres::PgListener, types::Json, FromRow, PgConnection, PgPool};
 
 use crate::{
     expr::array::ArrayExpr,
     external_services::{PostgresExternalService, PostgresExternalServiceId},
-    replicas::{PostgresMediumReplica, PostgresReplica, PostgresReplicaId, PostgresReplicaThumbnail, PostgresReplicaThumbnailRow, PostgresThumbnail},
+    replicas::{PostgresMediumReplica, PostgresReplica, PostgresReplicaId, PostgresReplicaNotification, PostgresReplicaThumbnail, PostgresReplicaThumbnailRow, PostgresThumbnail},
     sea_query_uuid_value,
     sources::{PostgresExternalServiceMetadata, PostgresExternalServiceMetadataExtra, PostgresExternalServiceMetadataFull, PostgresSource, PostgresSourceExternalService, PostgresSourceId},
     tag_types::{PostgresTagTagType, PostgresTagType, PostgresTagTypeId},
@@ -776,6 +776,53 @@ impl MediaRepository for PostgresMediaRepository {
 
         eager_load(&mut conn, &mut media, tag_depth, replicas, sources).await?;
         Ok(media)
+    }
+
+    async fn watch_by_id(&self, id: MediumId, tag_depth: Option<TagDepth>, replicas: bool, sources: bool) -> Result<impl Stream<Item = Result<Medium>> + Send> {
+        let mut listener = PgListener::connect_with(&self.pool).await.map_err(Error::other)?;
+        listener.listen(&PostgresReplica::Table.to_string()).await.map_err(Error::other)?;
+
+        let fetch = move || async move {
+            let mut conn = self.pool.acquire().await.map_err(Error::other)?;
+
+            let (sql, values) = Query::select()
+                .columns([
+                    PostgresMedium::Id,
+                    PostgresMedium::CreatedAt,
+                    PostgresMedium::UpdatedAt,
+                ])
+                .from(PostgresMedium::Table)
+                .and_where(Expr::col(PostgresMedium::Id).eq(PostgresMediumId::from(id)))
+                .build_sqlx(PostgresQueryBuilder);
+
+            let medium = sqlx::query_as_with::<_, PostgresMediumRow, _>(&sql, values)
+                .fetch_one(&mut *conn)
+                .await
+                .map_err(Error::other)?
+                .into();
+
+            let mut media = [medium];
+            eager_load(&mut conn, &mut media, tag_depth, replicas, sources).await?;
+
+            let [medium] = media;
+            Ok(medium)
+        };
+
+        let initial = stream::once(fetch());
+        let updates = listener
+            .into_stream()
+            .map_err(Error::other)
+            .and_then(|notification| {
+                ready(serde_json::from_str::<PostgresReplicaNotification>(notification.payload()).map_err(Error::other))
+            })
+            .try_filter(move |notification| {
+                ready(notification.medium_id == id)
+            })
+            .and_then(move |_notification| {
+                fetch()
+            });
+
+        Ok(initial.chain(updates))
     }
 
     async fn update_by_id<T, U, V, W, X>(
