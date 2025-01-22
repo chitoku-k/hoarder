@@ -177,7 +177,7 @@ pub struct MediaService<MediaRepository, ObjectsRepository, ReplicasRepository, 
     replicas_repository: ReplicasRepository,
     sources_repository: SourcesRepository,
     medium_image_processor: MediumImageProcessor,
-    trakcer: TaskTracker,
+    tracker: TaskTracker,
 }
 
 impl<MediaRepository, ObjectsRepository, ReplicasRepository, SourcesRepository, MediumImageProcessor> MediaService<MediaRepository, ObjectsRepository, ReplicasRepository, SourcesRepository, MediumImageProcessor>
@@ -285,7 +285,7 @@ where
 
     fn process_replica_by_id(&self, id: ReplicaId, process: BoxFuture<'static, Result<(OriginalImage, ThumbnailImage)>>) {
         let replicas_repository = self.replicas_repository.clone();
-        self.trakcer.spawn(async move {
+        self.tracker.spawn(async move {
             let (original_image, thumbnail_image, status) = match process.await {
                 Ok((original_image, thumbnail_image)) => (Some(original_image), Some(thumbnail_image), ReplicaStatus::Ready),
                 Err(e) => {
