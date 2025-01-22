@@ -46,7 +46,7 @@ default-features = false
 workspace = true
 
 [dependencies.ordermap]
-version = "0.5.4"
+version = "0.5.5"
 
 [dependencies.serde]
 version = "1.0.217"
