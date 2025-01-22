@@ -41,29 +41,29 @@ impl Engine {
         ObjectsService: ObjectsServiceInterface,
         ThumbnailsService: ThumbnailsServiceInterface,
     {
-        let health = Router::new()
-            .route("/", get(|| async { "OK" }));
-
         let endpoints = graphql_service.endpoints();
         let graphql = Router::new()
+            .route("/", get(graphql::graphiql::<GraphQLService>))
             .route(endpoints.graphql, post(graphql::execute::<GraphQLService>))
             .route(endpoints.subscriptions, any(graphql::subscriptions::<GraphQLService>))
-            .route("/", get(graphql::graphiql::<GraphQLService>))
             .with_state(Arc::new(graphql_service));
 
         let objects = Router::new()
-            .route("/", get(objects::redirect::<ObjectsService>))
+            .route("/objects", get(objects::redirect::<ObjectsService>))
             .with_state(Arc::new(objects_service));
 
         let thumbnails = Router::new()
-            .route("/:id", get(thumbnails::show::<ThumbnailsService>))
+            .route("/thumbnails/{id}", get(thumbnails::show::<ThumbnailsService>))
             .with_state(Arc::new(thumbnails_service));
 
+        let health = Router::new()
+            .route("/healthz", get(|| async { "OK" }));
+
         let app = Router::new()
-            .nest("/", graphql)
-            .nest("/objects", objects)
-            .nest("/thumbnails", thumbnails)
-            .nest("/healthz", health);
+            .merge(graphql)
+            .merge(objects)
+            .merge(thumbnails)
+            .merge(health);
 
         Self { app }
     }
