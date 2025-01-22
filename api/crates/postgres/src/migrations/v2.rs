@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use domain::entity::objects::{EntryUrl, EntryUrlPath};
 use sea_query::{Expr, LockType, PostgresQueryBuilder, Query};
 use sea_query_binder::SqlxBinder;
-use sqlx::{migrate::MigrateError, prelude::FromRow, Connection, PgConnection, Postgres};
+use sqlx::{migrate::MigrateError, FromRow, Connection, PgConnection, Postgres};
 use sqlx_migrator::{error::Error, migration::Migration, operation::Operation, vec_box};
 
 use crate::replicas::{PostgresReplica, PostgresReplicaId};
