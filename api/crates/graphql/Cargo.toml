@@ -65,7 +65,7 @@ version = "0.1.17"
 version = "0.3.3"
 
 [dependencies.uuid]
-version = "1.12.0"
+version = "1.12.1"
 
 [dev-dependencies.application]
 workspace = true
