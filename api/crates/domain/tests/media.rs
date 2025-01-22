@@ -1,4 +1,4 @@
-use std::io::Cursor;
+use std::io::{copy, BufReader, Cursor};
 
 use anyhow::anyhow;
 use chrono::{TimeZone, Utc};
@@ -20,8 +20,7 @@ use futures::{future::{err, ok}, stream, StreamExt, TryFutureExt, TryStreamExt};
 use ordermap::OrderMap;
 use pretty_assertions::{assert_eq, assert_matches};
 use serial_test::serial;
-use tokio::io::BufReader;
-use tokio_util::{io::SyncIoBridge, task::TaskTracker};
+use tokio_util::task::TaskTracker;
 use uuid::uuid;
 
 mod mocks;
@@ -326,14 +325,12 @@ async fn create_replica_from_url_succeeds() {
         .returning(|| {
             let mut mock_medium_image_processor = MockMediumImageProcessor::new();
             mock_medium_image_processor
-                .expect_generate_thumbnail::<SyncIoBridge<BufReader<Cursor<&[_]>>>>()
+                .expect_generate_thumbnail::<BufReader<Cursor<&[_]>>>()
                 .times(1)
-                .returning(|_| {
-                    Box::pin(ok((
-                        OriginalImage::new("image/png", Size::new(720, 720)),
-                        ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240)),
-                    )))
-                });
+                .returning(|_| Ok((
+                    OriginalImage::new("image/png", Size::new(720, 720)),
+                    ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240)),
+                )));
 
             mock_medium_image_processor
         });
@@ -429,7 +426,7 @@ async fn create_replica_from_url_succeeds() {
     let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor, task_tracker.clone());
     let actual = service.create_replica(
         MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
-        MediumSource::Url(EntryUrl::from("file:///77777777-7777-7777-7777-777777777777.png".to_string())),
+        MediumSource::<Cursor<&[_]>>::Url(EntryUrl::from("file:///77777777-7777-7777-7777-777777777777.png".to_string())),
     ).await.unwrap();
 
     assert_eq!(actual, Replica {
@@ -462,15 +459,12 @@ async fn create_replica_from_content_succeeds() {
         .returning(|| {
             let mut mock_medium_image_processor = MockMediumImageProcessor::new();
             mock_medium_image_processor
-                .expect_generate_thumbnail::<Cursor<Vec<_>>>()
+                .expect_generate_thumbnail::<BufReader<Cursor<&[_]>>>()
                 .times(1)
-                .withf(|read| read == &Cursor::new(vec![0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08]))
-                .returning(|_| {
-                    Box::pin(ok((
-                        OriginalImage::new("image/png", Size::new(720, 720)),
-                        ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240)),
-                    )))
-                });
+                .returning(|_| Ok((
+                    OriginalImage::new("image/png", Size::new(720, 720)),
+                    ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240)),
+                )));
 
             mock_medium_image_processor
         });
@@ -500,6 +494,22 @@ async fn create_replica_from_content_succeeds() {
                 ),
                 Cursor::new(Vec::new()),
             )))
+        });
+
+    mock_objects_repository
+        .expect_clone()
+        .times(1)
+        .returning(|| {
+            let mut mock_objects_repository = MockObjectsRepository::new();
+            mock_objects_repository
+                .expect_copy()
+                .withf(|read, write| (read, write) == (
+                    &Cursor::new(&[0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08]),
+                    &Cursor::new(Vec::new()),
+                ))
+                .returning(|read, write| Ok(copy(read, write).unwrap()));
+
+            mock_objects_repository
         });
 
     let mock_objects_repository_scheme = MockObjectsRepository::scheme_context();
@@ -578,7 +588,7 @@ async fn create_replica_from_content_succeeds() {
         MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
         MediumSource::Content(
             EntryUrlPath::from("/77777777-7777-7777-7777-777777777777.png".to_string()),
-            vec![0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08],
+            Cursor::new(&[0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08]),
             MediumOverwriteBehavior::Overwrite,
         ),
     ).await.unwrap();
@@ -662,7 +672,7 @@ async fn create_replica_from_content_fails_with_replica_already_exists() {
         MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
         MediumSource::Content(
             EntryUrlPath::from("/77777777-7777-7777-7777-777777777777.png".to_string()),
-            vec![0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08],
+            Cursor::new(&[0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08]),
             MediumOverwriteBehavior::Fail,
         ),
     ).await.unwrap_err();
@@ -723,7 +733,7 @@ async fn create_replica_fails() {
     let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor, task_tracker.clone());
     let actual = service.create_replica(
         MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
-        MediumSource::Url(EntryUrl::from("file:///77777777-7777-7777-7777-777777777777.png".to_string())),
+        MediumSource::<Cursor<&[_]>>::Url(EntryUrl::from("file:///77777777-7777-7777-7777-777777777777.png".to_string())),
     ).await.unwrap_err();
 
     assert_matches!(actual.kind(), ErrorKind::Other);
@@ -2443,14 +2453,12 @@ async fn update_replica_by_id_from_url_succeeds() {
         .returning(|| {
             let mut mock_medium_image_processor = MockMediumImageProcessor::new();
             mock_medium_image_processor
-                .expect_generate_thumbnail::<SyncIoBridge<BufReader<Cursor<&[_]>>>>()
+                .expect_generate_thumbnail::<BufReader<Cursor<&[_]>>>()
                 .times(1)
-                .returning(|_| {
-                    Box::pin(ok((
-                        OriginalImage::new("image/jpeg", Size::new(720, 720)),
-                        ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240)),
-                    )))
-                });
+                .returning(|_| Ok((
+                    OriginalImage::new("image/jpeg", Size::new(720, 720)),
+                    ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240)),
+                )));
 
             mock_medium_image_processor
         });
@@ -2546,7 +2554,7 @@ async fn update_replica_by_id_from_url_succeeds() {
     let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor, task_tracker.clone());
     let actual = service.update_replica_by_id(
         ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
-        MediumSource::Url(EntryUrl::from("file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string())),
+        MediumSource::<Cursor<&[_]>>::Url(EntryUrl::from("file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string())),
     ).await.unwrap();
 
     assert_eq!(actual, Replica {
@@ -2579,15 +2587,12 @@ async fn update_replica_by_id_from_content_succeeds() {
         .returning(|| {
             let mut mock_medium_image_processor = MockMediumImageProcessor::new();
             mock_medium_image_processor
-                .expect_generate_thumbnail::<Cursor<Vec<_>>>()
+                .expect_generate_thumbnail::<BufReader<Cursor<&[_]>>>()
                 .times(1)
-                .withf(|read| read == &Cursor::new(vec![0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08]))
-                .returning(|_| {
-                    Box::pin(ok((
-                        OriginalImage::new("image/jpeg", Size::new(720, 720)),
-                        ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240)),
-                    )))
-                });
+                .returning(|_| Ok((
+                    OriginalImage::new("image/jpeg", Size::new(720, 720)),
+                    ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240)),
+                )));
 
             mock_medium_image_processor
         });
@@ -2617,6 +2622,22 @@ async fn update_replica_by_id_from_content_succeeds() {
                 ),
                 Cursor::new(Vec::new()),
             )))
+        });
+
+    mock_objects_repository
+        .expect_clone()
+        .times(1)
+        .returning(|| {
+            let mut mock_objects_repository = MockObjectsRepository::new();
+            mock_objects_repository
+                .expect_copy()
+                .withf(|read, write| (read, write) == (
+                    &Cursor::new(&[0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08]),
+                    &Cursor::new(Vec::new()),
+                ))
+                .returning(|read, write| Ok(copy(read, write).unwrap()));
+
+            mock_objects_repository
         });
 
     let mock_objects_repository_scheme = MockObjectsRepository::scheme_context();
@@ -2695,7 +2716,7 @@ async fn update_replica_by_id_from_content_succeeds() {
         ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
         MediumSource::Content(
             EntryUrlPath::from("/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string()),
-            vec![0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08],
+            Cursor::new(&[0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08]),
             MediumOverwriteBehavior::Overwrite,
         ),
     ).await.unwrap();
@@ -2780,7 +2801,7 @@ async fn update_replica_by_id_from_content_fails_with_replica_already_exists() {
         ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
         MediumSource::Content(
             EntryUrlPath::from("/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string()),
-            vec![0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08],
+            Cursor::new(&[0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08]),
             MediumOverwriteBehavior::Fail,
         ),
     ).await.unwrap_err();
@@ -2841,7 +2862,7 @@ async fn update_replica_by_id_fails() {
     let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor, task_tracker.clone());
     let actual = service.update_replica_by_id(
         ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
-        MediumSource::Url(EntryUrl::from("file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string())),
+        MediumSource::<Cursor<&[_]>>::Url(EntryUrl::from("file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string())),
     ).await.unwrap_err();
 
     assert_matches!(actual.kind(), ErrorKind::Other);

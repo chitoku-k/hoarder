@@ -1,10 +1,9 @@
-use std::{future::Future, io::Cursor};
+use std::{future::Future, io::{BufReader, Read, Seek, SeekFrom}};
 
 use chrono::{DateTime, Utc};
 use derive_more::Constructor;
-use futures::{future::BoxFuture, Stream};
-use tokio::io::{copy, BufReader};
-use tokio_util::{io::SyncIoBridge, task::TaskTracker};
+use futures::Stream;
+use tokio_util::task::TaskTracker;
 
 use crate::{
     entity::{
@@ -22,9 +21,9 @@ use crate::{
 };
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub enum MediumSource {
+pub enum MediumSource<R> {
     Url(EntryUrl),
-    Content(EntryUrlPath, Vec<u8>, MediumOverwriteBehavior),
+    Content(EntryUrlPath, R, MediumOverwriteBehavior),
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -50,7 +49,9 @@ pub trait MediaServiceInterface: Send + Sync + 'static {
         for<'a> U: IntoIterator<Item = (TagId, TagTypeId)> + Send + 'a;
 
     /// Creates a replica.
-    fn create_replica(&self, medium_id: MediumId, medium_source: MediumSource) -> impl Future<Output = Result<Replica>> + Send;
+    fn create_replica<R>(&self, medium_id: MediumId, medium_source: MediumSource<R>) -> impl Future<Output = Result<Replica>> + Send
+    where
+        for<'a> R: Read + Seek + Send + 'a;
 
     /// Creates a source.
     fn create_source(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> impl Future<Output = Result<Source>> + Send;
@@ -155,7 +156,9 @@ pub trait MediaServiceInterface: Send + Sync + 'static {
         for<'a> X: IntoIterator<Item = ReplicaId> + Send + 'a;
 
     /// Updates the replica by ID.
-    fn update_replica_by_id(&self, id: ReplicaId, medium_source: MediumSource) -> impl Future<Output = Result<Replica>> + Send;
+    fn update_replica_by_id<R>(&self, id: ReplicaId, medium_source: MediumSource<R>) -> impl Future<Output = Result<Replica>> + Send
+    where
+        for<'a> R: Read + Seek + Send + 'a;
 
     /// Updates the source by ID.
     fn update_source_by_id(&self, id: SourceId, external_service_id: Option<ExternalServiceId>, external_metadata: Option<ExternalMetadata>) -> impl Future<Output = Result<Source>> + Send;
@@ -220,19 +223,22 @@ where
 impl<MediaRepository, ObjectsRepository, ReplicasRepository, SourcesRepository, MediumImageProcessor> MediaService<MediaRepository, ObjectsRepository, ReplicasRepository, SourcesRepository, MediumImageProcessor>
 where
     MediumImageProcessor: processor::media::MediumImageProcessor + Clone,
-    ObjectsRepository: objects::ObjectsRepository,
+    ObjectsRepository: objects::ObjectsRepository + Clone,
 {
-    async fn extract_medium_source(&self, medium_source: MediumSource) -> Result<(EntryUrl, BoxFuture<'static, Result<(OriginalImage, ThumbnailImage)>>)> {
+    async fn extract_medium_source<R>(&self, medium_source: MediumSource<R>) -> Result<(EntryUrl, Box<dyn FnOnce() -> Result<(OriginalImage, ThumbnailImage)> + Send>)>
+    where
+        for<'a> R: Read + Seek + Send + 'a,
+    {
         let medium_image_processor = self.medium_image_processor.clone();
         match medium_source {
             MediumSource::Url(url) => {
                 let (url, read) = self.get_image(url).await?;
-                let read = SyncIoBridge::new(BufReader::new(read));
+                let read = BufReader::new(read);
 
                 Ok((
                     url,
-                    Box::pin(async move {
-                        let (original_image, thumbnail_image) = medium_image_processor.generate_thumbnail(read).await?;
+                    Box::new(move || {
+                        let (original_image, thumbnail_image) = medium_image_processor.generate_thumbnail(read)?;
                         Ok((original_image, thumbnail_image))
                     }),
                 ))
@@ -241,14 +247,17 @@ where
                 let url = path.to_url(ObjectsRepository::scheme());
                 let (url, mut write) = self.put_image(url, overwrite).await?;
 
+                let objects_repository = self.objects_repository.clone();
                 Ok((
                     url,
-                    Box::pin(async move {
-                        let mut read = Cursor::new(&*content);
-                        copy(&mut read, &mut write).await.map_err(|e| Error::new(ErrorKind::Other, e))?;
+                    Box::new(move || {
+                        let mut read = content;
+                        objects_repository.copy(&mut read, &mut write)?;
 
-                        let read = Cursor::new(content);
-                        let (original_image, thumbnail_image) = medium_image_processor.generate_thumbnail(read).await?;
+                        let mut read = BufReader::new(read);
+                        read.seek(SeekFrom::Start(0)).map_err(Error::other)?;
+
+                        let (original_image, thumbnail_image) = medium_image_processor.generate_thumbnail(read)?;
                         Ok((original_image, thumbnail_image))
                     }),
                 ))
@@ -261,9 +270,12 @@ impl<MediaRepository, ObjectsRepository, ReplicasRepository, SourcesRepository, 
 where
     MediumImageProcessor: processor::media::MediumImageProcessor + Clone,
     ReplicasRepository: replicas::ReplicasRepository + Clone,
-    ObjectsRepository: objects::ObjectsRepository,
+    ObjectsRepository: objects::ObjectsRepository + Clone,
 {
-    async fn create_replica_source(&self, medium_source: MediumSource) -> Result<(EntryUrl, BoxFuture<'static, Result<(OriginalImage, ThumbnailImage)>>)> {
+    async fn create_replica_source<R>(&self, medium_source: MediumSource<R>) -> Result<(EntryUrl, Box<dyn FnOnce() -> Result<(OriginalImage, ThumbnailImage)> + Send>)>
+    where
+        for<'a> R: Read + Seek + Send + 'a,
+    {
         match self.extract_medium_source(medium_source).await {
             Ok((url, process)) => Ok((url, process)),
             Err(e) => {
@@ -283,10 +295,12 @@ where
         }
     }
 
-    fn process_replica_by_id(&self, id: ReplicaId, process: BoxFuture<'static, Result<(OriginalImage, ThumbnailImage)>>) {
+    fn process_replica_by_id(&self, id: ReplicaId, process: Box<dyn FnOnce() -> Result<(OriginalImage, ThumbnailImage)> + Send>) {
+        let tracker = self.tracker.clone();
         let replicas_repository = self.replicas_repository.clone();
-        self.tracker.spawn(async move {
-            let (original_image, thumbnail_image, status) = match process.await {
+
+        self.tracker.spawn_blocking(move || {
+            let (original_image, thumbnail_image, status) = match process() {
                 Ok((original_image, thumbnail_image)) => (Some(original_image), Some(thumbnail_image), ReplicaStatus::Ready),
                 Err(e) => {
                     log::error!("failed to process a medium\nError: {e:?}");
@@ -294,9 +308,11 @@ where
                 },
             };
 
-            if let Err(e) = replicas_repository.update_by_id(id, thumbnail_image, None, original_image, Some(status)).await {
-                log::error!("failed to update the replica\nError: {e:?}");
-            }
+            tracker.spawn(async move {
+                if let Err(e) = replicas_repository.update_by_id(id, thumbnail_image, None, original_image, Some(status)).await {
+                    log::error!("failed to update the replica\nError: {e:?}");
+                }
+            });
         });
     }
 }
@@ -304,7 +320,7 @@ where
 impl<MediaRepository, ObjectsRepository, ReplicasRepository, SourcesRepository, MediumImageProcessor> MediaServiceInterface for MediaService<MediaRepository, ObjectsRepository, ReplicasRepository, SourcesRepository, MediumImageProcessor>
 where
     MediaRepository: media::MediaRepository,
-    ObjectsRepository: objects::ObjectsRepository,
+    ObjectsRepository: objects::ObjectsRepository + Clone,
     ReplicasRepository: replicas::ReplicasRepository + Clone,
     SourcesRepository: sources::SourcesRepository,
     MediumImageProcessor: processor::media::MediumImageProcessor + Clone,
@@ -323,7 +339,10 @@ where
         }
     }
 
-    async fn create_replica(&self, medium_id: MediumId, medium_source: MediumSource) -> Result<Replica> {
+    async fn create_replica<R>(&self, medium_id: MediumId, medium_source: MediumSource<R>) -> Result<Replica>
+    where
+        for<'a> R: Read + Seek + Send + 'a,
+    {
         let (url, process) = self.create_replica_source(medium_source).await?;
         match self.replicas_repository.create(medium_id, None, &url, None, ReplicaStatus::Processing).await {
             Ok(replica) => {
@@ -556,7 +575,10 @@ where
         }
     }
 
-    async fn update_replica_by_id(&self, id: ReplicaId, medium_source: MediumSource) -> Result<Replica> {
+    async fn update_replica_by_id<R>(&self, id: ReplicaId, medium_source: MediumSource<R>) -> Result<Replica>
+    where
+        for<'a> R: Read + Seek + Send + 'a,
+    {
         let (url, process) = self.create_replica_source(medium_source).await?;
         match self.replicas_repository.update_by_id(id, None, Some(&url), None, Some(ReplicaStatus::Processing)).await {
             Ok(replica) => {

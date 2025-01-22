@@ -1,7 +1,7 @@
 #![allow(clippy::too_many_arguments)]
 
 use application::service::graphql::{GraphQLEndpoints, GraphQLServiceInterface};
-use async_graphql::{http::GraphiQLSource, Enum, Schema, UploadValue};
+use async_graphql::{http::GraphiQLSource, Enum, Schema};
 use async_graphql_axum::{GraphQL, GraphQLSubscription};
 use axum::{
     body::Body,
@@ -17,16 +17,10 @@ use domain::{
         tags::TagsServiceInterface,
     },
 };
-use futures::AsyncReadExt;
 use normalizer::NormalizerInterface;
 use tower_service::Service;
 
-use crate::{
-    error::{Error, ErrorKind, Result},
-    mutation::Mutation,
-    query::Query,
-    subscription::Subscription,
-};
+use crate::{mutation::Mutation, query::Query, subscription::Subscription};
 
 pub mod error;
 pub mod mutation;
@@ -84,13 +78,6 @@ where
     fn definitions(&self) -> String {
         self.schema.sdl()
     }
-}
-
-pub(crate) async fn process_upload(value: UploadValue) -> Result<Vec<u8>> {
-    let mut buf = Vec::with_capacity(value.size().unwrap_or_default() as usize);
-    value.into_async_read().read_to_end(&mut buf).await.map_err(|_| Error::new(ErrorKind::InternalServerError))?;
-
-    Ok(buf)
 }
 
 #[derive(Enum, Clone, Copy, Default, Eq, PartialEq)]

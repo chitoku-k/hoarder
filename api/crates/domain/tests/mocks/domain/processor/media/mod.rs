@@ -1,4 +1,4 @@
-use std::{future::Future, io::{BufRead, Seek}};
+use std::io::{BufRead, Seek};
 
 use domain::{
     entity::replicas::{OriginalImage, ThumbnailImage},
@@ -10,9 +10,9 @@ mockall::mock! {
     pub MediumImageProcessor {}
 
     impl MediumImageProcessor for MediumImageProcessor {
-        fn generate_thumbnail<R>(&self, read: R) -> impl Future<Output = Result<(OriginalImage, ThumbnailImage)>> + Send
+        fn generate_thumbnail<R>(&self, read: R) -> Result<(OriginalImage, ThumbnailImage)>
         where
-            R: BufRead + Seek + Send + 'static;
+            R: BufRead + Seek + 'static;
     }
 
     impl Clone for MediumImageProcessor {

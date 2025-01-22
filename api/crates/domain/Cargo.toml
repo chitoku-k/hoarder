@@ -38,13 +38,9 @@ features = ["derive"]
 [dependencies.thiserror]
 version = "2.0.11"
 
-[dependencies.tokio]
-version = "1.43.0"
-features = ["macros", "rt-multi-thread"]
-
 [dependencies.tokio-util]
 version = "0.7.13"
-features = ["io", "io-util", "rt"]
+features = ["rt"]
 
 [dependencies.uuid]
 version = "1.12.0"
@@ -65,3 +61,7 @@ features = ["unstable"]
 
 [dev-dependencies.serial_test]
 version = "3.2.0"
+
+[dev-dependencies.tokio]
+version = "1.43.0"
+features = ["macros", "rt-multi-thread"]

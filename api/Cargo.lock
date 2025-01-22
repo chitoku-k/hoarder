@@ -3716,7 +3716,6 @@ dependencies = [
  "derive_more",
  "domain",
  "image",
- "tokio",
 ]
 
 [[package]]
