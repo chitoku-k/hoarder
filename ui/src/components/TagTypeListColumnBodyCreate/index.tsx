@@ -3,7 +3,6 @@
 import type { ChangeEvent, FunctionComponent } from 'react'
 import { useCallback, useState } from 'react'
 import Button from '@mui/material/Button'
-import LoadingButton from '@mui/lab/LoadingButton'
 import Portal from '@mui/material/Portal'
 import Snackbar from '@mui/material/Snackbar'
 import Stack from '@mui/material/Stack'
@@ -136,9 +135,9 @@ const TagTypeListColumnBodyCreate: FunctionComponent<TagTypeListColumnBodyCreate
       </Stack>
       <Stack direction="row" justifyContent="flex-end">
         <Stack className={styles.buttons} spacing={1} direction="row-reverse">
-          <LoadingButton onClick={handleClickSubmit} loading={loading} disabled={!changed || isSlugDuplicate}>
-            <span>保存</span>
-          </LoadingButton>
+          <Button onClick={handleClickSubmit} loading={loading} disabled={!changed || isSlugDuplicate}>
+            保存
+          </Button>
           <Button onClick={handleClickCancel}>
             キャンセル
           </Button>

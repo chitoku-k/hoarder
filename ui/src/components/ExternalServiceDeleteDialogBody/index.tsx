@@ -6,7 +6,6 @@ import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
-import LoadingButton from '@mui/lab/LoadingButton'
 import Typography from '@mui/material/Typography'
 
 import { useDeleteExternalService } from '@/hooks'
@@ -55,7 +54,7 @@ const ExternalServiceDeleteDialogBody: FunctionComponent<ExternalServiceDeleteDi
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClickClose} autoFocus>キャンセル</Button>
-        <LoadingButton color="error" onClick={handleClickDelete} loading={loading}>削除</LoadingButton>
+        <Button color="error" onClick={handleClickDelete} loading={loading}>削除</Button>
       </DialogActions>
     </>
   )

@@ -5,7 +5,6 @@ import { useCallback, useState } from 'react'
 import { useCollator } from '@react-aria/i18n'
 import Autocomplete from '@mui/material/Autocomplete'
 import Button from '@mui/material/Button'
-import LoadingButton from '@mui/lab/LoadingButton'
 import Portal from '@mui/material/Portal'
 import Snackbar from '@mui/material/Snackbar'
 import Stack from '@mui/material/Stack'
@@ -148,9 +147,9 @@ const TagListColumnBodyCreate: FunctionComponent<TagListColumnBodyCreateProps> =
           )}
         </Stack>
         <Stack className={styles.buttons} spacing={1} direction="row-reverse">
-          <LoadingButton onClick={handleClickSubmit} loading={loading} disabled={!changed}>
-            <span>保存</span>
-          </LoadingButton>
+          <Button onClick={handleClickSubmit} loading={loading} disabled={!changed}>
+            保存
+          </Button>
           <Button onClick={handleClickCancel}>
             キャンセル
           </Button>

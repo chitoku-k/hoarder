@@ -8,7 +8,6 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import FormGroup from '@mui/material/FormGroup'
-import LoadingButton from '@mui/lab/LoadingButton'
 import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
 
@@ -69,7 +68,7 @@ const MediumDeleteDialogBody: FunctionComponent<MediumDeleteDialogBodyProps> = (
       </DialogContent>
       <DialogActions>
         <Button onClick={close} autoFocus>キャンセル</Button>
-        <LoadingButton color="error" onClick={handleClickDelete} loading={loading} disabled={hasReplicas && deleteObjects === null}>削除</LoadingButton>
+        <Button color="error" onClick={handleClickDelete} loading={loading} disabled={hasReplicas && deleteObjects === null}>削除</Button>
       </DialogActions>
     </>
   )

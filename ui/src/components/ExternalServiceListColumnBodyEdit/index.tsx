@@ -4,7 +4,6 @@ import type { ChangeEvent, FunctionComponent } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
-import LoadingButton from '@mui/lab/LoadingButton'
 import Portal from '@mui/material/Portal'
 import Snackbar from '@mui/material/Snackbar'
 import Stack from '@mui/material/Stack'
@@ -222,9 +221,9 @@ const ExternalServiceListColumnBodyEdit: FunctionComponent<ExternalServiceListCo
       </Stack>
       <Stack direction="row" justifyContent="flex-end">
         <Stack className={styles.buttons} spacing={1} direction="row-reverse">
-          <LoadingButton onClick={handleClickSubmit} loading={loading}>
-            <span>保存</span>
-          </LoadingButton>
+          <Button onClick={handleClickSubmit} loading={loading}>
+            保存
+          </Button>
           <Button onClick={handleClickCancel}>
             キャンセル
           </Button>
