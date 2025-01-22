@@ -17,6 +17,6 @@ impl StringExpr {
         T1: Into<SimpleExpr>,
         T2: Into<SimpleExpr>,
     {
-        Expr::cust_with_exprs("rtrim($1)", [arg1.into(), arg2.into()])
+        Expr::cust_with_exprs("rtrim($1, $2)", [arg1.into(), arg2.into()])
     }
 }
