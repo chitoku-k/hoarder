@@ -1,4 +1,4 @@
-use std::{path::{Path, PathBuf}, sync::Arc};
+use std::{fs::File as StdFile, io::{self, Read, Write}, path::{Path, PathBuf}, sync::Arc};
 
 use derive_more::Constructor;
 use domain::{
@@ -8,7 +8,7 @@ use domain::{
 };
 use futures::{TryFutureExt, TryStreamExt};
 use icu_collator::Collator;
-use tokio::{fs::{canonicalize, read_dir, remove_file, DirBuilder, File}, io};
+use tokio::fs::{canonicalize, read_dir, remove_file, DirBuilder, File};
 use tokio_stream::wrappers::ReadDirStream;
 
 use crate::{filesystem::{entry::FilesystemEntry, url::FilesystemEntryUrl}, StorageEntry, StorageEntryUrl};
@@ -32,8 +32,8 @@ impl FilesystemObjectsRepository {
 }
 
 impl ObjectsRepository for FilesystemObjectsRepository {
-    type Read = File;
-    type Write = File;
+    type Read = StdFile;
+    type Write = StdFile;
 
     fn scheme() -> &'static str {
         "file"
@@ -92,7 +92,7 @@ impl ObjectsRepository for FilesystemObjectsRepository {
         };
 
         let entry = FilesystemEntry::from_file(url.as_path(), &file).await?;
-        Ok((entry.into_entry(), file))
+        Ok((entry.into_entry(), file.into_std().await))
     }
 
     async fn get(&self, url: EntryUrl) -> Result<(Entry, Self::Read)> {
@@ -102,12 +102,20 @@ impl ObjectsRepository for FilesystemObjectsRepository {
         match File::open(&fullpath).await {
             Ok(file) => {
                 let entry = FilesystemEntry::from_file(url.as_path(), &file).await?;
-                Ok((entry.into_entry(), file))
+                Ok((entry.into_entry(), file.into_std().await))
             },
             Err(e) if e.kind() == io::ErrorKind::NotFound => Err(Error::new(ErrorKind::ObjectNotFound { url: url.into_url().into_inner() }, e))?,
             Err(e) if e.kind() == io::ErrorKind::InvalidInput => Err(Error::new(ErrorKind::ObjectUrlInvalid { url: url.into_url().into_inner() }, e))?,
             Err(e) => Err(Error::new(ErrorKind::ObjectGetFailed { url: url.into_url().into_inner() }, e))?,
         }
+    }
+
+    fn copy<R, W>(&self, read: &mut R, write: &mut W) -> Result<u64>
+    where
+        R: Read,
+        W: Write,
+    {
+        io::copy(read, write).map_err(Error::other)
     }
 
     async fn list(&self, prefix: EntryUrl) -> Result<Vec<Entry>> {

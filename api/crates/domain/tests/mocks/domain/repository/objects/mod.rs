@@ -1,4 +1,4 @@
-use std::{future::Future, io::Cursor};
+use std::{future::Future, io::{Cursor, Read, Write}};
 
 use domain::{
     entity::objects::{Entry, EntryUrl},
@@ -18,6 +18,11 @@ mockall::mock! {
         fn put(&self, url: EntryUrl, overwrite: ObjectOverwriteBehavior) -> impl Future<Output = Result<(Entry, Cursor<Vec<u8>>)>> + Send;
 
         fn get(&self, url: EntryUrl) -> impl Future<Output = Result<(Entry, Cursor<&'static [u8]>)>> + Send;
+
+        fn copy<R, W>(&self, read: &mut R, write: &mut W) -> Result<u64>
+        where
+            R: Read + 'static,
+            W: Write + 'static;
 
         fn list(&self, prefix: EntryUrl) -> impl Future<Output = Result<Vec<Entry>>> + Send;
 

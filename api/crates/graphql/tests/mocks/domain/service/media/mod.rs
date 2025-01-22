@@ -1,4 +1,4 @@
-use std::future::Future;
+use std::{future::Future, io::{Seek, Read}};
 
 use chrono::{DateTime, Utc};
 use domain::{
@@ -26,7 +26,9 @@ mockall::mock! {
             T: IntoIterator<Item = SourceId> + Send + 'static,
             U: IntoIterator<Item = (TagId, TagTypeId)> + Send + 'static;
 
-        fn create_replica(&self, medium_id: MediumId, medium_source: MediumSource) -> impl Future<Output = Result<Replica>> + Send;
+        fn create_replica<R>(&self, medium_id: MediumId, medium_source: MediumSource<R>) -> impl Future<Output = Result<Replica>> + Send
+        where
+            R: Read + Seek + Send + 'static;
 
         fn create_source(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> impl Future<Output = Result<Source>> + Send;
 
@@ -115,7 +117,9 @@ mockall::mock! {
             W: IntoIterator<Item = (TagId, TagTypeId)> + Send + 'static,
             X: IntoIterator<Item = ReplicaId> + Send + 'static;
 
-        fn update_replica_by_id(&self, id: ReplicaId, medium_source: MediumSource) -> impl Future<Output = Result<Replica>> + Send;
+        fn update_replica_by_id<R>(&self, id: ReplicaId, medium_source: MediumSource<R>) -> impl Future<Output = Result<Replica>> + Send
+        where
+            R: Read + Seek + Send + 'static;
 
         fn update_source_by_id(&self, id: SourceId, external_service_id: Option<ExternalServiceId>, external_metadata: Option<ExternalMetadata>) -> impl Future<Output = Result<Source>> + Send;
 
