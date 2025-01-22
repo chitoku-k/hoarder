@@ -19,6 +19,7 @@ updates:
       patterns:
       - async-graphql
       - async-graphql-*
+      - axum
     icu:
       patterns:
       - icu_*
