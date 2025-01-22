@@ -2,8 +2,8 @@
 
 import type { FunctionComponent } from 'react'
 import { useCallback, useTransition } from 'react'
+import Button from '@mui/material/Button'
 import ImageList from '@mui/material/ImageList'
-import LoadingButton from '@mui/lab/LoadingButton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import CollectionsIcon from '@mui/icons-material/Collections'
@@ -42,7 +42,7 @@ const MediumListViewBody: FunctionComponent<MediumListViewBodyProps> = ({
       </ImageList>
       <Stack className={styles.pagination} alignItems="center">
         {hasNextPage ? (
-          <LoadingButton
+          <Button
             variant="outlined"
             loading={loading}
             loadingPosition="end"
@@ -50,7 +50,7 @@ const MediumListViewBody: FunctionComponent<MediumListViewBodyProps> = ({
             onClick={handleClickMore}
           >
             次へ
-          </LoadingButton>
+          </Button>
         ) : null}
       </Stack>
     </Stack>

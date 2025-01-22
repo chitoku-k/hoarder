@@ -8,7 +8,6 @@ import type { AutocompleteInputChangeReason } from '@mui/material/Autocomplete'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import List from '@mui/material/List'
-import LoadingButton from '@mui/lab/LoadingButton'
 import Stack from '@mui/material/Stack'
 import AddIcon from '@mui/icons-material/Add'
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
@@ -262,7 +261,7 @@ const TagListColumnBodyList: FunctionComponent<TagListColumnBodyListProps> = ({
         ) : null}
         {hasNextPage ? (
           <Stack className={styles.tagMoreContainer}>
-            <LoadingButton
+            <Button
               className={styles.tagMoreButton}
               color="inherit"
               loading={loading}
@@ -270,7 +269,7 @@ const TagListColumnBodyList: FunctionComponent<TagListColumnBodyListProps> = ({
               onClick={handleClickMore}
             >
               次へ
-            </LoadingButton>
+            </Button>
           </Stack>
         ) : null}
       </List>

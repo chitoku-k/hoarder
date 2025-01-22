@@ -11,7 +11,6 @@ import Card from '@mui/material/Card'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
-import LoadingButton from '@mui/lab/LoadingButton'
 import Paper from '@mui/material/Paper'
 import Portal from '@mui/material/Portal'
 import Snackbar from '@mui/material/Snackbar'
@@ -374,7 +373,7 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClickCancel} autoFocus>キャンセル</Button>
-        <LoadingButton onClick={handleClickUpload} loading={uploading} disabled={hasValidationErrors}>アップロード</LoadingButton>
+        <Button onClick={handleClickUpload} loading={uploading} disabled={hasValidationErrors}>アップロード</Button>
       </DialogActions>
       {currentOverwrite ? (
         <MediumItemFileOverwriteDialog

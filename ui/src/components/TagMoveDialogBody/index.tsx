@@ -7,7 +7,6 @@ import Card from '@mui/material/Card'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
-import LoadingButton from '@mui/lab/LoadingButton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 
@@ -112,7 +111,7 @@ const TagMoveDialogBody: FunctionComponent<TagMoveDialogBodyProps> = ({
       </DialogContent>
       <DialogActions>
         <Button onClick={close} autoFocus>キャンセル</Button>
-        <LoadingButton onClick={handleClickMove} loading={loading} disabled={tag.id === destination?.id}>移動</LoadingButton>
+        <Button onClick={handleClickMove} loading={loading} disabled={tag.id === destination?.id}>移動</Button>
       </DialogActions>
     </Stack>
   )

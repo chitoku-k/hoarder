@@ -4,7 +4,6 @@ import type { ComponentPropsWithoutRef, FunctionComponent, SyntheticEvent } from
 import { useCallback, useState } from 'react'
 import deepEqual from 'deep-equal'
 import Button from '@mui/material/Button'
-import LoadingButton from '@mui/lab/LoadingButton'
 import Portal from '@mui/material/Portal'
 import Snackbar from '@mui/material/Snackbar'
 import Stack from '@mui/material/Stack'
@@ -261,9 +260,9 @@ const MediumItemMetadataSourceEdit: FunctionComponent<MediumItemMetadataSourceEd
   return (
     <Stack>
       <MediumItemMetadataHeader title="ソース">
-        <LoadingButton onClick={handleClickSubmit} loading={loading}>
-          <span>保存</span>
-        </LoadingButton>
+        <Button onClick={handleClickSubmit} loading={loading}>
+          保存
+        </Button>
         <Button onClick={handleClickCancel}>
           キャンセル
         </Button>

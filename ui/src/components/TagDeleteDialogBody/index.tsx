@@ -9,7 +9,6 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import FormGroup from '@mui/material/FormGroup'
-import LoadingButton from '@mui/lab/LoadingButton'
 import Typography from '@mui/material/Typography'
 
 import { TAG_CHILDREN_EXIST, useDeleteTag, useError, useTag } from '@/hooks'
@@ -89,7 +88,7 @@ const TagDeleteDialogBody: FunctionComponent<TagDeleteDialogBodyProps> = ({
       </DialogContent>
       <DialogActions>
         <Button onClick={close} autoFocus>キャンセル</Button>
-        <LoadingButton color="error" onClick={handleClickDelete} loading={loading} disabled={hasChildren && !recursive}>削除</LoadingButton>
+        <Button color="error" onClick={handleClickDelete} loading={loading} disabled={hasChildren && !recursive}>削除</Button>
       </DialogActions>
     </>
   )

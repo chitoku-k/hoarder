@@ -3,7 +3,6 @@
 import type { ComponentPropsWithoutRef, FunctionComponent, SyntheticEvent } from 'react'
 import { useCallback, useState } from 'react'
 import Button from '@mui/material/Button'
-import LoadingButton from '@mui/lab/LoadingButton'
 import Stack from '@mui/material/Stack'
 import LabelIcon from '@mui/icons-material/Label'
 
@@ -217,9 +216,9 @@ const MediumItemMetadataTagEdit: FunctionComponent<MediumItemMetadataTagEditProp
   return (
     <Stack>
       <MediumItemMetadataHeader title="タグ">
-        <LoadingButton onClick={handleClickSubmit} loading={loading}>
-          <span>保存</span>
-        </LoadingButton>
+        <Button onClick={handleClickSubmit} loading={loading}>
+          保存
+        </Button>
         <Button onClick={handleClickCancel}>
           キャンセル
         </Button>

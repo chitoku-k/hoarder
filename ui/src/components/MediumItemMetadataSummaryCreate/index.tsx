@@ -2,8 +2,8 @@
 
 import type { FunctionComponent } from 'react'
 import { useCallback, useState } from 'react'
+import Button from '@mui/material/Button'
 import InputAdornment from '@mui/material/InputAdornment'
-import LoadingButton from '@mui/lab/LoadingButton'
 import Stack from '@mui/material/Stack'
 import { DateTimeField } from '@mui/x-date-pickers/DateTimeField'
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth'
@@ -42,9 +42,9 @@ const MediumItemMetadataSummaryCreate: FunctionComponent<MediumItemMetadataSumma
   return (
     <Stack>
       <MediumItemMetadataHeader title="メディア">
-        <LoadingButton onClick={handleClickSubmit} loading={loading}>
-          <span>保存</span>
-        </LoadingButton>
+        <Button onClick={handleClickSubmit} loading={loading}>
+          保存
+        </Button>
       </MediumItemMetadataHeader>
       <Stack flexGrow={1} spacing={3}>
         <DateTimeField
