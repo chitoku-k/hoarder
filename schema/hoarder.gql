@@ -6,57 +6,186 @@ The input/output is a string in RFC3339 format.
 """
 scalar DateTime
 
+"""
+A delete result represents the result of deletion.
+"""
 type DeleteResult {
+	"""
+	The value indicating whether the object has been deleted.
+	"""
 	deleted: Boolean!
 }
 
+"""
+An external metadata ID creator ID represents the ID of a medium and creator in the external service.
+"""
 input ExternalMetadataIdCreatorIdInput {
+	"""
+	The ID of a medium in the external service.
+	"""
 	id: String!
+	"""
+	The ID of a creator in the external service.
+	"""
 	creatorId: String!
 }
 
+"""
+An external metadata ID represents the ID of a medium in the external service.
+"""
 input ExternalMetadataIdInput {
+	"""
+	The ID of a medium in the external service.
+	"""
 	id: String!
 }
 
+"""
+An external metadata ID optional creator ID represents the ID of a medium and optional creator in the external service.
+"""
 input ExternalMetadataIdOptionalCreatorIdInput {
+	"""
+	The ID of a medium in the external service.
+	"""
 	id: String!
+	"""
+	The ID of an optional creator in the external service.
+	"""
 	creatorId: String
 }
 
+"""
+An external metadata represents the attributes from the external service.
+"""
 input ExternalMetadataInput @oneOf {
+	"""
+	The metadata from Bluesky.
+	"""
 	bluesky: ExternalMetadataIdCreatorIdInput
+	"""
+	The metadata from Fantia.
+	"""
 	fantia: ExternalMetadataIdInput
+	"""
+	The metadata from Mastodon.
+	"""
 	mastodon: ExternalMetadataIdCreatorIdInput
+	"""
+	The metadata from Misskey.
+	"""
 	misskey: ExternalMetadataIdInput
+	"""
+	The metadata from ニジエ.
+	"""
 	nijie: ExternalMetadataIdInput
+	"""
+	The metadata from pixiv.
+	"""
 	pixiv: ExternalMetadataIdInput
+	"""
+	The metadata from pixivFANBOX.
+	"""
 	pixiv_fanbox: ExternalMetadataIdCreatorIdInput
+	"""
+	The metadata from Pleroma.
+	"""
 	pleroma: ExternalMetadataIdInput
+	"""
+	The metadata from ニコニコ静画.
+	"""
 	seiga: ExternalMetadataIdInput
+	"""
+	The metadata from Skeb.
+	"""
 	skeb: ExternalMetadataIdCreatorIdInput
+	"""
+	The metadata from Threads.
+	"""
 	threads: ExternalMetadataIdOptionalCreatorIdInput
+	"""
+	The URL of any arbitrary website.
+	"""
 	website: ExternalMetadataUrlInput
+	"""
+	The metadata from X.
+	"""
 	x: ExternalMetadataIdOptionalCreatorIdInput
+	"""
+	The metadata from Xfolio.
+	"""
 	xfolio: ExternalMetadataIdCreatorIdInput
+	"""
+	The metadata with a custom value.
+	"""
 	custom: JSON
 }
 
+"""
+An external metadata like represents a partial metadata.
+"""
 input ExternalMetadataLikeInput @oneOf {
+	"""
+	The ID of a medium in the external service.
+	"""
 	id: String
+	"""
+	The URL of a medium in the external service.
+	"""
 	url: String
 }
 
+"""
+An external metadata URL represents the URL of a medium in the external service.
+"""
 input ExternalMetadataUrlInput {
+	"""
+	The URL of a medium in the external service.
+	"""
 	url: String!
 }
 
+"""
+An external service represents a Web service that is the origin of media.
+"""
 type ExternalService {
+	"""
+	The ID of the ExternalService object.
+	"""
 	id: UUID!
+	"""
+	The short and user-friendly name that uniquely identifies the Web service.
+	"""
 	slug: String!
+	"""
+	The kind of the Web service that the object represents.
+	Any other value than the following is considered a custom Web service:
+	* `bluesky`: Bluesky
+	* `fantia`: Fantia
+	* `mastodon`: Mastodon
+	* `misskey`: Misskey
+	* `nijie`: ニジエ
+	* `pixiv`: pixiv
+	* `pixiv_fanbox`: pixivFANBOX
+	* `pleroma`: Pleroma
+	* `seiga`: ニコニコ静画
+	* `skeb`: Skeb
+	* `threads`: Threads
+	* `x`: X
+	* `xfolio`: Xfolio
+	* `website`: any arbitrary website
+	"""
 	kind: String!
+	"""
+	The name of the Web service.
+	"""
 	name: String!
+	"""
+	The base URL of the Web service. Some services do not have the base URL.
+	"""
 	baseUrl: String
+	"""
+	The regex pattern of a URL in the Web service.
+	"""
 	urlPattern: String
 }
 
@@ -68,12 +197,33 @@ A scalar that can represent any JSON value.
 """
 scalar JSON
 
+"""
+A medium represents a set of sources, tags, and replicas.
+"""
 type Medium {
+	"""
+	The ID of the Medium object.
+	"""
 	id: UUID!
+	"""
+	The sources attached to the medium.
+	"""
 	sources: [Source!]!
+	"""
+	The tags attached to the medium.
+	"""
 	tags: [TagTagType!]!
+	"""
+	The replicas that belongs to the medium.
+	"""
 	replicas: [Replica!]!
+	"""
+	The date at which the medium was created.
+	"""
 	createdAt: DateTime!
+	"""
+	The date at which the medium was updated.
+	"""
 	updatedAt: DateTime!
 }
 
@@ -107,50 +257,478 @@ type MediumEdge {
 }
 
 type Mutation {
-	createExternalService(slug: String!, kind: String!, name: String!, baseUrl: String, urlPattern: String): ExternalService!
-	updateExternalService(id: UUID!, slug: String, name: String, baseUrl: String, urlPattern: String): ExternalService!
-	deleteExternalService(id: UUID!): DeleteResult!
-	createMedium(sourceIds: [UUID!], createdAt: DateTime, tagIds: [TagTagTypeInput!]): Medium!
-	createReplica(mediumId: UUID!, originalUrl: String, upload: ReplicaInput): Replica!
-	createSource(externalServiceId: UUID!, externalMetadata: ExternalMetadataInput!): Source!
-	updateMedium(id: UUID!, addSourceIds: [UUID!], removeSourceIds: [UUID!], addTagIds: [TagTagTypeInput!], removeTagIds: [TagTagTypeInput!], replicaOrders: [UUID!], createdAt: DateTime): Medium!
-	updateReplica(id: UUID!, originalUrl: String, upload: ReplicaInput): Replica!
-	updateSource(id: UUID!, externalServiceId: UUID, externalMetadata: ExternalMetadataInput): Source!
-	deleteMedium(id: UUID!, deleteObjects: Boolean): DeleteResult!
-	deleteReplica(id: UUID!, deleteObject: Boolean): DeleteResult!
-	deleteSource(id: UUID!): DeleteResult!
-	createTag(name: String!, kana: String!, aliases: [String!], parentId: UUID): Tag!
-	createTagType(slug: String!, name: String!, kana: String!): TagType!
-	updateTag(id: UUID!, name: String, kana: String, addAliases: [String!], removeAliases: [String!]): Tag!
-	updateTagType(id: UUID!, slug: String, name: String, kana: String): TagType!
-	attachTag(id: UUID!, parentId: UUID!): Tag!
-	detachTag(id: UUID!): Tag!
-	deleteTag(id: UUID!, recursive: Boolean! = false): DeleteResult!
-	deleteTagType(id: UUID!): DeleteResult!
+	"""
+	Creates an external service.
+	### Errors
+	* When the slug already exists, it returns an `EXTERNAL_SERVICE_SLUG_DUPLICATE` error.
+	* When the urlPattern is invalid, it returns an `EXTERNAL_SERVICE_URL_PATTERN_INVALID` error.
+	"""
+	createExternalService(
+		"""
+		The short and user-friendly name that uniquely identifies the Web service.
+		"""
+		slug: String!,
+		"""
+		The kind of the Web service that the object represents. See ExternalService for supported values.
+		"""
+		kind: String!,
+		"""
+		The name of the Web service.
+		"""
+		name: String!,
+		"""
+		The base URL of the Web service. Some services do not have the base URL.
+		"""
+		baseUrl: String,
+		"""
+		The regex pattern of a URL in the Web service.
+		"""
+		urlPattern: String
+	): ExternalService!
+	"""
+	Updates an external service. Only non-null fields will be updated.
+	### Errors
+	* When the slug already exists, it returns an `EXTERNAL_SERVICE_SLUG_DUPLICATE` error.
+	* When the urlPattern is invalid, it returns an `EXTERNAL_SERVICE_URL_PATTERN_INVALID` error.
+	"""
+	updateExternalService(
+		"""
+		The ID of the ExternalService object.
+		"""
+		id: UUID!,
+		"""
+		The short and user-friendly name that uniquely identifies the Web service.
+		"""
+		slug: String,
+		"""
+		The name of the Web service.
+		"""
+		name: String,
+		"""
+		The base URL of the Web service. Some services do not have the base URL. Pass an empty value to remove.
+		"""
+		baseUrl: String,
+		"""
+		The regex pattern of a URL in the Web service. Pass an empty value to remove.
+		"""
+		urlPattern: String
+	): ExternalService!
+	"""
+	Deletes an external service.
+	"""
+	deleteExternalService(
+		"""
+		The ID of the ExternalService object.
+		"""
+		id: UUID!
+	): DeleteResult!
+	"""
+	Creates a medium.
+	### Errors
+	* When any of the sources is not found, it returns a `MEDIUM_SOURCE_NOT_FOUND` error.
+	* When any of the tags is not found, it returns a `MEDIUM_TAG_NOT_FOUND` error.
+	"""
+	createMedium(
+		"""
+		The IDs of Source objects to associate.
+		"""
+		sourceIds: [UUID!],
+		"""
+		The date at which the medium was created.
+		"""
+		createdAt: DateTime,
+		"""
+		The IDs of Tag and TagType objects to associate.
+		"""
+		tagIds: [TagTagTypeInput!]
+	): Medium!
+	"""
+	Creates a replica either from an `originalUrl` or `upload`. The replica will be processed asynchronously, hence some
+	fields being unavailable in the response. Watch for the status updates of the medium by Subscription.
+	### Errors
+	* When the medium is not found, it returns a `MEDIUM_NOT_FOUND` error.
+	* When any replica with the same original URL already exists, it returns a `REPLICA_ORIGINAL_URL_DUPLICATE` error.
+	* When the object with the same name already exists and `overwrite` is disabled, it returns an `OBJECT_ALREADY_EXISTS` error.
+	* When the object could not be retrieved from the original URL, it returns an `OBJECT_GET_FAILED` error.
+	* When the object could not be created, it returns an `OBJECT_PUT_FAILED` error.
+	* When the original URL or the name of the upload is invalid, it returns an `OBJECT_URL_INVALID` error.
+	* When the original URL is unsupported, it returns an `OBJECT_URL_UNSUPPORTED` error.
+	"""
+	createReplica(
+		"""
+		The ID of the Medium object to which the replica is appended.
+		"""
+		mediumId: UUID!,
+		"""
+		The original URL of the replica. Mutually exclusive with `upload`.
+		"""
+		originalUrl: String,
+		"""
+		The upload of the replica. Mutually exclusive with `originalUrl`.
+		"""
+		upload: ReplicaInput
+	): Replica!
+	"""
+	Creates a source.
+	### Errors
+	* When the external service is not found, it returns an `EXTERNAL_SERVICE_NOT_FOUND` error.
+	* When any source with the same metadata already exists, it returns a `SOURCE_METADATA_DUPLICATE` error.
+	* When the metadata is invalid, it returns a `SOURCE_METADATA_INVALID` error.
+	* When the metadata does not match with the external service, it returns a `SOURCE_METADATA_NOT_MATCH` error.
+	"""
+	createSource(
+		"""
+		The ID of the ExternalService object.
+		"""
+		externalServiceId: UUID!,
+		"""
+		The metadata from the external service.
+		"""
+		externalMetadata: ExternalMetadataInput!
+	): Source!
+	"""
+	Updates a medium. The replicas must match with the current when specifying `replicaOrders`.
+	### Errors
+	* When the medium is not found, it returns a `MEDIUM_NOT_FOUND` error.
+	* When any of the sources is not found, it returns a `MEDIUM_SOURCE_NOT_FOUND` error.
+	* When any of the tags is not found, it returns a `MEDIUM_TAG_NOT_FOUND` error.
+	* When the replicas do not match with the current, it returns a `MEDIUM_REPLICAS_NOT_MATCH` error.
+	"""
+	updateMedium(
+		"""
+		The ID of the Medium object.
+		"""
+		id: UUID!,
+		"""
+		The IDs of Source objects to associate.
+		"""
+		addSourceIds: [UUID!],
+		"""
+		The IDs of Source objects to dissociate.
+		"""
+		removeSourceIds: [UUID!],
+		"""
+		The IDs of Tag and TagType objects to associate.
+		"""
+		addTagIds: [TagTagTypeInput!],
+		"""
+		The IDs of Tag and TagType objects to dissociate.
+		"""
+		removeTagIds: [TagTagTypeInput!],
+		"""
+		The IDs of Replica objects in the order they appear.
+		"""
+		replicaOrders: [UUID!],
+		"""
+		The date at which the medium was created.
+		"""
+		createdAt: DateTime
+	): Medium!
+	"""
+	Updates a replica either from an `originalUrl` or `upload`. The replica will be processed asynchronously, hence some
+	fields being unavailable in the response. Watch for the status updates of the medium by Subscription.
+	### Errors
+	* When the medium is not found, it returns a `MEDIUM_NOT_FOUND` error.
+	* When any replica with the same original URL already exists, it returns a `REPLICA_ORIGINAL_URL_DUPLICATE` error.
+	* When the object with the same name already exists and `overwrite` is disabled, it returns an `OBJECT_ALREADY_EXISTS` error.
+	* When the object could not be retrieved from the original URL, it returns an `OBJECT_GET_FAILED` error.
+	* When the object could not be created, it returns an `OBJECT_PUT_FAILED` error.
+	* When the original URL or the name of the upload is invalid, it returns an `OBJECT_URL_INVALID` error.
+	* When the original URL is unsupported, it returns an `OBJECT_URL_UNSUPPORTED` error.
+	"""
+	updateReplica(
+		"""
+		The ID of the Replica object.
+		"""
+		id: UUID!,
+		"""
+		The original URL of the replica. Mutually exclusive with `upload`.
+		"""
+		originalUrl: String,
+		"""
+		The upload of the replica. Mutually exclusive with `originalUrl`.
+		"""
+		upload: ReplicaInput
+	): Replica!
+	"""
+	Creates a source.
+	### Errors
+	* When the source is not found, it returns a `SOURCE_NOT_FOUND` error.
+	* When the external service is not found, it returns an `EXTERNAL_SERVICE_NOT_FOUND` error.
+	* When any source with the same metadata already exists, it returns a `SOURCE_METADATA_DUPLICATE` error.
+	* When the metadata is invalid, it returns a `SOURCE_METADATA_INVALID` error.
+	* When the metadata does not match with the external service, it returns a `SOURCE_METADATA_NOT_MATCH` error.
+	"""
+	updateSource(
+		"""
+		The ID of the Source object.
+		"""
+		id: UUID!,
+		"""
+		The ID of the ExternalService object.
+		"""
+		externalServiceId: UUID,
+		"""
+		The metadata from the external service.
+		"""
+		externalMetadata: ExternalMetadataInput
+	): Source!
+	"""
+	Deletes a medium.
+	### Errors
+	* When the objects in the storage could not be deleted, it returns an `OBJECT_DELETE_FAILED` error.
+	"""
+	deleteMedium(
+		"""
+		The ID of the Medium object.
+		"""
+		id: UUID!,
+		"""
+		Whether to delete the associated objects in the storage.
+		"""
+		deleteObjects: Boolean
+	): DeleteResult!
+	"""
+	Deletes a replica.
+	### Errors
+	* When the object in the storage could not be deleted, it returns an `OBJECT_DELETE_FAILED` error.
+	"""
+	deleteReplica(
+		"""
+		The ID of the Replica object.
+		"""
+		id: UUID!,
+		"""
+		Whether to delete the associated object in the storage.
+		"""
+		deleteObject: Boolean
+	): DeleteResult!
+	"""
+	Deletes a source.
+	"""
+	deleteSource(
+		"""
+		The ID of the Source object.
+		"""
+		id: UUID!
+	): DeleteResult!
+	"""
+	Creates a tag.
+	### Errors
+	* When the parent tag is not found, it returns a `TAG_NOT_FOUND` error.
+	"""
+	createTag(
+		"""
+		The name of the tag.
+		"""
+		name: String!,
+		"""
+		The kana of the tag.
+		"""
+		kana: String!,
+		"""
+		The list of aliases for the tag.
+		"""
+		aliases: [String!],
+		"""
+		The ID of the parent Tag object.
+		"""
+		parentId: UUID
+	): Tag!
+	"""
+	Creates a tag type.
+	### Errors
+	* When the slug already exists, it returns a `TAG_TYPE_SLUG_DUPLICATE` error.
+	"""
+	createTagType(
+		"""
+		The short and user-friendly name that uniquely identifies the tag type.
+		"""
+		slug: String!,
+		"""
+		The name of the tag type.
+		"""
+		name: String!,
+		"""
+		The kana of the tag type.
+		"""
+		kana: String!
+	): TagType!
+	"""
+	Updates a tag.
+	"""
+	updateTag(
+		"""
+		The ID of the Tag object.
+		"""
+		id: UUID!,
+		"""
+		The name of the tag.
+		"""
+		name: String,
+		"""
+		The kana of the tag.
+		"""
+		kana: String,
+		"""
+		The list of aliases to add to the tag.
+		"""
+		addAliases: [String!],
+		"""
+		The list of aliases to remove from the tag.
+		"""
+		removeAliases: [String!]
+	): Tag!
+	"""
+	Updates a tag type.
+	### Errors
+	* When the slug already exists, it returns a `TAG_TYPE_SLUG_DUPLICATE` error.
+	"""
+	updateTagType(
+		"""
+		The ID of the TagType object.
+		"""
+		id: UUID!,
+		"""
+		The short and user-friendly name that uniquely identifies the tag type.
+		"""
+		slug: String,
+		"""
+		The name of the tag type.
+		"""
+		name: String,
+		"""
+		The kana of the tag type.
+		"""
+		kana: String
+	): TagType!
+	"""
+	Attaches a tag to another one.
+	### Errors
+	* When the tag is not found, it returns a `TAG_NOT_FOUND` error.
+	* When the tag is being attached to its descendant, it returns a `TAG_ATTACHING_TO_DESCENDANT` error.
+	* When the tag is being attached to itself, it returns a `TAG_ATTACHING_TO_ITSELF` error.
+	"""
+	attachTag(
+		"""
+		The ID of the Tag object.
+		"""
+		id: UUID!,
+		"""
+		The ID of the new parent Tag object.
+		"""
+		parentId: UUID!
+	): Tag!
+	"""
+	Detaches a tag from its parent.
+	### Errors
+	* When the tag is not found, it returns a `TAG_NOT_FOUND` error.
+	"""
+	detachTag(
+		"""
+		The ID of the Tag object.
+		"""
+		id: UUID!
+	): Tag!
+	"""
+	Deletes a tag.
+	### Errors
+	* When the tag has children and `recursive` is disabled, it returns a `TAG_CHILDREN_EXIST` error.
+	"""
+	deleteTag(
+		"""
+		The ID of the Tag object.
+		"""
+		id: UUID!,
+		"""
+		Whether to delete all the descendants.
+		"""
+		recursive: Boolean! = false
+	): DeleteResult!
+	"""
+	Deletes a tag type.
+	"""
+	deleteTagType(
+		"""
+		The ID of the Tag Type object.
+		"""
+		id: UUID!
+	): DeleteResult!
 }
 
+"""
+An object entry represents an object in the storage.
+"""
 type ObjectEntry {
+	"""
+	The name of the object.
+	"""
 	name: String!
+	"""
+	The internal URL of the object.
+	"""
 	url: String
+	"""
+	The kind of the object.
+	"""
 	kind: ObjectKind!
+	"""
+	The metadata of the object.
+	"""
 	metadata: ObjectEntryMetadata
 }
 
+"""
+An object entry metadata represents attributes of an object in the storage.
+"""
 type ObjectEntryMetadata {
+	"""
+	The size of the object in bytes.
+	"""
 	size: Int!
+	"""
+	The date at which the object was created.
+	"""
 	createdAt: DateTime
+	"""
+	The date at which the object was updated.
+	"""
 	updatedAt: DateTime
+	"""
+	The date at which the object was accessed.
+	"""
 	accessedAt: DateTime
 }
 
+"""
+An object kind represents the kind of an object in the storage.
+"""
 enum ObjectKind {
+	"""
+	Container, e.g., a directory.
+	"""
 	CONTAINER
+	"""
+	Object, e.g., a file.
+	"""
 	OBJECT
+	"""
+	Unknown.
+	"""
 	UNKNOWN
 }
 
+"""
+The ordering direction.
+"""
 enum Order {
+	"""
+	Ascending.
+	"""
 	ASC
+	"""
+	Descending.
+	"""
 	DESC
 }
 
@@ -177,73 +755,346 @@ type PageInfo {
 }
 
 type Query {
+	"""
+	Fetches all external services.
+	"""
 	allExternalServices: [ExternalService!]!
-	externalServices(ids: [UUID!]!): [ExternalService!]!
-	allMedia(sourceIds: [UUID!], tagIds: [TagTagTypeInput!], order: Order! = ASC, after: String, before: String, first: Int, last: Int): MediumConnection!
-	media(ids: [UUID!]!): [Medium!]!
-	replica(originalUrl: String!): Replica!
-	allSourcesLike(externalMetadataLike: ExternalMetadataLikeInput!): [Source!]!
-	sources(ids: [UUID!]!): [Source!]!
-	source(externalServiceId: UUID!, externalMetadata: ExternalMetadataInput!): Source
-	objects(prefix: String!, kind: ObjectKind): [ObjectEntry!]!
-	allTags(root: Boolean! = false, after: String, before: String, first: Int, last: Int): TagConnection!
-	allTagsLike(nameOrAliasLike: String!): [Tag!]!
-	tags(ids: [UUID!]!): [Tag!]!
+	"""
+	Looks up external services by a list of IDs.
+	"""
+	externalServices(
+		"""
+		The IDs of the ExternalService objects.
+		"""
+		ids: [UUID!]!
+	): [ExternalService!]!
+	"""
+	Fetches media optionally filtered by sources or tags, returning up to 100 results.
+	"""
+	allMedia(
+		"""
+		The IDs of Source objects. Mutually exclusive with `tagIds`.
+		"""
+		sourceIds: [UUID!],
+		"""
+		The IDs of TagType and Tag objects. Mutually exclusive with `sourceIds`.
+		"""
+		tagIds: [TagTagTypeInput!],
+		"""
+		The ordering direction of media sorted by `createdAt`.
+		"""
+		order: Order! = ASC,
+		"""
+		Returns the elements in the list that come after the specified cursor.
+		"""
+		after: String,
+		"""
+		Returns the elements in the list that come before the specified cursor.
+		"""
+		before: String,
+		"""
+		Returns the first _n_ elements from the list.
+		"""
+		first: Int,
+		"""
+		Returns the last _n_ elements from the list.
+		"""
+		last: Int
+	): MediumConnection!
+	"""
+	Looks up media by a list of IDs.
+	"""
+	media(
+		"""
+		The IDs of Medium objects.
+		"""
+		ids: [UUID!]!
+	): [Medium!]!
+	"""
+	Looks up a replica by its original URL.
+	### Errors
+	* When the replica is not found, it returns a `REPLICA_NOT_FOUND_BY_URL` error.
+	"""
+	replica(
+		"""
+		The original URL of media.
+		"""
+		originalUrl: String!
+	): Replica!
+	"""
+	Looks up sources by partial metadata.
+	"""
+	allSourcesLike(
+		"""
+		The ID or URL representing sources.
+		"""
+		externalMetadataLike: ExternalMetadataLikeInput!
+	): [Source!]!
+	"""
+	Looks up sources by a list of IDs.
+	"""
+	sources(
+		"""
+		The IDs of Source objects.
+		"""
+		ids: [UUID!]!
+	): [Source!]!
+	"""
+	Looks up a source by the ID of an external service and the external metadata.
+	"""
+	source(
+		"""
+		The ID of an ExternalService object.
+		"""
+		externalServiceId: UUID!,
+		"""
+		The external metadata of a source.
+		"""
+		externalMetadata: ExternalMetadataInput!
+	): Source
+	"""
+	Fetches all objects in the storage by their prefix and optionally their kind.
+	### Errors
+	* When the prefix is invalid, it returns an `OBJECT_URL_INVALID` error.
+	"""
+	objects(
+		"""
+		The prefix of the object from the root. Must begin with `/`.
+		"""
+		prefix: String!,
+		"""
+		The kind of the object.
+		"""
+		kind: ObjectKind
+	): [ObjectEntry!]!
+	"""
+	Fetches tags.
+	"""
+	allTags(
+		"""
+		Returns the elements from the root of the hierarchy.
+		"""
+		root: Boolean! = false,
+		"""
+		Returns the elements in the list that come after the specified cursor.
+		"""
+		after: String,
+		"""
+		Returns the elements in the list that come before the specified cursor.
+		"""
+		before: String,
+		"""
+		Returns the first _n_ elements from the list.
+		"""
+		first: Int,
+		"""
+		Returns the last _n_ elements from the list.
+		"""
+		last: Int
+	): TagConnection!
+	"""
+	Looks up tags that contains the given name or alias.
+	"""
+	allTagsLike(
+		"""
+		The characters like the name or alias.
+		"""
+		nameOrAliasLike: String!
+	): [Tag!]!
+	"""
+	Looks up tags by a list of IDs.
+	"""
+	tags(
+		"""
+		The IDs of Tag objects.
+		"""
+		ids: [UUID!]!
+	): [Tag!]!
+	"""
+	Fetches all tag types.
+	"""
 	allTagTypes: [TagType!]!
-	tagTypes(ids: [UUID!]!): [TagType!]!
+	"""
+	Looks up tag types by a list of IDs.
+	"""
+	tagTypes(
+		"""
+		The IDs of TagType objects.
+		"""
+		ids: [UUID!]!
+	): [TagType!]!
 }
 
+"""
+A replica represents metadata and a reference to the object in the storage.
+"""
 type Replica {
+	"""
+	The ID of the Replica object.
+	"""
 	id: UUID!
+	"""
+	The 1-based index of the display order in the medium.
+	"""
 	displayOrder: Int!
+	"""
+	The thumbnail of the replica.
+	"""
 	thumbnail: Thumbnail
+	"""
+	The internal original URL of the replica.
+	"""
 	originalUrl: String!
+	"""
+	The MIME type of the replica. Unavailable when in process.
+	"""
 	mimeType: String
+	"""
+	The width of the replica. Unavailable when in process.
+	"""
 	width: Int
+	"""
+	The height of the replica. Unavailable when in process.
+	"""
 	height: Int
+	"""
+	The current status of the replica.
+	"""
 	status: ReplicaStatus!
+	"""
+	The date at which the replica was created.
+	"""
 	createdAt: DateTime!
+	"""
+	The date at which the replica was updated.
+	"""
 	updatedAt: DateTime!
+	"""
+	The public URL of the replica.
+	"""
 	url: String
 }
 
+"""
+A replica input represents a file upload.
+"""
 input ReplicaInput {
+	"""
+	The file to upload. The name must start with a single slash `/`.
+	"""
 	file: Upload!
+	"""
+	Whether to overwrite the existing file.
+	"""
 	overwrite: Boolean!
 }
 
+"""
+A replica phase represents the phase of a replica.
+"""
 enum ReplicaPhase {
+	"""
+	The replica is ready to serve.
+	"""
 	READY
+	"""
+	The replica is in process.
+	"""
 	PROCESSING
+	"""
+	The replica has an error.
+	"""
 	ERROR
 }
 
+"""
+A replica status represents the current status of a replica.
+"""
 type ReplicaStatus {
+	"""
+	The phase of the replica.
+	"""
 	phase: ReplicaPhase!
 }
 
+"""
+A source represents metadata that uniquely identifies the original location of a medium.
+"""
 type Source {
+	"""
+	The ID of the Source object.
+	"""
 	id: UUID!
+	"""
+	The external service of the source.
+	"""
 	externalService: ExternalService!
+	"""
+	The metadata from the external service.
+	"""
 	externalMetadata: JSON!
+	"""
+	The URL of the source.
+	"""
 	url: String
+	"""
+	The date at which the source was created.
+	"""
 	createdAt: DateTime!
+	"""
+	The date at which the source was updated.
+	"""
 	updatedAt: DateTime!
 }
 
 
 type Subscription {
-	medium(id: UUID!): Medium!
+	"""
+	Subscribes to a medium.
+	"""
+	medium(
+		"""
+		The ID of the Medium object.
+		"""
+		id: UUID!
+	): Medium!
 }
 
+"""
+A tag represents a user-friendly and hierarchical attribute attached to media.
+"""
 type Tag {
+	"""
+	The ID of the Tag object.
+	"""
 	id: UUID!
+	"""
+	The name of the tag.
+	"""
 	name: String!
+	"""
+	The kana of the tag.
+	"""
 	kana: String!
+	"""
+	The list of aliases for the tag.
+	"""
 	aliases: [String!]!
+	"""
+	The parent node of the tag.
+	"""
 	parent: Tag
+	"""
+	The child nodes of the tag.
+	"""
 	children: [Tag!]!
+	"""
+	The date at which the tag was created.
+	"""
 	createdAt: DateTime!
+	"""
+	The date at which the tag was updated.
+	"""
 	updatedAt: DateTime!
 }
 
@@ -276,29 +1127,84 @@ type TagEdge {
 	cursor: String!
 }
 
+"""
+A tag tag type is a pair of a tag and a tag type.
+"""
 type TagTagType {
+	"""
+	The tag.
+	"""
 	tag: Tag!
+	"""
+	The tag type.
+	"""
 	type: TagType!
 }
 
+"""
+A tag tag type input is a pair of the ID of a tag and tag type.
+"""
 input TagTagTypeInput {
+	"""
+	The ID of the tag.
+	"""
 	tagId: UUID!
+	"""
+	The ID of the tag type.
+	"""
 	tagTypeId: UUID!
 }
 
+"""
+A tag type represents a type of the tag being attached to media describing how
+the tag corresponds to the media.
+"""
 type TagType {
+	"""
+	The ID of the TagType object.
+	"""
 	id: UUID!
+	"""
+	The short and user-friendly name that uniquely identifies the tag type.
+	"""
 	slug: String!
+	"""
+	The name of the tag type.
+	"""
 	name: String!
+	"""
+	The kana of the tag type.
+	"""
 	kana: String!
 }
 
+"""
+A thumbnail represents a smaller version of the object that is generated from the original one.
+"""
 type Thumbnail {
+	"""
+	The ID of the Thumbnail object.
+	"""
 	id: UUID!
+	"""
+	The width of the thumbnail.
+	"""
 	width: Int!
+	"""
+	The height of the thumbnail.
+	"""
 	height: Int!
+	"""
+	The date at which the thumbnail was created.
+	"""
 	createdAt: DateTime!
+	"""
+	The date at which the thumbnail was updated.
+	"""
 	updatedAt: DateTime!
+	"""
+	The public URL of the thumbnail. Unavailable when in process.
+	"""
 	url: String!
 }
 
