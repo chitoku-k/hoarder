@@ -15,13 +15,20 @@ use crate::{
     tags::TagTagType,
 };
 
+/// A medium represents a set of sources, tags, and replicas.
 #[derive(SimpleObject)]
 pub(crate) struct Medium {
+    /// The ID of the Medium object.
     id: Uuid,
+    /// The sources attached to the medium.
     sources: Vec<Source>,
+    /// The tags attached to the medium.
     tags: Vec<TagTagType>,
+    /// The replicas that belongs to the medium.
     replicas: Vec<Replica>,
+    /// The date at which the medium was created.
     created_at: DateTime<Utc>,
+    /// The date at which the medium was updated.
     updated_at: DateTime<Utc>,
 }
 
