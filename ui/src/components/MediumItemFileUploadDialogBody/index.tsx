@@ -85,7 +85,7 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
       }
 
       const pathname = decodeURIComponent(new URL(replica.originalUrl).pathname)
-      const dirpart = pathname.substring(pathname.indexOf('/') + 1, pathname.lastIndexOf('/'))
+      const dirpart = pathname.substring(1).substring(pathname.indexOf('/'), pathname.lastIndexOf('/') - 1)
       if (current && current !== dirpart) {
         return ''
       }
@@ -131,9 +131,8 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
   }, [ close ])
 
   const processReplicaUpload = useCallback(async (medium: Medium, replica: ReplicaCreate, observable: Observable<Replica>, overwrite?: boolean): Promise<Replica> => {
-    const path = container ? `/${container}` : ''
-    const url = `${path}/${replica.name}`.split('/').map(strictUriEncode).join('/')
-    const file = new File([ replica.blob ], url)
+    const path = `${container}/${replica.name}`.split('/').filter(c => c.length).map(strictUriEncode).join('/')
+    const file = new File([ replica.blob ], `/${path}`)
 
     try {
       const newReplica = await createReplica(
