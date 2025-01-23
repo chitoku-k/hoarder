@@ -80,10 +80,13 @@ where
     }
 }
 
+/// The ordering direction.
 #[derive(Enum, Clone, Copy, Default, Eq, PartialEq)]
 pub(crate) enum Order {
+    /// Ascending.
     #[default]
     Asc,
+    /// Descending.
     Desc,
 }
 

@@ -9,70 +9,106 @@ use crate::{
     external_services::ExternalService,
 };
 
+/// A source represents metadata that uniquely identifies the original location of a medium.
 #[derive(SimpleObject)]
 pub(crate) struct Source {
+    /// The ID of the Source object.
     id: Uuid,
+    /// The external service of the source.
     external_service: ExternalService,
+    /// The metadata from the external service.
     external_metadata: serde_json::Value,
+    /// The URL of the source.
     url: Option<String>,
+    /// The date at which the source was created.
     created_at: DateTime<Utc>,
+    /// The date at which the source was updated.
     updated_at: DateTime<Utc>,
 }
 
+/// An external metadata represents the attributes from the external service.
 #[derive(Debug, Eq, OneofObject, PartialEq, Serialize)]
 #[graphql(name = "ExternalMetadataInput")]
 #[serde(rename_all = "snake_case")]
 pub(crate) enum ExternalMetadata {
+    /// The metadata from Bluesky.
     Bluesky(ExternalMetadataIdCreatorId),
+    /// The metadata from Fantia.
     Fantia(ExternalMetadataId),
+    /// The metadata from Mastodon.
     Mastodon(ExternalMetadataIdCreatorId),
+    /// The metadata from Misskey.
     Misskey(ExternalMetadataId),
+    /// The metadata from ニジエ.
     Nijie(ExternalMetadataId),
+    /// The metadata from pixiv.
     Pixiv(ExternalMetadataId),
+    /// The metadata from pixivFANBOX.
     #[graphql(name = "pixiv_fanbox")]
     PixivFanbox(ExternalMetadataIdCreatorId),
+    /// The metadata from Pleroma.
     Pleroma(ExternalMetadataId),
+    /// The metadata from ニコニコ静画.
     Seiga(ExternalMetadataId),
+    /// The metadata from Skeb.
     Skeb(ExternalMetadataIdCreatorId),
+    /// The metadata from Threads.
     Threads(ExternalMetadataIdOptionalCreatorId),
+    /// The URL of any arbitrary website.
     Website(ExternalMetadataUrl),
+    /// The metadata from X.
     X(ExternalMetadataIdOptionalCreatorId),
+    /// The metadata from Xfolio.
     Xfolio(ExternalMetadataIdCreatorId),
+    /// The metadata with a custom value.
     Custom(serde_json::Value),
 }
 
+/// An external metadata like represents a partial metadata.
 #[derive(Debug, Eq, OneofObject, PartialEq, Serialize)]
 #[graphql(name = "ExternalMetadataLikeInput")]
 pub(crate) enum ExternalMetadataLike {
+    /// The ID of a medium in the external service.
     Id(String),
+    /// The URL of a medium in the external service.
     Url(String),
 }
 
+/// An external metadata ID represents the ID of a medium in the external service.
 #[derive(Debug, Eq, InputObject, PartialEq, Serialize)]
 #[graphql(name = "ExternalMetadataIdInput")]
 pub(crate) struct ExternalMetadataId {
+    /// The ID of a medium in the external service.
     id: String,
 }
 
+/// An external metadata ID creator ID represents the ID of a medium and creator in the external service.
 #[derive(Debug, Eq, InputObject, PartialEq, Serialize)]
 #[graphql(name = "ExternalMetadataIdCreatorIdInput")]
 #[serde(rename_all = "camelCase")]
 pub(crate) struct ExternalMetadataIdCreatorId {
+    /// The ID of a medium in the external service.
     id: String,
+    /// The ID of a creator in the external service.
     creator_id: String,
 }
 
+/// An external metadata ID optional creator ID represents the ID of a medium and optional creator in the external service.
 #[derive(Debug, Eq, InputObject, PartialEq, Serialize)]
 #[graphql(name = "ExternalMetadataIdOptionalCreatorIdInput")]
 #[serde(rename_all = "camelCase")]
 pub(crate) struct ExternalMetadataIdOptionalCreatorId {
+    /// The ID of a medium in the external service.
     id: String,
+    /// The ID of an optional creator in the external service.
     creator_id: Option<String>,
 }
 
+/// An external metadata URL represents the URL of a medium in the external service.
 #[derive(Debug, Eq, InputObject, PartialEq, Serialize)]
 #[graphql(name = "ExternalMetadataUrlInput")]
 pub(crate) struct ExternalMetadataUrl {
+    /// The URL of a medium in the external service.
     url: String,
 }
 

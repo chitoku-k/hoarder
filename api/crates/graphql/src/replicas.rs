@@ -10,46 +10,72 @@ use domain::{entity::replicas, service::media::MediumOverwriteBehavior};
 use serde::Serialize;
 use uuid::Uuid;
 
+/// A replica represents metadata and a reference to the object in the storage.
 #[derive(SimpleObject)]
 #[graphql(complex)]
 pub(crate) struct Replica {
+    /// The ID of the Replica object.
     id: Uuid,
+    /// The 1-based index of the display order in the medium.
     display_order: u32,
+    /// The thumbnail of the replica.
     thumbnail: Option<Thumbnail>,
+    /// The internal original URL of the replica.
     original_url: String,
+    /// The MIME type of the replica. Unavailable when in process.
     mime_type: Option<String>,
+    /// The width of the replica. Unavailable when in process.
     width: Option<u32>,
+    /// The height of the replica. Unavailable when in process.
     height: Option<u32>,
+    /// The current status of the replica.
     status: ReplicaStatus,
+    /// The date at which the replica was created.
     created_at: DateTime<Utc>,
+    /// The date at which the replica was updated.
     updated_at: DateTime<Utc>,
 }
 
+/// A replica status represents the current status of a replica.
 #[derive(Debug, Serialize, SimpleObject)]
 pub(crate) struct ReplicaStatus {
+    /// The phase of the replica.
     phase: ReplicaPhase,
 }
 
+/// A replica phase represents the phase of a replica.
 #[derive(Enum, Copy, Clone, Debug, Eq, PartialEq, Serialize)]
 pub(crate) enum ReplicaPhase {
+    /// The replica is ready to serve.
     Ready,
+    /// The replica is in process.
     Processing,
+    /// The replica has an error.
     Error,
 }
 
+/// A replica input represents a file upload.
 #[derive(Clone, Copy, InputObject)]
 pub struct ReplicaInput {
+    /// The file to upload. The name must start with a single slash `/`.
     file: Upload,
+    /// Whether to overwrite the existing file.
     overwrite: bool,
 }
 
+/// A thumbnail represents a smaller version of the object that is generated from the original one.
 #[derive(SimpleObject)]
 #[graphql(complex)]
 pub(crate) struct Thumbnail {
+    /// The ID of the Thumbnail object.
     id: Uuid,
+    /// The width of the thumbnail.
     width: u32,
+    /// The height of the thumbnail.
     height: u32,
+    /// The date at which the thumbnail was created.
     created_at: DateTime<Utc>,
+    /// The date at which the thumbnail was updated.
     updated_at: DateTime<Utc>,
 }
 
@@ -109,6 +135,7 @@ impl From<replicas::Thumbnail> for Thumbnail {
 
 #[ComplexObject]
 impl Replica {
+    /// The public URL of the replica.
     async fn url(&self, ctx: &Context<'_>) -> Option<String> {
         let media_url_factory = ctx.data_unchecked::<Arc<dyn MediaURLFactoryInterface>>();
         media_url_factory.public_url(&self.original_url)
@@ -117,6 +144,7 @@ impl Replica {
 
 #[ComplexObject]
 impl Thumbnail {
+    /// The public URL of the thumbnail. Unavailable when in process.
     async fn url(&self, ctx: &Context<'_>) -> String {
         let thumbnail_url_factory = ctx.data_unchecked::<Arc<dyn ThumbnailURLFactoryInterface>>();
         thumbnail_url_factory.get(self.id.into())

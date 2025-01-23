@@ -25,7 +25,13 @@ impl<MediaService> Subscription<MediaService>
 where
     MediaService: MediaServiceInterface,
 {
-    async fn medium<'a>(&self, ctx: &Context<'a>, id: Uuid) -> Result<impl Stream<Item = Medium> + 'a> {
+    /// Subscribes to a medium.
+    async fn medium<'a>(
+        &self,
+        ctx: &Context<'a>,
+        #[graphql(desc = "The ID of the Medium object.")]
+        id: Uuid,
+    ) -> Result<impl Stream<Item = Medium> + 'a> {
         let media_service = ctx.data_unchecked::<MediaService>();
 
         let node = ctx.look_ahead();

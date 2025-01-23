@@ -15,39 +15,60 @@ use uuid::Uuid;
 
 use crate::error::ErrorKind;
 
+/// A tag represents a user-friendly and hierarchical attribute attached to media.
 #[derive(SimpleObject)]
 pub struct Tag {
+    /// The ID of the Tag object.
     id: Uuid,
+    /// The name of the tag.
     name: String,
+    /// The kana of the tag.
     kana: String,
+    /// The list of aliases for the tag.
     aliases: BTreeSet<String>,
+    /// The parent node of the tag.
     parent: Option<Box<Tag>>,
+    /// The child nodes of the tag.
     children: Vec<Tag>,
+    /// The date at which the tag was created.
     created_at: DateTime<Utc>,
+    /// The date at which the tag was updated.
     updated_at: DateTime<Utc>,
 }
 
 #[derive(Clone, Constructor, Debug, Eq, PartialEq)]
 pub(crate) struct TagCursor(String, Uuid);
 
+/// A tag type represents a type of the tag being attached to media describing how
+/// the tag corresponds to the media.
 #[derive(SimpleObject)]
 pub struct TagType {
+    /// The ID of the TagType object.
     id: Uuid,
+    /// The short and user-friendly name that uniquely identifies the tag type.
     slug: String,
+    /// The name of the tag type.
     name: String,
+    /// The kana of the tag type.
     kana: String,
 }
 
+/// A tag tag type is a pair of a tag and a tag type.
 #[derive(Constructor, SimpleObject)]
 pub struct TagTagType {
+    /// The tag.
     tag: Tag,
+    /// The tag type.
     #[graphql(name = "type")]
     tag_type: TagType,
 }
 
+/// A tag tag type input is a pair of the ID of a tag and tag type.
 #[derive(Clone, Copy, InputObject)]
 pub struct TagTagTypeInput {
+    /// The ID of the tag.
     tag_id: Uuid,
+    /// The ID of the tag type.
     tag_type_id: Uuid,
 }
 

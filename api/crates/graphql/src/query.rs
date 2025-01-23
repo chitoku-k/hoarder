@@ -57,6 +57,7 @@ where
     TagsService: TagsServiceInterface,
     Normalizer: NormalizerInterface,
 {
+    /// Fetches all external services.
     async fn all_external_services(&self, ctx: &Context<'_>) -> Result<Vec<ExternalService>> {
         let external_services_service = ctx.data_unchecked::<ExternalServicesService>();
 
@@ -64,7 +65,13 @@ where
         Ok(external_services.into_iter().map(Into::into).collect())
     }
 
-    async fn external_services(&self, ctx: &Context<'_>, ids: Vec<Uuid>) -> Result<Vec<ExternalService>> {
+    /// Looks up external services by a list of IDs.
+    async fn external_services(
+        &self,
+        ctx: &Context<'_>,
+        #[graphql(desc = "The IDs of the ExternalService objects.")]
+        ids: Vec<Uuid>,
+    ) -> Result<Vec<ExternalService>> {
         let external_services_service = ctx.data_unchecked::<ExternalServicesService>();
 
         let ids: Map<_, _, _> = ids.into_iter().map(Into::into);
@@ -73,18 +80,23 @@ where
         Ok(external_services.into_iter().map(Into::into).collect())
     }
 
+    /// Fetches media optionally filtered by sources or tags, returning up to 100 results.
     async fn all_media(
         &self,
         ctx: &Context<'_>,
+        #[graphql(desc = "The IDs of Source objects. Mutually exclusive with `tagIds`.")]
         source_ids: Option<Vec<Uuid>>,
+        #[graphql(desc = "The IDs of TagType and Tag objects. Mutually exclusive with `sourceIds`.")]
         tag_ids: Option<Vec<TagTagTypeInput>>,
-        #[graphql(default)]
+        #[graphql(default, desc = "The ordering direction of media sorted by `createdAt`.")]
         order: Order,
+        #[graphql(desc = "Returns the elements in the list that come after the specified cursor.")]
         after: Option<String>,
+        #[graphql(desc = "Returns the elements in the list that come before the specified cursor.")]
         before: Option<String>,
-        #[graphql(validator(maximum = 100))]
+        #[graphql(validator(maximum = 100), desc = "Returns the first _n_ elements from the list.")]
         first: Option<i32>,
-        #[graphql(validator(maximum = 100))]
+        #[graphql(validator(maximum = 100), desc = "Returns the last _n_ elements from the list.")]
         last: Option<i32>,
     ) -> Result<Connection<MediumCursor, Medium>> {
         let media_service = ctx.data_unchecked::<MediaService>();
@@ -156,7 +168,13 @@ where
         ).await.map_err(|e| Error::new(ErrorKind::GraphQLError(e)))
     }
 
-    async fn media(&self, ctx: &Context<'_>, ids: Vec<Uuid>) -> Result<Vec<Medium>> {
+    /// Looks up media by a list of IDs.
+    async fn media(
+        &self,
+        ctx: &Context<'_>,
+        #[graphql(desc = "The IDs of Medium objects.")]
+        ids: Vec<Uuid>,
+    ) -> Result<Vec<Medium>> {
         let media_service = ctx.data_unchecked::<MediaService>();
 
         let node = ctx.look_ahead();
@@ -172,14 +190,28 @@ where
         media.into_iter().map(|m| m.try_into().map_err(Error::new)).collect()
     }
 
-    async fn replica(&self, ctx: &Context<'_>, original_url: String) -> Result<Replica> {
+    /// Looks up a replica by its original URL.
+    /// ### Errors
+    /// * When the replica is not found, it returns a `REPLICA_NOT_FOUND_BY_URL` error.
+    async fn replica(
+        &self,
+        ctx: &Context<'_>,
+        #[graphql(desc = "The original URL of media.")]
+        original_url: String,
+    ) -> Result<Replica> {
         let media_service = ctx.data_unchecked::<MediaService>();
 
         let replica = media_service.get_replica_by_original_url(&original_url).await?;
         Ok(replica.into())
     }
 
-    async fn all_sources_like(&self, ctx: &Context<'_>, external_metadata_like: ExternalMetadataLike) -> Result<Vec<Source>> {
+    /// Looks up sources by partial metadata.
+    async fn all_sources_like(
+        &self,
+        ctx: &Context<'_>,
+        #[graphql(desc = "The ID or URL representing sources.")]
+        external_metadata_like: ExternalMetadataLike,
+    ) -> Result<Vec<Source>> {
         let external_services_service = ctx.data_unchecked::<ExternalServicesService>();
         let media_service = ctx.data_unchecked::<MediaService>();
 
@@ -209,7 +241,13 @@ where
         }
     }
 
-    async fn sources(&self, ctx: &Context<'_>, ids: Vec<Uuid>) -> Result<Vec<Source>> {
+    /// Looks up sources by a list of IDs.
+    async fn sources(
+        &self,
+        ctx: &Context<'_>,
+        #[graphql(desc = "The IDs of Source objects.")]
+        ids: Vec<Uuid>,
+    ) -> Result<Vec<Source>> {
         let media_service = ctx.data_unchecked::<MediaService>();
 
         let ids: Map<_, _, _> = ids.into_iter().map(Into::into);
@@ -218,7 +256,15 @@ where
         sources.into_iter().map(|source| source.try_into().map_err(Error::new)).collect()
     }
 
-    async fn source(&self, ctx: &Context<'_>, external_service_id: Uuid, external_metadata: ExternalMetadata) -> Result<Option<Source>> {
+    /// Looks up a source by the ID of an external service and the external metadata.
+    async fn source(
+        &self,
+        ctx: &Context<'_>,
+        #[graphql(desc = "The ID of an ExternalService object.")]
+        external_service_id: Uuid,
+        #[graphql(desc = "The external metadata of a source.")]
+        external_metadata: ExternalMetadata,
+    ) -> Result<Option<Source>> {
         let media_service = ctx.data_unchecked::<MediaService>();
 
         let external_service_id = external_service_id.into();
@@ -228,7 +274,17 @@ where
         source.map(TryInto::try_into).transpose().map_err(Error::new)
     }
 
-    async fn objects(&self, ctx: &Context<'_>, prefix: String, kind: Option<ObjectKind>) -> Result<Vec<ObjectEntry>> {
+    /// Fetches all objects in the storage by their prefix and optionally their kind.
+    /// ### Errors
+    /// * When the prefix is invalid, it returns an `OBJECT_URL_INVALID` error.
+    async fn objects(
+        &self,
+        ctx: &Context<'_>,
+        #[graphql(desc = "The prefix of the object from the root. Must begin with `/`.")]
+        prefix: String,
+        #[graphql(desc = "The kind of the object.")]
+        kind: Option<ObjectKind>,
+    ) -> Result<Vec<ObjectEntry>> {
         let media_service = ctx.data_unchecked::<MediaService>();
 
         let kind = kind.map(Into::into);
@@ -237,16 +293,19 @@ where
         Ok(objects.into_iter().map(Into::into).collect())
     }
 
+    /// Fetches tags.
     async fn all_tags(
         &self,
         ctx: &Context<'_>,
-        #[graphql(default = false)]
+        #[graphql(default = false, desc = "Returns the elements from the root of the hierarchy.")]
         root: bool,
+        #[graphql(desc = "Returns the elements in the list that come after the specified cursor.")]
         after: Option<String>,
+        #[graphql(desc = "Returns the elements in the list that come before the specified cursor.")]
         before: Option<String>,
-        #[graphql(validator(maximum = 100))]
+        #[graphql(validator(maximum = 100), desc = "Returns the first _n_ elements from the list.")]
         first: Option<i32>,
-        #[graphql(validator(maximum = 100))]
+        #[graphql(validator(maximum = 100), desc = "Returns the last _n_ elements from the list.")]
         last: Option<i32>,
     ) -> Result<Connection<TagCursor, Tag>> {
         let tags_service = ctx.data_unchecked::<TagsService>();
@@ -305,10 +364,11 @@ where
         ).await.map_err(|e| Error::new(ErrorKind::GraphQLError(e)))
     }
 
+    /// Looks up tags that contains the given name or alias.
     async fn all_tags_like(
         &self,
         ctx: &Context<'_>,
-        #[graphql(validator(chars_min_length = 1))]
+        #[graphql(validator(chars_min_length = 1), desc = "The characters like the name or alias.")]
         name_or_alias_like: String,
     ) -> Result<Vec<Tag>> {
         let tags_service = ctx.data_unchecked::<TagsService>();
@@ -321,7 +381,13 @@ where
         Ok(tags.into_iter().map(Into::into).collect())
     }
 
-    async fn tags(&self, ctx: &Context<'_>, ids: Vec<Uuid>) -> Result<Vec<Tag>> {
+    /// Looks up tags by a list of IDs.
+    async fn tags(
+        &self,
+        ctx: &Context<'_>,
+        #[graphql(desc = "The IDs of Tag objects.")]
+        ids: Vec<Uuid>,
+    ) -> Result<Vec<Tag>> {
         let tags_service = ctx.data_unchecked::<TagsService>();
 
         let depth = get_tag_depth(&ctx.look_ahead());
@@ -331,6 +397,7 @@ where
         Ok(tags.into_iter().map(Into::into).collect())
     }
 
+    /// Fetches all tag types.
     async fn all_tag_types(&self, ctx: &Context<'_>) -> Result<Vec<TagType>> {
         let tags_service = ctx.data_unchecked::<TagsService>();
 
@@ -338,7 +405,13 @@ where
         Ok(tag_types.into_iter().map(Into::into).collect())
     }
 
-    async fn tag_types(&self, ctx: &Context<'_>, ids: Vec<Uuid>) -> Result<Vec<TagType>> {
+    /// Looks up tag types by a list of IDs.
+    async fn tag_types(
+        &self,
+        ctx: &Context<'_>,
+        #[graphql(desc = "The IDs of TagType objects.")]
+        ids: Vec<Uuid>,
+    ) -> Result<Vec<TagType>> {
         let tags_service = ctx.data_unchecked::<TagsService>();
 
         let ids: Map<_, _, _> = ids.into_iter().map(Into::into);
