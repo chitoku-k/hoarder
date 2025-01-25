@@ -203,11 +203,11 @@ where
         }
     }
 
-    async fn put_image(&self, url: EntryUrl, overwrite: MediumOverwriteBehavior) -> Result<(EntryUrl, ObjectsRepository::Write)> {
+    async fn put_image(&self, url: EntryUrl, overwrite: MediumOverwriteBehavior) -> Result<(EntryUrl, objects::ObjectStatus, ObjectsRepository::Write)> {
         match self.objects_repository.put(url, overwrite.into()).await {
-            Ok((entry, write)) => {
+            Ok((entry, status, write)) => {
                 if let Some(url) = entry.url {
-                    Ok((url, write))
+                    Ok((url, status, write))
                 } else {
                     Err(ErrorKind::ObjectPathInvalid)?
                 }
@@ -225,7 +225,7 @@ where
     MediumImageProcessor: processor::media::MediumImageProcessor + Clone,
     ObjectsRepository: objects::ObjectsRepository + Clone,
 {
-    async fn extract_medium_source<R>(&self, medium_source: MediumSource<R>) -> Result<(EntryUrl, Box<dyn FnOnce() -> Result<(OriginalImage, ThumbnailImage)> + Send>)>
+    async fn extract_medium_source<R>(&self, medium_source: MediumSource<R>) -> Result<(EntryUrl, objects::ObjectStatus, Box<dyn FnOnce() -> Result<(OriginalImage, ThumbnailImage)> + Send>)>
     where
         for<'a> R: Read + Seek + Send + 'a,
     {
@@ -237,6 +237,7 @@ where
 
                 Ok((
                     url,
+                    objects::ObjectStatus::Existing,
                     Box::new(move || {
                         let (original_image, thumbnail_image) = medium_image_processor.generate_thumbnail(read)?;
                         Ok((original_image, thumbnail_image))
@@ -245,11 +246,12 @@ where
             },
             MediumSource::Content(path, content, overwrite) => {
                 let url = path.to_url(ObjectsRepository::scheme());
-                let (url, mut write) = self.put_image(url, overwrite).await?;
+                let (url, status, mut write) = self.put_image(url, overwrite).await?;
 
                 let objects_repository = self.objects_repository.clone();
                 Ok((
                     url,
+                    status,
                     Box::new(move || {
                         let mut read = content;
                         objects_repository.copy(&mut read, &mut write)?;
@@ -272,12 +274,12 @@ where
     ReplicasRepository: replicas::ReplicasRepository + Clone,
     ObjectsRepository: objects::ObjectsRepository + Clone,
 {
-    async fn create_replica_source<R>(&self, medium_source: MediumSource<R>) -> Result<(EntryUrl, Box<dyn FnOnce() -> Result<(OriginalImage, ThumbnailImage)> + Send>)>
+    async fn create_replica_source<R>(&self, medium_source: MediumSource<R>) -> Result<(EntryUrl, objects::ObjectStatus, Box<dyn FnOnce() -> Result<(OriginalImage, ThumbnailImage)> + Send>)>
     where
         for<'a> R: Read + Seek + Send + 'a,
     {
         match self.extract_medium_source(medium_source).await {
-            Ok((url, process)) => Ok((url, process)),
+            Ok((url, status, process)) => Ok((url, status, process)),
             Err(e) => {
                 let ErrorKind::ObjectAlreadyExists { url, entry } = e.kind() else {
                     log::error!("failed to process a medium\nError: {e:?}");
@@ -343,11 +345,19 @@ where
     where
         for<'a> R: Read + Seek + Send + 'a,
     {
-        let (url, process) = self.create_replica_source(medium_source).await?;
+        let (url, status, process) = self.create_replica_source(medium_source).await?;
         match self.replicas_repository.create(medium_id, None, &url, None, ReplicaStatus::Processing).await {
             Ok(replica) => {
                 self.process_replica_by_id(replica.id, process);
                 Ok(replica)
+            },
+            Err(e) if status.is_created() => {
+                log::error!("failed to create a replica\nError: {e:?}");
+
+                if let Err(e) = self.objects_repository.delete(url).await {
+                    log::error!("failed to delete the object\nError: {e:?}");
+                }
+                Err(e)
             },
             Err(e) => {
                 log::error!("failed to create a replica\nError: {e:?}");
@@ -579,11 +589,19 @@ where
     where
         for<'a> R: Read + Seek + Send + 'a,
     {
-        let (url, process) = self.create_replica_source(medium_source).await?;
+        let (url, status, process) = self.create_replica_source(medium_source).await?;
         match self.replicas_repository.update_by_id(id, None, Some(&url), None, Some(ReplicaStatus::Processing)).await {
             Ok(replica) => {
                 self.process_replica_by_id(replica.id, process);
                 Ok(replica)
+            },
+            Err(e) if status.is_created() => {
+                log::error!("failed to update the replica\nError: {e:?}");
+
+                if let Err(e) = self.objects_repository.delete(url).await {
+                    log::error!("failed to delete the object\nError: {e:?}");
+                }
+                Err(e)
             },
             Err(e) => {
                 log::error!("failed to update the replica\nError: {e:?}");

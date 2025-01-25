@@ -22,13 +22,29 @@ impl ObjectOverwriteBehavior {
     }
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ObjectStatus {
+    Created,
+    Existing,
+}
+
+impl ObjectStatus {
+    pub const fn is_created(&self) -> bool {
+        matches!(self, ObjectStatus::Created)
+    }
+
+    pub const fn is_existing(&self) -> bool {
+        matches!(self, ObjectStatus::Existing)
+    }
+}
+
 pub trait ObjectsRepository: Send + Sync + 'static {
     type Read: Read + Seek + Send + Unpin + 'static;
     type Write: Write + Seek + Send + Unpin + 'static;
 
     fn scheme() -> &'static str;
 
-    fn put(&self, url: EntryUrl, overwrite: ObjectOverwriteBehavior) -> impl Future<Output = Result<(Entry, Self::Write)>> + Send;
+    fn put(&self, url: EntryUrl, overwrite: ObjectOverwriteBehavior) -> impl Future<Output = Result<(Entry, ObjectStatus, Self::Write)>> + Send;
 
     fn get(&self, url: EntryUrl) -> impl Future<Output = Result<(Entry, Self::Read)>> + Send;
 
