@@ -32,10 +32,9 @@ pub trait ObjectsRepository: Send + Sync + 'static {
 
     fn get(&self, url: EntryUrl) -> impl Future<Output = Result<(Entry, Self::Read)>> + Send;
 
-    fn copy<R, W>(&self, read: &mut R, write: &mut W) -> Result<u64>
+    fn copy<R>(&self, read: &mut R, write: &mut Self::Write) -> Result<u64>
     where
-        for<'a> R: Read + 'a,
-        for<'a> W: Write + 'a;
+        for<'a> R: Read + 'a;
 
     fn list(&self, prefix: EntryUrl) -> impl Future<Output = Result<Vec<Entry>>> + Send;
 
