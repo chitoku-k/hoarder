@@ -3,7 +3,7 @@ use std::{future::Future, io::{Cursor, Read}};
 use domain::{
     entity::objects::{Entry, EntryUrl},
     error::Result,
-    repository::{objects::{ObjectsRepository, ObjectOverwriteBehavior}, DeleteResult},
+    repository::{objects::{ObjectOverwriteBehavior, ObjectStatus, ObjectsRepository}, DeleteResult},
 };
 
 mockall::mock! {
@@ -15,7 +15,7 @@ mockall::mock! {
 
         fn scheme() -> &'static str;
 
-        fn put(&self, url: EntryUrl, overwrite: ObjectOverwriteBehavior) -> impl Future<Output = Result<(Entry, Cursor<Vec<u8>>)>> + Send;
+        fn put(&self, url: EntryUrl, overwrite: ObjectOverwriteBehavior) -> impl Future<Output = Result<(Entry, ObjectStatus, Cursor<Vec<u8>>)>> + Send;
 
         fn get(&self, url: EntryUrl) -> impl Future<Output = Result<(Entry, Cursor<&'static [u8]>)>> + Send;
 

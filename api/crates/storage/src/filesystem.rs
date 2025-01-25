@@ -4,7 +4,7 @@ use derive_more::Constructor;
 use domain::{
     entity::objects::{Entry, EntryKind, EntryUrl},
     error::{Error, ErrorKind, Result},
-    repository::{objects::{ObjectOverwriteBehavior, ObjectsRepository}, DeleteResult},
+    repository::{objects::{ObjectOverwriteBehavior, ObjectStatus, ObjectsRepository}, DeleteResult},
 };
 use futures::{TryFutureExt, TryStreamExt};
 use icu_collator::Collator;
@@ -39,7 +39,7 @@ impl ObjectsRepository for FilesystemObjectsRepository {
         "file"
     }
 
-    async fn put(&self, url: EntryUrl, overwrite: ObjectOverwriteBehavior) -> Result<(Entry, Self::Write)> {
+    async fn put(&self, url: EntryUrl, overwrite: ObjectOverwriteBehavior) -> Result<(Entry, ObjectStatus, Self::Write)> {
         let url = FilesystemEntryUrl::try_from(url)?;
         let fullpath = self.fullpath(url.as_path());
 
@@ -57,13 +57,26 @@ impl ObjectsRepository for FilesystemObjectsRepository {
         }
 
         let result = File::options()
-            .create_new(overwrite.is_denied())
+            .create_new(true)
             .write(true)
             .open(&fullpath)
+            .map_ok(|file| (file, ObjectStatus::Created))
+            .or_else(|e| async {
+                if e.kind() == io::ErrorKind::AlreadyExists && overwrite.is_allowed() {
+                    let file = File::options()
+                        .write(true)
+                        .open(&fullpath)
+                        .await?;
+
+                    Ok((file, ObjectStatus::Existing))
+                } else {
+                    Err(e)
+                }
+            })
             .await;
 
-        let file = match result {
-            Ok(file) => file,
+        let (file, status) = match result {
+            Ok((file, status)) => (file, status),
             Err(e) if e.kind() == io::ErrorKind::AlreadyExists => {
                 let entry = File::open(&fullpath)
                     .map_err(Error::other)
@@ -92,7 +105,7 @@ impl ObjectsRepository for FilesystemObjectsRepository {
         };
 
         let entry = FilesystemEntry::from_file(url.as_path(), &file).await?;
-        Ok((entry.into_entry(), file.into_std().await))
+        Ok((entry.into_entry(), status, file.into_std().await))
     }
 
     async fn get(&self, url: EntryUrl) -> Result<(Entry, Self::Read)> {
