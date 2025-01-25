@@ -1,4 +1,4 @@
-use std::{fs::File as StdFile, io::{self, Read, Write}, path::{Path, PathBuf}, sync::Arc};
+use std::{fs::File as StdFile, io::{self, Read}, path::{Path, PathBuf}, sync::Arc};
 
 use derive_more::Constructor;
 use domain::{
@@ -110,12 +110,14 @@ impl ObjectsRepository for FilesystemObjectsRepository {
         }
     }
 
-    fn copy<R, W>(&self, read: &mut R, write: &mut W) -> Result<u64>
+    fn copy<R>(&self, read: &mut R, write: &mut Self::Write) -> Result<u64>
     where
         R: Read,
-        W: Write,
     {
-        io::copy(read, write).map_err(Error::other)
+        write.set_len(0).map_err(Error::other)?;
+
+        let written = io::copy(read, write).map_err(Error::other)?;
+        Ok(written)
     }
 
     async fn list(&self, prefix: EntryUrl) -> Result<Vec<Entry>> {
