@@ -63,9 +63,9 @@ jobs:
           kubectl config use-context k8s.chitoku.jp
       - name: Update images
         run: |
-          kubectl set image deployment/hoarder-api \
+          kubectl set image --field-manager=github-actions deployment/hoarder-api \
             migration=ghcr.io/chitoku-k/hoarder/api:${{ github.ref_name }} \
             api=ghcr.io/chitoku-k/hoarder/api:${{ github.ref_name }}
 
-          kubectl set image deployment/hoarder-ui \
+          kubectl set image --field-manager=github-actions deployment/hoarder-ui \
             ui=ghcr.io/chitoku-k/hoarder/ui:${{ github.ref_name }}
