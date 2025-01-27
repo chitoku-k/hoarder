@@ -87,7 +87,7 @@ impl TagTypesRepository for PostgresTagTypesRepository {
 
     async fn fetch_by_ids<T>(&self, ids: T) -> Result<Vec<TagType>>
     where
-        T: IntoIterator<Item = TagTypeId> + Send,
+        T: Iterator<Item = TagTypeId> + Send,
     {
         let (sql, values) = Query::select()
             .columns([
@@ -97,7 +97,7 @@ impl TagTypesRepository for PostgresTagTypesRepository {
                 PostgresTagType::Kana,
             ])
             .from(PostgresTagType::Table)
-            .and_where(Expr::col(PostgresTagType::Id).is_in(ids.into_iter().map(PostgresTagTypeId::from)))
+            .and_where(Expr::col(PostgresTagType::Id).is_in(ids.map(PostgresTagTypeId::from)))
             .order_by(PostgresTagType::Kana, Order::Asc)
             .build_sqlx(PostgresQueryBuilder);
 

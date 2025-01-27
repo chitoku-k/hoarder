@@ -11,6 +11,7 @@ use domain::{
     repository::{DeleteResult, Direction, Order},
     service::tags::{TagsService, TagsServiceInterface},
 };
+use dyn_clone::clone_box;
 use futures::future::{err, ok};
 use pretty_assertions::{assert_eq, assert_matches};
 use uuid::uuid;
@@ -25,10 +26,10 @@ async fn create_tag_succeeds() {
         .expect_create()
         .times(1)
         .withf(|name, kana, aliases, parent_id, depth| {
-            (name, kana, aliases, parent_id, depth) == (
+            clone_box(aliases).eq(["アッカリーン".to_string()]) &&
+            (name, kana, parent_id, depth) == (
                 "赤座あかり",
                 "あかざあかり",
-                &vec!["アッカリーン".to_string()],
                 &Some(TagId::from(uuid!("22222222-2222-2222-2222-222222222222"))),
                 &TagDepth::new(1, 1),
             )
@@ -61,7 +62,7 @@ async fn create_tag_succeeds() {
     let actual = service.create_tag(
         "赤座あかり",
         "あかざあかり",
-        vec!["アッカリーン".to_string()],
+        ["アッカリーン".to_string()].into_iter(),
         Some(TagId::from(uuid!("22222222-2222-2222-2222-222222222222"))),
         TagDepth::new(1, 1),
     ).await.unwrap();
@@ -94,10 +95,10 @@ async fn create_tag_fails() {
         .expect_create()
         .times(1)
         .withf(|name, kana, aliases, parent_id, depth| {
-            (name, kana, aliases, parent_id, depth) == (
+            clone_box(aliases).eq(["アッカリーン".to_string()]) &&
+            (name, kana, parent_id, depth) == (
                 "赤座あかり",
                 "あかざあかり",
-                &["アッカリーン".to_string()],
                 &Some(TagId::from(uuid!("22222222-2222-2222-2222-222222222222"))),
                 &TagDepth::new(1, 1),
             )
@@ -110,7 +111,7 @@ async fn create_tag_fails() {
     let actual = service.create_tag(
         "赤座あかり",
         "あかざあかり",
-        ["アッカリーン".to_string()],
+        ["アッカリーン".to_string()].into_iter(),
         Some(TagId::from(uuid!("22222222-2222-2222-2222-222222222222"))),
         TagDepth::new(1, 1),
     ).await.unwrap_err();
@@ -327,13 +328,11 @@ async fn get_tags_by_ids_succeeds() {
         .expect_fetch_by_ids()
         .times(1)
         .withf(|ids, depth| {
-            (ids, depth) == (
-                &[
-                    TagId::from(uuid!("22222222-2222-2222-2222-222222222222")),
-                    TagId::from(uuid!("55555555-5555-5555-5555-555555555555")),
-                ],
-                &TagDepth::new(0, 1),
-            )
+            clone_box(ids).eq([
+                TagId::from(uuid!("22222222-2222-2222-2222-222222222222")),
+                TagId::from(uuid!("55555555-5555-5555-5555-555555555555")),
+            ]) &&
+            depth == &TagDepth::new(0, 1)
         })
         .returning(|_, _| {
             Box::pin(ok(vec![
@@ -388,7 +387,7 @@ async fn get_tags_by_ids_succeeds() {
         [
             TagId::from(uuid!("22222222-2222-2222-2222-222222222222")),
             TagId::from(uuid!("55555555-5555-5555-5555-555555555555")),
-        ],
+        ].into_iter(),
         TagDepth::new(0, 1),
     ).await.unwrap();
 
@@ -444,13 +443,11 @@ async fn get_tags_by_ids_fails() {
         .expect_fetch_by_ids()
         .times(1)
         .withf(|ids, depth| {
-            (ids, depth) == (
-                &[
-                    TagId::from(uuid!("22222222-2222-2222-2222-222222222222")),
-                    TagId::from(uuid!("55555555-5555-5555-5555-555555555555")),
-                ],
-                &TagDepth::new(0, 1),
-            )
+            clone_box(ids).eq([
+                TagId::from(uuid!("22222222-2222-2222-2222-222222222222")),
+                TagId::from(uuid!("55555555-5555-5555-5555-555555555555")),
+            ]) &&
+            depth == &TagDepth::new(0, 1)
         })
         .returning(|_, _| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
 
@@ -461,7 +458,7 @@ async fn get_tags_by_ids_fails() {
         [
             TagId::from(uuid!("22222222-2222-2222-2222-222222222222")),
             TagId::from(uuid!("55555555-5555-5555-5555-555555555555")),
-        ],
+        ].into_iter(),
         TagDepth::new(0, 1),
     ).await.unwrap_err();
 
@@ -653,10 +650,10 @@ async fn get_tag_types_by_ids_succeeds() {
     mock_tag_types_repository
         .expect_fetch_by_ids()
         .times(1)
-        .withf(|ids: &[_; 2]| ids == &[
+        .withf(|ids| clone_box(ids).eq([
             TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
             TagTypeId::from(uuid!("55555555-5555-5555-5555-555555555555")),
-        ])
+        ]))
         .returning(|_| {
             Box::pin(ok(vec![
                 TagType {
@@ -678,7 +675,7 @@ async fn get_tag_types_by_ids_succeeds() {
     let actual = service.get_tag_types_by_ids([
         TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
         TagTypeId::from(uuid!("55555555-5555-5555-5555-555555555555")),
-    ]).await.unwrap();
+    ].into_iter()).await.unwrap();
 
     assert_eq!(actual, vec![
         TagType {
@@ -703,17 +700,17 @@ async fn get_tag_types_by_ids_fails() {
     mock_tag_types_repository
         .expect_fetch_by_ids()
         .times(1)
-        .withf(|ids: &[_; 2]| ids == &[
+        .withf(|ids| clone_box(ids).eq([
             TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
             TagTypeId::from(uuid!("55555555-5555-5555-5555-555555555555")),
-        ])
+        ]))
         .returning(|_| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
 
     let service = TagsService::new(mock_tags_repository, mock_tag_types_repository);
     let actual = service.get_tag_types_by_ids([
         TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
         TagTypeId::from(uuid!("55555555-5555-5555-5555-555555555555")),
-    ]).await.unwrap_err();
+    ].into_iter()).await.unwrap_err();
 
     assert_matches!(actual.kind(), ErrorKind::Other);
 }
@@ -725,12 +722,12 @@ async fn update_tag_by_id_succeeds() {
         .expect_update_by_id()
         .times(1)
         .withf(|id, name, kana, add_aliases, remove_aliases, depth| {
-            (id, name, kana, add_aliases, remove_aliases, depth) == (
+            clone_box(add_aliases).eq(["アッカリーン".to_string()]) &&
+            clone_box(remove_aliases).eq([] as [String; 0]) &&
+            (id, name, kana, depth) == (
                 &TagId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                 &Some("赤座あかり".to_string()),
                 &Some("あかざあかり".to_string()),
-                &vec!["アッカリーン".to_string()],
-                &vec![],
                 &TagDepth::new(0, 1),
             )
         })
@@ -763,8 +760,8 @@ async fn update_tag_by_id_succeeds() {
         TagId::from(uuid!("33333333-3333-3333-3333-333333333333")),
         Some("赤座あかり".to_string()),
         Some("あかざあかり".to_string()),
-        vec!["アッカリーン".to_string()],
-        vec![],
+        ["アッカリーン".to_string()].into_iter(),
+        [].into_iter(),
         TagDepth::new(0, 1),
     ).await.unwrap();
 
@@ -796,12 +793,12 @@ async fn update_tag_by_id_fails() {
         .expect_update_by_id()
         .times(1)
         .withf(|id, name, kana, add_aliases, remove_aliases, depth| {
-            (id, name, kana, add_aliases, remove_aliases, depth) == (
+            clone_box(add_aliases).eq(["アッカリーン".to_string()]) &&
+            clone_box(remove_aliases).eq([] as [String; 0]) &&
+            (id, name, kana, depth) == (
                 &TagId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                 &Some("赤座あかり".to_string()),
                 &Some("あかざあかり".to_string()),
-                &vec!["アッカリーン".to_string()],
-                &vec![],
                 &TagDepth::new(0, 1),
             )
         })
@@ -814,8 +811,8 @@ async fn update_tag_by_id_fails() {
         TagId::from(uuid!("33333333-3333-3333-3333-333333333333")),
         Some("赤座あかり".to_string()),
         Some("あかざあかり".to_string()),
-        vec!["アッカリーン".to_string()],
-        vec![],
+        ["アッカリーン".to_string()].into_iter(),
+        [].into_iter(),
         TagDepth::new(0, 1),
     ).await.unwrap_err();
 

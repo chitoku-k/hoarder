@@ -312,7 +312,7 @@ impl SourcesRepository for PostgresSourcesRepository {
 
     async fn fetch_by_ids<T>(&self, ids: T) -> Result<Vec<Source>>
     where
-        T: IntoIterator<Item = SourceId> + Send,
+        T: Iterator<Item = SourceId> + Send,
     {
         let (sql, values) = Query::select()
             .expr_as(Expr::col((PostgresSource::Table, PostgresSource::Id)), PostgresSourceExternalService::SourceId)
@@ -333,7 +333,7 @@ impl SourcesRepository for PostgresSourcesRepository {
                 Expr::col((PostgresExternalService::Table, PostgresExternalService::Id))
                     .equals((PostgresSource::Table, PostgresSource::ExternalServiceId)),
             )
-            .and_where(Expr::col((PostgresSource::Table, PostgresSource::Id)).is_in(ids.into_iter().map(PostgresSourceId::from)))
+            .and_where(Expr::col((PostgresSource::Table, PostgresSource::Id)).is_in(ids.map(PostgresSourceId::from)))
             .order_by((PostgresExternalService::Table, PostgresExternalService::Slug), Order::Asc)
             .order_by((PostgresSource::Table, PostgresSource::ExternalMetadata), Order::Asc)
             .build_sqlx(PostgresQueryBuilder);

@@ -18,7 +18,7 @@ async fn succeeds(ctx: &DatabaseContext) {
     let actual = repository.fetch_by_ids([
         TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
         TagTypeId::from(uuid!("1e5021f0-d8ef-4859-815a-747bf3175724")),
-    ]).await.unwrap();
+    ].into_iter()).await.unwrap();
 
     assert_eq!(actual, vec![
         TagType {

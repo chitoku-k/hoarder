@@ -20,7 +20,7 @@ async fn succeeds(ctx: &DatabaseContext) {
         ReplicaId::from(uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5")),
         ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be")),
         ReplicaId::from(uuid!("6fae1497-e987-492e-987a-f9870b7d3c5b")),
-    ]).await.unwrap();
+    ].into_iter()).await.unwrap();
 
     assert_eq!(actual, vec![
         Replica {

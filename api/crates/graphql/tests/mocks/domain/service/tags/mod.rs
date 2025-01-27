@@ -6,6 +6,7 @@ use domain::{
         tags::{Tag, TagDepth, TagId},
     },
     error::Result,
+    iter::CloneableIterator,
     repository::{DeleteResult, Direction, Order},
     service::tags::TagsServiceInterface,
 };
@@ -14,9 +15,10 @@ mockall::mock! {
     pub TagsServiceInterface {}
 
     impl TagsServiceInterface for TagsServiceInterface {
+        #[mockall::concretize]
         fn create_tag<T>(&self, name: &str, kana: &str, aliases: T, parent_id: Option<TagId>, depth: TagDepth) -> impl Future<Output = Result<Tag>> + Send
         where
-            T: IntoIterator<Item = String> + Send + 'static;
+            T: CloneableIterator<Item = String> + Send;
 
         fn create_tag_type(&self, slug: &str, name: &str, kana: &str) -> impl Future<Output = Result<TagType>> + Send;
 
@@ -30,22 +32,25 @@ mockall::mock! {
             limit: u64,
         ) -> impl Future<Output = Result<Vec<Tag>>> + Send;
 
+        #[mockall::concretize]
         fn get_tags_by_ids<T>(&self, ids: T, depth: TagDepth) -> impl Future<Output = Result<Vec<Tag>>> + Send
         where
-            T: IntoIterator<Item = TagId> + Send + 'static;
+            T: CloneableIterator<Item = TagId> + Send;
 
         fn get_tags_by_name_or_alias_like(&self, name_or_alias_like: &str, depth: TagDepth) -> impl Future<Output = Result<Vec<Tag>>> + Send;
 
         fn get_tag_types(&self) -> impl Future<Output = Result<Vec<TagType>>> + Send;
 
+        #[mockall::concretize]
         fn get_tag_types_by_ids<T>(&self, ids: T) -> impl Future<Output = Result<Vec<TagType>>> + Send
         where
-            T: IntoIterator<Item = TagTypeId> + Send + 'static;
+            T: CloneableIterator<Item = TagTypeId> + Send;
 
+        #[mockall::concretize]
         fn update_tag_by_id<T, U>(&self, id: TagId, name: Option<String>, kana: Option<String>, add_aliases: T, remove_aliases: U, depth: TagDepth) -> impl Future<Output = Result<Tag>> + Send
         where
-            T: IntoIterator<Item = String> + Send + 'static,
-            U: IntoIterator<Item = String> + Send + 'static;
+            T: CloneableIterator<Item = String> + Send,
+            U: CloneableIterator<Item = String> + Send;
 
         fn update_tag_type_by_id<'a>(&self, id: TagTypeId, slug: Option<&'a str>, name: Option<&'a str>, kana: Option<&'a str>) -> impl Future<Output = Result<TagType>> + Send;
 

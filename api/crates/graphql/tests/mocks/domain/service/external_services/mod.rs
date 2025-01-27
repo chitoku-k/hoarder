@@ -3,6 +3,7 @@ use std::future::Future;
 use domain::{
     entity::external_services::{ExternalMetadata, ExternalService, ExternalServiceId},
     error::Result,
+    iter::CloneableIterator,
     repository::DeleteResult,
     service::external_services::ExternalServicesServiceInterface,
 };
@@ -15,9 +16,10 @@ mockall::mock! {
 
         fn get_external_services(&self) -> impl Future<Output = Result<Vec<ExternalService>>> + Send;
 
+        #[mockall::concretize]
         fn get_external_services_by_ids<T>(&self, ids: T) -> impl Future<Output = Result<Vec<ExternalService>>> + Send
         where
-            T: IntoIterator<Item = ExternalServiceId> + Send + 'static;
+            T: CloneableIterator<Item = ExternalServiceId> + Send;
 
         fn get_external_services_by_url(&self, url: &str) -> impl Future<Output = Result<Vec<(ExternalService, ExternalMetadata)>>> + Send;
 

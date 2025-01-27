@@ -6,6 +6,7 @@ use domain::{
         replicas::{OriginalImage, Replica, ReplicaId, ReplicaStatus, ThumbnailId, ThumbnailImage},
     },
     error::Result,
+    iter::CloneableIterator,
     repository::{replicas::ReplicasRepository, DeleteResult},
 };
 
@@ -15,9 +16,10 @@ mockall::mock! {
     impl ReplicasRepository for ReplicasRepository {
         fn create(&self, medium_id: MediumId, thumbnail_image: Option<ThumbnailImage>, original_url: &str, original_image: Option<OriginalImage>, status: ReplicaStatus) -> impl Future<Output = Result<Replica>> + Send;
 
+        #[mockall::concretize]
         fn fetch_by_ids<T>(&self, ids: T) -> impl Future<Output = Result<Vec<Replica>>> + Send
         where
-            T: IntoIterator<Item = ReplicaId> + Send + 'static;
+            T: CloneableIterator<Item = ReplicaId> + Send;
 
         fn fetch_by_original_url(&self, original_url: &str) -> impl Future<Output = Result<Replica>> + Send;
 

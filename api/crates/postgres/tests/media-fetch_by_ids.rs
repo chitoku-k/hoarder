@@ -21,7 +21,7 @@ async fn succeeds(ctx: &DatabaseContext) {
         [
             MediumId::from(uuid!("2872ed9d-4db9-4b25-b86f-791ad009cc0a")),
             MediumId::from(uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1")),
-        ],
+        ].into_iter(),
         None,
         false,
         false,

@@ -1,10 +1,11 @@
 use async_graphql::{Schema, EmptyMutation, EmptySubscription, value};
 use domain::entity::tag_types::{TagType, TagTypeId};
+use dyn_clone::clone_box;
 use futures::future::ok;
 use graphql::query::Query;
 use indoc::indoc;
 use pretty_assertions::assert_eq;
-use uuid::{uuid, Uuid};
+use uuid::uuid;
 
 mod mocks;
 use mocks::{
@@ -16,9 +17,6 @@ use mocks::{
     normalizer::MockNormalizerInterface,
 };
 
-// Concrete type is required both in implementation and expectation.
-type IntoIterMap<T, U> = std::iter::Map<std::vec::IntoIter<T>, fn(T) -> U>;
-
 #[tokio::test]
 async fn succeeds() {
     let external_services_service = MockExternalServicesServiceInterface::new();
@@ -26,9 +24,9 @@ async fn succeeds() {
 
     let mut tags_service = MockTagsServiceInterface::new();
     tags_service
-        .expect_get_tag_types_by_ids::<IntoIterMap<Uuid, TagTypeId>>()
+        .expect_get_tag_types_by_ids()
         .times(1)
-        .withf(|ids| ids.clone().eq([
+        .withf(|ids| clone_box(ids).eq([
             TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
             TagTypeId::from(uuid!("66666666-6666-6666-6666-666666666666")),
         ]))

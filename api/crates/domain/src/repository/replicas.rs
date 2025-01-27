@@ -6,6 +6,7 @@ use crate::{
         replicas::{OriginalImage, Replica, ReplicaId, ReplicaStatus, ThumbnailId, ThumbnailImage},
     },
     error::Result,
+    iter::CloneableIterator,
     repository::DeleteResult,
 };
 
@@ -16,7 +17,7 @@ pub trait ReplicasRepository: Send + Sync + 'static {
     /// Fetches the replicas by IDs.
     fn fetch_by_ids<T>(&self, ids: T) -> impl Future<Output = Result<Vec<Replica>>> + Send
     where
-        for<'a> T: IntoIterator<Item = ReplicaId> + Send + 'a;
+        T: CloneableIterator<Item = ReplicaId> + Send;
 
     /// Fetches the replica by its original URL.
     fn fetch_by_original_url(&self, original_url: &str) -> impl Future<Output = Result<Replica>> + Send;

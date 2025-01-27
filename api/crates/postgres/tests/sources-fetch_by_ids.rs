@@ -22,7 +22,7 @@ async fn succeeds(ctx: &DatabaseContext) {
     let actual = repository.fetch_by_ids([
         SourceId::from(uuid!("76a94241-1736-4823-bb59-bef097c687e1")),
         SourceId::from(uuid!("94055dd8-7a22-4137-b8eb-3a374df5e5d1")),
-    ]).await.unwrap();
+    ].into_iter()).await.unwrap();
 
     assert_eq!(actual, vec![
         Source {

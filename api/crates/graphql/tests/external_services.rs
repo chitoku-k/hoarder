@@ -1,10 +1,11 @@
 use async_graphql::{Schema, EmptyMutation, EmptySubscription, value};
 use domain::entity::external_services::{ExternalService, ExternalServiceId};
+use dyn_clone::clone_box;
 use futures::future::ok;
 use graphql::query::Query;
 use indoc::indoc;
 use pretty_assertions::assert_eq;
-use uuid::{uuid, Uuid};
+use uuid::uuid;
 
 mod mocks;
 use mocks::{
@@ -16,16 +17,13 @@ use mocks::{
     normalizer::MockNormalizerInterface,
 };
 
-// Concrete type is required both in implementation and expectation.
-type IntoIterMap<T, U> = std::iter::Map<std::vec::IntoIter<T>, fn(T) -> U>;
-
 #[tokio::test]
 async fn succeeds() {
     let mut external_services_service = MockExternalServicesServiceInterface::new();
     external_services_service
-        .expect_get_external_services_by_ids::<IntoIterMap<Uuid, ExternalServiceId>>()
+        .expect_get_external_services_by_ids()
         .times(1)
-        .withf(|ids| ids.clone().eq([
+        .withf(|ids| clone_box(ids).eq([
             ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
             ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
         ]))

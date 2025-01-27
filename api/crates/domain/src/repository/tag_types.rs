@@ -3,6 +3,7 @@ use std::future::Future;
 use crate::{
     entity::tag_types::{TagType, TagTypeId},
     error::Result,
+    iter::CloneableIterator,
     repository::DeleteResult,
 };
 
@@ -13,7 +14,7 @@ pub trait TagTypesRepository: Send + Sync + 'static {
     /// Fetches the tag types by their IDs.
     fn fetch_by_ids<T>(&self, ids: T) -> impl Future<Output = Result<Vec<TagType>>> + Send
     where
-        for<'a> T: IntoIterator<Item = TagTypeId> + Send + 'a;
+        T: CloneableIterator<Item = TagTypeId> + Send;
 
     /// Fetches all tag types.
     fn fetch_all(&self) -> impl Future<Output = Result<Vec<TagType>>> + Send;

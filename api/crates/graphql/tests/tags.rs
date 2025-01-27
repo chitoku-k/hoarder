@@ -3,11 +3,12 @@ use std::collections::BTreeSet;
 use async_graphql::{Schema, EmptyMutation, EmptySubscription, value};
 use chrono::{TimeZone, Utc};
 use domain::entity::tags::{AliasSet, Tag, TagDepth, TagId};
+use dyn_clone::clone_box;
 use futures::future::ok;
 use graphql::query::Query;
 use indoc::indoc;
 use pretty_assertions::assert_eq;
-use uuid::{uuid, Uuid};
+use uuid::uuid;
 
 mod mocks;
 use mocks::{
@@ -19,9 +20,6 @@ use mocks::{
     normalizer::MockNormalizerInterface,
 };
 
-// Concrete type is required both in implementation and expectation.
-type IntoIterMap<T, U> = std::iter::Map<std::vec::IntoIter<T>, fn(T) -> U>;
-
 #[tokio::test]
 async fn succeeds() {
     let external_services_service = MockExternalServicesServiceInterface::new();
@@ -29,10 +27,10 @@ async fn succeeds() {
 
     let mut tags_service = MockTagsServiceInterface::new();
     tags_service
-        .expect_get_tags_by_ids::<IntoIterMap<Uuid, TagId>>()
+        .expect_get_tags_by_ids()
         .times(1)
         .withf(|ids, depth| {
-            ids.clone().eq([
+            clone_box(ids).eq([
                 TagId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                 TagId::from(uuid!("22222222-2222-2222-2222-222222222222")),
             ]) && depth == &TagDepth::new(2, 2)

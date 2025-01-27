@@ -12,6 +12,7 @@ use domain::{
         tags::{TagDepth, TagId},
     },
     error::Result,
+    iter::CloneableIterator,
     repository::{DeleteResult, Direction, Order},
     service::media::{MediaServiceInterface, MediumSource},
 };
@@ -21,10 +22,11 @@ mockall::mock! {
     pub MediaServiceInterface {}
 
     impl MediaServiceInterface for MediaServiceInterface {
+        #[mockall::concretize]
         fn create_medium<T, U>(&self, source_ids: T, created_at: Option<DateTime<Utc>>, tag_tag_type_ids: U, tag_depth: Option<TagDepth>, sources: bool) -> impl Future<Output = Result<Medium>> + Send
         where
-            T: IntoIterator<Item = SourceId> + Send + 'static,
-            U: IntoIterator<Item = (TagId, TagTypeId)> + Send + 'static;
+            T: CloneableIterator<Item = SourceId> + Send,
+            U: CloneableIterator<Item = (TagId, TagTypeId)> + Send;
 
         fn create_replica<R>(&self, medium_id: MediumId, medium_source: MediumSource<R>) -> impl Future<Output = Result<Replica>> + Send
         where
@@ -43,10 +45,12 @@ mockall::mock! {
             limit: u64,
         ) -> impl Future<Output = Result<Vec<Medium>>> + Send;
 
+        #[mockall::concretize]
         fn get_media_by_ids<T>(&self, ids: T, tag_depth: Option<TagDepth>, replicas: bool, sources: bool) -> impl Future<Output = Result<Vec<Medium>>> + Send
         where
-            T: IntoIterator<Item = MediumId> + Send + 'static;
+            T: CloneableIterator<Item = MediumId> + Send;
 
+        #[mockall::concretize]
         fn get_media_by_source_ids<T>(
             &self,
             source_ids: T,
@@ -59,8 +63,9 @@ mockall::mock! {
             limit: u64,
         ) -> impl Future<Output = Result<Vec<Medium>>> + Send
         where
-            T: IntoIterator<Item = SourceId> + Send + 'static;
+            T: CloneableIterator<Item = SourceId> + Send;
 
+        #[mockall::concretize]
         fn get_media_by_tag_ids<T>(
             &self,
             tag_tag_type_ids: T,
@@ -73,17 +78,19 @@ mockall::mock! {
             limit: u64,
         ) -> impl Future<Output = Result<Vec<Medium>>> + Send
         where
-            T: IntoIterator<Item = (TagId, TagTypeId)> + Send + 'static;
+            T: CloneableIterator<Item = (TagId, TagTypeId)> + Send;
 
+        #[mockall::concretize]
         fn get_replicas_by_ids<T>(&self, ids: T) -> impl Future<Output = Result<Vec<Replica>>> + Send
         where
-            T: IntoIterator<Item = ReplicaId> + Send + 'static;
+            T: CloneableIterator<Item = ReplicaId> + Send;
 
         fn get_replica_by_original_url(&self, original_url: &str) -> impl Future<Output = Result<Replica>> + Send;
 
+        #[mockall::concretize]
         fn get_sources_by_ids<T>(&self, ids: T) -> impl Future<Output = Result<Vec<Source>>> + Send
         where
-            T: IntoIterator<Item = SourceId> + Send + 'static;
+            T: CloneableIterator<Item = SourceId> + Send;
 
         fn get_source_by_external_metadata(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> impl Future<Output = Result<Option<Source>>> + Send;
 
@@ -97,6 +104,7 @@ mockall::mock! {
 
         fn watch_medium_by_id(&self, id: MediumId, tag_depth: Option<TagDepth>, replicas: bool, sources: bool) -> impl Future<Output = Result<BoxStream<'static, Result<Medium>>>> + Send;
 
+        #[mockall::concretize]
         fn update_medium_by_id<T, U, V, W, X>(
             &self,
             id: MediumId,
@@ -111,11 +119,11 @@ mockall::mock! {
             sources: bool,
         ) -> impl Future<Output = Result<Medium>> + Send
         where
-            T: IntoIterator<Item = SourceId> + Send + 'static,
-            U: IntoIterator<Item = SourceId> + Send + 'static,
-            V: IntoIterator<Item = (TagId, TagTypeId)> + Send + 'static,
-            W: IntoIterator<Item = (TagId, TagTypeId)> + Send + 'static,
-            X: IntoIterator<Item = ReplicaId> + Send + 'static;
+            T: CloneableIterator<Item = SourceId> + Send,
+            U: CloneableIterator<Item = SourceId> + Send,
+            V: CloneableIterator<Item = (TagId, TagTypeId)> + Send,
+            W: CloneableIterator<Item = (TagId, TagTypeId)> + Send,
+            X: CloneableIterator<Item = ReplicaId> + Send;
 
         fn update_replica_by_id<R>(&self, id: ReplicaId, medium_source: MediumSource<R>) -> impl Future<Output = Result<Replica>> + Send
         where

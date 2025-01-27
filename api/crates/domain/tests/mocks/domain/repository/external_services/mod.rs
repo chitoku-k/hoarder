@@ -3,6 +3,7 @@ use std::future::Future;
 use domain::{
     entity::external_services::{ExternalService, ExternalServiceId},
     error::Result,
+    iter::CloneableIterator,
     repository::{external_services::ExternalServicesRepository, DeleteResult},
 };
 
@@ -12,9 +13,10 @@ mockall::mock! {
     impl ExternalServicesRepository for ExternalServicesRepository {
         fn create<'a>(&self, slug: &str, kind: &str, name: &str, base_url: Option<&'a str>, url_pattern: Option<&'a str>) -> impl Future<Output = Result<ExternalService>> + Send;
 
+        #[mockall::concretize]
         fn fetch_by_ids<T>(&self, ids: T) -> impl Future<Output = Result<Vec<ExternalService>>> + Send
         where
-            T: IntoIterator<Item = ExternalServiceId> + Send + 'static;
+            T: CloneableIterator<Item = ExternalServiceId> + Send;
 
         fn fetch_all(&self) -> impl Future<Output = Result<Vec<ExternalService>>> + Send;
 

@@ -395,7 +395,7 @@ impl ReplicasRepository for PostgresReplicasRepository {
 
     async fn fetch_by_ids<T>(&self, ids: T) -> Result<Vec<Replica>>
     where
-        T: IntoIterator<Item = ReplicaId> + Send,
+        T: Iterator<Item = ReplicaId> + Send,
     {
         let (sql, values) = Query::select()
             .expr_as(Expr::col((PostgresReplica::Table, PostgresReplica::Id)), PostgresReplicaThumbnail::ReplicaId)
@@ -420,7 +420,7 @@ impl ReplicasRepository for PostgresReplicasRepository {
                 Expr::col((PostgresReplica::Table, PostgresReplica::Id))
                     .equals((PostgresThumbnail::Table, PostgresThumbnail::ReplicaId)),
             )
-            .and_where(Expr::col((PostgresReplica::Table, PostgresReplica::Id)).is_in(ids.into_iter().map(PostgresReplicaId::from)))
+            .and_where(Expr::col((PostgresReplica::Table, PostgresReplica::Id)).is_in(ids.map(PostgresReplicaId::from)))
             .order_by(PostgresReplica::MediumId, Order::Asc)
             .order_by(PostgresReplica::DisplayOrder, Order::Asc)
             .build_sqlx(PostgresQueryBuilder);

@@ -3,6 +3,7 @@ use std::future::Future;
 use crate::{
     entity::external_services::{ExternalMetadata, ExternalService, ExternalServiceId},
     error::{Error, ErrorKind, Result},
+    iter::CloneableIterator,
     repository::{external_services, DeleteResult},
 };
 
@@ -19,7 +20,7 @@ pub trait ExternalServicesServiceInterface: Send + Sync + 'static {
     /// Gets the external services by their IDs.
     fn get_external_services_by_ids<T>(&self, ids: T) -> impl Future<Output = Result<Vec<ExternalService>>> + Send
     where
-        for<'a> T: IntoIterator<Item = ExternalServiceId> + Send + 'a;
+        T: CloneableIterator<Item = ExternalServiceId> + Send;
 
     /// Gets the external services and metadata by URL.
     fn get_external_services_by_url(&self, url: &str) -> impl Future<Output = Result<Vec<(ExternalService, ExternalMetadata)>>> + Send;
@@ -80,7 +81,7 @@ where
 
     async fn get_external_services_by_ids<T>(&self, ids: T) -> Result<Vec<ExternalService>>
     where
-        for<'a> T: IntoIterator<Item = ExternalServiceId> + Send + 'a,
+        T: CloneableIterator<Item = ExternalServiceId> + Send,
     {
         match self.external_services_repository.fetch_by_ids(ids).await {
             Ok(services) => Ok(services),

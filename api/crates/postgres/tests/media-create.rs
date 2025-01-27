@@ -27,9 +27,9 @@ use common::DatabaseContext;
 async fn succeeds(ctx: &DatabaseContext) {
     let repository = PostgresMediaRepository::new(ctx.pool.clone());
     let actual = repository.create(
-        [],
+        [].into_iter(),
         None,
-        [],
+        [].into_iter(),
         None,
         false,
     ).await.unwrap();
@@ -54,9 +54,9 @@ async fn succeeds(ctx: &DatabaseContext) {
 async fn with_created_at_succeeds(ctx: &DatabaseContext) {
     let repository = PostgresMediaRepository::new(ctx.pool.clone());
     let actual = repository.create(
-        [],
+        [].into_iter(),
         Some(Utc.with_ymd_and_hms(2022, 1, 1, 5, 6, 7).unwrap()),
-        [],
+        [].into_iter(),
         None,
         false,
     ).await.unwrap();
@@ -85,9 +85,9 @@ async fn with_sources_succeeds(ctx: &DatabaseContext) {
         [
             SourceId::from(uuid!("3e1150b0-144a-4fcf-a202-b93a5f3274db")),
             SourceId::from(uuid!("082bdad0-46a9-4637-af44-3c91a605a5f1")),
-        ],
+        ].into_iter(),
         None,
-        [],
+        [].into_iter(),
         None,
         true,
     ).await.unwrap();
@@ -153,7 +153,7 @@ async fn with_sources_succeeds(ctx: &DatabaseContext) {
 async fn with_tags_succeeds(ctx: &DatabaseContext) {
     let repository = PostgresMediaRepository::new(ctx.pool.clone());
     let actual = repository.create(
-        [],
+        [].into_iter(),
         None,
         [
             (
@@ -168,7 +168,7 @@ async fn with_tags_succeeds(ctx: &DatabaseContext) {
                 TagId::from(uuid!("a2a6c29d-18d0-47b1-a324-88e93c267707")),
                 TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
             ),
-        ],
+        ].into_iter(),
         Some(TagDepth::new(2, 2)),
         true,
     ).await.unwrap();
@@ -365,7 +365,7 @@ async fn with_sources_tags_succeeds(ctx: &DatabaseContext) {
         [
             SourceId::from(uuid!("3e1150b0-144a-4fcf-a202-b93a5f3274db")),
             SourceId::from(uuid!("082bdad0-46a9-4637-af44-3c91a605a5f1")),
-        ],
+        ].into_iter(),
         None,
         [
             (
@@ -380,7 +380,7 @@ async fn with_sources_tags_succeeds(ctx: &DatabaseContext) {
                 TagId::from(uuid!("a2a6c29d-18d0-47b1-a324-88e93c267707")),
                 TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
             ),
-        ],
+        ].into_iter(),
         Some(TagDepth::new(2, 2)),
         true,
     ).await.unwrap();
