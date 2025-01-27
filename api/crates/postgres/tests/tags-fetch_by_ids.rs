@@ -23,7 +23,7 @@ async fn succeeds(ctx: &DatabaseContext) {
             TagId::from(uuid!("12c4101e-722f-4172-9fe2-7862ebbc8fc5")),
             TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")),
             TagId::from(uuid!("d1a302b5-7b49-44be-9019-ac337077786a")),
-        ],
+        ].into_iter(),
         TagDepth::new(2, 2),
     ).await.unwrap();
 

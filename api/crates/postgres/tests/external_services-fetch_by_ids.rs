@@ -18,7 +18,7 @@ async fn succeeds(ctx: &DatabaseContext) {
     let actual = repository.fetch_by_ids([
         ExternalServiceId::from(uuid!("4e0c68c7-e5ec-4d60-b9eb-733f47290cd3")),
         ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")),
-    ]).await.unwrap();
+    ].into_iter()).await.unwrap();
 
     assert_eq!(actual, vec![
         ExternalService {

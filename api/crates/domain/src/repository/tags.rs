@@ -3,6 +3,7 @@ use std::future::Future;
 use crate::{
     entity::tags::{Tag, TagDepth, TagId},
     error::Result,
+    iter::CloneableIterator,
     repository::{DeleteResult, Direction, Order},
 };
 
@@ -10,12 +11,12 @@ pub trait TagsRepository: Send + Sync + 'static {
     /// Creates a tag.
     fn create<T>(&self, name: &str, kana: &str, aliases: T, parent_id: Option<TagId>, depth: TagDepth) -> impl Future<Output = Result<Tag>> + Send
     where
-        for<'a> T: IntoIterator<Item = String> + Send + 'a;
+        T: CloneableIterator<Item = String> + Send;
 
     /// Fetches tags by their IDs.
     fn fetch_by_ids<T>(&self, ids: T, depth: TagDepth) -> impl Future<Output = Result<Vec<Tag>>> + Send
     where
-        for<'a> T: IntoIterator<Item = TagId> + Send + 'a;
+        T: CloneableIterator<Item = TagId> + Send;
 
     /// Fetches tags by their names like the given parameter.
     fn fetch_by_name_or_alias_like(&self, name_or_alias_like: &str, depth: TagDepth) -> impl Future<Output = Result<Vec<Tag>>> + Send;
@@ -34,8 +35,8 @@ pub trait TagsRepository: Send + Sync + 'static {
         depth: TagDepth,
     ) -> impl Future<Output = Result<Tag>> + Send
     where
-        for<'a> T: IntoIterator<Item = String> + Send + 'a,
-        for<'a> U: IntoIterator<Item = String> + Send + 'a;
+        T: CloneableIterator<Item = String> + Send,
+        U: CloneableIterator<Item = String> + Send;
 
     /// Attaches the tag to the existing tag by ID.
     fn attach_by_id(&self, id: TagId, parent_id: TagId, depth: TagDepth) -> impl Future<Output = Result<Tag>> + Send;

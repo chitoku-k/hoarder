@@ -24,8 +24,8 @@ async fn with_depth_succeeds(ctx: &DatabaseContext) {
         TagId::from(uuid!("e8d32062-0185-43e8-a27d-6ca707d7dd60")),
         Some("ごらく部".to_string()),
         Some("ごらくぶ".to_string()),
-        ["七森中☆ごらく部".to_string()],
-        [],
+        ["七森中☆ごらく部".to_string()].into_iter(),
+        [].into_iter(),
         TagDepth::new(2, 2),
     ).await.unwrap();
 
@@ -107,8 +107,8 @@ async fn without_depth_succeeds(ctx: &DatabaseContext) {
         TagId::from(uuid!("e8d32062-0185-43e8-a27d-6ca707d7dd60")),
         Some("ごらく部".to_string()),
         Some("ごらくぶ".to_string()),
-        ["七森中☆ごらく部".to_string()],
-        [],
+        ["七森中☆ごらく部".to_string()].into_iter(),
+        [].into_iter(),
         TagDepth::new(0, 0),
     ).await.unwrap();
 
@@ -140,8 +140,8 @@ async fn root_fails(ctx: &DatabaseContext) {
         TagId::from(uuid!("00000000-0000-0000-0000-000000000000")),
         None,
         None,
-        [],
-        [],
+        [].into_iter(),
+        [].into_iter(),
         TagDepth::new(0, 0),
     ).await.unwrap_err();
 
@@ -157,8 +157,8 @@ async fn fails(ctx: &DatabaseContext) {
         TagId::from(uuid!("11111111-1111-1111-1111-111111111111")),
         None,
         None,
-        [],
-        [],
+        [].into_iter(),
+        [].into_iter(),
         TagDepth::new(0, 0),
     ).await.unwrap_err();
 

@@ -3,6 +3,7 @@ use std::future::Future;
 use domain::{
     entity::tag_types::{TagType, TagTypeId},
     error::Result,
+    iter::CloneableIterator,
     repository::{tag_types::TagTypesRepository, DeleteResult},
 };
 
@@ -12,9 +13,10 @@ mockall::mock! {
     impl TagTypesRepository for TagTypesRepository {
         fn create(&self, slug: &str, name: &str, kana: &str) -> impl Future<Output = Result<TagType>> + Send;
 
+        #[mockall::concretize]
         fn fetch_by_ids<T>(&self, ids: T) -> impl Future<Output = Result<Vec<TagType>>> + Send
         where
-            T: IntoIterator<Item = TagTypeId> + Send + 'static;
+            T: CloneableIterator<Item = TagTypeId> + Send;
 
         fn fetch_all(&self) -> impl Future<Output = Result<Vec<TagType>>> + Send;
 

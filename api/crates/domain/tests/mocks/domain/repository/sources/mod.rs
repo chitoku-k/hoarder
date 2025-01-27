@@ -6,6 +6,7 @@ use domain::{
         sources::{Source, SourceId},
     },
     error::Result,
+    iter::CloneableIterator,
     repository::{sources::SourcesRepository, DeleteResult},
 };
 
@@ -15,9 +16,10 @@ mockall::mock! {
     impl SourcesRepository for SourcesRepository {
         fn create(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> impl Future<Output = Result<Source>> + Send;
 
+        #[mockall::concretize]
         fn fetch_by_ids<T>(&self, ids: T) -> impl Future<Output = Result<Vec<Source>>> + Send
         where
-            T: IntoIterator<Item = SourceId> + Send + 'static;
+            T: CloneableIterator<Item = SourceId> + Send;
 
         fn fetch_by_external_metadata(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> impl Future<Output = Result<Option<Source>>> + Send;
 

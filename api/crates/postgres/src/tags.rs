@@ -462,7 +462,7 @@ async fn detach_parent(tx: &mut Transaction<'_, Postgres>, id: TagId) -> Result<
 impl TagsRepository for PostgresTagsRepository {
     async fn create<T>(&self, name: &str, kana: &str, aliases: T, parent_id: Option<TagId>, depth: TagDepth) -> Result<Tag>
     where
-        T: IntoIterator<Item = String> + Send,
+        T: Iterator<Item = String> + Send,
     {
         let mut tx = self.pool.begin().await.map_err(Error::other)?;
 
@@ -476,7 +476,7 @@ impl TagsRepository for PostgresTagsRepository {
             .values([
                 Expr::val(name).into(),
                 Expr::val(kana).into(),
-                aliases.into_iter().collect::<Vec<_>>().into(),
+                aliases.collect::<Vec<_>>().into(),
             ])
             .map_err(Error::other)?
             .returning(
@@ -530,7 +530,7 @@ impl TagsRepository for PostgresTagsRepository {
 
     async fn fetch_by_ids<T>(&self, ids: T, depth: TagDepth) -> Result<Vec<Tag>>
     where
-        T: IntoIterator<Item = TagId> + Send,
+        T: Iterator<Item = TagId> + Send,
     {
         let mut conn = self.pool.acquire().await.map_err(Error::other)?;
 
@@ -670,8 +670,8 @@ impl TagsRepository for PostgresTagsRepository {
 
     async fn update_by_id<T, U>(&self, id: TagId, name: Option<String>, kana: Option<String>, add_aliases: T, remove_aliases: U, depth: TagDepth) -> Result<Tag>
     where
-        T: IntoIterator<Item = String> + Send,
-        U: IntoIterator<Item = String> + Send,
+        T: Iterator<Item = String> + Send,
+        U: Iterator<Item = String> + Send,
     {
         if id.is_root() {
             return Err(ErrorKind::TagUpdatingRoot)?;

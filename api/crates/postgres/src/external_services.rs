@@ -97,7 +97,7 @@ impl ExternalServicesRepository for PostgresExternalServicesRepository {
 
     async fn fetch_by_ids<T>(&self, ids: T) -> Result<Vec<ExternalService>>
     where
-        T: IntoIterator<Item = ExternalServiceId> + Send,
+        T: Iterator<Item = ExternalServiceId> + Send,
     {
         let (sql, values) = Query::select()
             .columns([
@@ -109,7 +109,7 @@ impl ExternalServicesRepository for PostgresExternalServicesRepository {
                 PostgresExternalService::UrlPattern,
             ])
             .from(PostgresExternalService::Table)
-            .and_where(Expr::col(PostgresExternalService::Id).is_in(ids.into_iter().map(PostgresExternalServiceId::from)))
+            .and_where(Expr::col(PostgresExternalService::Id).is_in(ids.map(PostgresExternalServiceId::from)))
             .order_by(PostgresExternalService::Slug, Order::Asc)
             .build_sqlx(PostgresQueryBuilder);
 

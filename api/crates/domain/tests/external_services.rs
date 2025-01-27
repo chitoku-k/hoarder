@@ -5,6 +5,7 @@ use domain::{
     repository::DeleteResult,
     service::external_services::{ExternalServicesService, ExternalServicesServiceInterface},
 };
+use dyn_clone::clone_box;
 use futures::future::{err, ok};
 use pretty_assertions::{assert_eq, assert_matches};
 use uuid::uuid;
@@ -184,10 +185,10 @@ async fn get_external_services_by_ids_succeeds() {
     mock_external_services_repository
         .expect_fetch_by_ids()
         .times(1)
-        .withf(|ids: &Vec<_>| ids == &vec![
+        .withf(|ids| clone_box(ids).eq([
             ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
             ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
-        ])
+        ]))
         .returning(|_| {
             Box::pin(ok(vec![
                 ExternalService {
@@ -210,10 +211,10 @@ async fn get_external_services_by_ids_succeeds() {
         });
 
     let service = ExternalServicesService::new(mock_external_services_repository);
-    let actual = service.get_external_services_by_ids(vec![
+    let actual = service.get_external_services_by_ids([
         ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
         ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
-    ]).await.unwrap();
+    ].into_iter()).await.unwrap();
 
     assert_eq!(actual, vec![
         ExternalService {
@@ -241,17 +242,17 @@ async fn get_external_services_by_ids_fails() {
     mock_external_services_repository
         .expect_fetch_by_ids()
         .times(1)
-        .withf(|ids: &Vec<_>| ids == &vec![
+        .withf(|ids| clone_box(ids).eq([
             ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
             ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
-        ])
+        ]))
         .returning(|_| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
 
     let service = ExternalServicesService::new(mock_external_services_repository);
-    let actual = service.get_external_services_by_ids(vec![
+    let actual = service.get_external_services_by_ids([
         ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
         ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
-    ]).await.unwrap_err();
+    ].into_iter()).await.unwrap_err();
 
     assert_matches!(actual.kind(), ErrorKind::Other);
 }

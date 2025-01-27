@@ -1,12 +1,13 @@
 use async_graphql::{Schema, EmptyMutation, EmptySubscription, value};
 use chrono::{TimeZone, Utc};
 use domain::entity::media::{Medium, MediumId};
+use dyn_clone::clone_box;
 use futures::future::ok;
 use graphql::query::Query;
 use indoc::indoc;
 use ordermap::OrderMap;
 use pretty_assertions::assert_eq;
-use uuid::{uuid, Uuid};
+use uuid::uuid;
 
 mod mocks;
 use mocks::{
@@ -18,19 +19,16 @@ use mocks::{
     normalizer::MockNormalizerInterface,
 };
 
-// Concrete type is required both in implementation and expectation.
-type IntoIterMap<T, U> = std::iter::Map<std::vec::IntoIter<T>, fn(T) -> U>;
-
 #[tokio::test]
 async fn succeeds() {
     let external_services_service = MockExternalServicesServiceInterface::new();
 
     let mut media_service = MockMediaServiceInterface::new();
     media_service
-        .expect_get_media_by_ids::<IntoIterMap<Uuid, MediumId>>()
+        .expect_get_media_by_ids()
         .times(1)
         .withf(|ids, tag_depth, replicas, sources| {
-            ids.clone().eq([
+            clone_box(ids).eq([
                 MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
                 MediumId::from(uuid!("99999999-9999-9999-9999-999999999999")),
             ]) &&

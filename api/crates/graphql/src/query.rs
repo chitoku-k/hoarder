@@ -36,8 +36,6 @@ pub struct Query<ExternalServicesService, MediaService, TagsService, Normalizer>
     normalizer: PhantomData<fn() -> Normalizer>,
 }
 
-type Map<T, U, V> = std::iter::Map<T, fn(U) -> V>;
-
 impl<ExternalServicesService, MediaService, TagsService, Normalizer> Query<ExternalServicesService, MediaService, TagsService, Normalizer> {
     pub fn new() -> Self {
         Self {
@@ -74,7 +72,7 @@ where
     ) -> Result<Vec<ExternalService>> {
         let external_services_service = ctx.data_unchecked::<ExternalServicesService>();
 
-        let ids: Map<_, _, _> = ids.into_iter().map(Into::into);
+        let ids = ids.into_iter().map(Into::into);
 
         let external_services = external_services_service.get_external_services_by_ids(ids).await?;
         Ok(external_services.into_iter().map(Into::into).collect())
@@ -142,11 +140,11 @@ where
                             media_service.get_media(tag_depth, replicas, sources, cursor, order, direction, limit).await?
                         },
                         (Some(source_ids), None) => {
-                            let source_ids: Map<_, _, _> = source_ids.into_iter().map(Into::into);
+                            let source_ids = source_ids.into_iter().map(Into::into);
                             media_service.get_media_by_source_ids(source_ids, tag_depth, replicas, sources, cursor, order, direction, limit).await?
                         },
                         (None, Some(tag_ids)) => {
-                            let tag_ids: Map<_, _, _> = tag_ids.into_iter().map(Into::into);
+                            let tag_ids = tag_ids.into_iter().map(Into::into);
                             media_service.get_media_by_tag_ids(tag_ids, tag_depth, replicas, sources, cursor, order, direction, limit).await?
                         },
                     }
@@ -184,7 +182,7 @@ where
         let replicas = node.field("replicas").exists();
         let sources = node.field("sources").exists();
 
-        let ids: Map<_, _, _> = ids.into_iter().map(Into::into);
+        let ids = ids.into_iter().map(Into::into);
 
         let media = media_service.get_media_by_ids(ids, tag_depth, replicas, sources).await?;
         media.into_iter().map(|m| m.try_into().map_err(Error::new)).collect()
@@ -250,7 +248,7 @@ where
     ) -> Result<Vec<Source>> {
         let media_service = ctx.data_unchecked::<MediaService>();
 
-        let ids: Map<_, _, _> = ids.into_iter().map(Into::into);
+        let ids = ids.into_iter().map(Into::into);
 
         let sources = media_service.get_sources_by_ids(ids).await?;
         sources.into_iter().map(|source| source.try_into().map_err(Error::new)).collect()
@@ -391,7 +389,7 @@ where
         let tags_service = ctx.data_unchecked::<TagsService>();
 
         let depth = get_tag_depth(&ctx.look_ahead());
-        let ids: Map<_, _, _> = ids.into_iter().map(Into::into);
+        let ids = ids.into_iter().map(Into::into);
 
         let tags = tags_service.get_tags_by_ids(ids, depth).await?;
         Ok(tags.into_iter().map(Into::into).collect())
@@ -414,7 +412,7 @@ where
     ) -> Result<Vec<TagType>> {
         let tags_service = ctx.data_unchecked::<TagsService>();
 
-        let ids: Map<_, _, _> = ids.into_iter().map(Into::into);
+        let ids = ids.into_iter().map(Into::into);
 
         let tag_types = tags_service.get_tag_types_by_ids(ids).await?;
         Ok(tag_types.into_iter().map(Into::into).collect())

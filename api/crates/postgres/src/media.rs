@@ -421,8 +421,8 @@ async fn eager_load(conn: &mut PgConnection, media: &mut [Medium], tag_depth: Op
 impl MediaRepository for PostgresMediaRepository {
     async fn create<T, U>(&self, source_ids: T, created_at: Option<DateTime<Utc>>, tag_tag_type_ids: U, tag_depth: Option<TagDepth>, sources: bool) -> Result<Medium>
     where
-        T: IntoIterator<Item = SourceId> + Send,
-        U: IntoIterator<Item = (TagId, TagTypeId)> + Send,
+        T: Iterator<Item = SourceId> + Send,
+        U: Iterator<Item = (TagId, TagTypeId)> + Send,
     {
         let mut tx = self.pool.begin().await.map_err(Error::other)?;
 
@@ -453,7 +453,7 @@ impl MediaRepository for PostgresMediaRepository {
             .into();
 
         let query = {
-            let mut source_ids = source_ids.into_iter().peekable();
+            let mut source_ids = source_ids.peekable();
             if source_ids.peek().is_some() {
                 let mut query = Query::insert();
                 query
@@ -487,7 +487,7 @@ impl MediaRepository for PostgresMediaRepository {
         }
 
         let query = {
-            let mut tag_tag_type_ids = tag_tag_type_ids.into_iter().peekable();
+            let mut tag_tag_type_ids = tag_tag_type_ids.peekable();
             if tag_tag_type_ids.peek().is_some() {
                 let mut query = Query::insert();
                 query
@@ -533,7 +533,7 @@ impl MediaRepository for PostgresMediaRepository {
 
     async fn fetch_by_ids<T>(&self, ids: T, tag_depth: Option<TagDepth>, replicas: bool, sources: bool) -> Result<Vec<Medium>>
     where
-        T: IntoIterator<Item = MediumId> + Send,
+        T: Iterator<Item = MediumId> + Send,
     {
         let mut conn = self.pool.acquire().await.map_err(Error::other)?;
 
@@ -544,7 +544,7 @@ impl MediaRepository for PostgresMediaRepository {
                 PostgresMedium::UpdatedAt,
             ])
             .from(PostgresMedium::Table)
-            .and_where(Expr::col(PostgresMedium::Id).is_in(ids.into_iter().map(PostgresMediumId::from)))
+            .and_where(Expr::col(PostgresMedium::Id).is_in(ids.map(PostgresMediumId::from)))
             .order_by(PostgresMedium::CreatedAt, Order::Asc)
             .build_sqlx(PostgresQueryBuilder);
 
@@ -571,7 +571,7 @@ impl MediaRepository for PostgresMediaRepository {
         limit: u64,
     ) -> Result<Vec<Medium>>
     where
-        T: IntoIterator<Item = SourceId> + Send,
+        T: Iterator<Item = SourceId> + Send,
     {
         let mut conn = self.pool.acquire().await.map_err(Error::other)?;
 
@@ -606,7 +606,7 @@ impl MediaRepository for PostgresMediaRepository {
                     ]))
                 })
             )
-            .and_where(Expr::col(PostgresMediumSource::SourceId).is_in(source_ids.into_iter().map(PostgresSourceId::from)))
+            .and_where(Expr::col(PostgresMediumSource::SourceId).is_in(source_ids.map(PostgresSourceId::from)))
             .group_by_col(PostgresMedium::Id)
             .order_by((PostgresMedium::Table, PostgresMedium::CreatedAt), order.clone())
             .order_by((PostgresMedium::Table, PostgresMedium::Id), order)
@@ -640,10 +640,9 @@ impl MediaRepository for PostgresMediaRepository {
         limit: u64,
     ) -> Result<Vec<Medium>>
     where
-        T: IntoIterator<Item = (TagId, TagTypeId)> + Send,
+        T: Iterator<Item = (TagId, TagTypeId)> + Send,
     {
         let tag_tag_type_ids: Vec<_> = tag_tag_type_ids
-            .into_iter()
             .map(|(tag_id, tag_type_id)| (*tag_id, *tag_type_id))
             .collect();
 
@@ -839,11 +838,11 @@ impl MediaRepository for PostgresMediaRepository {
         sources: bool,
     ) -> Result<Medium>
     where
-        T: IntoIterator<Item = SourceId> + Send,
-        U: IntoIterator<Item = SourceId> + Send,
-        V: IntoIterator<Item = (TagId, TagTypeId)> + Send,
-        W: IntoIterator<Item = (TagId, TagTypeId)> + Send,
-        X: IntoIterator<Item = ReplicaId> + Send,
+        T: Iterator<Item = SourceId> + Send,
+        U: Iterator<Item = SourceId> + Send,
+        V: Iterator<Item = (TagId, TagTypeId)> + Send,
+        W: Iterator<Item = (TagId, TagTypeId)> + Send,
+        X: Iterator<Item = ReplicaId> + Send,
     {
         let mut tx = self.pool.begin().await.map_err(Error::other)?;
 
@@ -875,7 +874,7 @@ impl MediaRepository for PostgresMediaRepository {
             .await
             .map_err(Error::other)?;
 
-        let replica_orders: OrderSet<_> = replica_orders.into_iter().collect();
+        let replica_orders: OrderSet<_> = replica_orders.collect();
         if !replica_orders.is_empty() {
             if replica_orders.len() != replica_ids.len() || !replica_orders.is_subset(&replica_ids) {
                 let expected_replicas = replica_ids.into_iter().collect();
@@ -909,7 +908,7 @@ impl MediaRepository for PostgresMediaRepository {
         }
 
         let query = {
-            let mut add_source_ids = add_source_ids.into_iter().peekable();
+            let mut add_source_ids = add_source_ids.peekable();
             if add_source_ids.peek().is_some() {
                 let mut query = Query::insert();
                 query
@@ -941,7 +940,7 @@ impl MediaRepository for PostgresMediaRepository {
         }
 
         let query = {
-            let mut remove_source_ids = remove_source_ids.into_iter().peekable();
+            let mut remove_source_ids = remove_source_ids.peekable();
             if remove_source_ids.peek().is_some() {
                 let mut query = Query::delete();
                 query
@@ -962,7 +961,7 @@ impl MediaRepository for PostgresMediaRepository {
         }
 
         let query = {
-            let mut add_tag_tag_type_ids = add_tag_tag_type_ids.into_iter().peekable();
+            let mut add_tag_tag_type_ids = add_tag_tag_type_ids.peekable();
             if add_tag_tag_type_ids.peek().is_some() {
                 let mut query = Query::insert();
                 query
@@ -999,7 +998,7 @@ impl MediaRepository for PostgresMediaRepository {
         }
 
         let query = {
-            let mut remove_tag_tag_type_ids = remove_tag_tag_type_ids.into_iter().peekable();
+            let mut remove_tag_tag_type_ids = remove_tag_tag_type_ids.peekable();
             if remove_tag_tag_type_ids.peek().is_some() {
                 let remove_tag_tag_type_ids: Vec<_> = remove_tag_tag_type_ids
                     .map(|(tag_id, tag_type_id)| (*tag_id, *tag_type_id))

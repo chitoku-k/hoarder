@@ -34,10 +34,10 @@ async fn succeeds(ctx: &DatabaseContext) {
         [
             SourceId::from(uuid!("6807b3f6-6325-4212-bba5-bdb48150bb69")),
             SourceId::from(uuid!("5c872f82-2ad0-47c4-8c6f-64efc9443128")),
-        ],
+        ].into_iter(),
         [
             SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
-        ],
+        ].into_iter(),
         [
             (
                 TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
@@ -47,14 +47,14 @@ async fn succeeds(ctx: &DatabaseContext) {
                 TagId::from(uuid!("d65c551d-5a49-4ec7-8e8b-0054e116a18d")),
                 TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
             ),
-        ],
+        ].into_iter(),
         [
             (
                 TagId::from(uuid!("7648d9b5-e0f0-48c2-870c-1fcd60a099de")),
                 TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
             ),
-        ],
-        Vec::new(),
+        ].into_iter(),
+        [].into_iter(),
         None,
         None,
         false,
@@ -123,10 +123,10 @@ async fn with_tags_succeeds(ctx: &DatabaseContext) {
         [
             SourceId::from(uuid!("6807b3f6-6325-4212-bba5-bdb48150bb69")),
             SourceId::from(uuid!("5c872f82-2ad0-47c4-8c6f-64efc9443128")),
-        ],
+        ].into_iter(),
         [
             SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
-        ],
+        ].into_iter(),
         [
             (
                 TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
@@ -136,14 +136,14 @@ async fn with_tags_succeeds(ctx: &DatabaseContext) {
                 TagId::from(uuid!("d65c551d-5a49-4ec7-8e8b-0054e116a18d")),
                 TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
             ),
-        ],
+        ].into_iter(),
         [
             (
                 TagId::from(uuid!("7648d9b5-e0f0-48c2-870c-1fcd60a099de")),
                 TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
             ),
-        ],
-        Vec::new(),
+        ].into_iter(),
+        [].into_iter(),
         None,
         Some(TagDepth::new(2, 2)),
         false,
@@ -305,10 +305,10 @@ async fn with_replicas_succeeds(ctx: &DatabaseContext) {
         [
             SourceId::from(uuid!("6807b3f6-6325-4212-bba5-bdb48150bb69")),
             SourceId::from(uuid!("5c872f82-2ad0-47c4-8c6f-64efc9443128")),
-        ],
+        ].into_iter(),
         [
             SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
-        ],
+        ].into_iter(),
         [
             (
                 TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
@@ -318,14 +318,14 @@ async fn with_replicas_succeeds(ctx: &DatabaseContext) {
                 TagId::from(uuid!("d65c551d-5a49-4ec7-8e8b-0054e116a18d")),
                 TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
             ),
-        ],
+        ].into_iter(),
         [
             (
                 TagId::from(uuid!("7648d9b5-e0f0-48c2-870c-1fcd60a099de")),
                 TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
             ),
-        ],
-        Vec::new(),
+        ].into_iter(),
+        [].into_iter(),
         None,
         None,
         true,
@@ -438,10 +438,10 @@ async fn with_sources_succeeds(ctx: &DatabaseContext) {
         [
             SourceId::from(uuid!("6807b3f6-6325-4212-bba5-bdb48150bb69")),
             SourceId::from(uuid!("5c872f82-2ad0-47c4-8c6f-64efc9443128")),
-        ],
+        ].into_iter(),
         [
             SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
-        ],
+        ].into_iter(),
         [
             (
                 TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
@@ -451,14 +451,14 @@ async fn with_sources_succeeds(ctx: &DatabaseContext) {
                 TagId::from(uuid!("d65c551d-5a49-4ec7-8e8b-0054e116a18d")),
                 TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
             ),
-        ],
+        ].into_iter(),
         [
             (
                 TagId::from(uuid!("7648d9b5-e0f0-48c2-870c-1fcd60a099de")),
                 TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
             ),
-        ],
-        Vec::new(),
+        ].into_iter(),
+        [].into_iter(),
         None,
         None,
         false,
@@ -556,10 +556,10 @@ async fn reorder_replicas_succeeds(ctx: &DatabaseContext) {
         [
             SourceId::from(uuid!("6807b3f6-6325-4212-bba5-bdb48150bb69")),
             SourceId::from(uuid!("5c872f82-2ad0-47c4-8c6f-64efc9443128")),
-        ],
+        ].into_iter(),
         [
             SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
-        ],
+        ].into_iter(),
         [
             (
                 TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
@@ -569,18 +569,18 @@ async fn reorder_replicas_succeeds(ctx: &DatabaseContext) {
                 TagId::from(uuid!("d65c551d-5a49-4ec7-8e8b-0054e116a18d")),
                 TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
             ),
-        ],
+        ].into_iter(),
         [
             (
                 TagId::from(uuid!("7648d9b5-e0f0-48c2-870c-1fcd60a099de")),
                 TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
             ),
-        ],
+        ].into_iter(),
         [
             ReplicaId::from(uuid!("6fae1497-e987-492e-987a-f9870b7d3c5b")),
             ReplicaId::from(uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5")),
             ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be")),
-        ],
+        ].into_iter(),
         Some(Utc.with_ymd_and_hms(2022, 4, 5, 6, 7, 8).unwrap()),
         None,
         false,
@@ -657,10 +657,10 @@ async fn reorder_replicas_with_tags_succeeds(ctx: &DatabaseContext) {
         [
             SourceId::from(uuid!("6807b3f6-6325-4212-bba5-bdb48150bb69")),
             SourceId::from(uuid!("5c872f82-2ad0-47c4-8c6f-64efc9443128")),
-        ],
+        ].into_iter(),
         [
             SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
-        ],
+        ].into_iter(),
         [
             (
                 TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
@@ -670,18 +670,18 @@ async fn reorder_replicas_with_tags_succeeds(ctx: &DatabaseContext) {
                 TagId::from(uuid!("d65c551d-5a49-4ec7-8e8b-0054e116a18d")),
                 TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
             ),
-        ],
+        ].into_iter(),
         [
             (
                 TagId::from(uuid!("7648d9b5-e0f0-48c2-870c-1fcd60a099de")),
                 TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
             ),
-        ],
+        ].into_iter(),
         [
             ReplicaId::from(uuid!("6fae1497-e987-492e-987a-f9870b7d3c5b")),
             ReplicaId::from(uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5")),
             ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be")),
-        ],
+        ].into_iter(),
         Some(Utc.with_ymd_and_hms(2022, 4, 5, 6, 7, 8).unwrap()),
         Some(TagDepth::new(2, 2)),
         false,
@@ -851,10 +851,10 @@ async fn reorder_replicas_with_replicas_succeeds(ctx: &DatabaseContext) {
         [
             SourceId::from(uuid!("6807b3f6-6325-4212-bba5-bdb48150bb69")),
             SourceId::from(uuid!("5c872f82-2ad0-47c4-8c6f-64efc9443128")),
-        ],
+        ].into_iter(),
         [
             SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
-        ],
+        ].into_iter(),
         [
             (
                 TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
@@ -864,18 +864,18 @@ async fn reorder_replicas_with_replicas_succeeds(ctx: &DatabaseContext) {
                 TagId::from(uuid!("d65c551d-5a49-4ec7-8e8b-0054e116a18d")),
                 TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
             ),
-        ],
+        ].into_iter(),
         [
             (
                 TagId::from(uuid!("7648d9b5-e0f0-48c2-870c-1fcd60a099de")),
                 TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
             ),
-        ],
+        ].into_iter(),
         [
             ReplicaId::from(uuid!("6fae1497-e987-492e-987a-f9870b7d3c5b")),
             ReplicaId::from(uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5")),
             ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be")),
-        ],
+        ].into_iter(),
         Some(Utc.with_ymd_and_hms(2022, 4, 5, 6, 7, 8).unwrap()),
         None,
         true,
@@ -996,10 +996,10 @@ async fn reorder_replicas_with_sources_succeeds(ctx: &DatabaseContext) {
         [
             SourceId::from(uuid!("6807b3f6-6325-4212-bba5-bdb48150bb69")),
             SourceId::from(uuid!("5c872f82-2ad0-47c4-8c6f-64efc9443128")),
-        ],
+        ].into_iter(),
         [
             SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
-        ],
+        ].into_iter(),
         [
             (
                 TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
@@ -1009,18 +1009,18 @@ async fn reorder_replicas_with_sources_succeeds(ctx: &DatabaseContext) {
                 TagId::from(uuid!("d65c551d-5a49-4ec7-8e8b-0054e116a18d")),
                 TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
             ),
-        ],
+        ].into_iter(),
         [
             (
                 TagId::from(uuid!("7648d9b5-e0f0-48c2-870c-1fcd60a099de")),
                 TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
             ),
-        ],
+        ].into_iter(),
         [
             ReplicaId::from(uuid!("6fae1497-e987-492e-987a-f9870b7d3c5b")),
             ReplicaId::from(uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5")),
             ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be")),
-        ],
+        ].into_iter(),
         Some(Utc.with_ymd_and_hms(2022, 4, 5, 6, 7, 8).unwrap()),
         None,
         false,
@@ -1126,10 +1126,10 @@ async fn reorder_too_few_replicas_fails(ctx: &DatabaseContext) {
         [
             SourceId::from(uuid!("6807b3f6-6325-4212-bba5-bdb48150bb69")),
             SourceId::from(uuid!("5c872f82-2ad0-47c4-8c6f-64efc9443128")),
-        ],
+        ].into_iter(),
         [
             SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
-        ],
+        ].into_iter(),
         [
             (
                 TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
@@ -1139,17 +1139,17 @@ async fn reorder_too_few_replicas_fails(ctx: &DatabaseContext) {
                 TagId::from(uuid!("d65c551d-5a49-4ec7-8e8b-0054e116a18d")),
                 TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
             ),
-        ],
+        ].into_iter(),
         [
             (
                 TagId::from(uuid!("7648d9b5-e0f0-48c2-870c-1fcd60a099de")),
                 TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
             ),
-        ],
+        ].into_iter(),
         [
             ReplicaId::from(uuid!("6fae1497-e987-492e-987a-f9870b7d3c5b")),
             ReplicaId::from(uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5")),
-        ],
+        ].into_iter(),
         Some(Utc.with_ymd_and_hms(2022, 4, 5, 6, 7, 8).unwrap()),
         None,
         false,
@@ -1180,10 +1180,10 @@ async fn reorder_too_many_replicas_fails(ctx: &DatabaseContext) {
         [
             SourceId::from(uuid!("6807b3f6-6325-4212-bba5-bdb48150bb69")),
             SourceId::from(uuid!("5c872f82-2ad0-47c4-8c6f-64efc9443128")),
-        ],
+        ].into_iter(),
         [
             SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
-        ],
+        ].into_iter(),
         [
             (
                 TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
@@ -1193,19 +1193,19 @@ async fn reorder_too_many_replicas_fails(ctx: &DatabaseContext) {
                 TagId::from(uuid!("d65c551d-5a49-4ec7-8e8b-0054e116a18d")),
                 TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
             ),
-        ],
+        ].into_iter(),
         [
             (
                 TagId::from(uuid!("7648d9b5-e0f0-48c2-870c-1fcd60a099de")),
                 TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
             ),
-        ],
+        ].into_iter(),
         [
             ReplicaId::from(uuid!("6fae1497-e987-492e-987a-f9870b7d3c5b")),
             ReplicaId::from(uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5")),
             ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be")),
             ReplicaId::from(uuid!("790dc278-2c53-4988-883c-43a037664b24")),
-        ],
+        ].into_iter(),
         Some(Utc.with_ymd_and_hms(2022, 4, 5, 6, 7, 8).unwrap()),
         None,
         false,
@@ -1238,10 +1238,10 @@ async fn reorder_replicas_mismatch_fails(ctx: &DatabaseContext) {
         [
             SourceId::from(uuid!("6807b3f6-6325-4212-bba5-bdb48150bb69")),
             SourceId::from(uuid!("5c872f82-2ad0-47c4-8c6f-64efc9443128")),
-        ],
+        ].into_iter(),
         [
             SourceId::from(uuid!("435d422e-acd0-4b22-b46c-180894a91049")),
-        ],
+        ].into_iter(),
         [
             (
                 TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
@@ -1251,18 +1251,18 @@ async fn reorder_replicas_mismatch_fails(ctx: &DatabaseContext) {
                 TagId::from(uuid!("d65c551d-5a49-4ec7-8e8b-0054e116a18d")),
                 TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
             ),
-        ],
+        ].into_iter(),
         [
             (
                 TagId::from(uuid!("7648d9b5-e0f0-48c2-870c-1fcd60a099de")),
                 TagTypeId::from(uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38")),
             ),
-        ],
+        ].into_iter(),
         [
             ReplicaId::from(uuid!("6fae1497-e987-492e-987a-f9870b7d3c5b")),
             ReplicaId::from(uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5")),
             ReplicaId::from(uuid!("790dc278-2c53-4988-883c-43a037664b24")),
-        ],
+        ].into_iter(),
         Some(Utc.with_ymd_and_hms(2022, 4, 5, 6, 7, 8).unwrap()),
         None,
         false,

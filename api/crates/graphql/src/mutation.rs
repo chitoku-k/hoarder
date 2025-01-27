@@ -46,8 +46,6 @@ pub struct Mutation<ExternalServicesService, MediaService, TagsService, Normaliz
     normalizer: PhantomData<fn() -> Normalizer>,
 }
 
-type Map<T, U, V> = std::iter::Map<T, fn(U) -> V>;
-
 async fn create_medium_source(ctx: &Context<'_>, original_url: Option<String>, upload: Option<ReplicaInput>) -> Result<MediumSource<impl Read + Seek + Send + Sync + 'static>> {
     match (original_url, upload) {
         (None, None) => Err(Error::new(ErrorKind::ArgumentRequired { one_of: vec!["original_url", "upload"] })),
@@ -181,8 +179,8 @@ where
         let tag_depth = tags.exists().then(|| get_tag_depth(&tags));
         let sources = ctx.look_ahead().field("sources").exists();
 
-        let source_ids: Map<_, _, _> = source_ids.unwrap_or_default().into_iter().map(Into::into);
-        let tag_tag_type_ids: Map<_, _, _> = tag_ids.unwrap_or_default().into_iter().map(Into::into);
+        let source_ids = source_ids.unwrap_or_default().into_iter().map(Into::into);
+        let tag_tag_type_ids = tag_ids.unwrap_or_default().into_iter().map(Into::into);
 
         let created_at = created_at.map(Into::into);
 
@@ -273,13 +271,13 @@ where
         let replicas = ctx.look_ahead().field("replicas").exists();
         let sources = ctx.look_ahead().field("sources").exists();
 
-        let add_source_ids: Map<_, _, _> = add_source_ids.unwrap_or_default().into_iter().map(Into::into);
-        let remove_source_ids: Map<_, _, _> = remove_source_ids.unwrap_or_default().into_iter().map(Into::into);
+        let add_source_ids = add_source_ids.unwrap_or_default().into_iter().map(Into::into);
+        let remove_source_ids = remove_source_ids.unwrap_or_default().into_iter().map(Into::into);
 
-        let add_tag_tag_type_ids: Map<_, _, _> = add_tag_ids.unwrap_or_default().into_iter().map(Into::into);
-        let remove_tag_tag_type_ids: Map<_, _, _> = remove_tag_ids.unwrap_or_default().into_iter().map(Into::into);
+        let add_tag_tag_type_ids = add_tag_ids.unwrap_or_default().into_iter().map(Into::into);
+        let remove_tag_tag_type_ids = remove_tag_ids.unwrap_or_default().into_iter().map(Into::into);
 
-        let replica_orders: Map<_, _, _> = replica_orders.unwrap_or_default().into_iter().map(Into::into);
+        let replica_orders = replica_orders.unwrap_or_default().into_iter().map(Into::into);
 
         let created_at = created_at.map(Into::into);
 

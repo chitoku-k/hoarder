@@ -23,7 +23,7 @@ async fn with_parent_succeeds(ctx: &DatabaseContext) {
     let actual = repository.create(
         "七森中☆生徒会",
         "ななもりちゅうせいとかい",
-        ["生徒会".to_string(), "七森中生徒会".to_string()],
+        ["生徒会".to_string(), "七森中生徒会".to_string()].into_iter(),
         Some(TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba"))),
         TagDepth::new(2, 2),
     ).await.unwrap();
@@ -87,7 +87,7 @@ async fn without_parent_succeeds(ctx: &DatabaseContext) {
     let actual = repository.create(
         "七森中☆生徒会",
         "ななもりちゅうせいとかい",
-        ["生徒会".to_string(), "七森中生徒会".to_string()],
+        ["生徒会".to_string(), "七森中生徒会".to_string()].into_iter(),
         None,
         TagDepth::new(2, 2),
     ).await.unwrap();
