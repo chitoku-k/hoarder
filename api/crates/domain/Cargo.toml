@@ -16,9 +16,6 @@ features = ["clock", "std"]
 version = "1.0.0"
 features = ["constructor", "deref", "display", "from"]
 
-[dependencies.dyn-clone]
-version = "1.0.17"
-
 [dependencies.futures]
 version = "0.3.31"
 

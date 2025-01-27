@@ -70,9 +70,6 @@ version = "1.12.1"
 [dev-dependencies.application]
 workspace = true
 
-[dev-dependencies.dyn-clone]
-version = "1.0.17"
-
 [dev-dependencies.indoc]
 version = "2.0.5"
 

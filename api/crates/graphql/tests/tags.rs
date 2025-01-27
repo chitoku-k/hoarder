@@ -3,7 +3,6 @@ use std::collections::BTreeSet;
 use async_graphql::{Schema, EmptyMutation, EmptySubscription, value};
 use chrono::{TimeZone, Utc};
 use domain::entity::tags::{AliasSet, Tag, TagDepth, TagId};
-use dyn_clone::clone_box;
 use futures::future::ok;
 use graphql::query::Query;
 use indoc::indoc;
@@ -30,7 +29,7 @@ async fn succeeds() {
         .expect_get_tags_by_ids()
         .times(1)
         .withf(|ids, depth| {
-            clone_box(ids).eq([
+            ids.clone_box().eq([
                 TagId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                 TagId::from(uuid!("22222222-2222-2222-2222-222222222222")),
             ]) && depth == &TagDepth::new(2, 2)

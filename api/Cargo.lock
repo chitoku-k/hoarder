@@ -890,7 +890,6 @@ dependencies = [
  "anyhow",
  "chrono",
  "derive_more",
- "dyn-clone",
  "futures",
  "log",
  "mockall",
@@ -917,12 +916,6 @@ name = "downcast"
 version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1435fa1053d8b2fbbe9be7e97eca7f33d37b28409959813daefc1446a14247f1"
-
-[[package]]
-name = "dyn-clone"
-version = "1.0.17"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0d6ef0072f8a535281e4876be788938b528e9a1d43900b82c2569af7da799125"
 
 [[package]]
 name = "either"
@@ -1308,7 +1301,6 @@ dependencies = [
  "chrono",
  "derive_more",
  "domain",
- "dyn-clone",
  "futures",
  "indoc",
  "mockall",

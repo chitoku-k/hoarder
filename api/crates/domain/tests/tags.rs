@@ -11,7 +11,6 @@ use domain::{
     repository::{DeleteResult, Direction, Order},
     service::tags::{TagsService, TagsServiceInterface},
 };
-use dyn_clone::clone_box;
 use futures::future::{err, ok};
 use pretty_assertions::{assert_eq, assert_matches};
 use uuid::uuid;
@@ -26,7 +25,7 @@ async fn create_tag_succeeds() {
         .expect_create()
         .times(1)
         .withf(|name, kana, aliases, parent_id, depth| {
-            clone_box(aliases).eq(["アッカリーン".to_string()]) &&
+            aliases.clone_box().eq(["アッカリーン".to_string()]) &&
             (name, kana, parent_id, depth) == (
                 "赤座あかり",
                 "あかざあかり",
@@ -95,7 +94,7 @@ async fn create_tag_fails() {
         .expect_create()
         .times(1)
         .withf(|name, kana, aliases, parent_id, depth| {
-            clone_box(aliases).eq(["アッカリーン".to_string()]) &&
+            aliases.clone_box().eq(["アッカリーン".to_string()]) &&
             (name, kana, parent_id, depth) == (
                 "赤座あかり",
                 "あかざあかり",
@@ -328,7 +327,7 @@ async fn get_tags_by_ids_succeeds() {
         .expect_fetch_by_ids()
         .times(1)
         .withf(|ids, depth| {
-            clone_box(ids).eq([
+            ids.clone_box().eq([
                 TagId::from(uuid!("22222222-2222-2222-2222-222222222222")),
                 TagId::from(uuid!("55555555-5555-5555-5555-555555555555")),
             ]) &&
@@ -443,7 +442,7 @@ async fn get_tags_by_ids_fails() {
         .expect_fetch_by_ids()
         .times(1)
         .withf(|ids, depth| {
-            clone_box(ids).eq([
+            ids.clone_box().eq([
                 TagId::from(uuid!("22222222-2222-2222-2222-222222222222")),
                 TagId::from(uuid!("55555555-5555-5555-5555-555555555555")),
             ]) &&
@@ -650,7 +649,7 @@ async fn get_tag_types_by_ids_succeeds() {
     mock_tag_types_repository
         .expect_fetch_by_ids()
         .times(1)
-        .withf(|ids| clone_box(ids).eq([
+        .withf(|ids| ids.clone_box().eq([
             TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
             TagTypeId::from(uuid!("55555555-5555-5555-5555-555555555555")),
         ]))
@@ -700,7 +699,7 @@ async fn get_tag_types_by_ids_fails() {
     mock_tag_types_repository
         .expect_fetch_by_ids()
         .times(1)
-        .withf(|ids| clone_box(ids).eq([
+        .withf(|ids| ids.clone_box().eq([
             TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
             TagTypeId::from(uuid!("55555555-5555-5555-5555-555555555555")),
         ]))
@@ -722,8 +721,8 @@ async fn update_tag_by_id_succeeds() {
         .expect_update_by_id()
         .times(1)
         .withf(|id, name, kana, add_aliases, remove_aliases, depth| {
-            clone_box(add_aliases).eq(["アッカリーン".to_string()]) &&
-            clone_box(remove_aliases).eq([] as [String; 0]) &&
+            add_aliases.clone_box().eq(["アッカリーン".to_string()]) &&
+            remove_aliases.clone_box().eq([] as [String; 0]) &&
             (id, name, kana, depth) == (
                 &TagId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                 &Some("赤座あかり".to_string()),
@@ -793,8 +792,8 @@ async fn update_tag_by_id_fails() {
         .expect_update_by_id()
         .times(1)
         .withf(|id, name, kana, add_aliases, remove_aliases, depth| {
-            clone_box(add_aliases).eq(["アッカリーン".to_string()]) &&
-            clone_box(remove_aliases).eq([] as [String; 0]) &&
+            add_aliases.clone_box().eq(["アッカリーン".to_string()]) &&
+            remove_aliases.clone_box().eq([] as [String; 0]) &&
             (id, name, kana, depth) == (
                 &TagId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                 &Some("赤座あかり".to_string()),

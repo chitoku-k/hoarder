@@ -11,7 +11,6 @@ use domain::entity::{
     tag_types::{TagType, TagTypeId},
     tags::{AliasSet, Tag, TagDepth, TagId},
 };
-use dyn_clone::clone_box;
 use futures::future::ok;
 use graphql::query::Query;
 use indoc::indoc;
@@ -39,7 +38,7 @@ async fn tags_succeeds() {
         .expect_get_media_by_ids()
         .times(1)
         .withf(|ids, tag_depth, replicas, sources| {
-            clone_box(ids).eq([
+            ids.clone_box().eq([
                 MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
                 MediumId::from(uuid!("99999999-9999-9999-9999-999999999999")),
             ]) &&
@@ -484,7 +483,7 @@ async fn replicas_succeeds() {
         .expect_get_media_by_ids()
         .times(1)
         .withf(|ids, tag_depth, replicas, sources| {
-            clone_box(ids).eq([
+            ids.clone_box().eq([
                 MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
                 MediumId::from(uuid!("99999999-9999-9999-9999-999999999999")),
             ]) &&
@@ -690,7 +689,7 @@ async fn sources_succeeds() {
         .expect_get_media_by_ids()
         .times(1)
         .withf(|ids, tag_depth, replicas, sources| {
-            clone_box(ids).eq([
+            ids.clone_box().eq([
                 MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
                 MediumId::from(uuid!("99999999-9999-9999-9999-999999999999")),
             ]) &&
