@@ -1,6 +1,5 @@
 use async_graphql::{Schema, EmptyMutation, EmptySubscription, value};
 use domain::entity::tag_types::{TagType, TagTypeId};
-use dyn_clone::clone_box;
 use futures::future::ok;
 use graphql::query::Query;
 use indoc::indoc;
@@ -26,7 +25,7 @@ async fn succeeds() {
     tags_service
         .expect_get_tag_types_by_ids()
         .times(1)
-        .withf(|ids| clone_box(ids).eq([
+        .withf(|ids| ids.clone_box().eq([
             TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
             TagTypeId::from(uuid!("66666666-6666-6666-6666-666666666666")),
         ]))

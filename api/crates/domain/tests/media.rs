@@ -16,7 +16,6 @@ use domain::{
     repository::{objects::{ObjectOverwriteBehavior, ObjectStatus}, DeleteResult, Direction, Order},
     service::media::{MediaService, MediaServiceInterface, MediumOverwriteBehavior, MediumSource},
 };
-use dyn_clone::clone_box;
 use futures::{future::{err, ok}, stream, StreamExt, TryFutureExt, TryStreamExt};
 use ordermap::OrderMap;
 use pretty_assertions::{assert_eq, assert_matches};
@@ -42,11 +41,11 @@ async fn create_medium_succeeds() {
         .expect_create()
         .times(1)
         .withf(|source_ids, created_at, tag_tag_type_ids, tag_depth, sources| {
-            clone_box(source_ids).eq([
+            source_ids.clone_box().eq([
                 SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
                 SourceId::from(uuid!("22222222-2222-2222-2222-222222222222")),
             ]) &&
-            clone_box(tag_tag_type_ids).eq([
+            tag_tag_type_ids.clone_box().eq([
                 (
                     TagId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                     TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
@@ -261,11 +260,11 @@ async fn create_medium_fails() {
         .expect_create()
         .times(1)
         .withf(|source_ids, created_at, tag_tag_type_ids, tag_depth, sources| {
-            clone_box(source_ids).eq([
+            source_ids.clone_box().eq([
                 SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
                 SourceId::from(uuid!("22222222-2222-2222-2222-222222222222")),
             ]) &&
-            clone_box(tag_tag_type_ids).eq([
+            tag_tag_type_ids.clone_box().eq([
                 (
                     TagId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                     TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
@@ -1050,7 +1049,7 @@ async fn get_media_by_ids_succeeds() {
         .expect_fetch_by_ids()
         .times(1)
         .withf(|ids, tag_depth, replicas, sources| {
-            clone_box(ids).eq([
+            ids.clone_box().eq([
                 MediumId::from(uuid!("88888888-8888-8888-8888-888888888888")),
                 MediumId::from(uuid!("99999999-9999-9999-9999-999999999999")),
             ]) &&
@@ -1125,7 +1124,7 @@ async fn get_media_by_ids_fails() {
         .expect_fetch_by_ids()
         .times(1)
         .withf(|ids, tag_depth, replicas, sources| {
-            clone_box(ids).eq([
+            ids.clone_box().eq([
                 MediumId::from(uuid!("88888888-8888-8888-8888-888888888888")),
                 MediumId::from(uuid!("99999999-9999-9999-9999-999999999999")),
             ]) &&
@@ -1164,7 +1163,7 @@ async fn get_media_by_source_ids_succeeds() {
         .expect_fetch_by_source_ids()
         .times(1)
         .withf(|source_ids, tag_depth, replicas, sources, since, until, order, limit| {
-            clone_box(source_ids).eq([
+            source_ids.clone_box().eq([
                 SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
                 SourceId::from(uuid!("22222222-2222-2222-2222-222222222222")),
             ]) &&
@@ -1247,7 +1246,7 @@ async fn get_media_by_source_ids_fails() {
         .expect_fetch_by_source_ids()
         .times(1)
         .withf(|source_ids, tag_depth, replicas, sources, since, until, order, limit| {
-            clone_box(source_ids).eq([
+            source_ids.clone_box().eq([
                 SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
                 SourceId::from(uuid!("22222222-2222-2222-2222-222222222222")),
             ]) &&
@@ -1294,7 +1293,7 @@ async fn get_media_by_tag_ids_succeeds() {
         .expect_fetch_by_tag_ids()
         .times(1)
         .withf(|tag_tag_type_ids, tag_depth, replicas, sources, since, until, order, limit| {
-            clone_box(tag_tag_type_ids).eq([
+            tag_tag_type_ids.clone_box().eq([
                 (
                     TagId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                     TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
@@ -1389,7 +1388,7 @@ async fn get_media_by_tag_ids_fails() {
         .expect_fetch_by_tag_ids()
         .times(1)
         .withf(|tag_tag_type_ids, tag_depth, replicas, sources, since, until, order, limit| {
-            clone_box(tag_tag_type_ids).eq([
+            tag_tag_type_ids.clone_box().eq([
                 (
                     TagId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                     TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
@@ -1453,7 +1452,7 @@ async fn get_replicas_by_ids_succeeds() {
     mock_replicas_repository
         .expect_fetch_by_ids()
         .times(1)
-        .withf(|ids| clone_box(ids).eq([
+        .withf(|ids| ids.clone_box().eq([
             ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
             ReplicaId::from(uuid!("77777777-7777-7777-7777-777777777777")),
         ]))
@@ -1548,7 +1547,7 @@ async fn get_replicas_by_ids_fails() {
     mock_replicas_repository
         .expect_fetch_by_ids()
         .times(1)
-        .withf(|ids| clone_box(ids).eq([
+        .withf(|ids| ids.clone_box().eq([
             ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
             ReplicaId::from(uuid!("77777777-7777-7777-7777-777777777777")),
         ]))
@@ -1649,7 +1648,7 @@ async fn get_sources_by_ids_succeeds() {
     mock_sources_repository
         .expect_fetch_by_ids()
         .times(1)
-        .withf(|ids| clone_box(ids).eq([
+        .withf(|ids| ids.clone_box().eq([
             SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
             SourceId::from(uuid!("22222222-2222-2222-2222-222222222222")),
         ]))
@@ -1736,7 +1735,7 @@ async fn get_sources_by_ids_fails() {
     mock_sources_repository
         .expect_fetch_by_ids()
         .times(1)
-        .withf(|ids| clone_box(ids).eq([
+        .withf(|ids| ids.clone_box().eq([
             SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
             SourceId::from(uuid!("22222222-2222-2222-2222-222222222222")),
         ]))
@@ -2323,25 +2322,25 @@ async fn update_medium_by_id_succeeds() {
             replicas,
             sources,
         | {
-            clone_box(add_source_ids).eq([
+            add_source_ids.clone_box().eq([
                 SourceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
             ]) &&
-            clone_box(remove_source_ids).eq([
+            remove_source_ids.clone_box().eq([
                 SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
             ]) &&
-            clone_box(add_tag_tag_type_ids).eq([
+            add_tag_tag_type_ids.clone_box().eq([
                 (
                     TagId::from(uuid!("22222222-2222-2222-2222-222222222222")),
                     TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
                 ),
             ]) &&
-            clone_box(remove_tag_tag_type_ids).eq([
+            remove_tag_tag_type_ids.clone_box().eq([
                 (
                     TagId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                     TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
                 ),
             ]) &&
-            clone_box(replica_orders).eq([
+            replica_orders.clone_box().eq([
                 ReplicaId::from(uuid!("77777777-7777-7777-7777-777777777777")),
                 ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
             ]) &&
@@ -2435,25 +2434,25 @@ async fn update_medium_by_id_fails() {
             replicas,
             sources,
         | {
-            clone_box(add_source_ids).eq([
+            add_source_ids.clone_box().eq([
                 SourceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
             ]) &&
-            clone_box(remove_source_ids).eq([
+            remove_source_ids.clone_box().eq([
                 SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
             ]) &&
-            clone_box(add_tag_tag_type_ids).eq([
+            add_tag_tag_type_ids.clone_box().eq([
                 (
                     TagId::from(uuid!("22222222-2222-2222-2222-222222222222")),
                     TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
                 ),
             ]) &&
-            clone_box(remove_tag_tag_type_ids).eq([
+            remove_tag_tag_type_ids.clone_box().eq([
                 (
                     TagId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                     TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
                 ),
             ]) &&
-            clone_box(replica_orders).eq([
+            replica_orders.clone_box().eq([
                 ReplicaId::from(uuid!("77777777-7777-7777-7777-777777777777")),
                 ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
             ]) &&
@@ -3146,7 +3145,7 @@ async fn delete_medium_by_id_with_delete_objects_succeeds() {
         .expect_fetch_by_ids()
         .times(1)
         .withf(|ids, tag_depth, replicas, sources| {
-            clone_box(ids).eq([
+            ids.clone_box().eq([
                 MediumId::from(uuid!("77777777-7777-7777-7777-777777777777"))
             ]) &&
             (tag_depth, replicas, sources) == (
@@ -3303,7 +3302,7 @@ async fn delete_replica_by_id_with_delete_object_succeeds() {
     mock_replicas_repository
         .expect_fetch_by_ids()
         .times(1)
-        .withf(|ids| clone_box(ids).eq([ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666"))]))
+        .withf(|ids| ids.clone_box().eq([ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666"))]))
         .returning(|_| {
             Box::pin(ok(vec![
                 Replica {

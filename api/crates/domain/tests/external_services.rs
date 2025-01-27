@@ -5,7 +5,6 @@ use domain::{
     repository::DeleteResult,
     service::external_services::{ExternalServicesService, ExternalServicesServiceInterface},
 };
-use dyn_clone::clone_box;
 use futures::future::{err, ok};
 use pretty_assertions::{assert_eq, assert_matches};
 use uuid::uuid;
@@ -185,7 +184,7 @@ async fn get_external_services_by_ids_succeeds() {
     mock_external_services_repository
         .expect_fetch_by_ids()
         .times(1)
-        .withf(|ids| clone_box(ids).eq([
+        .withf(|ids| ids.clone_box().eq([
             ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
             ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
         ]))
@@ -242,7 +241,7 @@ async fn get_external_services_by_ids_fails() {
     mock_external_services_repository
         .expect_fetch_by_ids()
         .times(1)
-        .withf(|ids| clone_box(ids).eq([
+        .withf(|ids| ids.clone_box().eq([
             ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
             ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
         ]))

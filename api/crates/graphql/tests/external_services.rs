@@ -1,6 +1,5 @@
 use async_graphql::{Schema, EmptyMutation, EmptySubscription, value};
 use domain::entity::external_services::{ExternalService, ExternalServiceId};
-use dyn_clone::clone_box;
 use futures::future::ok;
 use graphql::query::Query;
 use indoc::indoc;
@@ -23,7 +22,7 @@ async fn succeeds() {
     external_services_service
         .expect_get_external_services_by_ids()
         .times(1)
-        .withf(|ids| clone_box(ids).eq([
+        .withf(|ids| ids.clone_box().eq([
             ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
             ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
         ]))

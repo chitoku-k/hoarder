@@ -9,7 +9,6 @@ use domain::{
     },
     repository::{Direction, Order},
 };
-use dyn_clone::clone_box;
 use futures::future::ok;
 use graphql::query::Query;
 use indoc::indoc;
@@ -36,7 +35,7 @@ async fn by_source_ids_succeeds() {
         .expect_get_media_by_source_ids()
         .times(1)
         .withf(|source_ids, tag_depth, replicas, sources, cursor, order, direction, limit| {
-            clone_box(source_ids).eq([
+            source_ids.clone_box().eq([
                 SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
                 SourceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
             ]) &&
@@ -134,7 +133,7 @@ async fn by_tag_ids_succeeds() {
         .expect_get_media_by_tag_ids()
         .times(1)
         .withf(|tag_ids, tag_depth, replicas, sources, cursor, order, direction, limit| {
-            clone_box(tag_ids).eq([
+            tag_ids.clone_box().eq([
                 (
                     TagId::from(uuid!("22222222-2222-2222-2222-222222222222")),
                     TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),

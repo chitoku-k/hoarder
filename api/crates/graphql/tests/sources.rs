@@ -4,7 +4,6 @@ use domain::entity::{
     external_services::{ExternalMetadata, ExternalService, ExternalServiceId},
     sources::{Source, SourceId},
 };
-use dyn_clone::clone_box;
 use futures::future::ok;
 use graphql::query::Query;
 use indoc::indoc;
@@ -28,7 +27,7 @@ async fn succeeds() {
     media_service
         .expect_get_sources_by_ids()
         .times(1)
-        .withf(|ids| clone_box(ids).eq([
+        .withf(|ids| ids.clone_box().eq([
             SourceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
             SourceId::from(uuid!("22222222-2222-2222-2222-222222222222")),
         ]))

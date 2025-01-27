@@ -1,7 +1,6 @@
 use async_graphql::{Schema, EmptyMutation, EmptySubscription, value};
 use chrono::{TimeZone, Utc};
 use domain::entity::media::{Medium, MediumId};
-use dyn_clone::clone_box;
 use futures::future::ok;
 use graphql::query::Query;
 use indoc::indoc;
@@ -28,7 +27,7 @@ async fn succeeds() {
         .expect_get_media_by_ids()
         .times(1)
         .withf(|ids, tag_depth, replicas, sources| {
-            clone_box(ids).eq([
+            ids.clone_box().eq([
                 MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")),
                 MediumId::from(uuid!("99999999-9999-9999-9999-999999999999")),
             ]) &&
