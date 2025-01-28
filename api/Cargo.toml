@@ -61,6 +61,7 @@ codegen-units = 1
 
 [profile.dev.package."*"]
 opt-level = 3
+debug = false
 
 [features]
 default = ["jemallocator", "tls"]
