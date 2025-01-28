@@ -3,6 +3,7 @@ FROM rust:1.84.0-bookworm AS base
 WORKDIR /usr/src
 RUN --mount=type=cache,id=api:/var/cache/apt,target=/var/cache/apt \
     --mount=type=cache,id=api:/var/lib/apt/lists,target=/var/lib/apt/lists \
+    rustup component add clippy && \
     apt-get -y update && \
     apt-get -y install \
         libjemalloc-dev
@@ -25,8 +26,7 @@ RUN --mount=type=cache,id=api:/usr/local/cargo/registry,target=/usr/local/cargo/
 FROM base AS dev
 ENV JEMALLOC_OVERRIDE=/usr/lib/x86_64-linux-gnu/libjemalloc.so
 COPY --from=docker:cli /usr/local/bin/docker /usr/bin/docker
-RUN rustup component add clippy && \
-    cargo install cargo-make
+RUN cargo install --no-default-features cargo-make
 
 FROM scratch AS production
 ARG PORT=80
