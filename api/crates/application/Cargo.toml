@@ -59,3 +59,6 @@ version = "1.0.137"
 [dev-dependencies.tower]
 version = "0.5.2"
 features = ["util"]
+
+[dev-dependencies.tungstenite]
+version = "0.26.1"

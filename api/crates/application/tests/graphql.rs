@@ -10,6 +10,7 @@ use indoc::indoc;
 use pretty_assertions::assert_eq;
 use serde_json::json;
 use tower::ServiceExt;
+use tungstenite::handshake::{client::generate_key, server::create_response_with_body};
 
 mod mocks;
 use mocks::application::service::{
@@ -106,6 +107,41 @@ async fn graphql() {
     let actual = body::to_bytes(actual.into_body(), usize::MAX).await.unwrap();
     let actual = String::from_utf8(actual.to_vec()).unwrap();
     assert_eq!(actual, expected.to_string());
+}
+
+#[tokio::test]
+async fn graphql_subscriptions() {
+    let mut mock_graphql_service = MockGraphQLServiceInterface::new();
+    mock_graphql_service
+        .expect_endpoints()
+        .times(1)
+        .returning(|| GraphQLEndpoints::new("/graphql", "/graphql/subscriptions"));
+
+    mock_graphql_service
+        .expect_subscriptions()
+        .times(1)
+        .returning(|req| Box::pin(ready(create_response_with_body(&req, Body::empty).unwrap())));
+
+    let mock_objects_service = MockObjectsServiceInterface::new();
+    let mock_thumbnails_service = MockThumbnailsServiceInterface::new();
+
+    let app = Engine::new(mock_graphql_service, mock_objects_service, mock_thumbnails_service).into_inner();
+    let actual = app
+        .oneshot(
+            Request::builder()
+                .method(Method::GET)
+                .uri("/graphql/subscriptions")
+                .header("Connection", "Upgrade")
+                .header("Upgrade", "websocket")
+                .header("Sec-WebSocket-Version", "13")
+                .header("Sec-WebSocket-Key", generate_key())
+                .header("Sec-WebSocket-Protocol", "graphql-transport-ws")
+                .body(Body::empty())
+                .unwrap())
+        .await
+        .unwrap();
+
+    assert_eq!(actual.status(), 101);
 }
 
 #[tokio::test]
