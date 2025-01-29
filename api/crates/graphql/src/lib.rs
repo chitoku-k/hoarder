@@ -1,7 +1,7 @@
 #![allow(clippy::too_many_arguments)]
 
 use application::service::graphql::{GraphQLEndpoints, GraphQLServiceInterface};
-use async_graphql::{http::GraphiQLSource, Enum, Schema};
+use async_graphql::{http::GraphiQLSource, Enum, ObjectType, SubscriptionType};
 use async_graphql_axum::{GraphQL, GraphQLSubscription};
 use axum::{
     body::Body,
@@ -9,18 +9,10 @@ use axum::{
     response::{IntoResponse, Html, Response},
 };
 use derive_more::Constructor;
-use domain::{
-    repository,
-    service::{
-        external_services::ExternalServicesServiceInterface,
-        media::MediaServiceInterface,
-        tags::TagsServiceInterface,
-    },
-};
-use normalizer::NormalizerInterface;
+use domain::repository;
 use tower_service::Service;
 
-use crate::{mutation::Mutation, query::Query, subscription::Subscription};
+pub use async_graphql::{Schema, SchemaBuilder};
 
 pub mod error;
 pub mod mutation;
@@ -34,25 +26,18 @@ pub mod replicas;
 pub mod sources;
 pub mod tags;
 
-pub type APISchema<ExternalServicesService, MediaService, TagsService, Normalizer> = Schema<
-    Query<ExternalServicesService, MediaService, TagsService, Normalizer>,
-    Mutation<ExternalServicesService, MediaService, TagsService, Normalizer>,
-    Subscription<MediaService>,
->;
-
 #[derive(Clone, Constructor)]
-pub struct GraphQLService<ExternalServicesService, MediaService, TagsService, Normalizer> {
-    schema: APISchema<ExternalServicesService, MediaService, TagsService, Normalizer>,
+pub struct GraphQLService<Query, Mutation, Subscription> {
+    schema: Schema<Query, Mutation, Subscription>,
     graphql_endpoint: &'static str,
     subscriptions_endpoint: &'static str,
 }
 
-impl<ExternalServicesService, MediaService, TagsService, Normalizer> GraphQLServiceInterface for GraphQLService<ExternalServicesService, MediaService, TagsService, Normalizer>
+impl<Query, Mutation, Subscription> GraphQLServiceInterface for GraphQLService<Query, Mutation, Subscription>
 where
-    ExternalServicesService: ExternalServicesServiceInterface,
-    MediaService: MediaServiceInterface,
-    TagsService: TagsServiceInterface,
-    Normalizer: NormalizerInterface,
+    Query: ObjectType + 'static,
+    Mutation: ObjectType + 'static,
+    Subscription: SubscriptionType + 'static,
 {
     async fn execute(&self, req: Request<Body>) -> Response {
         GraphQL::new(self.schema.clone()).call(req).await.unwrap()

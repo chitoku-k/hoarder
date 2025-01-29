@@ -1,13 +1,6 @@
 use std::{sync::Arc, time::Duration};
 
-use application::{
-    server::Engine,
-    service::{
-        graphql::GraphQLServiceInterface,
-        media::MediaURLFactoryInterface,
-        thumbnails::ThumbnailURLFactoryInterface,
-    },
-};
+use application::{server::Engine, service::{graphql::GraphQLServiceInterface, media::MediaURLFactoryInterface}};
 use anyhow::Context;
 use domain::{
     entity::replicas::Size,
@@ -17,7 +10,7 @@ use domain::{
         tags::TagsService,
     },
 };
-use graphql::{mutation::Mutation, query::Query, subscription::Subscription, APISchema, GraphQLService};
+use graphql::{mutation::Mutation, query::Query, subscription::Subscription, Schema, SchemaBuilder, GraphQLService};
 use icu_collator::{Collator, CollatorOptions};
 use icu_provider::DataLocale;
 use log::LevelFilter;
@@ -55,9 +48,13 @@ type MediaServiceImpl = MediaService<MediaRepositoryImpl, ObjectsRepositoryImpl,
 type TagsServiceImpl = TagsService<TagsRepositoryImpl, TagTypesRepositoryImpl>;
 type ObjectsServiceImpl = ObjectsService<MediaServiceImpl>;
 type ThumbnailsServiceImpl = ThumbnailsService<MediaServiceImpl>;
-type APISchemaImpl = APISchema<ExternalServicesServiceImpl, MediaServiceImpl, TagsServiceImpl, NormalizerImpl>;
+type QueryImpl = Query<ExternalServicesServiceImpl, MediaServiceImpl, TagsServiceImpl, NormalizerImpl>;
+type MutationImpl = Mutation<ExternalServicesServiceImpl, MediaServiceImpl, TagsServiceImpl, NormalizerImpl>;
+type SubscriptionImpl = Subscription<MediaServiceImpl>;
+type SchemaImpl = Schema<QueryImpl, MutationImpl, SubscriptionImpl>;
+type SchemaBuilderImpl = SchemaBuilder<QueryImpl, MutationImpl, SubscriptionImpl>;
 type MediumImageProcessorImpl = InMemoryImageProcessor;
-type GraphQLServiceImpl = GraphQLService<ExternalServicesServiceImpl, MediaServiceImpl, TagsServiceImpl, NormalizerImpl>;
+type GraphQLServiceImpl = GraphQLService<QueryImpl, MutationImpl, SubscriptionImpl>;
 
 async fn pg_pool() -> anyhow::Result<PgPool> {
     let pg_options = PgConnectOptions::new()
@@ -130,41 +127,27 @@ fn thumbnails_service(media_service: MediaServiceImpl) -> ThumbnailsServiceImpl 
     ThumbnailsService::new(media_service)
 }
 
-fn schema(
-    external_services_service: ExternalServicesServiceImpl,
-    media_service: MediaServiceImpl,
-    tags_service: TagsServiceImpl,
-    normalizer: Arc<NormalizerImpl>,
-    media_url_factory: Arc<dyn MediaURLFactoryInterface>,
-    thumbnail_url_factory: Arc<dyn ThumbnailURLFactoryInterface>,
-) -> APISchemaImpl {
-    let query = Query::new();
-    let mutation = Mutation::new();
-    let subscription = Subscription::new();
-
-    APISchema::build(query, mutation, subscription)
-        .data(external_services_service)
-        .data(media_service)
-        .data(tags_service)
-        .data(normalizer)
-        .data(media_url_factory)
-        .data(thumbnail_url_factory)
-        .finish()
+fn query() -> QueryImpl {
+    Query::new()
 }
 
-fn noop_schema() -> APISchemaImpl {
-    let query = Query::new();
-    let mutation = Mutation::new();
-    let subscription = Subscription::new();
+fn mutation() -> MutationImpl {
+    Mutation::new()
+}
 
-    APISchema::new(query, mutation, subscription)
+fn subscription() -> SubscriptionImpl {
+    Subscription::new()
+}
+
+fn schema(query: QueryImpl, mutation: MutationImpl, subscription: SubscriptionImpl) -> SchemaBuilderImpl {
+    Schema::build(query, mutation, subscription)
 }
 
 fn medium_image_processor() -> MediumImageProcessorImpl {
     InMemoryImageProcessor::new(Size::new(240, 240), ImageFormat::WebP, FilterType::CatmullRom)
 }
 
-fn graphql_service(schema: APISchemaImpl) -> GraphQLServiceImpl {
+fn graphql_service(schema: SchemaImpl) -> GraphQLServiceImpl {
     GraphQLService::new(schema, "/graphql", "/graphql/subscriptions")
 }
 
@@ -218,7 +201,18 @@ impl Application {
                 let thumbnail_url_factory = Arc::new(thumbnail_url_factory());
                 let thumbnails_service = thumbnails_service(media_service.clone());
 
-                let schema = schema(external_services_service, media_service, tags_service, normalizer, media_url_factory, thumbnail_url_factory);
+                let query = query();
+                let mutation = mutation();
+                let subscription = subscription();
+                let schema = schema(query, mutation, subscription)
+                    .data(external_services_service)
+                    .data(media_service)
+                    .data(tags_service)
+                    .data(normalizer)
+                    .data(media_url_factory)
+                    .data(thumbnail_url_factory)
+                    .finish();
+
                 let graphql_service = graphql_service(schema);
 
                 let tls = Option::zip(serve.tls_cert, serve.tls_key);
@@ -230,7 +224,10 @@ impl Application {
                 task_tracker.wait().await;
             },
             Commands::Schema(SchemaCommand { command: SchemaCommands::Print(..) }) => {
-                let schema = noop_schema();
+                let query = query();
+                let mutation = mutation();
+                let subscription = subscription();
+                let schema = schema(query, mutation, subscription).finish();
                 let graphql_service = graphql_service(schema);
                 print!("{}", graphql_service.definitions());
             },
