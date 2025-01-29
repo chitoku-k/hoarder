@@ -1,6 +1,9 @@
 use std::{sync::Arc, time::Duration};
 
-use application::{server::Engine, service::{graphql::GraphQLServiceInterface, media::MediaURLFactoryInterface}};
+use application::{
+    server::Engine,
+    service::{graphql::GraphQLServiceInterface, media::MediaURLFactoryInterface, thumbnails::ThumbnailURLFactoryInterface},
+};
 use anyhow::Context;
 use domain::{
     entity::replicas::Size,
@@ -198,7 +201,7 @@ impl Application {
 
                 let objects_service = objects_service(media_service.clone(), media_url_factory.clone());
 
-                let thumbnail_url_factory = Arc::new(thumbnail_url_factory());
+                let thumbnail_url_factory: Arc<dyn ThumbnailURLFactoryInterface> = Arc::new(thumbnail_url_factory());
                 let thumbnails_service = thumbnails_service(media_service.clone());
 
                 let query = query();
