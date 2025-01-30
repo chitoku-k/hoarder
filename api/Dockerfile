@@ -23,11 +23,6 @@ RUN --mount=type=cache,id=api:/usr/local/cargo/registry,target=/usr/local/cargo/
     cargo build --release && \
     cp -r target/release/hoarder /usr/local/bin/hoarder
 
-FROM base AS dev
-ENV JEMALLOC_OVERRIDE=/usr/lib/x86_64-linux-gnu/libjemalloc.so
-COPY --from=docker:cli /usr/local/bin/docker /usr/bin/docker
-RUN cargo install --no-default-features cargo-make
-
 FROM scratch AS production
 ARG PORT=80
 ENV PORT=$PORT
