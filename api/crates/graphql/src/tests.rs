@@ -11,6 +11,10 @@ mod mutation;
 mod query;
 mod subscription;
 
+mod media;
+mod sources;
+mod tags;
+
 #[derive(Default)]
 struct Query;
 
