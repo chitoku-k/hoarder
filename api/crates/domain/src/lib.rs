@@ -6,3 +6,6 @@ pub mod iter;
 pub mod processor;
 pub mod repository;
 pub mod service;
+
+#[cfg(test)]
+mod tests;

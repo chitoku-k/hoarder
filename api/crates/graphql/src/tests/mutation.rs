@@ -1,0 +1,22 @@
+use super::mocks;
+
+mod attach_tag;
+mod create_external_service;
+mod create_medium;
+mod create_replica;
+mod create_source;
+mod create_tag;
+mod create_tag_type;
+mod delete_external_service;
+mod delete_medium;
+mod delete_replica;
+mod delete_source;
+mod delete_tag;
+mod delete_tag_type;
+mod detach_tag;
+mod update_external_service;
+mod update_medium;
+mod update_replica;
+mod update_source;
+mod update_tag;
+mod update_tag_type;
