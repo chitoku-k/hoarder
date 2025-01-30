@@ -34,13 +34,26 @@ jobs:
         env:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          docker run --rm --volume=/var/run/docker.sock:/var/run/docker.sock:ro ${{ steps.build.outputs.imageid }} \
+          docker run --rm ${{ steps.build.outputs.imageid }} \
             cargo clippy --tests --workspace --quiet --message-format=short --color=never 2>&1 |
             reviewdog -f=clippy -reporter=github-pr-annotations -filter-mode=nofilter -fail-level=any -tee
 
   api-test:
     name: API Test
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17.2
+        env:
+          PGDATA: /dev/shm/pgdata/data
+          POSTGRES_DB: hoarder_test
+          POSTGRES_USER: hoarder_test
+          POSTGRES_PASSWORD: hoarder_test
+        ports:
+          - "5432:5432"
+        options: >-
+          --shm-size=512m
+          --tmpfs=/var/lib/postgresql/data
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -51,15 +64,23 @@ jobs:
         id: build
         with:
           context: ./api
-          target: dev
+          target: base
           cache-from: type=gha,scope=${{ github.ref_name }}-test
           cache-to: type=gha,scope=${{ github.ref_name }}-test,mode=max
           load: true
       - name: Run tests
         working-directory: api
         run: |
-          docker run --rm --volume=/var/run/docker.sock:/var/run/docker.sock:ro --network=host ${{ steps.build.outputs.imageid }} \
-            cargo make test --workspace
+          docker run \
+            --rm \
+            --env=PGHOST=localhost \
+            --env=PGPORT=5432 \
+            --env=PGDATABASE=hoarder_test \
+            --env=PGUSER=hoarder_test \
+            --env=PGPASSWORD=hoarder_test \
+            --network=host \
+            ${{ steps.build.outputs.imageid }} \
+            cargo test --workspace
 
   build:
     name: Build
