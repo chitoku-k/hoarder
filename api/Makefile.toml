@@ -9,7 +9,7 @@ script = '''
 set -euo pipefail
 
 source scripts/setup-postgres.bash
-cargo tarpaulin --features test-postgres "$@"
+cargo tarpaulin "$@"
 '''
 
 [tasks.test]
@@ -20,5 +20,5 @@ script = '''
 set -euo pipefail
 
 source scripts/setup-postgres.bash
-cargo test --features test-postgres "$@"
+cargo test "$@"
 '''

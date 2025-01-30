@@ -7,9 +7,6 @@ license.workspace = true
 [lib]
 doctest = false
 
-[features]
-test-postgres = []
-
 [dependencies.domain]
 workspace = true
 

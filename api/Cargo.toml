@@ -67,7 +67,6 @@ debug = false
 default = ["jemallocator", "tls"]
 jemallocator = ["tikv-jemallocator", "tikv-jemallocator/unprefixed_malloc_on_supported_platforms"]
 tls = ["application/tls"]
-test-postgres = []
 
 [dependencies.application]
 workspace = true
