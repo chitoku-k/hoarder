@@ -97,3 +97,6 @@ macro_rules! sea_query_uuid_value {
 }
 
 pub(crate) use sea_query_uuid_value;
+
+#[cfg(test)]
+mod tests;
