@@ -73,7 +73,7 @@ version = "1.4.1"
 features = ["unstable"]
 
 [dev-dependencies.test-context]
-version = "0.3.0"
+version = "0.4.1"
 
 [dev-dependencies.tokio]
 version = "1.43.0"
