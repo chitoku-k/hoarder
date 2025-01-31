@@ -43,9 +43,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/client@npm:^3.12.7, @apollo/client@npm:^3.8.0":
-  version: 3.12.7
-  resolution: "@apollo/client@npm:3.12.7"
+"@apollo/client@npm:^3.12.8, @apollo/client@npm:^3.8.0":
+  version: 3.12.8
+  resolution: "@apollo/client@npm:3.12.8"
   dependencies:
     "@graphql-typed-document-node/core": "npm:^3.1.1"
     "@wry/caches": "npm:^1.0.0"
@@ -56,7 +56,6 @@ __metadata:
     optimism: "npm:^0.18.0"
     prop-types: "npm:^15.7.2"
     rehackt: "npm:^0.1.0"
-    response-iterator: "npm:^0.2.6"
     symbol-observable: "npm:^4.0.0"
     ts-invariant: "npm:^0.10.3"
     tslib: "npm:^2.3.0"
@@ -76,7 +75,7 @@ __metadata:
       optional: true
     subscriptions-transport-ws:
       optional: true
-  checksum: 10/8d5d99ab5c17a7c3b8f8bc9486e69307e3b37b02f26196bf1901b72d61d1c3c39f18e0e3d672357eb30a0a266dea48163f537cc9e0496a66d375eab8bfedd55a
+  checksum: 10/6796aa549d87b166b96fc252adb479dc35cec92059824da4465eaa87a542a3fdb4317c4f26d3e444ec3b11212715b53311eef82c3e98c81360ba86e6d25e6173
   languageName: node
   linkType: hard
 
@@ -5606,7 +5605,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "hoarder-ui@workspace:."
   dependencies:
-    "@apollo/client": "npm:^3.12.7"
+    "@apollo/client": "npm:^3.12.8"
     "@apollo/experimental-nextjs-app-support": "npm:^0.11.8"
     "@date-fns/tz": "npm:^1.2.0"
     "@emotion/cache": "npm:^11.14.0"
@@ -7903,13 +7902,6 @@ __metadata:
   bin:
     resolve: bin/resolve
   checksum: 10/05fa778de9d0347c8b889eb7a18f1f06bf0f801b0eb4610b4871a4b2f22e220900cf0ad525e94f990bb8d8921c07754ab2122c0c225ab4cdcea98f36e64fa4c2
-  languageName: node
-  linkType: hard
-
-"response-iterator@npm:^0.2.6":
-  version: 0.2.6
-  resolution: "response-iterator@npm:0.2.6"
-  checksum: 10/ef7c74693ef3891461955a666e753585b298fe0de1baaf0d190e7a6818e4311e459d72f4a36f04aa8f49eda9b5f97124e5534be01e40d9e008795125d0bbb374
   languageName: node
   linkType: hard
 
