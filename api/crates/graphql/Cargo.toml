@@ -57,9 +57,6 @@ version = "1.0.138"
 [dependencies.thiserror]
 version = "2.0.11"
 
-[dependencies.tokio-stream]
-version = "0.1.17"
-
 [dependencies.tower-service]
 version = "0.3.3"
 
