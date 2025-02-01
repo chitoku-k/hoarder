@@ -40,6 +40,8 @@ features = ["macros", "net", "process", "rt-multi-thread", "signal"]
 
 [dev-dependencies.futures]
 version = "0.3.31"
+features = ["std"]
+default-features = false
 
 [dev-dependencies.hyper]
 version = "1.6.0"

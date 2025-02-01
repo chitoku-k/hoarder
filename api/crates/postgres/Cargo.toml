@@ -7,6 +7,9 @@ license.workspace = true
 [lib]
 doctest = false
 
+[features]
+tls = ["sqlx/tls-native-tls"]
+
 [dependencies.domain]
 workspace = true
 
@@ -15,8 +18,8 @@ version = "0.1.85"
 
 [dependencies.chrono]
 version = "0.4.39"
-default-features = false
 features = ["clock", "std"]
+default-features = false
 
 [dependencies.cow-utils]
 version = "0.1.3"
@@ -27,6 +30,7 @@ features = ["constructor", "from", "into"]
 
 [dependencies.futures]
 version = "0.3.31"
+features = ["std"]
 default-features = false
 
 [dependencies.log]
@@ -38,7 +42,8 @@ features = ["serde"]
 
 [dependencies.sea-query]
 version = "0.32.1"
-features = ["thread-safe"]
+features = ["derive", "backend-postgres", "thread-safe"]
+default-features = false
 
 [dependencies.sea-query-binder]
 version = "0.7.0"
@@ -56,7 +61,8 @@ version = "3.12.0"
 
 [dependencies.sqlx]
 version = "0.8.3"
-features = ["chrono", "json", "postgres", "runtime-tokio", "tls-native-tls", "uuid"]
+features = ["chrono", "json", "migrate", "postgres", "runtime-tokio", "uuid"]
+default-features = false
 
 [dependencies.sqlx_migrator]
 version = "0.16.2"

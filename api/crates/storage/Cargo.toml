@@ -19,6 +19,7 @@ features = ["constructor", "display"]
 
 [dependencies.futures]
 version = "0.3.31"
+features = ["std"]
 default-features = false
 
 [dependencies.icu_collator]
