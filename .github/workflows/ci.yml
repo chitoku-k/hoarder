@@ -80,7 +80,7 @@ jobs:
             --env=PGPASSWORD=hoarder_test \
             --network=host \
             ${{ steps.build.outputs.imageid }} \
-            cargo test --workspace
+            cargo test --workspace --no-default-features
 
   build:
     name: Build
