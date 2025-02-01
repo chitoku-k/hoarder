@@ -9,8 +9,8 @@ doctest = false
 
 [dependencies.chrono]
 version = "0.4.39"
-default-features = false
 features = ["clock", "std"]
+default-features = false
 
 [dependencies.derive_more]
 version = "1.0.0"
@@ -18,6 +18,8 @@ features = ["constructor", "deref", "display", "from"]
 
 [dependencies.futures]
 version = "0.3.31"
+features = ["std"]
+default-features = false
 
 [dependencies.log]
 version = "0.4.25"
@@ -48,9 +50,6 @@ features = ["serde", "v4"]
 
 [dev-dependencies.anyhow]
 version = "1.0.95"
-
-[dev-dependencies.futures]
-version = "0.3.31"
 
 [dev-dependencies.mockall]
 version = "0.13.1"

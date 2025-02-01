@@ -23,7 +23,6 @@ version = "7.0.14"
 
 [dependencies.axum]
 version = "0.8.1"
-features = ["default", "http2"]
 
 [dependencies.base64]
 version = "0.22.1"
