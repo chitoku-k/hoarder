@@ -64,66 +64,135 @@ fn external_service_metadata_by_url_succeeds_no_match() {
 fn external_metadata_from_metadata_succeeds_with_bluesky() {
     let actual = ExternalMetadata::from_metadata("bluesky", "https://bsky.app/profile/creator_01/post/abcdefghi", Some("abcdefghi"), Some("creator_01")).unwrap();
     assert_eq!(actual, ExternalMetadata::Bluesky { id: "abcdefghi".to_string(), creator_id: "creator_01".to_string() });
+
+    let actual = ExternalMetadata::from_metadata("bluesky", "https://bsky.app/profile/creator_01/post/abcdefghi", Some("abcdefghi"), None);
+    assert!(actual.is_none());
+
+    let actual = ExternalMetadata::from_metadata("bluesky", "https://bsky.app/profile/creator_01/post/abcdefghi", None, Some("creator_01"));
+    assert!(actual.is_none());
 }
 
 #[test]
 fn external_metadata_from_metadata_succeeds_with_fantia() {
     let actual = ExternalMetadata::from_metadata("fantia", "https://fantia.jp/posts/1305295", Some("1305295"), None).unwrap();
     assert_eq!(actual, ExternalMetadata::Fantia { id: 1305295 });
+
+    let actual = ExternalMetadata::from_metadata("fantia", "https://fantia.jp/posts/1305295", Some("abcdefghi"), None);
+    assert!(actual.is_none());
+
+    let actual = ExternalMetadata::from_metadata("fantia", "https://fantia.jp/posts/1305295", None, None);
+    assert!(actual.is_none());
 }
 
 #[test]
 fn external_metadata_from_metadata_succeeds_with_mastodon() {
     let actual = ExternalMetadata::from_metadata("mastodon", "https://mastodon.social/@creator_01/123456789", Some("123456789"), Some("creator_01")).unwrap();
     assert_eq!(actual, ExternalMetadata::Mastodon { id: 123456789, creator_id: "creator_01".to_string() });
+
+    let actual = ExternalMetadata::from_metadata("mastodon", "https://mastodon.social/@creator_01/123456789", Some("123456789"), None);
+    assert!(actual.is_none());
+
+    let actual = ExternalMetadata::from_metadata("mastodon", "https://mastodon.social/@creator_01/123456789", Some("abcdefghi"), None);
+    assert!(actual.is_none());
+
+    let actual = ExternalMetadata::from_metadata("mastodon", "https://mastodon.social/@creator_01/123456789", None, Some("creator_01"));
+    assert!(actual.is_none());
 }
 
 #[test]
 fn external_metadata_from_metadata_succeeds_with_misskey() {
     let actual = ExternalMetadata::from_metadata("misskey", "https://misskey.io/notes/abcdefghi", Some("abcdefghi"), None).unwrap();
     assert_eq!(actual, ExternalMetadata::Misskey { id: "abcdefghi".to_string() });
+
+    let actual = ExternalMetadata::from_metadata("misskey", "https://misskey.io/notes/abcdefghi", None, None);
+    assert!(actual.is_none());
 }
 
 #[test]
 fn external_metadata_from_metadata_succeeds_with_nijie() {
     let actual = ExternalMetadata::from_metadata("nijie", "https://nijie.info/view.php?id=323512", Some("323512"), None).unwrap();
     assert_eq!(actual, ExternalMetadata::Nijie { id: 323512 });
+
+    let actual = ExternalMetadata::from_metadata("nijie", "https://nijie.info/view.php?id=323512", Some("abcdefghi"), None);
+    assert!(actual.is_none());
+
+    let actual = ExternalMetadata::from_metadata("nijie", "https://nijie.info/view.php?id=323512", None, None);
+    assert!(actual.is_none());
 }
 
 #[test]
 fn external_metadata_from_metadata_succeeds_with_pixiv() {
     let actual = ExternalMetadata::from_metadata("pixiv", "https://www.pixiv.net/artworks/56736941", Some("56736941"), None).unwrap();
     assert_eq!(actual, ExternalMetadata::Pixiv { id: 56736941 });
+
+    let actual = ExternalMetadata::from_metadata("pixiv", "https://www.pixiv.net/artworks/56736941", Some("abcdefghi"), None);
+    assert!(actual.is_none());
+
+    let actual = ExternalMetadata::from_metadata("pixiv", "https://www.pixiv.net/artworks/56736941", None, None);
+    assert!(actual.is_none());
 }
 
 #[test]
 fn external_metadata_from_metadata_succeeds_with_pixiv_fanbox() {
     let actual = ExternalMetadata::from_metadata("pixiv_fanbox", "https://fairyeye.fanbox.cc/posts/178080", Some("178080"), Some("fairyeye")).unwrap();
     assert_eq!(actual, ExternalMetadata::PixivFanbox { id: 178080, creator_id: "fairyeye".to_string() });
+
+    let actual = ExternalMetadata::from_metadata("pixiv_fanbox", "https://fairyeye.fanbox.cc/posts/178080", Some("178080"), None);
+    assert!(actual.is_none());
+
+    let actual = ExternalMetadata::from_metadata("pixiv_fanbox", "https://fairyeye.fanbox.cc/posts/178080", Some("abcdefghi"), None);
+    assert!(actual.is_none());
+
+    let actual = ExternalMetadata::from_metadata("pixiv_fanbox", "https://fairyeye.fanbox.cc/posts/178080", None, Some("fairyeye"));
+    assert!(actual.is_none());
 }
 
 #[test]
 fn external_metadata_from_metadata_succeeds_with_pleroma() {
     let actual = ExternalMetadata::from_metadata("pleroma", "https://udongein.xyz/notice/abcdefghi", Some("abcdefghi"), None).unwrap();
     assert_eq!(actual, ExternalMetadata::Pleroma { id: "abcdefghi".to_string() });
+
+    let actual = ExternalMetadata::from_metadata("pleroma", "https://udongein.xyz/notice/abcdefghi", None, None);
+    assert!(actual.is_none());
 }
 
 #[test]
 fn external_metadata_from_metadata_succeeds_with_seiga() {
     let actual = ExternalMetadata::from_metadata("seiga", "https://seiga.nicovideo.jp/seiga/6452903", Some("6452903"), None).unwrap();
     assert_eq!(actual, ExternalMetadata::Seiga { id: 6452903 });
+
+    let actual = ExternalMetadata::from_metadata("seiga", "https://seiga.nicovideo.jp/seiga/6452903", Some("abcdefghi"), None);
+    assert!(actual.is_none());
+
+    let actual = ExternalMetadata::from_metadata("seiga", "https://seiga.nicovideo.jp/seiga/6452903", None, None);
+    assert!(actual.is_none());
 }
 
 #[test]
 fn external_metadata_from_metadata_succeeds_with_skeb() {
     let actual = ExternalMetadata::from_metadata("skeb", "https://skeb.jp/@pieleaf_x2/works/18", Some("18"), Some("pieleaf_x2")).unwrap();
     assert_eq!(actual, ExternalMetadata::Skeb { id: 18, creator_id: "pieleaf_x2".to_string() });
+
+    let actual = ExternalMetadata::from_metadata("skeb", "https://skeb.jp/@pieleaf_x2/works/18", Some("18"), None);
+    assert!(actual.is_none());
+
+    let actual = ExternalMetadata::from_metadata("skeb", "https://skeb.jp/@pieleaf_x2/works/18", Some("abcdefghi"), Some("pieleaf_x2"));
+    assert!(actual.is_none());
+
+    let actual = ExternalMetadata::from_metadata("skeb", "https://skeb.jp/@pieleaf_x2/works/18", None, Some("pieleaf_x2"));
+    assert!(actual.is_none());
 }
 
 #[test]
 fn external_metadata_from_metadata_succeeds_with_threads() {
     let actual = ExternalMetadata::from_metadata("threads", "https://www.threads.net/@creator_01/post/abcdefghi", Some("abcdefghi"), Some("creator_01")).unwrap();
     assert_eq!(actual, ExternalMetadata::Threads { id: "abcdefghi".to_string(), creator_id: Some("creator_01".to_string()) });
+
+    let actual = ExternalMetadata::from_metadata("threads", "https://www.threads.net/@creator_01/post/abcdefghi", Some("abcdefghi"), None).unwrap();
+    assert_eq!(actual, ExternalMetadata::Threads { id: "abcdefghi".to_string(), creator_id: None });
+
+    let actual = ExternalMetadata::from_metadata("threads", "https://www.threads.net/@creator_01/post/abcdefghi", None, Some("creator_01"));
+    assert!(actual.is_none());
 }
 
 #[test]
@@ -136,12 +205,36 @@ fn external_metadata_from_metadata_succeeds_with_website() {
 fn external_metadata_from_metadata_succeeds_with_x() {
     let actual = ExternalMetadata::from_metadata("x", "https://x.com/_namori_/status/727620202049900544", Some("727620202049900544"), Some("_namori_")).unwrap();
     assert_eq!(actual, ExternalMetadata::X { id: 727620202049900544, creator_id: Some("_namori_".to_string()) });
+
+    let actual = ExternalMetadata::from_metadata("x", "https://x.com/_namori_/status/727620202049900544", Some("727620202049900544"), None).unwrap();
+    assert_eq!(actual, ExternalMetadata::X { id: 727620202049900544, creator_id: None });
+
+    let actual = ExternalMetadata::from_metadata("x", "https://x.com/_namori_/status/727620202049900544", Some("abcdefghi"), None);
+    assert!(actual.is_none());
+
+    let actual = ExternalMetadata::from_metadata("x", "https://x.com/_namori_/status/727620202049900544", None, None);
+    assert!(actual.is_none());
 }
 
 #[test]
 fn external_metadata_from_metadata_succeeds_with_xfolio() {
     let actual = ExternalMetadata::from_metadata("xfolio", "https://xfolio.jp/portfolio/creator_01/works/123456789", Some("123456789"), Some("creator_01")).unwrap();
     assert_eq!(actual, ExternalMetadata::Xfolio { id: 123456789, creator_id: "creator_01".to_string() });
+
+    let actual = ExternalMetadata::from_metadata("xfolio", "https://xfolio.jp/portfolio/creator_01/works/123456789", Some("123456789"), None);
+    assert!(actual.is_none());
+
+    let actual = ExternalMetadata::from_metadata("xfolio", "https://xfolio.jp/portfolio/creator_01/works/123456789", Some("abcdefghi"), None);
+    assert!(actual.is_none());
+
+    let actual = ExternalMetadata::from_metadata("xfolio", "https://xfolio.jp/portfolio/creator_01/works/123456789", None, Some("creator_01"));
+    assert!(actual.is_none());
+}
+
+#[test]
+fn external_metadata_from_metadata_succeeds_with_custom() {
+    let actual = ExternalMetadata::from_metadata("custom", "https://example.com", None, None);
+    assert!(actual.is_none());
 }
 
 #[test]
@@ -358,4 +451,10 @@ fn external_metadata_url_succeeds_with_xfolio() {
 
     let actual = ExternalMetadata::Xfolio { id: 123456789, creator_id: "creator_01".to_string() }.url(None).unwrap();
     assert_eq!(actual, "https://xfolio.jp/portfolio/creator_01/works/123456789");
+}
+
+#[test]
+fn external_metadata_url_with_custom() {
+    let actual = ExternalMetadata::Custom(r#"{"id":42}"#.to_string()).url(None);
+    assert!(actual.is_none());
 }

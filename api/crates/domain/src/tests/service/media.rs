@@ -11,6 +11,7 @@ mod get_media;
 mod get_media_by_ids;
 mod get_media_by_source_ids;
 mod get_media_by_tag_ids;
+mod get_object;
 mod get_objects;
 mod get_replica_by_original_url;
 mod get_replicas_by_ids;
