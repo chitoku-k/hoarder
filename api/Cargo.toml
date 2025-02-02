@@ -64,7 +64,7 @@ debug = false
 
 [features]
 default = ["jemallocator", "tls"]
-jemallocator = ["tikv-jemallocator", "tikv-jemallocator/unprefixed_malloc_on_supported_platforms"]
+jemallocator = ["dep:tikv-jemallocator", "tikv-jemallocator/unprefixed_malloc_on_supported_platforms"]
 tls = ["application/tls", "postgres/tls"]
 
 [dependencies.application]
