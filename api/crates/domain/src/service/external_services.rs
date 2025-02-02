@@ -35,11 +35,7 @@ pub trait ExternalServicesServiceInterface: Send + Sync + 'static {
 fn validate_url_pattern(url_pattern: &str) -> Result<()> {
     if let Err(e) = Regex::new(url_pattern) {
         let url_pattern = url_pattern.to_string();
-        let description = if let regex::Error::Syntax(ref description) = e {
-            Some(description.clone())
-        } else {
-            None
-        };
+        let description = Some(e.to_string());
         Err(Error::new(ErrorKind::ExternalServiceUrlPatternInvalid { url_pattern, description }, e))
     } else {
         Ok(())
