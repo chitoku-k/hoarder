@@ -49,8 +49,8 @@ jobs:
           POSTGRES_DB: hoarder_test
           POSTGRES_USER: hoarder_test
           POSTGRES_PASSWORD: hoarder_test
-        ports:
-          - "5432:5432"
+        volumes:
+          - postgresql:/var/run/postgresql
         options: >-
           --shm-size=512m
           --tmpfs=/var/lib/postgresql/data
@@ -73,12 +73,10 @@ jobs:
         run: |
           docker run \
             --rm \
-            --env=PGHOST=localhost \
-            --env=PGPORT=5432 \
+            --env=PGHOST=/postgresql \
             --env=PGDATABASE=hoarder_test \
             --env=PGUSER=hoarder_test \
-            --env=PGPASSWORD=hoarder_test \
-            --network=host \
+            --volume=postgresql:/postgresql \
             ${{ steps.build.outputs.imageid }} \
             cargo test --workspace --no-default-features
 
