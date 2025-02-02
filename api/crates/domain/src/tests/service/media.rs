@@ -395,9 +395,9 @@ async fn create_replica_from_url_succeeds() {
                 .withf(|id, thumbnail_image, original_url, original_image, status| {
                     (id, thumbnail_image, original_url, original_image, status) == (
                         &ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
-                        &Some(ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240))),
+                        &Some(Some(ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240)))),
                         &None,
-                        &Some(OriginalImage::new("image/png", Size::new(720, 720))),
+                        &Some(Some(OriginalImage::new("image/png", Size::new(720, 720)))),
                         &Some(ReplicaStatus::Ready),
                     )
                 })
@@ -615,9 +615,9 @@ async fn create_replica_from_content_succeeds() {
                 .withf(|id, thumbnail_image, original_url, original_image, status| {
                     (id, thumbnail_image, original_url, original_image, status) == (
                         &ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
-                        &Some(ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240))),
+                        &Some(Some(ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240)))),
                         &None,
-                        &Some(OriginalImage::new("image/png", Size::new(720, 720))),
+                        &Some(Some(OriginalImage::new("image/png", Size::new(720, 720)))),
                         &Some(ReplicaStatus::Ready),
                     )
                 })
@@ -2564,9 +2564,9 @@ async fn update_replica_by_id_from_url_succeeds() {
         .withf(|id, thumbnail_image, original_url, original_image, status| {
             (id, thumbnail_image, original_url, original_image, status) == (
                 &ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
-                &None,
+                &Some(None),
                 &Some("file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg"),
-                &None,
+                &Some(None),
                 &Some(ReplicaStatus::Processing),
             )
         })
@@ -2595,9 +2595,9 @@ async fn update_replica_by_id_from_url_succeeds() {
                 .withf(|id, thumbnail_image, original_url, original_image, status| {
                     (id, thumbnail_image, original_url, original_image, status) == (
                         &ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
-                        &Some(ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240))),
-                        &Some("file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg"),
-                        &Some(OriginalImage::new("image/jpeg", Size::new(720, 720))),
+                        &Some(Some(ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240)))),
+                        &None,
+                        &Some(Some(OriginalImage::new("image/jpeg", Size::new(720, 720)))),
                         &Some(ReplicaStatus::Ready),
                     )
                 })
@@ -2686,9 +2686,9 @@ async fn update_replica_by_id_from_url_fails() {
         .withf(|id, thumbnail_image, original_url, original_image, status| {
             (id, thumbnail_image, original_url, original_image, status) == (
                 &ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
-                &None,
+                &Some(None),
                 &Some("file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg"),
-                &None,
+                &Some(None),
                 &Some(ReplicaStatus::Processing),
             )
         })
@@ -2784,9 +2784,9 @@ async fn update_replica_by_id_from_content_succeeds() {
         .withf(|id, thumbnail_image, original_url, original_image, status| {
             (id, thumbnail_image, original_url, original_image, status) == (
                 &ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
-                &None,
+                &Some(None),
                 &Some("file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg"),
-                &None,
+                &Some(None),
                 &Some(ReplicaStatus::Processing),
             )
         })
@@ -2815,9 +2815,9 @@ async fn update_replica_by_id_from_content_succeeds() {
                 .withf(|id, thumbnail_image, original_url, original_image, status| {
                     (id, thumbnail_image, original_url, original_image, status) == (
                         &ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
-                        &Some(ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240))),
-                        &Some("file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg"),
-                        &Some(OriginalImage::new("image/jpeg", Size::new(720, 720))),
+                        &Some(Some(ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(240, 240)))),
+                        &None,
+                        &Some(Some(OriginalImage::new("image/jpeg", Size::new(720, 720)))),
                         &Some(ReplicaStatus::Ready),
                     )
                 })
@@ -2927,9 +2927,9 @@ async fn update_replica_by_id_from_content_fails() {
         .withf(|id, thumbnail_image, original_url, original_image, status| {
             (id, thumbnail_image, original_url, original_image, status) == (
                 &ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
-                &None,
+                &Some(None),
                 &Some("file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg"),
-                &None,
+                &Some(None),
                 &Some(ReplicaStatus::Processing),
             )
         })

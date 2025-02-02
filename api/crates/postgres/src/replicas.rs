@@ -490,7 +490,7 @@ impl ReplicasRepository for PostgresReplicasRepository {
         Ok(thumbnail)
     }
 
-    async fn update_by_id(&self, id: ReplicaId, thumbnail_image: Option<ThumbnailImage>, original_url: Option<&str>, original_image: Option<OriginalImage>, status: Option<ReplicaStatus>) -> Result<Replica> {
+    async fn update_by_id(&self, id: ReplicaId, thumbnail_image: Option<Option<ThumbnailImage>>, original_url: Option<&str>, original_image: Option<Option<OriginalImage>>, status: Option<ReplicaStatus>) -> Result<Replica> {
         let mut tx = self.pool.begin().await.map_err(Error::other)?;
 
         let (sql, values) = Query::select()
@@ -542,9 +542,13 @@ impl ReplicasRepository for PostgresReplicasRepository {
             query.value(PostgresReplica::OriginalUrl, original_url);
         }
         if let Some(original_image) = original_image {
-            query.value(PostgresReplica::MimeType, original_image.mime_type);
-            query.value(PostgresReplica::Width, original_image.size.width);
-            query.value(PostgresReplica::Height, original_image.size.height);
+            let (mime_type, width, height) = match original_image {
+                Some(original_image) => (Some(original_image.mime_type), Some(original_image.size.width), Some(original_image.size.height)),
+                None => (None, None, None),
+            };
+            query.value(PostgresReplica::MimeType, mime_type);
+            query.value(PostgresReplica::Width, width);
+            query.value(PostgresReplica::Height, height);
         }
         if let Some(status) = status {
             query.value(PostgresReplica::Phase, PostgresReplicaPhase::from(status));
@@ -563,6 +567,10 @@ impl ReplicasRepository for PostgresReplicasRepository {
         };
 
         if let Some(thumbnail_image) = thumbnail_image {
+            let (body, width, height) = match thumbnail_image {
+                Some(thumbnail_image) => (Some(thumbnail_image.body), Some(thumbnail_image.size.width), Some(thumbnail_image.size.height)),
+                None => (None, None, None),
+            };
             let (sql, values) = Query::insert()
                 .into_table(PostgresThumbnail::Table)
                 .columns([
@@ -573,9 +581,9 @@ impl ReplicasRepository for PostgresReplicasRepository {
                 ])
                 .values([
                     PostgresReplicaId::from(replica.id).into(),
-                    thumbnail_image.body.into(),
-                    thumbnail_image.size.width.into(),
-                    thumbnail_image.size.height.into(),
+                    body.into(),
+                    width.into(),
+                    height.into(),
                 ])
                 .map_err(Error::other)?
                 .on_conflict(

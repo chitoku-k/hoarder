@@ -312,7 +312,7 @@ where
             };
 
             tracker.spawn(async move {
-                if let Err(e) = replicas_repository.update_by_id(id, thumbnail_image, None, original_image, Some(status)).await {
+                if let Err(e) = replicas_repository.update_by_id(id, Some(thumbnail_image), None, Some(original_image), Some(status)).await {
                     log::error!("failed to update the replica\nError: {e:?}");
                 }
             });
@@ -591,7 +591,7 @@ where
         for<'a> R: Read + Seek + Send + 'a,
     {
         let (url, status, process) = self.create_replica_source(medium_source).await?;
-        match self.replicas_repository.update_by_id(id, None, Some(&url), None, Some(ReplicaStatus::Processing)).await {
+        match self.replicas_repository.update_by_id(id, Some(None), Some(&url), Some(None), Some(ReplicaStatus::Processing)).await {
             Ok(replica) => {
                 self.process_replica_by_id(replica.id, process);
                 Ok(replica)
