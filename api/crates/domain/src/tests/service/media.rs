@@ -1,4 +1,4 @@
-use std::io::{copy, BufReader, Cursor};
+use std::io::{copy, Cursor};
 
 use anyhow::anyhow;
 use chrono::{TimeZone, Utc};
@@ -325,7 +325,7 @@ async fn create_replica_from_url_succeeds() {
         .returning(|| {
             let mut mock_medium_image_processor = MockMediumImageProcessor::new();
             mock_medium_image_processor
-                .expect_generate_thumbnail::<BufReader<Cursor<&[_]>>>()
+                .expect_generate_thumbnail()
                 .times(1)
                 .returning(|_| Ok((
                     OriginalImage::new("image/png", Size::new(720, 720)),
@@ -518,7 +518,7 @@ async fn create_replica_from_content_succeeds() {
         .returning(|| {
             let mut mock_medium_image_processor = MockMediumImageProcessor::new();
             mock_medium_image_processor
-                .expect_generate_thumbnail::<BufReader<Cursor<&[_]>>>()
+                .expect_generate_thumbnail()
                 .times(1)
                 .returning(|_| Ok((
                     OriginalImage::new("image/png", Size::new(720, 720)),
@@ -2525,7 +2525,7 @@ async fn update_replica_by_id_from_url_succeeds() {
         .returning(|| {
             let mut mock_medium_image_processor = MockMediumImageProcessor::new();
             mock_medium_image_processor
-                .expect_generate_thumbnail::<BufReader<Cursor<&[_]>>>()
+                .expect_generate_thumbnail()
                 .times(1)
                 .returning(|_| Ok((
                     OriginalImage::new("image/jpeg", Size::new(720, 720)),
@@ -2718,7 +2718,7 @@ async fn update_replica_by_id_from_content_succeeds() {
         .returning(|| {
             let mut mock_medium_image_processor = MockMediumImageProcessor::new();
             mock_medium_image_processor
-                .expect_generate_thumbnail::<BufReader<Cursor<&[_]>>>()
+                .expect_generate_thumbnail()
                 .times(1)
                 .returning(|_| Ok((
                     OriginalImage::new("image/jpeg", Size::new(720, 720)),

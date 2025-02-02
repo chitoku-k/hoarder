@@ -2,6 +2,7 @@
 
 pub mod entity;
 pub mod error;
+pub mod io;
 pub mod iter;
 pub mod processor;
 pub mod repository;
