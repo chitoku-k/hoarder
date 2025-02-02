@@ -96,3 +96,10 @@ fn alias_set_from_strings() {
 
     assert_eq!(actual, AliasSet::new(BTreeSet::from(["foo".to_string(), "bar".to_string(), "baz".to_string()])));
 }
+
+#[test]
+fn aslias_set_into_strings() {
+    let actual = Vec::from(AliasSet::new(BTreeSet::from(["foo".to_string(), "bar".to_string(), "baz".to_string()])));
+
+    assert_eq!(actual, vec!["bar".to_string(), "baz".to_string(), "foo".to_string()]);
+}

@@ -1,5 +1,7 @@
 use crate::repository::DeleteResult;
 
+mod objects;
+
 #[test]
 fn delete_result_is_not_found() {
     let result = DeleteResult::NotFound;
