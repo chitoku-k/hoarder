@@ -26,9 +26,9 @@ async fn succeeds(ctx: &DatabaseContext) {
     let repository = PostgresReplicasRepository::new(ctx.pool.clone());
     let actual_replica = repository.update_by_id(
         ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be")),
-        Some(ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(1, 1))),
+        Some(Some(ThumbnailImage::new(vec![0x01, 0x02, 0x03, 0x04], Size::new(1, 1)))),
         Some("file:///replica_new.jpg"),
-        Some(OriginalImage::new("image/jpeg", Size::new(720, 720))),
+        Some(Some(OriginalImage::new("image/jpeg", Size::new(720, 720)))),
         None,
     ).await.unwrap();
     let actual_thumbnail = actual_replica.thumbnail.unwrap();
