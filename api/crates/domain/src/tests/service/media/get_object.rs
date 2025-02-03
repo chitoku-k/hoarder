@@ -4,7 +4,6 @@ use anyhow::anyhow;
 use chrono::{TimeZone, Utc};
 use futures::future::{err, ok};
 use pretty_assertions::{assert_eq, assert_matches};
-use tokio_util::task::TaskTracker;
 
 use crate::{
     entity::objects::{Entry, EntryKind, EntryMetadata, EntryUrl},
@@ -28,7 +27,6 @@ async fn succeeds() {
     let mock_replicas_repository = MockReplicasRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
-    let task_tracker = TaskTracker::new();
 
     let mut mock_objects_repository = MockObjectsRepository::new();
     mock_objects_repository
@@ -52,7 +50,7 @@ async fn succeeds() {
             )))
         });
 
-    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor, task_tracker.clone());
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.get_object(EntryUrl::from("file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string())).await.unwrap();
 
     assert_eq!(actual, Entry::new(
@@ -74,7 +72,6 @@ async fn fails() {
     let mock_replicas_repository = MockReplicasRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
-    let task_tracker = TaskTracker::new();
 
     let mut mock_objects_repository = MockObjectsRepository::new();
     mock_objects_repository
@@ -88,7 +85,7 @@ async fn fails() {
             )))
         });
 
-    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor, task_tracker.clone());
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.get_object(EntryUrl::from("file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string())).await.unwrap_err();
 
     assert_matches!(actual.kind(), ErrorKind::ObjectNotFound { url } if url == "file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg");

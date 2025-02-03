@@ -2,7 +2,6 @@ use anyhow::anyhow;
 use chrono::{TimeZone, Utc};
 use futures::future::{err, ok};
 use pretty_assertions::{assert_eq, assert_matches};
-use tokio_util::task::TaskTracker;
 use uuid::uuid;
 
 use crate::{
@@ -31,7 +30,6 @@ async fn succeeds() {
     let mock_objects_repository = MockObjectsRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
-    let task_tracker = TaskTracker::new();
 
     let mut mock_replicas_repository = MockReplicasRepository::new();
     mock_replicas_repository
@@ -40,7 +38,7 @@ async fn succeeds() {
         .withf(|id| id == &ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")))
         .returning(|_| Box::pin(ok(DeleteResult::Deleted(1))));
 
-    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor, task_tracker);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.delete_replica_by_id(ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")), false).await.unwrap();
 
     assert_eq!(actual, DeleteResult::Deleted(1));
@@ -51,7 +49,6 @@ async fn succeeds_with_delete_object() {
     let mock_media_repository = MockMediaRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
-    let task_tracker = TaskTracker::new();
 
     let mut mock_objects_repository = MockObjectsRepository::new();
     mock_objects_repository
@@ -92,7 +89,7 @@ async fn succeeds_with_delete_object() {
         .withf(|id| id == &ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")))
         .returning(|_| Box::pin(ok(DeleteResult::Deleted(1))));
 
-    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor, task_tracker);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.delete_replica_by_id(ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")), true).await.unwrap();
 
     assert_eq!(actual, DeleteResult::Deleted(1));
@@ -104,7 +101,6 @@ async fn succeeds_with_delete_object_not_found() {
     let mock_objects_repository = MockObjectsRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
-    let task_tracker = TaskTracker::new();
 
     let mut mock_replicas_repository = MockReplicasRepository::new();
     mock_replicas_repository
@@ -113,7 +109,7 @@ async fn succeeds_with_delete_object_not_found() {
         .withf(|ids| ids.clone_box().eq([ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666"))]))
         .returning(|_| Box::pin(ok(Vec::new())));
 
-    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor, task_tracker);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.delete_replica_by_id(ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")), true).await.unwrap();
 
     assert_eq!(actual, DeleteResult::NotFound);
@@ -125,7 +121,6 @@ async fn fails() {
     let mock_objects_repository = MockObjectsRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
-    let task_tracker = TaskTracker::new();
 
     let mut mock_replicas_repository = MockReplicasRepository::new();
     mock_replicas_repository
@@ -134,7 +129,7 @@ async fn fails() {
         .withf(|id| id == &ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")))
         .returning(|_| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
 
-    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor, task_tracker);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.delete_replica_by_id(ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")), false).await.unwrap_err();
 
     assert_matches!(actual.kind(), ErrorKind::Other);
@@ -146,7 +141,6 @@ async fn fails_with_fetching_replica() {
     let mock_objects_repository = MockObjectsRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
-    let task_tracker = TaskTracker::new();
 
     let mut mock_replicas_repository = MockReplicasRepository::new();
     mock_replicas_repository
@@ -155,7 +149,7 @@ async fn fails_with_fetching_replica() {
         .withf(|ids| ids.clone_box().eq([ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666"))]))
         .returning(|_| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
 
-    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor, task_tracker);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.delete_replica_by_id(ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")), true).await.unwrap_err();
 
     assert_matches!(actual.kind(), ErrorKind::Other);
@@ -166,7 +160,6 @@ async fn fails_with_deleting_object() {
     let mock_media_repository = MockMediaRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
-    let task_tracker = TaskTracker::new();
 
     let mut mock_objects_repository = MockObjectsRepository::new();
     mock_objects_repository
@@ -206,7 +199,7 @@ async fn fails_with_deleting_object() {
             ]))
         });
 
-    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor, task_tracker);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.delete_replica_by_id(ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")), true).await.unwrap_err();
 
     assert_matches!(actual.kind(), ErrorKind::ObjectDeleteFailed { url } if url == "file:///77777777-7777-7777-7777-777777777777.png");

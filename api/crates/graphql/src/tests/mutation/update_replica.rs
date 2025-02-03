@@ -6,16 +6,16 @@ use chrono::{TimeZone, Utc};
 use domain::{
     entity::{
         objects::{EntryUrl, EntryUrlPath},
-        replicas::{Replica, ReplicaId, ReplicaStatus},
+        replicas::{Replica, ReplicaId, ReplicaStatus, Size, Thumbnail, ThumbnailId},
     },
     service::media::{MediumOverwriteBehavior, MediumSource},
 };
-use futures::future::{ok, ready};
+use futures::{future::ok, FutureExt};
 use indoc::indoc;
 use pretty_assertions::assert_eq;
 use serde_json::json;
 use tempfile::tempfile;
-use tokio::task;
+use tokio_util::task::TaskTracker;
 use uuid::uuid;
 
 use crate::{mutation::Mutation, query::Query};
@@ -35,6 +35,7 @@ async fn succeeds_with_original_url() {
     let external_services_service = MockExternalServicesServiceInterface::new();
     let tags_service = MockTagsServiceInterface::new();
     let normalizer = MockNormalizerInterface::new();
+    let task_tracker = TaskTracker::new();
 
     let mut media_service = MockMediaServiceInterface::new();
     media_service
@@ -57,7 +58,22 @@ async fn succeeds_with_original_url() {
                     created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 1, 0).unwrap(),
                 },
-                task::spawn(ready(())),
+                ok(Replica {
+                    id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
+                    display_order: 1,
+                    thumbnail: Some(Thumbnail {
+                        id: ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888")),
+                        size: Size::new(240, 240),
+                        created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 2, 0).unwrap(),
+                        updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 3, 0).unwrap(),
+                    }),
+                    original_url: "file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string(),
+                    mime_type: Some("image/jpeg".to_string()),
+                    size: Some(Size::new(720, 720)),
+                    status: ReplicaStatus::Ready,
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 1, 0).unwrap(),
+                }).boxed(),
             )))
         });
 
@@ -76,6 +92,7 @@ async fn succeeds_with_original_url() {
         .data(tags_service)
         .data(Arc::new(normalizer))
         .data::<Arc<dyn MediaURLFactoryInterface>>(Arc::new(media_url_factory))
+        .data(task_tracker)
         .finish();
 
     let req = indoc! {r#"
@@ -133,6 +150,7 @@ async fn succeeds_with_upload() {
     let external_services_service = MockExternalServicesServiceInterface::new();
     let tags_service = MockTagsServiceInterface::new();
     let normalizer = MockNormalizerInterface::new();
+    let task_tracker = TaskTracker::new();
 
     let mut media_service = MockMediaServiceInterface::new();
     media_service
@@ -164,7 +182,22 @@ async fn succeeds_with_upload() {
                     created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 1, 0).unwrap(),
                 },
-                task::spawn(ready(())),
+                ok(Replica {
+                    id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
+                    display_order: 1,
+                    thumbnail: Some(Thumbnail {
+                        id: ThumbnailId::from(uuid!("88888888-8888-8888-8888-888888888888")),
+                        size: Size::new(240, 240),
+                        created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 2, 0).unwrap(),
+                        updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 3, 0).unwrap(),
+                    }),
+                    original_url: "file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string(),
+                    mime_type: Some("image/jpeg".to_string()),
+                    size: Some(Size::new(720, 720)),
+                    status: ReplicaStatus::Ready,
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 1, 0).unwrap(),
+                }).boxed(),
             )))
         });
 
@@ -183,6 +216,7 @@ async fn succeeds_with_upload() {
         .data(tags_service)
         .data(Arc::new(normalizer))
         .data::<Arc<dyn MediaURLFactoryInterface>>(Arc::new(media_url_factory))
+        .data(task_tracker)
         .finish();
 
     let query = indoc! {r#"

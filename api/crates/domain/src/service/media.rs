@@ -3,8 +3,7 @@ use std::{future::Future, io::{BufReader, Read, Seek, SeekFrom}};
 use chrono::{DateTime, Utc};
 use derive_more::Constructor;
 use futures::Stream;
-use tokio::task::{self, JoinHandle};
-use tokio_util::task::TaskTracker;
+use tokio::task;
 
 use crate::{
     entity::{
@@ -51,7 +50,7 @@ pub trait MediaServiceInterface: Send + Sync + 'static {
         U: CloneableIterator<Item = (TagId, TagTypeId)> + Send;
 
     /// Creates a replica.
-    fn create_replica<R>(&self, medium_id: MediumId, medium_source: MediumSource<R>) -> impl Future<Output = Result<(Replica, JoinHandle<()>)>> + Send
+    fn create_replica<R>(&self, medium_id: MediumId, medium_source: MediumSource<R>) -> impl Future<Output = Result<(Replica, impl Future<Output = Result<Replica>> + Send + 'static)>> + Send
     where
         for<'a> R: Read + Seek + Send + 'a;
 
@@ -158,7 +157,7 @@ pub trait MediaServiceInterface: Send + Sync + 'static {
         X: CloneableIterator<Item = ReplicaId> + Send;
 
     /// Updates the replica by ID.
-    fn update_replica_by_id<R>(&self, id: ReplicaId, medium_source: MediumSource<R>) -> impl Future<Output = Result<(Replica, JoinHandle<()>)>> + Send
+    fn update_replica_by_id<R>(&self, id: ReplicaId, medium_source: MediumSource<R>) -> impl Future<Output = Result<(Replica, impl Future<Output = Result<Replica>> + Send + 'static)>> + Send
     where
         for<'a> R: Read + Seek + Send + 'a;
 
@@ -182,7 +181,6 @@ pub struct MediaService<MediaRepository, ObjectsRepository, ReplicasRepository, 
     replicas_repository: ReplicasRepository,
     sources_repository: SourcesRepository,
     medium_image_processor: MediumImageProcessor,
-    tracker: TaskTracker,
 }
 
 impl<MediaRepository, ObjectsRepository, ReplicasRepository, SourcesRepository, MediumImageProcessor> MediaService<MediaRepository, ObjectsRepository, ReplicasRepository, SourcesRepository, MediumImageProcessor>
@@ -311,13 +309,12 @@ where
         }
     }
 
-    fn process_replica_by_id<F>(&self, id: ReplicaId, process: F) -> JoinHandle<()>
+    fn process_replica_by_id<F>(&self, id: ReplicaId, process: F) -> impl Future<Output = Result<Replica>> + Send
     where
         for<'a> F: FnOnce() -> Result<(OriginalImage, ThumbnailImage)> + Send + 'a,
     {
         let replicas_repository = self.replicas_repository.clone();
-
-        self.tracker.spawn(async move {
+        async move {
             let (original_image, thumbnail_image, status) = match task::spawn_blocking(process).await.map_err(Error::other).and_then(|result| result) {
                 Ok((original_image, thumbnail_image)) => (Some(original_image), Some(thumbnail_image), ReplicaStatus::Ready),
                 Err(e) => {
@@ -326,10 +323,14 @@ where
                 },
             };
 
-            if let Err(e) = replicas_repository.update_by_id(id, Some(thumbnail_image), None, Some(original_image), Some(status)).await {
-                log::error!("failed to update the replica\nError: {e:?}");
+            match replicas_repository.update_by_id(id, Some(thumbnail_image), None, Some(original_image), Some(status)).await {
+                Ok(replica) => Ok(replica),
+                Err(e) => {
+                    log::error!("failed to update the replica\nError: {e:?}");
+                    Err(e)
+                },
             }
-        })
+        }
     }
 }
 
@@ -355,15 +356,15 @@ where
         }
     }
 
-    async fn create_replica<R>(&self, medium_id: MediumId, medium_source: MediumSource<R>) -> Result<(Replica, JoinHandle<()>)>
+    async fn create_replica<R>(&self, medium_id: MediumId, medium_source: MediumSource<R>) -> Result<(Replica, impl Future<Output = Result<Replica>> + Send + 'static)>
     where
         for<'a> R: Read + Seek + Send + 'a,
     {
         let (url, status, process) = self.create_replica_source(medium_source).await?;
         match self.replicas_repository.create(medium_id, None, &url, None, ReplicaStatus::Processing).await {
             Ok(replica) => {
-                let handle = self.process_replica_by_id(replica.id, process);
-                Ok((replica, handle))
+                let task = self.process_replica_by_id(replica.id, process);
+                Ok((replica, task))
             },
             Err(e) if status.is_created() => {
                 log::error!("failed to create a replica\nError: {e:?}");
@@ -599,15 +600,15 @@ where
         }
     }
 
-    async fn update_replica_by_id<R>(&self, id: ReplicaId, medium_source: MediumSource<R>) -> Result<(Replica, JoinHandle<()>)>
+    async fn update_replica_by_id<R>(&self, id: ReplicaId, medium_source: MediumSource<R>) -> Result<(Replica, impl Future<Output = Result<Replica>> + Send + 'static)>
     where
         for<'a> R: Read + Seek + Send + 'a,
     {
         let (url, status, process) = self.create_replica_source(medium_source).await?;
         match self.replicas_repository.update_by_id(id, Some(None), Some(&url), Some(None), Some(ReplicaStatus::Processing)).await {
             Ok(replica) => {
-                let handle = self.process_replica_by_id(replica.id, process);
-                Ok((replica, handle))
+                let task = self.process_replica_by_id(replica.id, process);
+                Ok((replica, task))
             },
             Err(e) if status.is_created() => {
                 log::error!("failed to update the replica\nError: {e:?}");
