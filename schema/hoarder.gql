@@ -343,8 +343,8 @@ type Mutation {
 		tagIds: [TagTagTypeInput!]
 	): Medium!
 	"""
-	Creates a replica either from an `originalUrl` or `upload`. The replica will be processed asynchronously, hence some
-	fields being unavailable in the response. Watch for the status updates of the medium by Subscription.
+	Creates a replica either from an `originalUrl` or `upload`. By default, the replica will be processed asynchronously,
+	hence some fields being unavailable in the response. Watch for the status updates of the medium by Subscription.
 	### Errors
 	* When the medium is not found, it returns a `MEDIUM_NOT_FOUND` error.
 	* When any replica with the same original URL already exists, it returns a `REPLICA_ORIGINAL_URL_DUPLICATE` error.
@@ -366,7 +366,11 @@ type Mutation {
 		"""
 		The upload of the replica. Mutually exclusive with `originalUrl`.
 		"""
-		upload: ReplicaInput
+		upload: ReplicaInput,
+		"""
+		Whether to process replica synchronously.
+		"""
+		sync: Boolean! = false
 	): Replica!
 	"""
 	Creates a source.
@@ -425,8 +429,8 @@ type Mutation {
 		createdAt: DateTime
 	): Medium!
 	"""
-	Updates a replica either from an `originalUrl` or `upload`. The replica will be processed asynchronously, hence some
-	fields being unavailable in the response. Watch for the status updates of the medium by Subscription.
+	Updates a replica either from an `originalUrl` or `upload`. By default, the replica will be processed asynchronously,
+	hence some fields being unavailable in the response. Watch for the status updates of the medium by Subscription.
 	### Errors
 	* When the medium is not found, it returns a `MEDIUM_NOT_FOUND` error.
 	* When any replica with the same original URL already exists, it returns a `REPLICA_ORIGINAL_URL_DUPLICATE` error.
@@ -448,7 +452,11 @@ type Mutation {
 		"""
 		The upload of the replica. Mutually exclusive with `originalUrl`.
 		"""
-		upload: ReplicaInput
+		upload: ReplicaInput,
+		"""
+		Whether to process replica synchronously.
+		"""
+		sync: Boolean! = false
 	): Replica!
 	"""
 	Creates a source.
