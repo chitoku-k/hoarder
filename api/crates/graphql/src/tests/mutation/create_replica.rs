@@ -11,11 +11,12 @@ use domain::{
     },
     service::media::{MediumOverwriteBehavior, MediumSource},
 };
-use futures::future::ok;
+use futures::future::{ok, ready};
 use indoc::indoc;
 use pretty_assertions::assert_eq;
 use serde_json::json;
 use tempfile::tempfile;
+use tokio::task;
 use uuid::uuid;
 
 use crate::{mutation::Mutation, query::Query};
@@ -45,17 +46,20 @@ async fn succeeds_with_original_url() {
             matches!(medium_source, MediumSource::Url(url) if url == &EntryUrl::from("file:///77777777-7777-7777-7777-777777777777.png".to_string()))
         })
         .returning(|_, _| {
-            Box::pin(ok(Replica {
-                id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
-                display_order: 1,
-                thumbnail: None,
-                original_url: "file:///77777777-7777-7777-7777-777777777777.png".to_string(),
-                mime_type: None,
-                size: None,
-                status: ReplicaStatus::Processing,
-                created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
-                updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 1, 0).unwrap(),
-            }))
+            Box::pin(ok((
+                Replica {
+                    id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
+                    display_order: 1,
+                    thumbnail: None,
+                    original_url: "file:///77777777-7777-7777-7777-777777777777.png".to_string(),
+                    mime_type: None,
+                    size: None,
+                    status: ReplicaStatus::Processing,
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 1, 0).unwrap(),
+                },
+                task::spawn(ready(())),
+            )))
         });
 
     let mut media_url_factory = MockMediaURLFactoryInterface::new();
@@ -149,17 +153,20 @@ async fn succeeds_with_upload() {
             })
         })
         .returning(|_, _| {
-            Box::pin(ok(Replica {
-                id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
-                display_order: 1,
-                thumbnail: None,
-                original_url: "file:///77777777-7777-7777-7777-777777777777.png".to_string(),
-                mime_type: None,
-                size: None,
-                status: ReplicaStatus::Processing,
-                created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
-                updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 1, 0).unwrap(),
-            }))
+            Box::pin(ok((
+                Replica {
+                    id: ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
+                    display_order: 1,
+                    thumbnail: None,
+                    original_url: "file:///77777777-7777-7777-7777-777777777777.png".to_string(),
+                    mime_type: None,
+                    size: None,
+                    status: ReplicaStatus::Processing,
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 0, 0).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 2, 0, 1, 0).unwrap(),
+                },
+                task::spawn(ready(())),
+            )))
         });
 
     let mut media_url_factory = MockMediaURLFactoryInterface::new();

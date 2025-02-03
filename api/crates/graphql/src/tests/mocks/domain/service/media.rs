@@ -17,6 +17,7 @@ use domain::{
     service::media::{MediaServiceInterface, MediumSource},
 };
 use futures::stream::BoxStream;
+use tokio::task::JoinHandle;
 
 mockall::mock! {
     pub(crate) MediaServiceInterface {}
@@ -28,7 +29,7 @@ mockall::mock! {
             T: CloneableIterator<Item = SourceId> + Send,
             U: CloneableIterator<Item = (TagId, TagTypeId)> + Send;
 
-        fn create_replica<R>(&self, medium_id: MediumId, medium_source: MediumSource<R>) -> impl Future<Output = Result<Replica>> + Send
+        fn create_replica<R>(&self, medium_id: MediumId, medium_source: MediumSource<R>) -> impl Future<Output = Result<(Replica, JoinHandle<()>)>> + Send
         where
             R: Read + Seek + Send + 'static;
 
@@ -125,7 +126,7 @@ mockall::mock! {
             W: CloneableIterator<Item = (TagId, TagTypeId)> + Send,
             X: CloneableIterator<Item = ReplicaId> + Send;
 
-        fn update_replica_by_id<R>(&self, id: ReplicaId, medium_source: MediumSource<R>) -> impl Future<Output = Result<Replica>> + Send
+        fn update_replica_by_id<R>(&self, id: ReplicaId, medium_source: MediumSource<R>) -> impl Future<Output = Result<(Replica, JoinHandle<()>)>> + Send
         where
             R: Read + Seek + Send + 'static;
 

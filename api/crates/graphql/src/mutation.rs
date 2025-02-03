@@ -212,7 +212,7 @@ where
         let media_service = ctx.data_unchecked::<MediaService>();
 
         let medium_source = create_medium_source(ctx, original_url, upload).await?;
-        let replica = media_service.create_replica(medium_id.into(), medium_source).await?;
+        let (replica, _handle) = media_service.create_replica(medium_id.into(), medium_source).await?;
         Ok(replica.into())
     }
 
@@ -320,7 +320,7 @@ where
         let media_service = ctx.data_unchecked::<MediaService>();
 
         let medium_source = create_medium_source(ctx, original_url, upload).await?;
-        let replica = media_service.update_replica_by_id(id.into(), medium_source).await?;
+        let (replica, _handle) = media_service.update_replica_by_id(id.into(), medium_source).await?;
         Ok(replica.into())
     }
 

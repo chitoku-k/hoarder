@@ -168,7 +168,7 @@ async fn succeeds() {
         });
 
     let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor, task_tracker.clone());
-    let actual = service.update_replica_by_id(
+    let (actual, handle) = service.update_replica_by_id(
         ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
         MediumSource::Content(
             EntryUrlPath::from("/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string()),
@@ -191,6 +191,8 @@ async fn succeeds() {
 
     task_tracker.close();
     task_tracker.wait().await;
+
+    handle.await.unwrap();
 }
 
 #[tokio::test]
@@ -317,7 +319,7 @@ async fn succeeds_and_copy_fails() {
         });
 
     let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor, task_tracker.clone());
-    let actual = service.update_replica_by_id(
+    let (actual, handle) = service.update_replica_by_id(
         ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
         MediumSource::Content(
             EntryUrlPath::from("/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string()),
@@ -340,6 +342,8 @@ async fn succeeds_and_copy_fails() {
 
     task_tracker.close();
     task_tracker.wait().await;
+
+    handle.await.unwrap();
 }
 
 #[tokio::test]
@@ -474,7 +478,7 @@ async fn succeeds_and_process_fails() {
         });
 
     let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor, task_tracker.clone());
-    let actual = service.update_replica_by_id(
+    let (actual, handle) = service.update_replica_by_id(
         ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
         MediumSource::Content(
             EntryUrlPath::from("/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string()),
@@ -497,6 +501,8 @@ async fn succeeds_and_process_fails() {
 
     task_tracker.close();
     task_tracker.wait().await;
+
+    handle.await.unwrap();
 }
 
 #[tokio::test]
@@ -619,7 +625,7 @@ async fn succeeds_and_update_fails() {
         });
 
     let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor, task_tracker.clone());
-    let actual = service.update_replica_by_id(
+    let (actual, handle) = service.update_replica_by_id(
         ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")),
         MediumSource::Content(
             EntryUrlPath::from("/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string()),
@@ -642,6 +648,8 @@ async fn succeeds_and_update_fails() {
 
     task_tracker.close();
     task_tracker.wait().await;
+
+    handle.await.unwrap();
 }
 
 #[tokio::test]
