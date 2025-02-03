@@ -227,34 +227,39 @@ where
     MediumImageProcessor: processor::media::MediumImageProcessor + Clone,
     ObjectsRepository: objects::ObjectsRepository + Clone,
 {
-    async fn extract_medium_source<R>(&self, medium_source: MediumSource<R>) -> Result<(EntryUrl, objects::ObjectStatus, Box<dyn FnOnce() -> Result<(OriginalImage, ThumbnailImage)> + Send>)>
+    async fn extract_medium_source<R>(&self, medium_source: MediumSource<R>) -> Result<(EntryUrl, objects::ObjectStatus, impl FnOnce() -> Result<(OriginalImage, ThumbnailImage)> + Send)>
     where
         for<'a> R: Read + Seek + Send + 'a,
     {
+        enum Process<R, W> {
+            Read(R),
+            Write(W),
+        }
+
         let medium_image_processor = self.medium_image_processor.clone();
-        match medium_source {
+        let (url, status, process) = match medium_source {
             MediumSource::Url(url) => {
                 let (url, read) = self.get_image(url).await?;
                 let read = BufReader::new(read);
 
-                Ok((
+                (
                     url,
                     objects::ObjectStatus::Existing,
-                    Box::new(move || {
+                    Process::Read(move || {
                         let (original_image, thumbnail_image) = medium_image_processor.generate_thumbnail(read)?;
                         Ok((original_image, thumbnail_image))
                     }),
-                ))
+                )
             },
             MediumSource::Content(path, content, overwrite) => {
                 let url = path.to_url(ObjectsRepository::scheme());
                 let (url, status, mut write) = self.put_image(url, overwrite).await?;
 
                 let objects_repository = self.objects_repository.clone();
-                Ok((
+                (
                     url,
                     status,
-                    Box::new(move || {
+                    Process::Write(move || {
                         let mut read = content;
                         objects_repository.copy(&mut read, &mut write)?;
 
@@ -264,9 +269,16 @@ where
                         let (original_image, thumbnail_image) = medium_image_processor.generate_thumbnail(read)?;
                         Ok((original_image, thumbnail_image))
                     }),
-                ))
+                )
             },
-        }
+        };
+
+        let process = || match process {
+            Process::Read(read) => read(),
+            Process::Write(write) => write(),
+        };
+
+        Ok((url, status, process))
     }
 }
 
@@ -276,7 +288,7 @@ where
     ReplicasRepository: replicas::ReplicasRepository + Clone,
     ObjectsRepository: objects::ObjectsRepository + Clone,
 {
-    async fn create_replica_source<R>(&self, medium_source: MediumSource<R>) -> Result<(EntryUrl, objects::ObjectStatus, Box<dyn FnOnce() -> Result<(OriginalImage, ThumbnailImage)> + Send>)>
+    async fn create_replica_source<R>(&self, medium_source: MediumSource<R>) -> Result<(EntryUrl, objects::ObjectStatus, impl FnOnce() -> Result<(OriginalImage, ThumbnailImage)> + Send)>
     where
         for<'a> R: Read + Seek + Send + 'a,
     {
@@ -299,7 +311,10 @@ where
         }
     }
 
-    fn process_replica_by_id(&self, id: ReplicaId, process: Box<dyn FnOnce() -> Result<(OriginalImage, ThumbnailImage)> + Send>) -> JoinHandle<()> {
+    fn process_replica_by_id<F>(&self, id: ReplicaId, process: F) -> JoinHandle<()>
+    where
+        for<'a> F: FnOnce() -> Result<(OriginalImage, ThumbnailImage)> + Send + 'a,
+    {
         let replicas_repository = self.replicas_repository.clone();
 
         self.tracker.spawn(async move {
