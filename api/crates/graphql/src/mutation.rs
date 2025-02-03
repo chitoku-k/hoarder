@@ -190,8 +190,8 @@ where
         Ok(medium)
     }
 
-    /// Creates a replica either from an `originalUrl` or `upload`. The replica will be processed asynchronously, hence some
-    /// fields being unavailable in the response. Watch for the status updates of the medium by Subscription.
+    /// Creates a replica either from an `originalUrl` or `upload`. By default, the replica will be processed asynchronously,
+    /// hence some fields being unavailable in the response. Watch for the status updates of the medium by Subscription.
     /// ### Errors
     /// * When the medium is not found, it returns a `MEDIUM_NOT_FOUND` error.
     /// * When any replica with the same original URL already exists, it returns a `REPLICA_ORIGINAL_URL_DUPLICATE` error.
@@ -209,13 +209,21 @@ where
         original_url: Option<String>,
         #[graphql(desc = "The upload of the replica. Mutually exclusive with `originalUrl`.")]
         upload: Option<ReplicaInput>,
+        #[graphql(default = false, desc = "Whether to process replica synchronously.")]
+        sync: bool,
     ) -> Result<Replica> {
         let media_service = ctx.data_unchecked::<MediaService>();
         let tracker = ctx.data_unchecked::<TaskTracker>();
 
         let medium_source = create_medium_source(ctx, original_url, upload).await?;
         let (replica, task) = media_service.create_replica(medium_id.into(), medium_source).await?;
-        tracker.spawn(task);
+
+        let replica = if sync {
+            task.await?
+        } else {
+            tracker.spawn(task);
+            replica
+        };
 
         Ok(replica.into())
     }
@@ -301,8 +309,8 @@ where
         Ok(medium)
     }
 
-    /// Updates a replica either from an `originalUrl` or `upload`. The replica will be processed asynchronously, hence some
-    /// fields being unavailable in the response. Watch for the status updates of the medium by Subscription.
+    /// Updates a replica either from an `originalUrl` or `upload`. By default, the replica will be processed asynchronously,
+    /// hence some fields being unavailable in the response. Watch for the status updates of the medium by Subscription.
     /// ### Errors
     /// * When the medium is not found, it returns a `MEDIUM_NOT_FOUND` error.
     /// * When any replica with the same original URL already exists, it returns a `REPLICA_ORIGINAL_URL_DUPLICATE` error.
@@ -320,13 +328,21 @@ where
         original_url: Option<String>,
         #[graphql(desc = "The upload of the replica. Mutually exclusive with `originalUrl`.")]
         upload: Option<ReplicaInput>,
+        #[graphql(default = false, desc = "Whether to process replica synchronously.")]
+        sync: bool,
     ) -> Result<Replica> {
         let media_service = ctx.data_unchecked::<MediaService>();
         let tracker = ctx.data_unchecked::<TaskTracker>();
 
         let medium_source = create_medium_source(ctx, original_url, upload).await?;
         let (replica, task) = media_service.update_replica_by_id(id.into(), medium_source).await?;
-        tracker.spawn(task);
+
+        let replica = if sync {
+            task.await?
+        } else {
+            tracker.spawn(task);
+            replica
+        };
 
         Ok(replica.into())
     }
