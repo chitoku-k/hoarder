@@ -3,7 +3,6 @@ use chrono::{TimeZone, Utc};
 use futures::future::{err, ok};
 use ordermap::OrderMap;
 use pretty_assertions::{assert_eq, assert_matches};
-use tokio_util::task::TaskTracker;
 use uuid::uuid;
 
 use crate::{
@@ -64,9 +63,8 @@ async fn succeeds() {
     let mock_replicas_repository = MockReplicasRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
-    let task_tracker = TaskTracker::new();
 
-    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor, task_tracker);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.get_media_by_ids(
         [
             MediumId::from(uuid!("88888888-8888-8888-8888-888888888888")),
@@ -120,9 +118,8 @@ async fn fails() {
     let mock_replicas_repository = MockReplicasRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
-    let task_tracker = TaskTracker::new();
 
-    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor, task_tracker);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.get_media_by_ids(
         [
             MediumId::from(uuid!("88888888-8888-8888-8888-888888888888")),

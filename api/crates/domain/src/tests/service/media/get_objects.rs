@@ -2,7 +2,6 @@ use anyhow::anyhow;
 use futures::future::{err, ok};
 use pretty_assertions::{assert_eq, assert_matches};
 use serial_test::serial;
-use tokio_util::task::TaskTracker;
 
 use crate::{
     entity::objects::{Entry, EntryKind, EntryUrl, EntryUrlPath},
@@ -27,7 +26,6 @@ async fn succeeds() {
     let mock_replicas_repository = MockReplicasRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
-    let task_tracker = TaskTracker::new();
 
     let mut mock_objects_repository = MockObjectsRepository::new();
     mock_objects_repository
@@ -74,7 +72,7 @@ async fn succeeds() {
         .expect()
         .return_const("file");
 
-    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor, task_tracker);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.get_objects(EntryUrlPath::from("/path/to/dest".to_string()), None).await.unwrap();
 
     assert_eq!(actual, vec![
@@ -118,7 +116,6 @@ async fn succeeds_with_kind() {
     let mock_replicas_repository = MockReplicasRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
-    let task_tracker = TaskTracker::new();
 
     let mut mock_objects_repository = MockObjectsRepository::new();
     mock_objects_repository
@@ -165,7 +162,7 @@ async fn succeeds_with_kind() {
         .expect()
         .return_const("file");
 
-    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor, task_tracker);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.get_objects(EntryUrlPath::from("/path/to/dest".to_string()), Some(EntryKind::Container)).await.unwrap();
 
     assert_eq!(actual, vec![
@@ -191,7 +188,6 @@ async fn fails() {
     let mock_replicas_repository = MockReplicasRepository::new();
     let mock_sources_repository = MockSourcesRepository::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();
-    let task_tracker = TaskTracker::new();
 
     let mut mock_objects_repository = MockObjectsRepository::new();
     mock_objects_repository
@@ -210,7 +206,7 @@ async fn fails() {
         .expect()
         .return_const("file");
 
-    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor, task_tracker);
+    let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.get_objects(EntryUrlPath::from("/path/to/dest".to_string()), None).await.unwrap_err();
 
     assert_matches!(actual.kind(), ErrorKind::ObjectGetFailed { url } if url == "file:///path/to/dest");

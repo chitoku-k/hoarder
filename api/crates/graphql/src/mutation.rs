@@ -12,6 +12,7 @@ use domain::{
     },
 };
 use normalizer::NormalizerInterface;
+use tokio_util::task::TaskTracker;
 use uuid::Uuid;
 
 use crate::{
@@ -210,9 +211,12 @@ where
         upload: Option<ReplicaInput>,
     ) -> Result<Replica> {
         let media_service = ctx.data_unchecked::<MediaService>();
+        let tracker = ctx.data_unchecked::<TaskTracker>();
 
         let medium_source = create_medium_source(ctx, original_url, upload).await?;
-        let (replica, _handle) = media_service.create_replica(medium_id.into(), medium_source).await?;
+        let (replica, task) = media_service.create_replica(medium_id.into(), medium_source).await?;
+        tracker.spawn(task);
+
         Ok(replica.into())
     }
 
@@ -318,9 +322,12 @@ where
         upload: Option<ReplicaInput>,
     ) -> Result<Replica> {
         let media_service = ctx.data_unchecked::<MediaService>();
+        let tracker = ctx.data_unchecked::<TaskTracker>();
 
         let medium_source = create_medium_source(ctx, original_url, upload).await?;
-        let (replica, _handle) = media_service.update_replica_by_id(id.into(), medium_source).await?;
+        let (replica, task) = media_service.update_replica_by_id(id.into(), medium_source).await?;
+        tracker.spawn(task);
+
         Ok(replica.into())
     }
 

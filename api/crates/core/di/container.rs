@@ -114,8 +114,8 @@ fn external_services_service(external_services_repository: ExternalServicesRepos
     ExternalServicesService::new(external_services_repository)
 }
 
-fn media_service(media_repository: MediaRepositoryImpl, objects_repository: ObjectsRepositoryImpl, replicas_repository: ReplicasRepositoryImpl, sources_repository: SourcesRepositoryImpl, medium_image_processor: MediumImageProcessorImpl, task_tracker: TaskTracker) -> MediaServiceImpl {
-    MediaService::new(media_repository, objects_repository, replicas_repository, sources_repository, medium_image_processor, task_tracker)
+fn media_service(media_repository: MediaRepositoryImpl, objects_repository: ObjectsRepositoryImpl, replicas_repository: ReplicasRepositoryImpl, sources_repository: SourcesRepositoryImpl, medium_image_processor: MediumImageProcessorImpl) -> MediaServiceImpl {
+    MediaService::new(media_repository, objects_repository, replicas_repository, sources_repository, medium_image_processor)
 }
 
 fn tags_service(tags_repository: TagsRepositoryImpl, tag_types_repository: TagTypesRepositoryImpl) -> TagsServiceImpl {
@@ -190,7 +190,7 @@ impl Application {
                 let medium_image_processor = medium_image_processor();
 
                 let external_services_service = external_services_service(external_services_repository);
-                let media_service = media_service(media_repository, objects_repository, replicas_repository, sources_repository, medium_image_processor, task_tracker.clone());
+                let media_service = media_service(media_repository, objects_repository, replicas_repository, sources_repository, medium_image_processor);
                 let tags_service = tags_service(tags_repository, tag_types_repository);
 
                 let normalizer = Arc::new(normalizer());
@@ -214,6 +214,7 @@ impl Application {
                     .data(normalizer)
                     .data(media_url_factory)
                     .data(thumbnail_url_factory)
+                    .data(task_tracker.clone())
                     .finish();
 
                 let graphql_service = graphql_service(schema);

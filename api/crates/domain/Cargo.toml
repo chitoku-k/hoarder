@@ -44,10 +44,6 @@ version = "2.0.11"
 version = "1.43.0"
 features = ["macros", "rt-multi-thread"]
 
-[dependencies.tokio-util]
-version = "0.7.13"
-features = ["rt"]
-
 [dependencies.uuid]
 version = "1.12.1"
 features = ["serde", "v4"]
