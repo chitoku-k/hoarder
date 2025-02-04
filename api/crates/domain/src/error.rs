@@ -1,3 +1,7 @@
+use std::fmt::{self, Write};
+
+use indenter::indented;
+
 use crate::entity::{
     external_services::ExternalServiceId,
     media::MediumId,
@@ -10,7 +14,7 @@ use crate::entity::{
 
 pub type Result<T> = std::result::Result<T, Error>;
 
-#[derive(Debug, thiserror::Error)]
+#[derive(thiserror::Error)]
 #[error("{kind}")]
 pub struct Error {
     kind: ErrorKind,
@@ -55,6 +59,55 @@ impl From<ErrorKind> for Error {
             kind,
             error: None,
         }
+    }
+}
+
+struct Chain<'a>(Option<&'a dyn std::error::Error>);
+
+impl<'a> Iterator for Chain<'a> {
+    type Item = &'a (dyn std::error::Error);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if let Some(error) = self.0 {
+            self.0 = error.source();
+            Some(error)
+        } else {
+            None
+        }
+    }
+}
+
+impl fmt::Debug for Error {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let source = match (&self.kind, &self.error) {
+            (ErrorKind::Other, Some(source)) => {
+                write!(f, "{}", source)?;
+                source.source()
+            },
+            (kind, error) => {
+                writeln!(f, "{}", kind)?;
+                writeln!(f, "Details:")?;
+                write!(indented(f).with_str("      "), "{:#?}", kind)?;
+                error.as_deref().map(|e| e as _)
+            },
+        };
+
+        if let Some(source) = source {
+            write!(f, "\nCaused by:")?;
+
+            let multiple = source.source().is_some();
+            for (i, error) in Chain(Some(source)).enumerate() {
+                writeln!(f)?;
+
+                if multiple {
+                    write!(indented(f).ind(i), "{}", error)?;
+                } else {
+                    write!(indented(f).with_str("      "), "{}", error)?;
+                }
+            }
+        }
+
+        Ok(())
     }
 }
 
