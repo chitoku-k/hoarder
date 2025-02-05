@@ -1,4 +1,4 @@
-use std::{future::Future, io::{BufReader, Read, Seek, SeekFrom}};
+use std::{future::Future, io::{BufReader, Read, Seek}};
 
 use chrono::{DateTime, Utc};
 use derive_more::Constructor;
@@ -262,7 +262,7 @@ where
                         objects_repository.copy(&mut read, &mut write)?;
 
                         let mut read = BufReader::new(read);
-                        read.seek(SeekFrom::Start(0)).map_err(Error::other)?;
+                        read.rewind().map_err(Error::other)?;
 
                         let (original_image, thumbnail_image) = medium_image_processor.generate_thumbnail(read)?;
                         Ok((original_image, thumbnail_image))
