@@ -13,7 +13,7 @@ features = ["clock", "std"]
 default-features = false
 
 [dependencies.derive_more]
-version = "1.0.0"
+version = "2.0.1"
 features = ["constructor", "deref", "display", "from"]
 
 [dependencies.futures]
