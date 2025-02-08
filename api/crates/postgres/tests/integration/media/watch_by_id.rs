@@ -111,4 +111,55 @@ async fn succeeds(ctx: &DatabaseContext) {
         created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
         updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
     }));
+
+    sqlx::query(r#"UPDATE "replicas" SET "mime_type" = $1, "width" = $2, "height" = $3, "phase" = $4 WHERE "id" = $5"#)
+        .bind("image/jpeg")
+        .bind(1800)
+        .bind(2400)
+        .bind("ready")
+        .bind(uuid!("b7a54e0b-6ab3-4385-a18b-bacadff6b18d"))
+        .execute(&ctx.pool)
+        .await
+        .unwrap();
+
+    sqlx::query(r#"SELECT pg_notify($1, $2)"#)
+        .bind("replicas")
+        .bind(r#"{"id":"b7a54e0b-6ab3-4385-a18b-bacadff6b18d","medium_id":"2872ed9d-4db9-4b25-b86f-791ad009cc0a"}"#)
+        .execute(&ctx.pool)
+        .await
+        .unwrap();
+
+    let actual = stream.try_next().await.unwrap();
+
+    assert_eq!(actual, Some(Medium {
+        id: MediumId::from(uuid!("2872ed9d-4db9-4b25-b86f-791ad009cc0a")),
+        sources: Vec::new(),
+        tags: OrderMap::new(),
+        replicas: vec![
+            Replica {
+                id: ReplicaId::from(uuid!("b7a54e0b-6ab3-4385-a18b-bacadff6b18d")),
+                display_order: 1,
+                thumbnail: None,
+                original_url: "file:///b7a54e0b-6ab3-4385-a18b-bacadff6b18d.jpg".to_string(),
+                mime_type: Some("image/jpeg".to_string()),
+                size: Some(Size::new(1800, 2400)),
+                status: ReplicaStatus::Ready,
+                created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
+                updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
+            },
+            Replica {
+                id: ReplicaId::from(uuid!("790dc278-2c53-4988-883c-43a037664b24")),
+                display_order: 2,
+                thumbnail: None,
+                original_url: "file:///790dc278-2c53-4988-883c-43a037664b24.jpg".to_string(),
+                mime_type: Some("image/jpeg".to_string()),
+                size: Some(Size::new(1800, 2400)),
+                status: ReplicaStatus::Ready,
+                created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
+                updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 6).unwrap(),
+            },
+        ],
+        created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
+        updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
+    }));
 }
