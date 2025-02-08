@@ -69,7 +69,7 @@ version = "0.1.41"
 
 [dependencies.tracing-futures]
 version = "0.2.5"
-features = ["futures"]
+features = ["futures-03"]
 
 [dependencies.uuid]
 version = "1.13.1"
