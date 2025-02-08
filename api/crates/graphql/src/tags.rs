@@ -13,7 +13,7 @@ use domain::entity::{
 };
 use uuid::Uuid;
 
-use crate::error::ErrorKind;
+use crate::error::{Error, ErrorKind};
 
 /// A tag represents a user-friendly and hierarchical attribute attached to media.
 #[derive(SimpleObject)]
@@ -105,7 +105,7 @@ impl TagCursor {
 }
 
 impl CursorType for TagCursor {
-    type Error = ErrorKind;
+    type Error = Error;
 
     fn decode_cursor(s: &str) -> Result<Self, Self::Error> {
         let bin = BASE64_STANDARD.decode(s).map_err(|_| ErrorKind::CursorInvalid)?;

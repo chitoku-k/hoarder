@@ -156,8 +156,8 @@ where
 
                 let mut connection = Connection::new(has_previous, has_next);
                 let result: Result<_> = match rev {
-                    true => media.rev().map(|m| Medium::try_from(m).map(Into::into).map_err(Error::new)).collect(),
-                    false => media.map(|m| Medium::try_from(m).map(Into::into).map_err(Error::new)).collect(),
+                    true => media.rev().map(|m| Medium::try_from(m).map(Into::into)).collect(),
+                    false => media.map(|m| Medium::try_from(m).map(Into::into)).collect(),
                 };
                 connection.edges = result?;
 
@@ -185,7 +185,7 @@ where
         let ids = ids.into_iter().map(Into::into);
 
         let media = media_service.get_media_by_ids(ids, tag_depth, replicas, sources).await?;
-        media.into_iter().map(|m| m.try_into().map_err(Error::new)).collect()
+        media.into_iter().map(TryInto::try_into).collect()
     }
 
     /// Looks up a replica by its original URL.
@@ -219,7 +219,7 @@ where
                     .get_sources_by_external_metadata_like_id(&id)
                     .await?
                     .into_iter()
-                    .map(|source| source.try_into().map_err(Error::new))
+                    .map(TryInto::try_into)
                     .collect()
             },
             ExternalMetadataLike::Url(url) => {
@@ -233,7 +233,7 @@ where
                     .await?
                     .into_iter()
                     .flatten()
-                    .map(|source| source.try_into().map_err(Error::new))
+                    .map(TryInto::try_into)
                     .collect()
             },
         }
@@ -251,7 +251,7 @@ where
         let ids = ids.into_iter().map(Into::into);
 
         let sources = media_service.get_sources_by_ids(ids).await?;
-        sources.into_iter().map(|source| source.try_into().map_err(Error::new)).collect()
+        sources.into_iter().map(TryInto::try_into).collect()
     }
 
     /// Looks up a source by the ID of an external service and the external metadata.
@@ -266,10 +266,10 @@ where
         let media_service = ctx.data_unchecked::<MediaService>();
 
         let external_service_id = external_service_id.into();
-        let external_metadata = external_metadata.try_into().map_err(Error::new)?;
+        let external_metadata = external_metadata.try_into()?;
 
         let source = media_service.get_source_by_external_metadata(external_service_id, external_metadata).await?;
-        source.map(TryInto::try_into).transpose().map_err(Error::new)
+        source.map(TryInto::try_into).transpose()
     }
 
     /// Fetches all objects in the storage by their prefix and optionally their kind.

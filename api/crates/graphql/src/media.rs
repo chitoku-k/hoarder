@@ -9,7 +9,7 @@ use domain::entity::media::{self, MediumId};
 use uuid::Uuid;
 
 use crate::{
-    error::ErrorKind,
+    error::{Error, ErrorKind},
     replicas::Replica,
     sources::Source,
     tags::TagTagType,
@@ -36,7 +36,7 @@ pub(crate) struct Medium {
 pub(crate) struct MediumCursor(DateTime<Utc>, Uuid);
 
 impl TryFrom<media::Medium> for Medium {
-    type Error = ErrorKind;
+    type Error = Error;
 
     fn try_from(medium: media::Medium) -> Result<Self, Self::Error> {
         let sources: Result<_, _> = medium.sources
@@ -78,7 +78,7 @@ impl MediumCursor {
 }
 
 impl CursorType for MediumCursor {
-    type Error = ErrorKind;
+    type Error = Error;
 
     fn decode_cursor(s: &str) -> Result<Self, Self::Error> {
         let bin = BASE64_STANDARD.decode(s).map_err(|_| ErrorKind::CursorInvalid)?;

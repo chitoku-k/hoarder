@@ -13,8 +13,26 @@ use crate::objects::ObjectEntry;
 
 pub(crate) type Result<T> = std::result::Result<T, Error>;
 
+#[derive(Debug, thiserror::Error)]
+#[error("{kind}")]
 pub(crate) struct Error {
     kind: ErrorKind,
+}
+
+impl Error {
+    pub fn new(kind: ErrorKind) -> Self {
+        Error {
+            kind,
+        }
+    }
+}
+
+impl From<ErrorKind> for Error {
+    fn from(kind: ErrorKind) -> Self {
+        Error {
+            kind,
+        }
+    }
 }
 
 #[derive(Debug, Serialize, thiserror::Error)]
@@ -139,30 +157,12 @@ pub(crate) enum ErrorKind {
     GraphQLError(async_graphql::Error),
 }
 
-impl Error {
-    pub fn new<K>(kind: K) -> Error
-    where
-        K: Into<ErrorKind>,
-    {
-        Self {
-            kind: kind.into(),
-        }
-    }
-}
-
 impl From<domain::error::Error> for Error {
     fn from(e: domain::error::Error) -> Self {
         let (kind, ..) = e.into_inner();
         Self {
             kind: kind.into(),
         }
-    }
-}
-
-impl From<domain::error::Error> for ErrorKind {
-    fn from(e: domain::error::Error) -> Self {
-        let (kind, ..) = e.into_inner();
-        kind.into()
     }
 }
 
