@@ -57,6 +57,7 @@ impl From<PostgresExternalServiceRow> for ExternalService {
 }
 
 impl ExternalServicesRepository for PostgresExternalServicesRepository {
+    #[tracing::instrument(skip_all)]
     async fn create(&self, slug: &str, kind: &str, name: &str, base_url: Option<&str>, url_pattern: Option<&str>) -> Result<ExternalService> {
         let (sql, values) = Query::insert()
             .into_table(PostgresExternalService::Table)
@@ -95,6 +96,7 @@ impl ExternalServicesRepository for PostgresExternalServicesRepository {
         }
     }
 
+    #[tracing::instrument(skip_all)]
     async fn fetch_by_ids<T>(&self, ids: T) -> Result<Vec<ExternalService>>
     where
         T: Iterator<Item = ExternalServiceId> + Send,
@@ -123,6 +125,7 @@ impl ExternalServicesRepository for PostgresExternalServicesRepository {
         Ok(external_services)
     }
 
+    #[tracing::instrument(skip_all)]
     async fn fetch_all(&self) -> Result<Vec<ExternalService>> {
         let (sql, values) = Query::select()
             .columns([
@@ -147,6 +150,7 @@ impl ExternalServicesRepository for PostgresExternalServicesRepository {
         Ok(external_services)
     }
 
+    #[tracing::instrument(skip_all)]
     async fn update_by_id(&self, id: ExternalServiceId, slug: Option<&str>, name: Option<&str>, base_url: Option<Option<&str>>, url_pattern: Option<Option<&str>>) -> Result<ExternalService> {
         let mut tx = self.pool.begin().await.map_err(Error::other)?;
 
@@ -204,6 +208,7 @@ impl ExternalServicesRepository for PostgresExternalServicesRepository {
         Ok(external_service)
     }
 
+    #[tracing::instrument(skip_all)]
     async fn delete_by_id(&self, id: ExternalServiceId) -> Result<DeleteResult> {
         let (sql, values) = Query::delete()
             .from_table(PostgresExternalService::Table)

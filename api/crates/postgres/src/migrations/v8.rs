@@ -29,6 +29,7 @@ struct ExternalServiceUrlPatternOperation;
 
 #[async_trait]
 impl Operation<Postgres> for ExternalServiceUrlPatternOperation {
+    #[tracing::instrument(skip_all)]
     async fn up(&self, connection: &mut PgConnection) -> Result<(), Error> {
         let sql = Table::alter()
             .table(PostgresExternalService::Table)
@@ -219,6 +220,7 @@ impl Operation<Postgres> for ExternalServiceUrlPatternOperation {
         Ok(())
     }
 
+    #[tracing::instrument(skip_all)]
     async fn down(&self, connection: &mut PgConnection) -> Result<(), Error> {
         let sql = Table::alter()
             .table(PostgresExternalService::Table)

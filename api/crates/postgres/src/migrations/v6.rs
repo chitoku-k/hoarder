@@ -32,6 +32,7 @@ struct ExternalServiceTwitterToX;
 
 #[async_trait]
 impl Operation<Postgres> for ExternalServiceTwitterToX {
+    #[tracing::instrument(skip_all)]
     async fn up(&self, connection: &mut PgConnection) -> Result<(), Error> {
         const OLD_SLUG: &str = "twitter";
         const NEW_SLUG: &str = "x";
@@ -80,6 +81,7 @@ impl Operation<Postgres> for ExternalServiceTwitterToX {
         Ok(())
     }
 
+    #[tracing::instrument(skip_all)]
     async fn down(&self, connection: &mut PgConnection) -> Result<(), Error> {
         const OLD_SLUG: &str = "x";
         const NEW_SLUG: &str = "twitter";

@@ -44,6 +44,7 @@ struct CreateTableOperation;
 
 #[async_trait]
 impl Operation<Postgres> for CreateTableOperation {
+    #[tracing::instrument(skip_all)]
     async fn up(&self, connection: &mut PgConnection) -> Result<(), Error> {
         let sql = Table::create()
             .table(PostgresExternalService::Table)
@@ -262,6 +263,7 @@ impl Operation<Postgres> for CreateTableOperation {
         Ok(())
     }
 
+    #[tracing::instrument(skip_all)]
     async fn down(&self, connection: &mut PgConnection) -> Result<(), Error> {
         let sql = Table::drop()
             .table(PostgresMediumTag::Table)
@@ -331,6 +333,7 @@ struct CreateIndexOperation;
 
 #[async_trait]
 impl Operation<Postgres> for CreateIndexOperation {
+    #[tracing::instrument(skip_all)]
     async fn up(&self, connection: &mut PgConnection) -> Result<(), Error> {
         let sql = Index::create()
             .name("media_created_at_id_idx")
@@ -384,6 +387,7 @@ impl Operation<Postgres> for CreateIndexOperation {
         Ok(())
     }
 
+    #[tracing::instrument(skip_all)]
     async fn down(&self, connection: &mut PgConnection) -> Result<(), Error> {
         let sql = Index::drop()
             .name("media_created_at_id_idx")
@@ -423,6 +427,7 @@ struct InsertRootTagsOperation;
 
 #[async_trait]
 impl Operation<Postgres> for InsertRootTagsOperation {
+    #[tracing::instrument(skip_all)]
     async fn up(&self, connection: &mut PgConnection) -> Result<(), Error> {
         let (sql, values) = Query::insert()
             .into_table(PostgresTag::Table)
@@ -467,6 +472,7 @@ impl Operation<Postgres> for InsertRootTagsOperation {
         Ok(())
     }
 
+    #[tracing::instrument(skip_all)]
     async fn down(&self, connection: &mut PgConnection) -> Result<(), Error> {
         let mut tx = connection.begin().await?;
 

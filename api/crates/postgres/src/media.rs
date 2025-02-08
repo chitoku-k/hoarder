@@ -19,6 +19,7 @@ use ordermap::{OrderMap, OrderSet};
 use sea_query::{Alias, BinOper, Expr, Iden, JoinType, Keyword, LockType, OnConflict, Order, PostgresQueryBuilder, Query};
 use sea_query_binder::SqlxBinder;
 use sqlx::{postgres::PgListener, types::Json, FromRow, PgConnection, PgPool};
+use tracing_futures::Instrument;
 
 use crate::{
     expr::array::ArrayExpr,
@@ -419,6 +420,7 @@ async fn eager_load(conn: &mut PgConnection, media: &mut [Medium], tag_depth: Op
 }
 
 impl MediaRepository for PostgresMediaRepository {
+    #[tracing::instrument(skip_all)]
     async fn create<T, U>(&self, source_ids: T, created_at: Option<DateTime<Utc>>, tag_tag_type_ids: U, tag_depth: Option<TagDepth>, sources: bool) -> Result<Medium>
     where
         T: Iterator<Item = SourceId> + Send,
@@ -531,6 +533,7 @@ impl MediaRepository for PostgresMediaRepository {
         Ok(medium)
     }
 
+    #[tracing::instrument(skip_all)]
     async fn fetch_by_ids<T>(&self, ids: T, tag_depth: Option<TagDepth>, replicas: bool, sources: bool) -> Result<Vec<Medium>>
     where
         T: Iterator<Item = MediumId> + Send,
@@ -559,6 +562,7 @@ impl MediaRepository for PostgresMediaRepository {
         Ok(media)
     }
 
+    #[tracing::instrument(skip_all)]
     async fn fetch_by_source_ids<T>(
         &self,
         source_ids: T,
@@ -628,6 +632,7 @@ impl MediaRepository for PostgresMediaRepository {
         Ok(media)
     }
 
+    #[tracing::instrument(skip_all)]
     async fn fetch_by_tag_ids<T>(
         &self,
         tag_tag_type_ids: T,
@@ -720,6 +725,7 @@ impl MediaRepository for PostgresMediaRepository {
         Ok(media)
     }
 
+    #[tracing::instrument(skip_all)]
     async fn fetch_all(
         &self,
         tag_depth: Option<TagDepth>,
@@ -777,6 +783,7 @@ impl MediaRepository for PostgresMediaRepository {
         Ok(media)
     }
 
+    #[tracing::instrument(skip_all)]
     async fn watch_by_id(&self, id: MediumId, tag_depth: Option<TagDepth>, replicas: bool, sources: bool) -> Result<impl Stream<Item = Result<Medium>> + Send> {
         let mut listener = PgListener::connect_with(&self.pool).await.map_err(Error::other)?;
         listener.listen(&PostgresReplica::Table.to_string()).await.map_err(Error::other)?;
@@ -821,9 +828,14 @@ impl MediaRepository for PostgresMediaRepository {
                 fetch()
             });
 
-        Ok(initial.chain(updates))
+        let stream = initial
+            .chain(updates)
+            .in_current_span();
+
+        Ok(stream)
     }
 
+    #[tracing::instrument(skip_all)]
     async fn update_by_id<T, U, V, W, X>(
         &self,
         id: MediumId,
@@ -1062,6 +1074,7 @@ impl MediaRepository for PostgresMediaRepository {
         Ok(medium)
     }
 
+    #[tracing::instrument(skip_all)]
     async fn delete_by_id(&self, id: MediumId) -> Result<DeleteResult> {
         let (sql, values) = Query::delete()
             .from_table(PostgresMedium::Table)

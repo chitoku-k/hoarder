@@ -59,6 +59,7 @@ impl From<PostgresTagTypeRow> for TagType {
 }
 
 impl TagTypesRepository for PostgresTagTypesRepository {
+    #[tracing::instrument(skip_all)]
     async fn create(&self, slug: &str, name: &str, kana: &str) -> Result<TagType> {
         let (sql, values) = Query::insert()
             .into_table(PostgresTagType::Table)
@@ -85,6 +86,7 @@ impl TagTypesRepository for PostgresTagTypesRepository {
         Ok(tag_type)
     }
 
+    #[tracing::instrument(skip_all)]
     async fn fetch_by_ids<T>(&self, ids: T) -> Result<Vec<TagType>>
     where
         T: Iterator<Item = TagTypeId> + Send,
@@ -111,6 +113,7 @@ impl TagTypesRepository for PostgresTagTypesRepository {
         Ok(tag_types)
     }
 
+    #[tracing::instrument(skip_all)]
     async fn fetch_all(&self) -> Result<Vec<TagType>> {
         let (sql, values) = Query::select()
             .columns([
@@ -133,6 +136,7 @@ impl TagTypesRepository for PostgresTagTypesRepository {
         Ok(tag_types)
     }
 
+    #[tracing::instrument(skip_all)]
     async fn update_by_id(&self, id: TagTypeId, slug: Option<&str>, name: Option<&str>, kana: Option<&str>) -> Result<TagType> {
         let mut tx = self.pool.begin().await.map_err(Error::other)?;
 
@@ -185,6 +189,7 @@ impl TagTypesRepository for PostgresTagTypesRepository {
         Ok(tag_type)
     }
 
+    #[tracing::instrument(skip_all)]
     async fn delete_by_id(&self, id: TagTypeId) -> Result<DeleteResult> {
         let (sql, values) = Query::delete()
             .from_table(PostgresTagType::Table)

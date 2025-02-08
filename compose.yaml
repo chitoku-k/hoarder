@@ -8,8 +8,9 @@ services:
     ports:
       - '8080:8080'
     environment:
-      LOG_LEVEL: debug,hyper=info
-      RUST_LOG_STYLE: always
+      LOG_FORMAT: pretty
+      LOG_LEVEL: debug,handlebars=info,hyper=info,tungstenite=info
+      CLICOLOR_FORCE: '1'
       PORT: '8080'
       LOCALE: ja-JP
       PGHOST: database

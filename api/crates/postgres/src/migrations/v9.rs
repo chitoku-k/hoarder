@@ -35,6 +35,7 @@ enum PostgresReplicaTemporary {
 
 #[async_trait]
 impl Operation<Postgres> for ReplicasPhaseOperation {
+    #[tracing::instrument(skip_all)]
     async fn up(&self, connection: &mut PgConnection) -> Result<(), Error> {
         let sql = Table::alter()
             .table(PostgresReplica::Table)
@@ -95,6 +96,7 @@ impl Operation<Postgres> for ReplicasPhaseOperation {
         Ok(())
     }
 
+    #[tracing::instrument(skip_all)]
     async fn down(&self, connection: &mut PgConnection) -> Result<(), Error> {
         let sql = r#"
             ALTER TABLE "replicas"

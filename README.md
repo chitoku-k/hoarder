@@ -29,7 +29,8 @@ $ docker run --rm -it ghcr.io/chitoku-k/hoarder/api migration apply
 #### Global Options
 
 - `--locale` (`LOCALE`): [Unicode locale identifier](https://unicode.org/reports/tr35/tr35.html#Unicode_locale_identifier) for collation order
-- `--log-level` (`LOG_LEVEL`): Log level as in [RUST\_LOG](https://docs.rs/env_logger/latest/env_logger/)
+- `--log-format` (`LOG_FORMAT`): Log format (`compact` or `pretty`)
+- `--log-level` (`LOG_LEVEL`): Log level as in [Directives](https://docs.rs/tracing-subscriber/latest/tracing_subscriber/filter/struct.EnvFilter.html)
 
 The following environment variables can be used to configure PostgreSQL connection:
 

@@ -56,6 +56,7 @@ where
     Normalizer: NormalizerInterface,
 {
     /// Fetches all external services.
+    #[tracing::instrument(skip_all)]
     async fn all_external_services(&self, ctx: &Context<'_>) -> Result<Vec<ExternalService>> {
         let external_services_service = ctx.data_unchecked::<ExternalServicesService>();
 
@@ -64,6 +65,7 @@ where
     }
 
     /// Looks up external services by a list of IDs.
+    #[tracing::instrument(skip_all)]
     async fn external_services(
         &self,
         ctx: &Context<'_>,
@@ -79,6 +81,7 @@ where
     }
 
     /// Fetches media optionally filtered by sources or tags, returning up to 100 results.
+    #[tracing::instrument(skip_all)]
     async fn all_media(
         &self,
         ctx: &Context<'_>,
@@ -167,6 +170,7 @@ where
     }
 
     /// Looks up media by a list of IDs.
+    #[tracing::instrument(skip_all)]
     async fn media(
         &self,
         ctx: &Context<'_>,
@@ -191,6 +195,7 @@ where
     /// Looks up a replica by its original URL.
     /// ### Errors
     /// * When the replica is not found, it returns a `REPLICA_NOT_FOUND_BY_URL` error.
+    #[tracing::instrument(skip_all)]
     async fn replica(
         &self,
         ctx: &Context<'_>,
@@ -204,6 +209,7 @@ where
     }
 
     /// Looks up sources by partial metadata.
+    #[tracing::instrument(skip_all)]
     async fn all_sources_like(
         &self,
         ctx: &Context<'_>,
@@ -240,6 +246,7 @@ where
     }
 
     /// Looks up sources by a list of IDs.
+    #[tracing::instrument(skip_all)]
     async fn sources(
         &self,
         ctx: &Context<'_>,
@@ -255,6 +262,7 @@ where
     }
 
     /// Looks up a source by the ID of an external service and the external metadata.
+    #[tracing::instrument(skip_all)]
     async fn source(
         &self,
         ctx: &Context<'_>,
@@ -275,6 +283,7 @@ where
     /// Fetches all objects in the storage by their prefix and optionally their kind.
     /// ### Errors
     /// * When the prefix is invalid, it returns an `OBJECT_URL_INVALID` error.
+    #[tracing::instrument(skip_all)]
     async fn objects(
         &self,
         ctx: &Context<'_>,
@@ -292,6 +301,7 @@ where
     }
 
     /// Fetches tags.
+    #[tracing::instrument(skip_all)]
     async fn all_tags(
         &self,
         ctx: &Context<'_>,
@@ -363,6 +373,7 @@ where
     }
 
     /// Looks up tags that contains the given name or alias.
+    #[tracing::instrument(skip_all)]
     async fn all_tags_like(
         &self,
         ctx: &Context<'_>,
@@ -380,6 +391,7 @@ where
     }
 
     /// Looks up tags by a list of IDs.
+    #[tracing::instrument(skip_all)]
     async fn tags(
         &self,
         ctx: &Context<'_>,
@@ -396,6 +408,7 @@ where
     }
 
     /// Fetches all tag types.
+    #[tracing::instrument(skip_all)]
     async fn all_tag_types(&self, ctx: &Context<'_>) -> Result<Vec<TagType>> {
         let tags_service = ctx.data_unchecked::<TagsService>();
 
@@ -404,6 +417,7 @@ where
     }
 
     /// Looks up tag types by a list of IDs.
+    #[tracing::instrument(skip_all)]
     async fn tag_types(
         &self,
         ctx: &Context<'_>,
