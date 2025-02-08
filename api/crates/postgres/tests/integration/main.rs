@@ -1,8 +1,7 @@
-use std::error::Error;
-
 use include_dir::{include_dir, Dir};
 use postgres::Migrator;
 use sqlx::{
+    error::BoxDynError,
     postgres::{PgConnectOptions, PgPoolOptions},
     Connection, Executor, PgConnection, PgPool,
 };
@@ -18,8 +17,6 @@ mod tag_types;
 mod tags;
 
 const FIXTURES: Dir = include_dir!("$CARGO_MANIFEST_DIR/tests/fixtures");
-
-type BoxDynError = Box<dyn Error + Send + Sync + 'static>;
 
 pub(crate) struct DatabaseContext {
     pub conn: PgConnection,
@@ -60,6 +57,15 @@ async fn setup_database(pool: &PgPool) -> Result<(), BoxDynError> {
     Ok(())
 }
 
+async fn teardown_database(pool: PgPool) -> Result<(), BoxDynError> {
+    let mut conn = pool.acquire().await?;
+
+    let migrator = Migrator::new().into_boxed_migrator();
+    migrator.run(&mut *conn, &Plan::revert_all()).await?;
+
+    Ok(())
+}
+
 async fn drop_database(conn: &mut PgConnection, name: &str) -> Result<(), BoxDynError> {
     conn.execute(&*format!(r#"DROP DATABASE "{}" WITH (FORCE)"#, name)).await?;
 
@@ -90,7 +96,14 @@ impl AsyncTestContext for DatabaseContext {
     }
 
     async fn teardown(mut self) {
-        self.pool.close().await;
-        drop_database(&mut self.conn, &self.name).await.unwrap();
+        match teardown_database(self.pool).await {
+            Ok(()) => {
+                drop_database(&mut self.conn, &self.name).await.unwrap();
+            },
+            Err(e) => {
+                drop_database(&mut self.conn, &self.name).await.unwrap();
+                panic!("{e:?}");
+            },
+        }
     }
 }
