@@ -176,7 +176,7 @@ impl Operation<Postgres> for SourceTwitterToX {
                 Expr::cust_with_exprs("jsonb_set($1, $2, $3)", [
                     Expr::col(PostgresSource::ExternalMetadata).into(),
                     "{type}".into(),
-                    Expr::cust_with_expr("to_json($1)", NEW_TYPE),
+                    Expr::cust_with_expr("to_jsonb($1::text)", NEW_TYPE),
                 ]),
             )
             .value(
@@ -184,7 +184,7 @@ impl Operation<Postgres> for SourceTwitterToX {
                 Expr::cust_with_exprs("jsonb_set($1, $2, $3)", [
                     Expr::col(PostgresSource::ExternalMetadataExtra).into(),
                     "{type}".into(),
-                    Expr::cust_with_expr("to_json($1)", NEW_TYPE),
+                    Expr::cust_with_expr("to_jsonb($1::text)", NEW_TYPE),
                 ]),
             )
             .and_where(Expr::col(PostgresSource::ExternalMetadata).cast_json_field("type").eq(OLD_TYPE))
