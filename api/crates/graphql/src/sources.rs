@@ -5,7 +5,7 @@ use serde::Serialize;
 use uuid::Uuid;
 
 use crate::{
-    error::ErrorKind,
+    error::{Error, ErrorKind},
     external_services::ExternalService,
 };
 
@@ -113,7 +113,7 @@ pub(crate) struct ExternalMetadataUrl {
 }
 
 impl TryFrom<external_services::ExternalMetadata> for ExternalMetadata {
-    type Error = ErrorKind;
+    type Error = Error;
 
     fn try_from(value: external_services::ExternalMetadata) -> Result<Self, Self::Error> {
         use external_services::ExternalMetadata::*;
@@ -138,7 +138,7 @@ impl TryFrom<external_services::ExternalMetadata> for ExternalMetadata {
 }
 
 impl TryFrom<ExternalMetadata> for external_services::ExternalMetadata {
-    type Error = ErrorKind;
+    type Error = Error;
 
     fn try_from(value: ExternalMetadata) -> Result<Self, Self::Error> {
         use ExternalMetadata::*;
@@ -163,7 +163,7 @@ impl TryFrom<ExternalMetadata> for external_services::ExternalMetadata {
 }
 
 impl TryFrom<sources::Source> for Source {
-    type Error = ErrorKind;
+    type Error = Error;
 
     fn try_from(source: sources::Source) -> Result<Self, Self::Error> {
         let url = source.url();

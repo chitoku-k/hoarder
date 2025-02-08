@@ -186,7 +186,7 @@ where
         let created_at = created_at.map(Into::into);
 
         let medium = media_service.create_medium(source_ids, created_at, tag_tag_type_ids, tag_depth, sources).await?;
-        let medium = medium.try_into().map_err(Error::new)?;
+        let medium = medium.try_into()?;
         Ok(medium)
     }
 
@@ -245,10 +245,10 @@ where
         let media_service = ctx.data_unchecked::<MediaService>();
 
         let external_service_id = external_service_id.into();
-        let external_metadata = external_metadata.try_into().map_err(Error::new)?;
+        let external_metadata = external_metadata.try_into()?;
 
         let source = media_service.create_source(external_service_id, external_metadata).await?;
-        let source = source.try_into().map_err(Error::new)?;
+        let source = source.try_into()?;
         Ok(source)
     }
 
@@ -305,7 +305,7 @@ where
             replicas,
             sources,
         ).await?;
-        let medium = medium.try_into().map_err(Error::new)?;
+        let medium = medium.try_into()?;
         Ok(medium)
     }
 
@@ -367,10 +367,10 @@ where
         let media_service = ctx.data_unchecked::<MediaService>();
 
         let external_service_id = external_service_id.map(Into::into);
-        let external_metadata = external_metadata.map(TryInto::try_into).transpose().map_err(Error::new)?;
+        let external_metadata = external_metadata.map(TryInto::try_into).transpose()?;
 
         let source = media_service.update_source_by_id(id.into(), external_service_id, external_metadata).await?;
-        let source = source.try_into().map_err(Error::new)?;
+        let source = source.try_into()?;
         Ok(source)
     }
 

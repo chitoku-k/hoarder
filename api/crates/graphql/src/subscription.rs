@@ -5,7 +5,7 @@ use domain::service::media::MediaServiceInterface;
 use futures::{future::ready, Stream, StreamExt, TryStreamExt};
 use uuid::Uuid;
 
-use crate::{error::{ErrorKind, Result}, media::Medium, tags::get_tag_depth};
+use crate::{error::{Error, Result}, media::Medium, tags::get_tag_depth};
 
 #[derive(Default)]
 pub struct Subscription<MediaService> {
@@ -44,7 +44,7 @@ where
         let stream = media_service
             .watch_medium_by_id(id.into(), tag_depth, replicas, sources)
             .await?
-            .map_err(ErrorKind::from)
+            .map_err(Error::from)
             .and_then(|medium| ready(medium.try_into()))
             .filter_map(|result| ready(result.ok()));
 

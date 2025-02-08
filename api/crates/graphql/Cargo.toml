@@ -15,7 +15,7 @@ workspace = true
 
 [dependencies.async-graphql]
 version = "7.0.15"
-features = ["chrono", "graphiql", "tempfile", "unblock", "uuid"]
+features = ["chrono", "custom-error-conversion", "graphiql", "tempfile", "unblock", "uuid"]
 default-features = false
 
 [dependencies.async-graphql-axum]
