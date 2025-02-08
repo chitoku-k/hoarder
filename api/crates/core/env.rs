@@ -1,8 +1,14 @@
+use std::io::stdout;
+
+use anstream::{AutoStream, ColorChoice};
 use clap::{crate_version, Parser};
 use icu_locid::Locale;
+use tracing_subscriber::{fmt, prelude::*, EnvFilter};
 
 pub mod commands;
-use commands::{Commands, ServeCommand};
+pub mod trace;
+
+use crate::env::{commands::{Commands, ServeCommand}, trace::{Format, LayerFormatExt}};
 
 #[derive(Debug, Parser)]
 #[command(version = version())]
@@ -25,12 +31,17 @@ struct ServeConfig {
     pub command: ServeCommand,
 }
 
-#[derive(Debug, Clone, Parser)]
+#[derive(Debug, Parser)]
 pub struct Global {
     /// Locale
     #[arg(long, env, default_value_t)]
     #[arg(global = true)]
     pub locale: Locale,
+
+    /// Log format
+    #[arg(long, env, default_value = "compact")]
+    #[arg(global = true)]
+    pub log_format: Format,
 
     /// Log level
     #[arg(long, env, default_value = "info")]
@@ -63,11 +74,11 @@ impl Config {
     }
 
     pub fn init(&self) {
-        env_logger::builder()
-            .format_target(true)
-            .format_timestamp_secs()
-            .format_indent(None)
-            .parse_filters(&self.global.log_level)
+        tracing_subscriber::registry()
+            .with(fmt::layer()
+                .with_ansi(AutoStream::choice(&stdout()) != ColorChoice::Never)
+                .with_format(&self.global.log_format)
+                .with_filter(EnvFilter::new(&self.global.log_level)))
             .init();
     }
 }

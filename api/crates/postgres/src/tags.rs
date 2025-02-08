@@ -460,6 +460,7 @@ async fn detach_parent(tx: &mut Transaction<'_, Postgres>, id: TagId) -> Result<
 }
 
 impl TagsRepository for PostgresTagsRepository {
+    #[tracing::instrument(skip_all)]
     async fn create<T>(&self, name: &str, kana: &str, aliases: T, parent_id: Option<TagId>, depth: TagDepth) -> Result<Tag>
     where
         T: Iterator<Item = String> + Send,
@@ -528,6 +529,7 @@ impl TagsRepository for PostgresTagsRepository {
         Ok(tag)
     }
 
+    #[tracing::instrument(skip_all)]
     async fn fetch_by_ids<T>(&self, ids: T, depth: TagDepth) -> Result<Vec<Tag>>
     where
         T: Iterator<Item = TagId> + Send,
@@ -538,6 +540,7 @@ impl TagsRepository for PostgresTagsRepository {
         Ok(tags)
     }
 
+    #[tracing::instrument(skip_all)]
     async fn fetch_by_name_or_alias_like(&self, name_or_alias_like: &str, depth: TagDepth) -> Result<Vec<Tag>> {
         let mut conn = self.pool.acquire().await.map_err(Error::other)?;
 
@@ -591,6 +594,7 @@ impl TagsRepository for PostgresTagsRepository {
         Ok(tags)
     }
 
+    #[tracing::instrument(skip_all)]
     async fn fetch_all(&self, depth: TagDepth, root: bool, cursor: Option<(String, TagId)>, order: repository::Order, direction: repository::Direction, limit: u64) -> Result<Vec<Tag>> {
         let mut conn = self.pool.acquire().await.map_err(Error::other)?;
 
@@ -668,6 +672,7 @@ impl TagsRepository for PostgresTagsRepository {
         Ok(tags)
     }
 
+    #[tracing::instrument(skip_all)]
     async fn update_by_id<T, U>(&self, id: TagId, name: Option<String>, kana: Option<String>, add_aliases: T, remove_aliases: U, depth: TagDepth) -> Result<Tag>
     where
         T: Iterator<Item = String> + Send,
@@ -728,6 +733,7 @@ impl TagsRepository for PostgresTagsRepository {
         Ok(tag)
     }
 
+    #[tracing::instrument(skip_all)]
     async fn attach_by_id(&self, id: TagId, parent_id: TagId, depth: TagDepth) -> Result<Tag> {
         if id.is_root() || parent_id.is_root() {
             return Err(ErrorKind::TagAttachingRoot)?;
@@ -766,6 +772,7 @@ impl TagsRepository for PostgresTagsRepository {
         Ok(tag)
     }
 
+    #[tracing::instrument(skip_all)]
     async fn detach_by_id(&self, id: TagId, depth: TagDepth) -> Result<Tag> {
         if id.is_root() {
             return Err(ErrorKind::TagDetachingRoot)?;
@@ -783,6 +790,7 @@ impl TagsRepository for PostgresTagsRepository {
         Ok(tag)
     }
 
+    #[tracing::instrument(skip_all)]
     async fn delete_by_id(&self, id: TagId, recursive: bool) -> Result<DeleteResult> {
         if id.is_root() {
             return Err(ErrorKind::TagDeletingRoot)?;

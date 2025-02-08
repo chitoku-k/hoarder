@@ -30,6 +30,7 @@ impl<MediaService> ObjectsServiceInterface for ObjectsService<MediaService>
 where
     MediaService: MediaServiceInterface,
 {
+    #[tracing::instrument(skip_all)]
     async fn redirect(&self, url: String) -> Response {
         let public_url = self.media_service
             .get_object(EntryUrl::from(url))

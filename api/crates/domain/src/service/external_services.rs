@@ -51,6 +51,7 @@ impl<ExternalServicesRepository> ExternalServicesServiceInterface for ExternalSe
 where
     ExternalServicesRepository: external_services::ExternalServicesRepository,
 {
+    #[tracing::instrument(skip_all)]
     async fn create_external_service(&self, slug: &str, kind: &str, name: &str, base_url: Option<&str>, url_pattern: Option<&str>) -> Result<ExternalService> {
         if let Some(url_pattern) = url_pattern {
             validate_url_pattern(url_pattern)?;
@@ -59,22 +60,24 @@ where
         match self.external_services_repository.create(slug, kind, name, base_url, url_pattern).await {
             Ok(service) => Ok(service),
             Err(e) => {
-                log::error!("failed to create an external service\nError: {e:?}");
+                tracing::error!("failed to create an external service\nError: {e:?}");
                 Err(e)
             },
         }
     }
 
+    #[tracing::instrument(skip_all)]
     async fn get_external_services(&self) -> Result<Vec<ExternalService>> {
         match self.external_services_repository.fetch_all().await {
             Ok(services) => Ok(services),
             Err(e) => {
-                log::error!("failed to get external services\nError: {e:?}");
+                tracing::error!("failed to get external services\nError: {e:?}");
                 Err(e)
             },
         }
     }
 
+    #[tracing::instrument(skip_all)]
     async fn get_external_services_by_ids<T>(&self, ids: T) -> Result<Vec<ExternalService>>
     where
         T: CloneableIterator<Item = ExternalServiceId> + Send,
@@ -82,12 +85,13 @@ where
         match self.external_services_repository.fetch_by_ids(ids).await {
             Ok(services) => Ok(services),
             Err(e) => {
-                log::error!("failed to get external services\nError: {e:?}");
+                tracing::error!("failed to get external services\nError: {e:?}");
                 Err(e)
             },
         }
     }
 
+    #[tracing::instrument(skip_all)]
     async fn get_external_services_by_url(&self, url: &str) -> Result<Vec<(ExternalService, ExternalMetadata)>> {
         match self.external_services_repository.fetch_all().await {
             Ok(external_services) => {
@@ -101,12 +105,13 @@ where
                 Ok(external_metadata)
             },
             Err(e) => {
-                log::error!("failed to get external services\nError: {e:?}");
+                tracing::error!("failed to get external services\nError: {e:?}");
                 Err(e)
             },
         }
     }
 
+    #[tracing::instrument(skip_all)]
     async fn update_external_service_by_id(&self, id: ExternalServiceId, slug: Option<&str>, name: Option<&str>, base_url: Option<Option<&str>>, url_pattern: Option<Option<&str>>) -> Result<ExternalService> {
         if let Some(Some(url_pattern)) = url_pattern {
             validate_url_pattern(url_pattern)?;
@@ -115,17 +120,18 @@ where
         match self.external_services_repository.update_by_id(id, slug, name, base_url, url_pattern).await {
             Ok(service) => Ok(service),
             Err(e) => {
-                log::error!("failed to update the external service\nError: {e:?}");
+                tracing::error!("failed to update the external service\nError: {e:?}");
                 Err(e)
             },
         }
     }
 
+    #[tracing::instrument(skip_all)]
     async fn delete_external_service_by_id(&self, id: ExternalServiceId) -> Result<DeleteResult> {
         match self.external_services_repository.delete_by_id(id).await {
             Ok(result) => Ok(result),
             Err(e) => {
-                log::error!("failed to delete the external service\nError: {e:?}");
+                tracing::error!("failed to delete the external service\nError: {e:?}");
                 Err(e)
             },
         }

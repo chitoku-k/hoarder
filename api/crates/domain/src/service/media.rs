@@ -4,6 +4,7 @@ use chrono::{DateTime, Utc};
 use derive_more::Constructor;
 use futures::Stream;
 use tokio::task;
+use tracing::{Instrument, Span};
 
 use crate::{
     entity::{
@@ -197,7 +198,7 @@ where
                 }
             },
             Err(e) => {
-                log::error!("failed to get an image\nError: {e:?}");
+                tracing::error!("failed to get an image\nError: {e:?}");
                 Err(e)
             },
         }
@@ -213,7 +214,7 @@ where
                 }
             },
             Err(e) => {
-                log::error!("failed to put an image\nError: {e:?}");
+                tracing::error!("failed to put an image\nError: {e:?}");
                 Err(e)
             },
         }
@@ -271,9 +272,14 @@ where
             },
         };
 
-        let process = || match process {
-            Process::Read(read) => read(),
-            Process::Write(write) => write(),
+        let process = {
+            let span = Span::current();
+            move || {
+                span.in_scope(|| match process {
+                    Process::Read(read) => read(),
+                    Process::Write(write) => write(),
+                })
+            }
         };
 
         Ok((url, status, process))
@@ -294,7 +300,7 @@ where
             Ok((url, status, process)) => Ok((url, status, process)),
             Err(e) => {
                 let ErrorKind::ObjectAlreadyExists { url, entry } = e.kind() else {
-                    log::error!("failed to process a medium\nError: {e:?}");
+                    tracing::error!("failed to process a medium\nError: {e:?}");
                     return Err(e);
                 };
                 match self.replicas_repository.fetch_by_original_url(url).await {
@@ -318,7 +324,7 @@ where
             let (original_image, thumbnail_image, status) = match task::spawn_blocking(process).await.map_err(Error::other).and_then(|result| result) {
                 Ok((original_image, thumbnail_image)) => (Some(original_image), Some(thumbnail_image), ReplicaStatus::Ready),
                 Err(e) => {
-                    log::error!("failed to process a medium\nError: {e:?}");
+                    tracing::error!("failed to process a medium\nError: {e:?}");
                     (None, None, ReplicaStatus::Error)
                 },
             };
@@ -326,11 +332,11 @@ where
             match replicas_repository.update_by_id(id, Some(thumbnail_image), None, Some(original_image), Some(status)).await {
                 Ok(replica) => Ok(replica),
                 Err(e) => {
-                    log::error!("failed to update the replica\nError: {e:?}");
+                    tracing::error!("failed to update the replica\nError: {e:?}");
                     Err(e)
                 },
             }
-        }
+        }.in_current_span()
     }
 }
 
@@ -342,6 +348,7 @@ where
     SourcesRepository: sources::SourcesRepository,
     MediumImageProcessor: processor::media::MediumImageProcessor + Clone,
 {
+    #[tracing::instrument(skip_all)]
     async fn create_medium<T, U>(&self, source_ids: T, created_at: Option<DateTime<Utc>>, tag_tag_type_ids: U, tag_depth: Option<TagDepth>, sources: bool) -> Result<Medium>
     where
         T: CloneableIterator<Item = SourceId> + Send,
@@ -350,12 +357,13 @@ where
         match self.media_repository.create(source_ids, created_at, tag_tag_type_ids, tag_depth, sources).await {
             Ok(medium) => Ok(medium),
             Err(e) => {
-                log::error!("failed to create a medium\nError: {e:?}");
+                tracing::error!("failed to create a medium\nError: {e:?}");
                 Err(e)
             },
         }
     }
 
+    #[tracing::instrument(skip_all)]
     async fn create_replica<R>(&self, medium_id: MediumId, medium_source: MediumSource<R>) -> Result<(Replica, impl Future<Output = Result<Replica>> + Send + 'static)>
     where
         for<'a> R: Read + Seek + Send + 'a,
@@ -367,30 +375,32 @@ where
                 Ok((replica, task))
             },
             Err(e) if status.is_created() => {
-                log::error!("failed to create a replica\nError: {e:?}");
+                tracing::error!("failed to create a replica\nError: {e:?}");
 
                 if let Err(e) = self.objects_repository.delete(url).await {
-                    log::error!("failed to delete the object\nError: {e:?}");
+                    tracing::error!("failed to delete the object\nError: {e:?}");
                 }
                 Err(e)
             },
             Err(e) => {
-                log::error!("failed to create a replica\nError: {e:?}");
+                tracing::error!("failed to create a replica\nError: {e:?}");
                 Err(e)
             },
         }
     }
 
+    #[tracing::instrument(skip_all)]
     async fn create_source(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> Result<Source> {
         match self.sources_repository.create(external_service_id, external_metadata).await {
             Ok(source) => Ok(source),
             Err(e) => {
-                log::error!("failed to create a source\nError: {e:?}");
+                tracing::error!("failed to create a source\nError: {e:?}");
                 Err(e)
             },
         }
     }
 
+    #[tracing::instrument(skip_all)]
     async fn get_media(
         &self,
         tag_depth: Option<TagDepth>,
@@ -404,12 +414,13 @@ where
         match self.media_repository.fetch_all(tag_depth, replicas, sources, cursor, order, direction, limit).await {
             Ok(media) => Ok(media),
             Err(e) => {
-                log::error!("failed to get the media\nError: {e:?}");
+                tracing::error!("failed to get the media\nError: {e:?}");
                 Err(e)
             },
         }
     }
 
+    #[tracing::instrument(skip_all)]
     async fn get_media_by_ids<T>(&self, ids: T, tag_depth: Option<TagDepth>, replicas: bool, sources: bool) -> Result<Vec<Medium>>
     where
         T: CloneableIterator<Item = MediumId> + Send,
@@ -417,12 +428,13 @@ where
         match self.media_repository.fetch_by_ids(ids, tag_depth, replicas, sources).await {
             Ok(media) => Ok(media),
             Err(e) => {
-                log::error!("failed to get the media\nError: {e:?}");
+                tracing::error!("failed to get the media\nError: {e:?}");
                 Err(e)
             },
         }
     }
 
+    #[tracing::instrument(skip_all)]
     async fn get_media_by_source_ids<T>(
         &self,
         source_ids: T,
@@ -440,12 +452,13 @@ where
         match self.media_repository.fetch_by_source_ids(source_ids, tag_depth, replicas, sources, cursor, order, direction, limit).await {
             Ok(media) => Ok(media),
             Err(e) => {
-                log::error!("failed to get the media\nError: {e:?}");
+                tracing::error!("failed to get the media\nError: {e:?}");
                 Err(e)
             },
         }
     }
 
+    #[tracing::instrument(skip_all)]
     async fn get_media_by_tag_ids<T>(
         &self,
         tag_tag_type_ids: T,
@@ -463,12 +476,13 @@ where
         match self.media_repository.fetch_by_tag_ids(tag_tag_type_ids, tag_depth, replicas, sources, cursor, order, direction, limit).await {
             Ok(media) => Ok(media),
             Err(e) => {
-                log::error!("failed to get the media\nError: {e:?}");
+                tracing::error!("failed to get the media\nError: {e:?}");
                 Err(e)
             },
         }
     }
 
+    #[tracing::instrument(skip_all)]
     async fn get_replicas_by_ids<T>(&self, ids: T) -> Result<Vec<Replica>>
     where
         T: CloneableIterator<Item = ReplicaId> + Send,
@@ -476,22 +490,24 @@ where
         match self.replicas_repository.fetch_by_ids(ids).await {
             Ok(replicas) => Ok(replicas),
             Err(e) => {
-                log::error!("failed to get the replicas\nError: {e:?}");
+                tracing::error!("failed to get the replicas\nError: {e:?}");
                 Err(e)
             },
         }
     }
 
+    #[tracing::instrument(skip_all)]
     async fn get_replica_by_original_url(&self, original_url: &str) -> Result<Replica> {
         match self.replicas_repository.fetch_by_original_url(original_url).await {
             Ok(replica) => Ok(replica),
             Err(e) => {
-                log::error!("failed to get the replica\nError: {e:?}");
+                tracing::error!("failed to get the replica\nError: {e:?}");
                 Err(e)
             },
         }
     }
 
+    #[tracing::instrument(skip_all)]
     async fn get_sources_by_ids<T>(&self, ids: T) -> Result<Vec<Source>>
     where
         T: CloneableIterator<Item = SourceId> + Send,
@@ -499,52 +515,57 @@ where
         match self.sources_repository.fetch_by_ids(ids).await {
             Ok(sources) => Ok(sources),
             Err(e) => {
-                log::error!("failed to get the sources\nError: {e:?}");
+                tracing::error!("failed to get the sources\nError: {e:?}");
                 Err(e)
             },
         }
     }
 
+    #[tracing::instrument(skip_all)]
     async fn get_source_by_external_metadata(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> Result<Option<Source>> {
         match self.sources_repository.fetch_by_external_metadata(external_service_id, external_metadata).await {
             Ok(source) => Ok(source),
             Err(e) => {
-                log::error!("failed to get the source\nError: {e:?}");
+                tracing::error!("failed to get the source\nError: {e:?}");
                 Err(e)
             },
         }
     }
 
+    #[tracing::instrument(skip_all)]
     async fn get_sources_by_external_metadata_like_id(&self, id: &str) -> Result<Vec<Source>> {
         match self.sources_repository.fetch_by_external_metadata_like_id(id).await {
             Ok(sources) => Ok(sources),
             Err(e) => {
-                log::error!("failed to get the sources\nError: {e:?}");
+                tracing::error!("failed to get the sources\nError: {e:?}");
                 Err(e)
             },
         }
     }
 
+    #[tracing::instrument(skip_all)]
     async fn get_thumbnail_by_id(&self, id: ThumbnailId) -> Result<Vec<u8>> {
         match self.replicas_repository.fetch_thumbnail_by_id(id).await {
             Ok(replica) => Ok(replica),
             Err(e) => {
-                log::error!("failed to get the replica\nError: {e:?}");
+                tracing::error!("failed to get the replica\nError: {e:?}");
                 Err(e)
             },
         }
     }
 
+    #[tracing::instrument(skip_all)]
     async fn get_object(&self, url: EntryUrl) -> Result<Entry> {
         match self.objects_repository.get(url).await {
             Ok((entry, ..)) => Ok(entry),
             Err(e) => {
-                log::error!("failed to get the object\nError: {e:?}");
+                tracing::error!("failed to get the object\nError: {e:?}");
                 Err(e)
             },
         }
     }
 
+    #[tracing::instrument(skip_all)]
     async fn get_objects(&self, prefix: EntryUrlPath, kind: Option<EntryKind>) -> Result<Vec<Entry>> {
         let url = prefix.to_url(ObjectsRepository::scheme());
         match self.objects_repository.list(url).await {
@@ -555,22 +576,24 @@ where
                 Ok(entries)
             },
             Err(e) => {
-                log::error!("failed to get objects\nError: {e:?}");
+                tracing::error!("failed to get objects\nError: {e:?}");
                 Err(e)
             },
         }
     }
 
+    #[tracing::instrument(skip_all)]
     async fn watch_medium_by_id(&self, id: MediumId, tag_depth: Option<TagDepth>, replicas: bool, sources: bool) -> Result<impl Stream<Item = Result<Medium>> + Send> {
         match self.media_repository.watch_by_id(id, tag_depth, replicas, sources).await {
             Ok(stream) => Ok(stream),
             Err(e) => {
-                log::error!("failed to watch the medium\nError: {e:?}");
+                tracing::error!("failed to watch the medium\nError: {e:?}");
                 Err(e)
             },
         }
     }
 
+    #[tracing::instrument(skip_all)]
     async fn update_medium_by_id<T, U, V, W, X>(
         &self,
         id: MediumId,
@@ -594,12 +617,13 @@ where
         match self.media_repository.update_by_id(id, add_source_ids, remove_source_ids, add_tag_tag_type_ids, remove_tag_tag_type_ids, replica_orders, created_at, tag_depth, replicas, sources).await {
             Ok(medium) => Ok(medium),
             Err(e) => {
-                log::error!("failed to update the medium\nError: {e:?}");
+                tracing::error!("failed to update the medium\nError: {e:?}");
                 Err(e)
             },
         }
     }
 
+    #[tracing::instrument(skip_all)]
     async fn update_replica_by_id<R>(&self, id: ReplicaId, medium_source: MediumSource<R>) -> Result<(Replica, impl Future<Output = Result<Replica>> + Send + 'static)>
     where
         for<'a> R: Read + Seek + Send + 'a,
@@ -611,49 +635,51 @@ where
                 Ok((replica, task))
             },
             Err(e) if status.is_created() => {
-                log::error!("failed to update the replica\nError: {e:?}");
+                tracing::error!("failed to update the replica\nError: {e:?}");
 
                 if let Err(e) = self.objects_repository.delete(url).await {
-                    log::error!("failed to delete the object\nError: {e:?}");
+                    tracing::error!("failed to delete the object\nError: {e:?}");
                 }
                 Err(e)
             },
             Err(e) => {
-                log::error!("failed to update the replica\nError: {e:?}");
+                tracing::error!("failed to update the replica\nError: {e:?}");
                 Err(e)
             },
         }
     }
 
+    #[tracing::instrument(skip_all)]
     async fn update_source_by_id(&self, id: SourceId, external_service_id: Option<ExternalServiceId>, external_metadata: Option<ExternalMetadata>) -> Result<Source> {
         match self.sources_repository.update_by_id(id, external_service_id, external_metadata).await {
             Ok(source) => Ok(source),
             Err(e) => {
-                log::error!("failed to update the source\nError: {e:?}");
+                tracing::error!("failed to update the source\nError: {e:?}");
                 Err(e)
             },
         }
     }
 
+    #[tracing::instrument(skip_all)]
     async fn delete_medium_by_id(&self, id: MediumId, delete_objects: bool) -> Result<DeleteResult> {
         if delete_objects {
             let replicas = match self.media_repository.fetch_by_ids([id].into_iter(), None, true, false).await.map(|mut r| r.pop()) {
                 Ok(Some(medium)) => medium.replicas,
                 Ok(None) => return Ok(DeleteResult::NotFound),
                 Err(e) => {
-                    log::error!("failed to delete the objects of the media\nError: {e:?}");
+                    tracing::error!("failed to delete the objects of the media\nError: {e:?}");
                     return Err(e);
                 },
             };
 
             for replica in replicas {
                 if let Err(e) = self.objects_repository.delete(EntryUrl::from(replica.original_url)).await {
-                    log::error!("failed to delete the objects of the media\nError: {e:?}");
+                    tracing::error!("failed to delete the objects of the media\nError: {e:?}");
                     return Err(e);
                 }
 
                 if let Err(e) = self.replicas_repository.delete_by_id(replica.id).await {
-                    log::error!("failed to delete the replica of the media\nError: {e:?}");
+                    tracing::error!("failed to delete the replica of the media\nError: {e:?}");
                     return Err(e);
                 }
             }
@@ -662,25 +688,26 @@ where
         match self.media_repository.delete_by_id(id).await {
             Ok(result) => Ok(result),
             Err(e) => {
-                log::error!("failed to delete the medium\nError: {e:?}");
+                tracing::error!("failed to delete the medium\nError: {e:?}");
                 Err(e)
             },
         }
     }
 
+    #[tracing::instrument(skip_all)]
     async fn delete_replica_by_id(&self, id: ReplicaId, delete_object: bool) -> Result<DeleteResult> {
         if delete_object {
             let replica = match self.replicas_repository.fetch_by_ids([id].into_iter()).await.map(|mut r| r.pop()) {
                 Ok(Some(replica)) => replica,
                 Ok(None) => return Ok(DeleteResult::NotFound),
                 Err(e) => {
-                    log::error!("failed to delete the object of the replica\nError: {e:?}");
+                    tracing::error!("failed to delete the object of the replica\nError: {e:?}");
                     return Err(e);
                 },
             };
 
             if let Err(e) = self.objects_repository.delete(EntryUrl::from(replica.original_url)).await {
-                log::error!("failed to delete the object of the replica\nError: {e:?}");
+                tracing::error!("failed to delete the object of the replica\nError: {e:?}");
                 return Err(e);
             }
         }
@@ -688,17 +715,18 @@ where
         match self.replicas_repository.delete_by_id(id).await {
             Ok(result) => Ok(result),
             Err(e) => {
-                log::error!("failed to delete the replica\nError: {e:?}");
+                tracing::error!("failed to delete the replica\nError: {e:?}");
                 Err(e)
             },
         }
     }
 
+    #[tracing::instrument(skip_all)]
     async fn delete_source_by_id(&self, id: SourceId) -> Result<DeleteResult> {
         match self.sources_repository.delete_by_id(id).await {
             Ok(result) => Ok(result),
             Err(e) => {
-                log::error!("failed to delete the source\nError: {e:?}");
+                tracing::error!("failed to delete the source\nError: {e:?}");
                 Err(e)
             },
         }

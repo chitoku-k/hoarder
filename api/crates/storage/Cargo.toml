@@ -39,3 +39,6 @@ features = ["fs", "rt-multi-thread"]
 [dependencies.tokio-stream]
 version = "0.1.17"
 features = ["fs"]
+
+[dependencies.tracing]
+version = "0.1.41"

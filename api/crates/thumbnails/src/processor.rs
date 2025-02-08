@@ -18,6 +18,7 @@ pub struct InMemoryImageProcessor {
 }
 
 impl MediumImageProcessor for InMemoryImageProcessor {
+    #[tracing::instrument(skip_all)]
     fn generate_thumbnail<R>(&self, read: R) -> Result<(OriginalImage, ThumbnailImage)>
     where
         R: BufRead + Seek,

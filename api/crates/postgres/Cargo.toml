@@ -33,9 +33,6 @@ version = "0.3.31"
 features = ["std"]
 default-features = false
 
-[dependencies.log]
-version = "0.4.25"
-
 [dependencies.ordermap]
 version = "0.5.5"
 features = ["serde"]
@@ -67,6 +64,13 @@ default-features = false
 [dependencies.sqlx_migrator]
 version = "0.16.2"
 features = ["postgres"]
+
+[dependencies.tracing]
+version = "0.1.41"
+
+[dependencies.tracing-futures]
+version = "0.2.5"
+features = ["futures"]
 
 [dependencies.uuid]
 version = "1.13.1"

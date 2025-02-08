@@ -39,6 +39,7 @@ impl ObjectsRepository for FilesystemObjectsRepository {
         "file"
     }
 
+    #[tracing::instrument(skip_all)]
     async fn put(&self, url: EntryUrl, overwrite: ObjectOverwriteBehavior) -> Result<(Entry, ObjectStatus, Self::Write)> {
         let url = FilesystemEntryUrl::try_from(url)?;
         let fullpath = self.fullpath(url.as_path());
@@ -108,6 +109,7 @@ impl ObjectsRepository for FilesystemObjectsRepository {
         Ok((entry.into_entry(), status, file.into_std().await))
     }
 
+    #[tracing::instrument(skip_all)]
     async fn get(&self, url: EntryUrl) -> Result<(Entry, Self::Read)> {
         let url = FilesystemEntryUrl::try_from(url)?;
         let fullpath = self.fullpath(url.as_path());
@@ -123,6 +125,7 @@ impl ObjectsRepository for FilesystemObjectsRepository {
         }
     }
 
+    #[tracing::instrument(skip_all)]
     fn copy<R>(&self, read: &mut R, write: &mut Self::Write) -> Result<u64>
     where
         R: Read,
@@ -133,6 +136,7 @@ impl ObjectsRepository for FilesystemObjectsRepository {
         Ok(written)
     }
 
+    #[tracing::instrument(skip_all)]
     async fn list(&self, prefix: EntryUrl) -> Result<Vec<Entry>> {
         let url = FilesystemEntryUrl::try_from(prefix)?;
         let fullpath = self.fullpath(url.as_path());
@@ -167,6 +171,7 @@ impl ObjectsRepository for FilesystemObjectsRepository {
         Ok(entries)
     }
 
+    #[tracing::instrument(skip_all)]
     async fn delete(&self, url: EntryUrl) -> Result<DeleteResult> {
         let url = FilesystemEntryUrl::try_from(url)?;
         let fullpath = self.fullpath(url.as_path());

@@ -3,6 +3,7 @@ use std::marker::PhantomData;
 use async_graphql::{Context, Subscription};
 use domain::service::media::MediaServiceInterface;
 use futures::{future::ready, Stream, StreamExt, TryStreamExt};
+use tracing_futures::Instrument;
 use uuid::Uuid;
 
 use crate::{error::{Error, Result}, media::Medium, tags::get_tag_depth};
@@ -26,6 +27,7 @@ where
     MediaService: MediaServiceInterface,
 {
     /// Subscribes to a medium.
+    #[tracing::instrument(skip_all)]
     async fn medium<'a>(
         &self,
         ctx: &Context<'a>,
@@ -46,7 +48,8 @@ where
             .await?
             .map_err(Error::from)
             .and_then(|medium| ready(medium.try_into()))
-            .filter_map(|result| ready(result.ok()));
+            .filter_map(|result| ready(result.ok()))
+            .in_current_span();
 
         Ok(stream)
     }

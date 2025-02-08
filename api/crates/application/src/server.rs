@@ -1,14 +1,13 @@
 use std::{net::Ipv6Addr, sync::Arc};
 
-use axum::{
-    routing::{any, get, post},
-    Router,
-};
+use axum::{extract::MatchedPath, http::Request, routing::{any, get, post}, Router};
 use axum_server::Handle;
 use tokio::{
     signal::unix::{self, SignalKind},
     task::JoinHandle,
 };
+use tower_http::trace::{DefaultOnEos, DefaultOnFailure, DefaultOnRequest, DefaultOnResponse, TraceLayer};
+use tracing::Level;
 
 #[cfg(feature = "tls")]
 use std::sync::mpsc::channel;
@@ -63,6 +62,20 @@ impl Engine {
             .merge(graphql)
             .merge(objects)
             .merge(thumbnails)
+            .layer(TraceLayer::new_for_http()
+                .make_span_with(|req: &Request<_>| {
+                    let method = req.method();
+                    let route = req
+                        .extensions()
+                        .get::<MatchedPath>()
+                        .map(|p| p.as_str());
+
+                    tracing::debug_span!("request", ?method, route)
+                })
+                .on_request(DefaultOnRequest::new().level(Level::TRACE))
+                .on_response(DefaultOnResponse::new().level(Level::TRACE))
+                .on_eos(DefaultOnEos::new().level(Level::TRACE))
+                .on_failure(DefaultOnFailure::new().level(Level::TRACE)))
             .merge(health);
 
         Self { app }
@@ -134,7 +147,7 @@ fn enable_graceful_shutdown(handle: Handle, tls: bool) -> JoinHandle<Result<()>>
         let address = handle.listening().await.ok_or(ErrorKind::ServerBindFailed)?;
         let scheme = if tls { "https" } else { "http" };
 
-        log::info!("listening on {scheme}://{address}/");
+        tracing::info!("listening on {scheme}://{address}/");
 
         let mut interrupt = unix::signal(SignalKind::interrupt()).map_err(Error::other)?;
         let mut terminate = unix::signal(SignalKind::terminate()).map_err(Error::other)?;

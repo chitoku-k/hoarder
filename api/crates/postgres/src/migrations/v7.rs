@@ -29,6 +29,7 @@ struct TagTypeKanaOperation;
 
 #[async_trait]
 impl Operation<Postgres> for TagTypeKanaOperation {
+    #[tracing::instrument(skip_all)]
     async fn up(&self, connection: &mut PgConnection) -> Result<(), Error> {
         let sql = Table::alter()
             .table(PostgresTagType::Table)
@@ -54,6 +55,7 @@ impl Operation<Postgres> for TagTypeKanaOperation {
         Ok(())
     }
 
+    #[tracing::instrument(skip_all)]
     async fn down(&self, connection: &mut PgConnection) -> Result<(), Error> {
         let sql = Table::alter()
             .table(PostgresTagType::Table)

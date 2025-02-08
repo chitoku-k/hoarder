@@ -29,6 +29,7 @@ struct SourceExternalMetadataOperation;
 
 #[async_trait]
 impl Operation<Postgres> for SourceExternalMetadataOperation {
+    #[tracing::instrument(skip_all)]
     async fn up(&self, connection: &mut PgConnection) -> Result<(), Error> {
         const OLD_NAME: &str = "creator_id";
         const OLD_PATH: &str = "{creator_id}";
@@ -52,6 +53,7 @@ impl Operation<Postgres> for SourceExternalMetadataOperation {
         Ok(())
     }
 
+    #[tracing::instrument(skip_all)]
     async fn down(&self, connection: &mut PgConnection) -> Result<(), Error> {
         const OLD_NAME: &str = "creatorId";
         const OLD_PATH: &str = "{creatorId}";

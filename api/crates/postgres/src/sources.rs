@@ -235,6 +235,7 @@ impl TryFrom<PostgresSourceExternalServiceRow> for Source {
 }
 
 impl SourcesRepository for PostgresSourcesRepository {
+    #[tracing::instrument(skip_all)]
     async fn create(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> Result<Source> {
         let mut tx = self.pool.begin().await.map_err(Error::other)?;
 
@@ -310,6 +311,7 @@ impl SourcesRepository for PostgresSourcesRepository {
         Ok(source)
     }
 
+    #[tracing::instrument(skip_all)]
     async fn fetch_by_ids<T>(&self, ids: T) -> Result<Vec<Source>>
     where
         T: Iterator<Item = SourceId> + Send,
@@ -348,6 +350,7 @@ impl SourcesRepository for PostgresSourcesRepository {
         Ok(sources)
     }
 
+    #[tracing::instrument(skip_all)]
     async fn fetch_by_external_metadata(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> Result<Option<Source>> {
         let (external_metadata, _) = PostgresExternalServiceMetadataFull::try_from(external_metadata)
             .map_err(|e| Error::new(ErrorKind::SourceMetadataInvalid, e))?
@@ -389,6 +392,7 @@ impl SourcesRepository for PostgresSourcesRepository {
         Ok(source)
     }
 
+    #[tracing::instrument(skip_all)]
     async fn fetch_by_external_metadata_like_id(&self, id: &str) -> Result<Vec<Source>> {
         let (sql, values) = Query::select()
             .expr_as(Expr::col((PostgresSource::Table, PostgresSource::Id)), PostgresSourceExternalService::SourceId)
@@ -424,6 +428,7 @@ impl SourcesRepository for PostgresSourcesRepository {
         Ok(sources)
     }
 
+    #[tracing::instrument(skip_all)]
     async fn update_by_id(&self, id: SourceId, external_service_id: Option<ExternalServiceId>, external_metadata: Option<ExternalMetadata>) -> Result<Source> {
         let mut tx = self.pool.begin().await.map_err(Error::other)?;
 
@@ -522,6 +527,7 @@ impl SourcesRepository for PostgresSourcesRepository {
         Ok(source)
     }
 
+    #[tracing::instrument(skip_all)]
     async fn delete_by_id(&self, id: SourceId) -> Result<DeleteResult> {
         let (sql, values) = Query::delete()
             .from_table(PostgresSource::Table)

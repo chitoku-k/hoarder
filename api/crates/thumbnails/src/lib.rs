@@ -37,6 +37,7 @@ impl<MediaService> ThumbnailsServiceInterface for ThumbnailsService<MediaService
 where
     MediaService: MediaServiceInterface,
 {
+    #[tracing::instrument(skip_all)]
     async fn show(&self, id: ThumbnailId) -> Response {
         match self.media_service.get_thumbnail_by_id(id).await {
             Ok(thumbnail) => {

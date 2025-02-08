@@ -40,6 +40,7 @@ struct PostgresReplicaOriginalUrlRow {
 
 #[async_trait]
 impl Operation<Postgres> for ReplicaUrlOperation {
+    #[tracing::instrument(skip_all)]
     async fn up(&self, connection: &mut PgConnection) -> Result<(), Error> {
         let mut tx = connection.begin().await?;
 
@@ -75,6 +76,7 @@ impl Operation<Postgres> for ReplicaUrlOperation {
         Ok(())
     }
 
+    #[tracing::instrument(skip_all)]
     async fn down(&self, connection: &mut PgConnection) -> Result<(), Error> {
         let mut tx = connection.begin().await?;
 
@@ -107,14 +109,14 @@ impl Operation<Postgres> for ReplicaUrlOperation {
                         .await?;
                 },
                 Err(e) => {
-                    log::error!("failed to decode URL\nID: {:?}\nError: {e:?}", replica.id);
+                    tracing::error!("failed to decode URL\nID: {:?}\nError: {e:?}", replica.id);
                     errors.push(e);
                 },
             }
         }
 
         if let Some(e) = errors.pop() {
-            log::error!("{} error(s) found", errors.len());
+            tracing::error!("{} error(s) found", errors.len());
             return Err(sqlx::Error::Migrate(Box::new(MigrateError::Source(Box::new(e)))))?;
         }
 

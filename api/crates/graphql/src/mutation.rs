@@ -83,6 +83,7 @@ where
     /// ### Errors
     /// * When the slug already exists, it returns an `EXTERNAL_SERVICE_SLUG_DUPLICATE` error.
     /// * When the urlPattern is invalid, it returns an `EXTERNAL_SERVICE_URL_PATTERN_INVALID` error.
+    #[tracing::instrument(skip_all)]
     async fn create_external_service(
         &self,
         ctx: &Context<'_>,
@@ -112,6 +113,7 @@ where
     /// ### Errors
     /// * When the slug already exists, it returns an `EXTERNAL_SERVICE_SLUG_DUPLICATE` error.
     /// * When the urlPattern is invalid, it returns an `EXTERNAL_SERVICE_URL_PATTERN_INVALID` error.
+    #[tracing::instrument(skip_all)]
     async fn update_external_service(
         &self,
         ctx: &Context<'_>,
@@ -148,6 +150,7 @@ where
     }
 
     /// Deletes an external service.
+    #[tracing::instrument(skip_all)]
     async fn delete_external_service(
         &self,
         ctx: &Context<'_>,
@@ -164,6 +167,7 @@ where
     /// ### Errors
     /// * When any of the sources is not found, it returns a `MEDIUM_SOURCE_NOT_FOUND` error.
     /// * When any of the tags is not found, it returns a `MEDIUM_TAG_NOT_FOUND` error.
+    #[tracing::instrument(skip_all)]
     async fn create_medium(
         &self,
         ctx: &Context<'_>,
@@ -200,6 +204,7 @@ where
     /// * When the object could not be created, it returns an `OBJECT_PUT_FAILED` error.
     /// * When the original URL or the name of the upload is invalid, it returns an `OBJECT_URL_INVALID` error.
     /// * When the original URL is unsupported, it returns an `OBJECT_URL_UNSUPPORTED` error.
+    #[tracing::instrument(skip_all)]
     async fn create_replica(
         &self,
         ctx: &Context<'_>,
@@ -234,6 +239,7 @@ where
     /// * When any source with the same metadata already exists, it returns a `SOURCE_METADATA_DUPLICATE` error.
     /// * When the metadata is invalid, it returns a `SOURCE_METADATA_INVALID` error.
     /// * When the metadata does not match with the external service, it returns a `SOURCE_METADATA_NOT_MATCH` error.
+    #[tracing::instrument(skip_all)]
     async fn create_source(
         &self,
         ctx: &Context<'_>,
@@ -258,6 +264,7 @@ where
     /// * When any of the sources is not found, it returns a `MEDIUM_SOURCE_NOT_FOUND` error.
     /// * When any of the tags is not found, it returns a `MEDIUM_TAG_NOT_FOUND` error.
     /// * When the replicas do not match with the current, it returns a `MEDIUM_REPLICAS_NOT_MATCH` error.
+    #[tracing::instrument(skip_all)]
     async fn update_medium(
         &self,
         ctx: &Context<'_>,
@@ -319,6 +326,7 @@ where
     /// * When the object could not be created, it returns an `OBJECT_PUT_FAILED` error.
     /// * When the original URL or the name of the upload is invalid, it returns an `OBJECT_URL_INVALID` error.
     /// * When the original URL is unsupported, it returns an `OBJECT_URL_UNSUPPORTED` error.
+    #[tracing::instrument(skip_all)]
     async fn update_replica(
         &self,
         ctx: &Context<'_>,
@@ -354,6 +362,7 @@ where
     /// * When any source with the same metadata already exists, it returns a `SOURCE_METADATA_DUPLICATE` error.
     /// * When the metadata is invalid, it returns a `SOURCE_METADATA_INVALID` error.
     /// * When the metadata does not match with the external service, it returns a `SOURCE_METADATA_NOT_MATCH` error.
+    #[tracing::instrument(skip_all)]
     async fn update_source(
         &self,
         ctx: &Context<'_>,
@@ -377,6 +386,7 @@ where
     /// Deletes a medium.
     /// ### Errors
     /// * When the objects in the storage could not be deleted, it returns an `OBJECT_DELETE_FAILED` error.
+    #[tracing::instrument(skip_all)]
     async fn delete_medium(
         &self,
         ctx: &Context<'_>,
@@ -396,6 +406,7 @@ where
     /// Deletes a replica.
     /// ### Errors
     /// * When the object in the storage could not be deleted, it returns an `OBJECT_DELETE_FAILED` error.
+    #[tracing::instrument(skip_all)]
     async fn delete_replica(
         &self,
         ctx: &Context<'_>,
@@ -413,6 +424,7 @@ where
     }
 
     /// Deletes a source.
+    #[tracing::instrument(skip_all)]
     async fn delete_source(
         &self,
         ctx: &Context<'_>,
@@ -428,6 +440,7 @@ where
     /// Creates a tag.
     /// ### Errors
     /// * When the parent tag is not found, it returns a `TAG_NOT_FOUND` error.
+    #[tracing::instrument(skip_all)]
     async fn create_tag(
         &self,
         ctx: &Context<'_>,
@@ -458,6 +471,7 @@ where
     /// Creates a tag type.
     /// ### Errors
     /// * When the slug already exists, it returns a `TAG_TYPE_SLUG_DUPLICATE` error.
+    #[tracing::instrument(skip_all)]
     async fn create_tag_type(
         &self,
         ctx: &Context<'_>,
@@ -480,6 +494,7 @@ where
     }
 
     /// Updates a tag.
+    #[tracing::instrument(skip_all)]
     async fn update_tag(
         &self,
         ctx: &Context<'_>,
@@ -517,6 +532,7 @@ where
     /// Updates a tag type.
     /// ### Errors
     /// * When the slug already exists, it returns a `TAG_TYPE_SLUG_DUPLICATE` error.
+    #[tracing::instrument(skip_all)]
     async fn update_tag_type(
         &self,
         ctx: &Context<'_>,
@@ -545,6 +561,7 @@ where
     /// * When the tag is not found, it returns a `TAG_NOT_FOUND` error.
     /// * When the tag is being attached to its descendant, it returns a `TAG_ATTACHING_TO_DESCENDANT` error.
     /// * When the tag is being attached to itself, it returns a `TAG_ATTACHING_TO_ITSELF` error.
+    #[tracing::instrument(skip_all)]
     async fn attach_tag(
         &self,
         ctx: &Context<'_>,
@@ -564,6 +581,7 @@ where
     /// Detaches a tag from its parent.
     /// ### Errors
     /// * When the tag is not found, it returns a `TAG_NOT_FOUND` error.
+    #[tracing::instrument(skip_all)]
     async fn detach_tag(
         &self,
         ctx: &Context<'_>,
@@ -581,6 +599,7 @@ where
     /// Deletes a tag.
     /// ### Errors
     /// * When the tag has children and `recursive` is disabled, it returns a `TAG_CHILDREN_EXIST` error.
+    #[tracing::instrument(skip_all)]
     async fn delete_tag(
         &self,
         ctx: &Context<'_>,
@@ -596,6 +615,7 @@ where
     }
 
     /// Deletes a tag type.
+    #[tracing::instrument(skip_all)]
     async fn delete_tag_type(
         &self,
         ctx: &Context<'_>,

@@ -266,6 +266,7 @@ impl fmt::Display for PostgresReplicaNotification {
 }
 
 impl ReplicasRepository for PostgresReplicasRepository {
+    #[tracing::instrument(skip_all)]
     async fn create(&self, medium_id: MediumId, thumbnail_image: Option<ThumbnailImage>, original_url: &str, original_image: Option<OriginalImage>, status: ReplicaStatus) -> Result<Replica> {
         let mut tx = self.pool.begin().map_err(Error::other).await?;
 
@@ -393,6 +394,7 @@ impl ReplicasRepository for PostgresReplicasRepository {
         Ok(replica)
     }
 
+    #[tracing::instrument(skip_all)]
     async fn fetch_by_ids<T>(&self, ids: T) -> Result<Vec<Replica>>
     where
         T: Iterator<Item = ReplicaId> + Send,
@@ -436,6 +438,7 @@ impl ReplicasRepository for PostgresReplicasRepository {
         Ok(replicas)
     }
 
+    #[tracing::instrument(skip_all)]
     async fn fetch_by_original_url(&self, original_url: &str) -> Result<Replica> {
         let (sql, values) = Query::select()
             .expr_as(Expr::col((PostgresReplica::Table, PostgresReplica::Id)), PostgresReplicaThumbnail::ReplicaId)
@@ -472,6 +475,7 @@ impl ReplicasRepository for PostgresReplicasRepository {
         Ok(replica)
     }
 
+    #[tracing::instrument(skip_all)]
     async fn fetch_thumbnail_by_id(&self, id: ThumbnailId) -> Result<Vec<u8>> {
         let (sql, values) = Query::select()
             .columns([
@@ -490,6 +494,7 @@ impl ReplicasRepository for PostgresReplicasRepository {
         Ok(thumbnail)
     }
 
+    #[tracing::instrument(skip_all)]
     async fn update_by_id(&self, id: ReplicaId, thumbnail_image: Option<Option<ThumbnailImage>>, original_url: Option<&str>, original_image: Option<Option<OriginalImage>>, status: Option<ReplicaStatus>) -> Result<Replica> {
         let mut tx = self.pool.begin().await.map_err(Error::other)?;
 
@@ -627,6 +632,7 @@ impl ReplicasRepository for PostgresReplicasRepository {
         Ok(replica)
     }
 
+    #[tracing::instrument(skip_all)]
     async fn delete_by_id(&self, id: ReplicaId) -> Result<DeleteResult> {
         let mut tx = self.pool.begin().await.map_err(Error::other)?;
 

@@ -13,10 +13,9 @@ use domain::{
         tags::TagsService,
     },
 };
-use graphql::{mutation::Mutation, query::Query, subscription::Subscription, Schema, SchemaBuilder, GraphQLService};
+use graphql::{mutation::Mutation, query::Query, subscription::Subscription, GraphQLService, Schema, SchemaBuilder, Tracing};
 use icu_collator::{Collator, CollatorOptions};
 use icu_provider::DataLocale;
-use log::LevelFilter;
 use media::{FileMediaURLFactory, NoopMediaURLFactory};
 use normalizer::Normalizer;
 use objects::ObjectsService;
@@ -35,6 +34,7 @@ use thumbnails::{
     ThumbnailURLFactory, ThumbnailsService,
 };
 use tokio_util::task::TaskTracker;
+use tracing::log::LevelFilter;
 
 use crate::env::{self, commands::{Commands, SchemaCommand, SchemaCommands}};
 
@@ -215,6 +215,7 @@ impl Application {
                     .data(media_url_factory)
                     .data(thumbnail_url_factory)
                     .data(task_tracker.clone())
+                    .extension(Tracing)
                     .finish();
 
                 let graphql_service = graphql_service(schema);

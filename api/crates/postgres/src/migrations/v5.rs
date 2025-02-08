@@ -37,6 +37,7 @@ enum PostgresSourceTemporary {
 
 #[async_trait]
 impl Operation<Postgres> for SourceExternalMetadataExtraOperation {
+    #[tracing::instrument(skip_all)]
     async fn up(&self, connection: &mut PgConnection) -> Result<(), Error> {
         let sql = Table::alter()
             .table(PostgresSource::Table)
@@ -111,6 +112,7 @@ impl Operation<Postgres> for SourceExternalMetadataExtraOperation {
         Ok(())
     }
 
+    #[tracing::instrument(skip_all)]
     async fn down(&self, connection: &mut PgConnection) -> Result<(), Error> {
         let sql = Query::update()
             .table(PostgresSource::Table)

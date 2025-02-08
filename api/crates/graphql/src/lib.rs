@@ -12,7 +12,7 @@ use derive_more::Constructor;
 use domain::repository;
 use tower_service::Service;
 
-pub use async_graphql::{Schema, SchemaBuilder};
+pub use async_graphql::{extensions::Tracing, Schema, SchemaBuilder};
 
 pub mod error;
 pub mod mutation;
