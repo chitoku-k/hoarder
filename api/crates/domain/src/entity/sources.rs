@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 use chrono::{DateTime, Utc};
 use derive_more::{Deref, Display, From};
 use serde::{Deserialize, Serialize};
@@ -18,7 +20,7 @@ pub struct Source {
 }
 
 impl Source {
-    pub fn url(&self) -> Option<String> {
+    pub fn url(&self) -> Option<Cow<str>> {
         self.external_metadata.url(self.external_service.base_url.as_deref())
     }
 
