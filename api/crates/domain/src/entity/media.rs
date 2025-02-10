@@ -2,7 +2,6 @@ use chrono::{DateTime, Utc};
 use derive_more::{Deref, Display, From};
 use ordermap::OrderMap;
 use serde::{Deserialize, Serialize};
-use thiserror::Error;
 use uuid::Uuid;
 
 use crate::entity::{
@@ -23,10 +22,4 @@ pub struct Medium {
     pub replicas: Vec<Replica>,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
-}
-
-#[derive(Debug, Error)]
-pub enum MediumError {
-    #[error("medium not found: {0}")]
-    NotFound(MediumId),
 }
