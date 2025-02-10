@@ -4,7 +4,7 @@ use application::service::{media::MediaURLFactoryInterface, thumbnails::Thumbnai
 use async_graphql::{Schema, EmptySubscription, value};
 use chrono::{TimeZone, Utc};
 use domain::entity::{
-    external_services::{ExternalMetadata, ExternalService, ExternalServiceId},
+    external_services::{ExternalMetadata, ExternalService, ExternalServiceId, ExternalServiceKind},
     media::{Medium, MediumId},
     replicas::{Replica, ReplicaId, ReplicaStatus, Size, Thumbnail, ThumbnailId},
     sources::{Source, SourceId},
@@ -90,7 +90,7 @@ async fn succeeds() {
                         external_service: ExternalService {
                             id: ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
                             slug: "pixiv".to_string(),
-                            kind: "pixiv".to_string(),
+                            kind: ExternalServiceKind::Pixiv,
                             name: "pixiv".to_string(),
                             base_url: Some("https://www.pixiv.net".to_string()),
                             url_pattern: Some(r"^https?://www\.pixiv\.net/(?:artworks/|member_illust\.php\?(?:|.+&)illust_id=)(?<id>\d+)(?:[?&#].*)?$".to_string()),
@@ -104,7 +104,7 @@ async fn succeeds() {
                         external_service: ExternalService {
                             id: ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
                             slug: "pixiv".to_string(),
-                            kind: "pixiv".to_string(),
+                            kind: ExternalServiceKind::Pixiv,
                             name: "pixiv".to_string(),
                             base_url: Some("https://www.pixiv.net".to_string()),
                             url_pattern: Some(r"^https?://www\.pixiv\.net/(?:artworks/|member_illust\.php\?(?:|.+&)illust_id=)(?<id>\d+)(?:[?&#].*)?$".to_string()),

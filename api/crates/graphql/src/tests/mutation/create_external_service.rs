@@ -1,7 +1,7 @@
 use std::{borrow::Cow, sync::Arc};
 
 use async_graphql::{Schema, EmptySubscription, value};
-use domain::entity::external_services::{ExternalService, ExternalServiceId};
+use domain::entity::external_services::{ExternalService, ExternalServiceId, ExternalServiceKind};
 use futures::future::ok;
 use indoc::indoc;
 use pretty_assertions::assert_eq;
@@ -26,7 +26,7 @@ async fn succeeds() {
         .times(1)
         .withf(|slug, kind, name, base_url, url_pattern| (slug, kind, name, base_url, url_pattern) == (
             "x",
-            "x",
+            &ExternalServiceKind::X,
             "X",
             &Some("https://x.com"),
             &Some(r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$"),
@@ -35,7 +35,7 @@ async fn succeeds() {
             Box::pin(ok(ExternalService {
                 id: ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                 slug: "x".to_string(),
-                kind: "x".to_string(),
+                kind: ExternalServiceKind::X,
                 name: "X".to_string(),
                 base_url: Some("https://x.com".to_string()),
                 url_pattern: Some(r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$".to_string()),

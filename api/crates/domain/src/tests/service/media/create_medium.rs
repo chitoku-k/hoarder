@@ -7,7 +7,7 @@ use uuid::uuid;
 
 use crate::{
     entity::{
-        external_services::{ExternalMetadata, ExternalService, ExternalServiceId},
+        external_services::{ExternalMetadata, ExternalService, ExternalServiceId, ExternalServiceKind},
         media::{Medium, MediumId},
         sources::{Source, SourceId},
         tag_types::{TagType, TagTypeId},
@@ -63,7 +63,7 @@ async fn succeeds() {
                         external_service: ExternalService {
                             id: ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                             slug: "x".to_string(),
-                            kind: "x".to_string(),
+                            kind: ExternalServiceKind::X,
                             name: "X".to_string(),
                             base_url: Some("https://x.com".to_string()),
                             url_pattern: Some(r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$".to_string()),
@@ -77,7 +77,7 @@ async fn succeeds() {
                         external_service: ExternalService {
                             id: ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
                             slug: "pixiv".to_string(),
-                            kind: "pixiv".to_string(),
+                            kind: ExternalServiceKind::Pixiv,
                             name: "pixiv".to_string(),
                             base_url: Some("https://www.pixiv.net".to_string()),
                             url_pattern: Some(r"^https?://www\.pixiv\.net/(?:artworks/|member_illust\.php\?(?:|.+&)illust_id=)(?<id>\d+)(?:[?&#].*)?$".to_string()),
@@ -171,7 +171,7 @@ async fn succeeds() {
                 external_service: ExternalService {
                     id: ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                     slug: "x".to_string(),
-                    kind: "x".to_string(),
+                    kind: ExternalServiceKind::X,
                     name: "X".to_string(),
                     base_url: Some("https://x.com".to_string()),
                     url_pattern: Some(r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$".to_string()),
@@ -185,7 +185,7 @@ async fn succeeds() {
                 external_service: ExternalService {
                     id: ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
                     slug: "pixiv".to_string(),
-                    kind: "pixiv".to_string(),
+                    kind: ExternalServiceKind::Pixiv,
                     name: "pixiv".to_string(),
                     base_url: Some("https://www.pixiv.net".to_string()),
                     url_pattern: Some(r"^https?://www\.pixiv\.net/(?:artworks/|member_illust\.php\?(?:|.+&)illust_id=)(?<id>\d+)(?:[?&#].*)?$".to_string()),

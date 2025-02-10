@@ -3,7 +3,7 @@ use std::collections::BTreeSet;
 use chrono::{DateTime, TimeZone, Utc};
 use domain::{
     entity::{
-        external_services::{ExternalMetadata, ExternalService, ExternalServiceId},
+        external_services::{ExternalMetadata, ExternalService, ExternalServiceId, ExternalServiceKind},
         media::MediumId,
         replicas::{Replica, ReplicaId, ReplicaStatus, Size, Thumbnail, ThumbnailId},
         sources::{Source, SourceId},
@@ -466,7 +466,7 @@ async fn with_sources_succeeds(ctx: &DatabaseContext) {
             external_service: ExternalService {
                 id: ExternalServiceId::from(uuid!("2018afa2-aed9-46de-af9e-02e5fab64ed7")),
                 slug: "skeb".to_string(),
-                kind: "skeb".to_string(),
+                kind: ExternalServiceKind::Skeb,
                 name: "Skeb".to_string(),
                 base_url: Some("https://skeb.jp".to_string()),
                 url_pattern: Some(r"^https?://skeb\.jp/@(?<creatorId>[^/]+)/works/(?<id>\d+)(?:[?#].*)?$".to_string()),
@@ -480,7 +480,7 @@ async fn with_sources_succeeds(ctx: &DatabaseContext) {
             external_service: ExternalService {
                 id: ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")),
                 slug: "x".to_string(),
-                kind: "x".to_string(),
+                kind: ExternalServiceKind::X,
                 name: "X".to_string(),
                 base_url: Some("https://x.com".to_string()),
                 url_pattern: Some(r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$".to_string()),
@@ -1024,7 +1024,7 @@ async fn reorder_replicas_with_sources_succeeds(ctx: &DatabaseContext) {
             external_service: ExternalService {
                 id: ExternalServiceId::from(uuid!("2018afa2-aed9-46de-af9e-02e5fab64ed7")),
                 slug: "skeb".to_string(),
-                kind: "skeb".to_string(),
+                kind: ExternalServiceKind::Skeb,
                 name: "Skeb".to_string(),
                 base_url: Some("https://skeb.jp".to_string()),
                 url_pattern: Some(r"^https?://skeb\.jp/@(?<creatorId>[^/]+)/works/(?<id>\d+)(?:[?#].*)?$".to_string()),
@@ -1038,7 +1038,7 @@ async fn reorder_replicas_with_sources_succeeds(ctx: &DatabaseContext) {
             external_service: ExternalService {
                 id: ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")),
                 slug: "x".to_string(),
-                kind: "x".to_string(),
+                kind: ExternalServiceKind::X,
                 name: "X".to_string(),
                 base_url: Some("https://x.com".to_string()),
                 url_pattern: Some(r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$".to_string()),

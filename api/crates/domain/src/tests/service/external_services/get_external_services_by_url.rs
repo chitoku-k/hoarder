@@ -4,7 +4,7 @@ use pretty_assertions::{assert_eq, assert_matches};
 use uuid::uuid;
 
 use crate::{
-    entity::external_services::{ExternalMetadata, ExternalService, ExternalServiceId},
+    entity::external_services::{ExternalMetadata, ExternalService, ExternalServiceId, ExternalServiceKind},
     error::{Error, ErrorKind},
     service::external_services::{ExternalServicesService, ExternalServicesServiceInterface},
 };
@@ -22,7 +22,7 @@ async fn succeeds() {
                 ExternalService {
                     id: ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
                     slug: "pixiv".to_string(),
-                    kind: "pixiv".to_string(),
+                    kind: ExternalServiceKind::Pixiv,
                     name: "pixiv".to_string(),
                     base_url: Some("https://www.pixiv.net".to_string()),
                     url_pattern: Some(r"^https?://www\.pixiv\.net/(?:artworks/|member_illust\.php\?(?:|.+&)illust_id=)(?<id>\d+)(?:[?&#].*)?$".to_string()),
@@ -30,7 +30,7 @@ async fn succeeds() {
                 ExternalService {
                     id: ExternalServiceId::from(uuid!("22222222-2222-2222-2222-222222222222")),
                     slug: "skeb".to_string(),
-                    kind: "skeb".to_string(),
+                    kind: ExternalServiceKind::Skeb,
                     name: "Skeb".to_string(),
                     base_url: Some("https://skeb.jp".to_string()),
                     url_pattern: Some(r"^https?://skeb\.jp/@(?<creatorId>[^/]+)/works/(?<id>\d+)(?:[?#].*)?$".to_string()),
@@ -38,7 +38,7 @@ async fn succeeds() {
                 ExternalService {
                     id: ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                     slug: "x".to_string(),
-                    kind: "x".to_string(),
+                    kind: ExternalServiceKind::X,
                     name: "X".to_string(),
                     base_url: Some("https://x.com".to_string()),
                     url_pattern: Some(r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$".to_string()),
@@ -54,7 +54,7 @@ async fn succeeds() {
             ExternalService {
                 id: ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                 slug: "x".to_string(),
-                kind: "x".to_string(),
+                kind: ExternalServiceKind::X,
                 name: "X".to_string(),
                 base_url: Some("https://x.com".to_string()),
                 url_pattern: Some(r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$".to_string()),

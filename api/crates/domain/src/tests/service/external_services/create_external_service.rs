@@ -4,7 +4,7 @@ use pretty_assertions::{assert_eq, assert_matches};
 use uuid::uuid;
 
 use crate::{
-    entity::external_services::{ExternalService, ExternalServiceId},
+    entity::external_services::{ExternalService, ExternalServiceId, ExternalServiceKind},
     error::{Error, ErrorKind},
     service::external_services::{ExternalServicesService, ExternalServicesServiceInterface},
 };
@@ -19,7 +19,7 @@ async fn succeeds() {
         .times(1)
         .withf(|slug, kind, name, base_url, url_pattern| (slug, kind, name, base_url, url_pattern) == (
             "x",
-            "x",
+            &ExternalServiceKind::X,
             "X",
             &Some("https://x.com"),
             &None,
@@ -28,7 +28,7 @@ async fn succeeds() {
             Box::pin(ok(ExternalService {
                 id: ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                 slug: "x".to_string(),
-                kind: "x".to_string(),
+                kind: ExternalServiceKind::X,
                 name: "X".to_string(),
                 base_url: Some("https://x.com".to_string()),
                 url_pattern: None,
@@ -38,7 +38,7 @@ async fn succeeds() {
     let service = ExternalServicesService::new(mock_external_services_repository);
     let actual = service.create_external_service(
         "x",
-        "x",
+        ExternalServiceKind::X,
         "X",
         Some("https://x.com"),
         None,
@@ -47,7 +47,7 @@ async fn succeeds() {
     assert_eq!(actual, ExternalService {
         id: ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
         slug: "x".to_string(),
-        kind: "x".to_string(),
+        kind: ExternalServiceKind::X,
         name: "X".to_string(),
         base_url: Some("https://x.com".to_string()),
         url_pattern: None,
@@ -62,7 +62,7 @@ async fn succeeds_with_url_pattern() {
         .times(1)
         .withf(|slug, kind, name, base_url, url_pattern| (slug, kind, name, base_url, url_pattern) == (
             "x",
-            "x",
+            &ExternalServiceKind::X,
             "X",
             &Some("https://x.com"),
             &Some(r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$"),
@@ -71,7 +71,7 @@ async fn succeeds_with_url_pattern() {
             Box::pin(ok(ExternalService {
                 id: ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                 slug: "x".to_string(),
-                kind: "x".to_string(),
+                kind: ExternalServiceKind::X,
                 name: "X".to_string(),
                 base_url: Some("https://x.com".to_string()),
                 url_pattern: Some(r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$".to_string()),
@@ -81,7 +81,7 @@ async fn succeeds_with_url_pattern() {
     let service = ExternalServicesService::new(mock_external_services_repository);
     let actual = service.create_external_service(
         "x",
-        "x",
+        ExternalServiceKind::X,
         "X",
         Some("https://x.com"),
         Some(r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$"),
@@ -90,7 +90,7 @@ async fn succeeds_with_url_pattern() {
     assert_eq!(actual, ExternalService {
         id: ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
         slug: "x".to_string(),
-        kind: "x".to_string(),
+        kind: ExternalServiceKind::X,
         name: "X".to_string(),
         base_url: Some("https://x.com".to_string()),
         url_pattern: Some(r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$".to_string()),
@@ -105,7 +105,7 @@ async fn fails() {
         .times(1)
         .withf(|slug, kind, name, base_url, url_pattern| (slug, kind, name, base_url, url_pattern) == (
             "x",
-            "x",
+            &ExternalServiceKind::X,
             "X",
             &Some("https://x.com"),
             &Some(r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$"),
@@ -115,7 +115,7 @@ async fn fails() {
     let service = ExternalServicesService::new(mock_external_services_repository);
     let actual = service.create_external_service(
         "x",
-        "x",
+        ExternalServiceKind::X,
         "X",
         Some("https://x.com"),
         Some(r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$"),
@@ -131,7 +131,7 @@ async fn fails_with_url_pattern_invalid() {
     let service = ExternalServicesService::new(mock_external_services_repository);
     let actual = service.create_external_service(
         "x",
-        "x",
+        ExternalServiceKind::X,
         "X",
         Some("https://x.com"),
         Some("("),

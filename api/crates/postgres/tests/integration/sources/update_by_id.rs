@@ -1,7 +1,7 @@
 use chrono::{TimeZone, Utc};
 use domain::{
     entity::{
-        external_services::{ExternalService, ExternalServiceId, ExternalMetadata},
+        external_services::{ExternalMetadata, ExternalService, ExternalServiceId, ExternalServiceKind},
         sources::SourceId,
     },
     error::ErrorKind,
@@ -32,7 +32,7 @@ async fn with_external_metadata_succeeds(ctx: &DatabaseContext) {
         ExternalService {
             id: ExternalServiceId::from(uuid!("4e0c68c7-e5ec-4d60-b9eb-733f47290cd3")),
             slug: "pixiv".to_string(),
-            kind: "pixiv".to_string(),
+            kind: ExternalServiceKind::Pixiv,
             name: "pixiv".to_string(),
             base_url: Some("https://www.pixiv.net".to_string()),
             url_pattern: Some(r"^https?://www\.pixiv\.net/(?:artworks/|member_illust\.php\?(?:|.+&)illust_id=)(?<id>\d+)(?:[?&#].*)?$".to_string()),
@@ -80,7 +80,7 @@ async fn with_external_service_and_external_metadata_succeeds(ctx: &DatabaseCont
         ExternalService {
             id: ExternalServiceId::from(uuid!("2018afa2-aed9-46de-af9e-02e5fab64ed7")),
             slug: "skeb".to_string(),
-            kind: "skeb".to_string(),
+            kind: ExternalServiceKind::Skeb,
             name: "Skeb".to_string(),
             base_url: Some("https://skeb.jp".to_string()),
             url_pattern: Some(r"^https?://skeb\.jp/@(?<creatorId>[^/]+)/works/(?<id>\d+)(?:[?#].*)?$".to_string()),

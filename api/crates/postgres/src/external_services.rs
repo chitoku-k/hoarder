@@ -1,6 +1,6 @@
 use derive_more::{Constructor, From, Into};
 use domain::{
-    entity::external_services::{ExternalService, ExternalServiceId},
+    entity::external_services::{ExternalService, ExternalServiceId, ExternalServiceKind},
     error::{Error, ErrorKind, Result},
     repository::{external_services::ExternalServicesRepository, DeleteResult},
 };
@@ -48,7 +48,7 @@ impl From<PostgresExternalServiceRow> for ExternalService {
         Self {
             id: row.id.into(),
             slug: row.slug,
-            kind: row.kind,
+            kind: row.kind.into(),
             name: row.name,
             base_url: row.base_url,
             url_pattern: row.url_pattern,
@@ -58,7 +58,7 @@ impl From<PostgresExternalServiceRow> for ExternalService {
 
 impl ExternalServicesRepository for PostgresExternalServicesRepository {
     #[tracing::instrument(skip_all)]
-    async fn create(&self, slug: &str, kind: &str, name: &str, base_url: Option<&str>, url_pattern: Option<&str>) -> Result<ExternalService> {
+    async fn create(&self, slug: &str, kind: ExternalServiceKind, name: &str, base_url: Option<&str>, url_pattern: Option<&str>) -> Result<ExternalService> {
         let (sql, values) = Query::insert()
             .into_table(PostgresExternalService::Table)
             .columns([
@@ -70,7 +70,7 @@ impl ExternalServicesRepository for PostgresExternalServicesRepository {
             ])
             .values([
                 slug.into(),
-                kind.into(),
+                kind.to_string().into(),
                 name.into(),
                 base_url.into(),
                 url_pattern.into(),

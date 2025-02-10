@@ -1,7 +1,7 @@
 use std::future::Future;
 
 use domain::{
-    entity::external_services::{ExternalMetadata, ExternalService, ExternalServiceId},
+    entity::external_services::{ExternalMetadata, ExternalService, ExternalServiceId, ExternalServiceKind},
     error::Result,
     iter::CloneableIterator,
     repository::DeleteResult,
@@ -12,7 +12,7 @@ mockall::mock! {
     pub(crate) ExternalServicesServiceInterface {}
 
     impl ExternalServicesServiceInterface for ExternalServicesServiceInterface {
-        fn create_external_service<'a>(&self, slug: &str, kind: &str, name: &str, base_url: Option<&'a str>, url_pattern: Option<&'a str>) -> impl Future<Output = Result<ExternalService>> + Send;
+        fn create_external_service<'a>(&self, slug: &str, kind: ExternalServiceKind, name: &str, base_url: Option<&'a str>, url_pattern: Option<&'a str>) -> impl Future<Output = Result<ExternalService>> + Send;
 
         fn get_external_services(&self) -> impl Future<Output = Result<Vec<ExternalService>>> + Send;
 

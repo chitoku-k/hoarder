@@ -1,7 +1,7 @@
 use chrono::{TimeZone, Utc};
 use domain::{
     entity::{
-        external_services::{ExternalService, ExternalServiceId, ExternalMetadata},
+        external_services::{ExternalMetadata, ExternalService, ExternalServiceId, ExternalServiceKind},
         sources::{Source, SourceId},
     },
     repository::sources::SourcesRepository,
@@ -25,7 +25,7 @@ async fn succeeds(ctx: &DatabaseContext) {
             external_service: ExternalService {
                 id: ExternalServiceId::from(uuid!("4e0c68c7-e5ec-4d60-b9eb-733f47290cd3")),
                 slug: "pixiv".to_string(),
-                kind: "pixiv".to_string(),
+                kind: ExternalServiceKind::Pixiv,
                 name: "pixiv".to_string(),
                 base_url: Some("https://www.pixiv.net".to_string()),
                 url_pattern: Some(r"^https?://www\.pixiv\.net/(?:artworks/|member_illust\.php\?(?:|.+&)illust_id=)(?<id>\d+)(?:[?&#].*)?$".to_string()),
