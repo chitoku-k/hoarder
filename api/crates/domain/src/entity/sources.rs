@@ -1,7 +1,6 @@
 use chrono::{DateTime, Utc};
 use derive_more::{Deref, Display, From};
 use serde::{Deserialize, Serialize};
-use thiserror::Error;
 use uuid::Uuid;
 
 use crate::{entity::external_services::{ExternalMetadata, ExternalService}, error::{ErrorKind, Result}};
@@ -16,12 +15,6 @@ pub struct Source {
     pub external_metadata: ExternalMetadata,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
-}
-
-#[derive(Debug, Error)]
-pub enum SourceError {
-    #[error("source not found: {0}")]
-    NotFound(SourceId),
 }
 
 impl Source {
