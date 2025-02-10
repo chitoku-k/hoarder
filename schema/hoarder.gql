@@ -305,11 +305,11 @@ type Mutation {
 		"""
 		name: String,
 		"""
-		The base URL of the Web service. Some services do not have the base URL. Pass an empty value to remove.
+		The base URL of the Web service. Some services do not have the base URL. Pass an empty value to reset.
 		"""
 		baseUrl: String,
 		"""
-		The regex pattern of a URL in the Web service. Pass an empty value to remove.
+		The regex pattern of a URL in the Web service. Pass an empty value to reset.
 		"""
 		urlPattern: String
 	): ExternalService!
