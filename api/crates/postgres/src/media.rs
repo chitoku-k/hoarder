@@ -147,7 +147,7 @@ impl TryFrom<PostgresMediumSourceExternalServiceRow> for (MediumId, Source) {
                 external_service: ExternalService {
                     id: row.external_service_id.into(),
                     slug: row.external_service_slug,
-                    kind: row.external_service_kind,
+                    kind: row.external_service_kind.into(),
                     name: row.external_service_name,
                     base_url: row.external_service_base_url,
                     url_pattern: row.external_service_url_pattern,

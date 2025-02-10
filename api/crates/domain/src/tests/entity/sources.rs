@@ -2,7 +2,13 @@ use chrono::{TimeZone, Utc};
 use pretty_assertions::assert_matches;
 use uuid::uuid;
 
-use crate::{entity::{external_services::{ExternalMetadata, ExternalService, ExternalServiceId}, sources::{Source, SourceId}}, error::ErrorKind};
+use crate::{
+    entity::{
+        external_services::{ExternalMetadata, ExternalService, ExternalServiceId, ExternalServiceKind},
+        sources::{Source, SourceId},
+    },
+    error::ErrorKind,
+};
 
 #[test]
 fn url_succeeds() {
@@ -11,7 +17,7 @@ fn url_succeeds() {
         external_service: ExternalService {
             id: ExternalServiceId::from(uuid!("22222222-2222-2222-2222-222222222222")),
             slug: "x".to_string(),
-            kind: "x".to_string(),
+            kind: ExternalServiceKind::X,
             name: "X".to_string(),
             base_url: Some("https://x.com".to_string()),
             url_pattern: Some(r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$".to_string()),
@@ -32,7 +38,7 @@ fn validate_succeeds() {
         external_service: ExternalService {
             id: ExternalServiceId::from(uuid!("22222222-2222-2222-2222-222222222222")),
             slug: "x".to_string(),
-            kind: "x".to_string(),
+            kind: ExternalServiceKind::X,
             name: "X".to_string(),
             base_url: Some("https://x.com".to_string()),
             url_pattern: Some(r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$".to_string()),
@@ -53,7 +59,7 @@ fn validate_succeeds_with_custom() {
         external_service: ExternalService {
             id: ExternalServiceId::from(uuid!("22222222-2222-2222-2222-222222222222")),
             slug: "custom".to_string(),
-            kind: "custom".to_string(),
+            kind: ExternalServiceKind::Custom("custom".to_string()),
             name: "Custom".to_string(),
             base_url: None,
             url_pattern: None,
@@ -74,7 +80,7 @@ fn validate_fails() {
         external_service: ExternalService {
             id: ExternalServiceId::from(uuid!("22222222-2222-2222-2222-222222222222")),
             slug: "website".to_string(),
-            kind: "website".to_string(),
+            kind: ExternalServiceKind::Website,
             name: "Website".to_string(),
             base_url: None,
             url_pattern: None,
@@ -85,5 +91,5 @@ fn validate_fails() {
     };
 
     let actual = source.validate().unwrap_err();
-    assert_matches!(actual.kind(), ErrorKind::SourceMetadataNotMatch { kind } if kind == "website");
+    assert_matches!(actual.kind(), ErrorKind::SourceMetadataNotMatch { kind } if kind == &ExternalServiceKind::Website);
 }

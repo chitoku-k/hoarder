@@ -3,7 +3,7 @@ use std::fmt::{self, Write};
 use indenter::indented;
 
 use crate::entity::{
-    external_services::ExternalServiceId,
+    external_services::{ExternalServiceId, ExternalServiceKind},
     media::MediumId,
     objects::Entry,
     replicas::{ReplicaId, ThumbnailId},
@@ -190,7 +190,7 @@ pub enum ErrorKind {
     SourceMetadataInvalid,
 
     #[error("the source metadata does not match with external service")]
-    SourceMetadataNotMatch { kind: String },
+    SourceMetadataNotMatch { kind: ExternalServiceKind },
 
     #[error("the source was not found")]
     SourceNotFound { id: SourceId },

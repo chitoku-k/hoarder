@@ -1,7 +1,7 @@
 use std::future::Future;
 
 use crate::{
-    entity::external_services::{ExternalMetadata, ExternalService, ExternalServiceId},
+    entity::external_services::{ExternalMetadata, ExternalService, ExternalServiceId, ExternalServiceKind},
     error::{Error, ErrorKind, Result},
     iter::CloneableIterator,
     repository::{external_services, DeleteResult},
@@ -12,7 +12,7 @@ use regex::Regex;
 
 pub trait ExternalServicesServiceInterface: Send + Sync + 'static {
     /// Creates an external service.
-    fn create_external_service(&self, slug: &str, kind: &str, name: &str, base_url: Option<&str>, url_pattern: Option<&str>) -> impl Future<Output = Result<ExternalService>> + Send;
+    fn create_external_service(&self, slug: &str, kind: ExternalServiceKind, name: &str, base_url: Option<&str>, url_pattern: Option<&str>) -> impl Future<Output = Result<ExternalService>> + Send;
 
     /// Gets external services.
     fn get_external_services(&self) -> impl Future<Output = Result<Vec<ExternalService>>> + Send;
@@ -52,7 +52,7 @@ where
     ExternalServicesRepository: external_services::ExternalServicesRepository,
 {
     #[tracing::instrument(skip_all)]
-    async fn create_external_service(&self, slug: &str, kind: &str, name: &str, base_url: Option<&str>, url_pattern: Option<&str>) -> Result<ExternalService> {
+    async fn create_external_service(&self, slug: &str, kind: ExternalServiceKind, name: &str, base_url: Option<&str>, url_pattern: Option<&str>) -> Result<ExternalService> {
         if let Some(url_pattern) = url_pattern {
             validate_url_pattern(url_pattern)?;
         }

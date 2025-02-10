@@ -1,7 +1,7 @@
 use std::future::Future;
 
 use crate::{
-    entity::external_services::{ExternalService, ExternalServiceId},
+    entity::external_services::{ExternalService, ExternalServiceId, ExternalServiceKind},
     error::Result,
     iter::CloneableIterator,
     repository::{external_services::ExternalServicesRepository, DeleteResult},
@@ -11,7 +11,7 @@ mockall::mock! {
     pub(crate) ExternalServicesRepository {}
 
     impl ExternalServicesRepository for ExternalServicesRepository {
-        fn create<'a>(&self, slug: &str, kind: &str, name: &str, base_url: Option<&'a str>, url_pattern: Option<&'a str>) -> impl Future<Output = Result<ExternalService>> + Send;
+        fn create<'a>(&self, slug: &str, kind: ExternalServiceKind, name: &str, base_url: Option<&'a str>, url_pattern: Option<&'a str>) -> impl Future<Output = Result<ExternalService>> + Send;
 
         #[mockall::concretize]
         fn fetch_by_ids<T>(&self, ids: T) -> impl Future<Output = Result<Vec<ExternalService>>> + Send

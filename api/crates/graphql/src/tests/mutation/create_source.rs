@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use async_graphql::{value, EmptySubscription, Schema};
 use chrono::{TimeZone, Utc};
-use domain::entity::{external_services::{ExternalMetadata, ExternalService, ExternalServiceId}, sources::{Source, SourceId}};
+use domain::entity::{external_services::{ExternalMetadata, ExternalService, ExternalServiceId, ExternalServiceKind}, sources::{Source, SourceId}};
 use futures::future::ok;
 use indoc::indoc;
 use pretty_assertions::assert_eq;
@@ -39,7 +39,7 @@ async fn succeeds() {
                 external_service: ExternalService {
                     id: ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                     slug: "x".to_string(),
-                    kind: "x".to_string(),
+                    kind: ExternalServiceKind::X,
                     name: "X".to_string(),
                     base_url: Some("https://x.com".to_string()),
                     url_pattern: Some(r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$".to_string()),

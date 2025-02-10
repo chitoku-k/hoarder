@@ -4,7 +4,7 @@ use pretty_assertions::{assert_eq, assert_matches};
 use uuid::uuid;
 
 use crate::{
-    entity::external_services::{ExternalService, ExternalServiceId},
+    entity::external_services::{ExternalService, ExternalServiceId, ExternalServiceKind},
     error::{Error, ErrorKind},
     service::external_services::{ExternalServicesService, ExternalServicesServiceInterface},
 };
@@ -28,7 +28,7 @@ async fn succeeds() {
             Box::pin(ok(ExternalService {
                 id: ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
                 slug: "pixiv".to_string(),
-                kind: "pixiv".to_string(),
+                kind: ExternalServiceKind::Pixiv,
                 name: "PIXIV".to_string(),
                 base_url: Some("https://www.pixiv.net".to_string()),
                 url_pattern: Some(r"^https?://www\.pixiv\.net/(?:artworks/|member_illust\.php\?(?:|.+&)illust_id=)(?<id>\d+)(?:[?&#].*)?$".to_string()),
@@ -47,7 +47,7 @@ async fn succeeds() {
     assert_eq!(actual, ExternalService {
         id: ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
         slug: "pixiv".to_string(),
-        kind: "pixiv".to_string(),
+        kind: ExternalServiceKind::Pixiv,
         name: "PIXIV".to_string(),
         base_url: Some("https://www.pixiv.net".to_string()),
         url_pattern: Some(r"^https?://www\.pixiv\.net/(?:artworks/|member_illust\.php\?(?:|.+&)illust_id=)(?<id>\d+)(?:[?&#].*)?$".to_string()),

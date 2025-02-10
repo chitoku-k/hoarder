@@ -3,7 +3,7 @@ use std::{io::{Read, Seek}, marker::PhantomData, sync::Arc};
 use async_graphql::{Context, Object, SimpleObject};
 use chrono::{DateTime, FixedOffset};
 use domain::{
-    entity::objects::{EntryUrl, EntryUrlPath},
+    entity::{external_services::ExternalServiceKind, objects::{EntryUrl, EntryUrlPath}},
     repository,
     service::{
         external_services::ExternalServicesServiceInterface,
@@ -105,7 +105,7 @@ where
         let kind = normalizer.normalize(kind);
         let name = normalizer.normalize(name);
 
-        let service = external_services_service.create_external_service(&slug, &kind, &name, base_url.as_deref(), url_pattern.as_deref()).await?;
+        let service = external_services_service.create_external_service(&slug, ExternalServiceKind::from(kind), &name, base_url.as_deref(), url_pattern.as_deref()).await?;
         Ok(service.into())
     }
 

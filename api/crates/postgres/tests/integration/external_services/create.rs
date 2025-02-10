@@ -1,4 +1,5 @@
 use domain::{
+    entity::external_services::ExternalServiceKind,
     error::ErrorKind,
     repository::external_services::ExternalServicesRepository,
 };
@@ -15,14 +16,14 @@ async fn succeeds(ctx: &DatabaseContext) {
     let repository = PostgresExternalServicesRepository::new(ctx.pool.clone());
     let actual = repository.create(
         "foobar",
-        "foobar",
+        ExternalServiceKind::Custom("foobar".to_string()),
         "FooBar",
         Some("https://foobar.example.com"),
         Some(r"^https?://foobar\.example\.com/(?<id>\d+)(?:[/?#].*)?$"),
     ).await.unwrap();
 
     assert_eq!(actual.slug, "foobar".to_string());
-    assert_eq!(actual.kind, "foobar".to_string());
+    assert_eq!(actual.kind, ExternalServiceKind::Custom("foobar".to_string()));
     assert_eq!(actual.name, "FooBar".to_string());
     assert_eq!(actual.base_url, Some("https://foobar.example.com".to_string()));
     assert_eq!(actual.url_pattern, Some(r"^https?://foobar\.example\.com/(?<id>\d+)(?:[/?#].*)?$".to_string()));
@@ -46,7 +47,7 @@ async fn fails(ctx: &DatabaseContext) {
     let repository = PostgresExternalServicesRepository::new(ctx.pool.clone());
     let actual = repository.create(
         "x",
-        "x",
+        ExternalServiceKind::X,
         "X",
         Some("https://x.com"),
         Some(r"^https?://foobar\.example\.com/(?<id>\d+)(?:[/?#].*)?$"),

@@ -1,5 +1,5 @@
 use domain::{
-    entity::external_services::ExternalServiceId,
+    entity::external_services::{ExternalServiceId, ExternalServiceKind},
     error::ErrorKind,
     repository::external_services::ExternalServicesRepository,
 };
@@ -56,7 +56,7 @@ async fn with_slug_succeeds(ctx: &DatabaseContext) {
 
     assert_eq!(actual.id, ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")));
     assert_eq!(actual.slug, "twitter".to_string());
-    assert_eq!(actual.kind, "x".to_string());
+    assert_eq!(actual.kind, ExternalServiceKind::X);
     assert_eq!(actual.name, "X".to_string());
     assert_eq!(actual.base_url, Some("https://x.com".to_string()));
     assert_eq!(actual.url_pattern, Some(r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$".to_string()));
@@ -88,7 +88,7 @@ async fn with_name_succeeds(ctx: &DatabaseContext) {
 
     assert_eq!(actual.id, ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")));
     assert_eq!(actual.slug, "x".to_string());
-    assert_eq!(actual.kind, "x".to_string());
+    assert_eq!(actual.kind, ExternalServiceKind::X);
     assert_eq!(actual.name, "Twitter".to_string());
     assert_eq!(actual.base_url, Some("https://x.com".to_string()));
     assert_eq!(actual.url_pattern, Some(r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$".to_string()));
@@ -120,7 +120,7 @@ async fn with_base_url_set_succeeds(ctx: &DatabaseContext) {
 
     assert_eq!(actual.id, ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")));
     assert_eq!(actual.slug, "x".to_string());
-    assert_eq!(actual.kind, "x".to_string());
+    assert_eq!(actual.kind, ExternalServiceKind::X);
     assert_eq!(actual.name, "X".to_string());
     assert_eq!(actual.base_url, Some("https://twitter.com".to_string()));
     assert_eq!(actual.url_pattern, Some(r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$".to_string()));
@@ -152,7 +152,7 @@ async fn with_base_url_remove_succeeds(ctx: &DatabaseContext) {
 
     assert_eq!(actual.id, ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")));
     assert_eq!(actual.slug, "x".to_string());
-    assert_eq!(actual.kind, "x".to_string());
+    assert_eq!(actual.kind, ExternalServiceKind::X);
     assert_eq!(actual.name, "X".to_string());
     assert_eq!(actual.base_url, None);
     assert_eq!(actual.url_pattern, Some(r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$".to_string()));
@@ -184,7 +184,7 @@ async fn with_url_pattern_set_succeeds(ctx: &DatabaseContext) {
 
     assert_eq!(actual.id, ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")));
     assert_eq!(actual.slug, "x".to_string());
-    assert_eq!(actual.kind, "x".to_string());
+    assert_eq!(actual.kind, ExternalServiceKind::X);
     assert_eq!(actual.name, "X".to_string());
     assert_eq!(actual.base_url, Some("https://x.com".to_string()));
     assert_eq!(actual.url_pattern, Some(r"^https?://twitter\.com/([^/]+)/status/(\d+)(?:[/?#].*)?$".to_string()));
@@ -216,7 +216,7 @@ async fn with_url_pattern_remove_succeeds(ctx: &DatabaseContext) {
 
     assert_eq!(actual.id, ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")));
     assert_eq!(actual.slug, "x".to_string());
-    assert_eq!(actual.kind, "x".to_string());
+    assert_eq!(actual.kind, ExternalServiceKind::X);
     assert_eq!(actual.name, "X".to_string());
     assert_eq!(actual.base_url, Some("https://x.com".to_string()));
     assert_eq!(actual.url_pattern, None);
@@ -248,7 +248,7 @@ async fn with_all_succeeds(ctx: &DatabaseContext) {
 
     assert_eq!(actual.id, ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")));
     assert_eq!(actual.slug, "x".to_string());
-    assert_eq!(actual.kind, "x".to_string());
+    assert_eq!(actual.kind, ExternalServiceKind::X);
     assert_eq!(actual.name, "X".to_string());
     assert_eq!(actual.base_url, Some("https://x.com".to_string()));
     assert_eq!(actual.url_pattern, Some(r"^https?://x\.com/([^/]+)/status/(\d+)(?:[/?#].*)?$".to_string()));

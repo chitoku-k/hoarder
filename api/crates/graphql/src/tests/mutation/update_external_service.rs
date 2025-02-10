@@ -1,7 +1,7 @@
 use std::{borrow::Cow, sync::Arc};
 
 use async_graphql::{Schema, EmptySubscription, value};
-use domain::entity::external_services::{ExternalService, ExternalServiceId};
+use domain::entity::external_services::{ExternalService, ExternalServiceId, ExternalServiceKind};
 use futures::future::ok;
 use indoc::indoc;
 use pretty_assertions::assert_eq;
@@ -35,7 +35,7 @@ async fn succeeds() {
             Box::pin(ok(ExternalService {
                 id: ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
                 slug: "pixiv".to_string(),
-                kind: "PIXIV".to_string(),
+                kind: ExternalServiceKind::Pixiv,
                 name: "PIXIV".to_string(),
                 base_url: Some("https://example.com".to_string()),
                 url_pattern: Some(r"^https://example\.com".to_string()),
@@ -85,7 +85,7 @@ async fn succeeds() {
         "updateExternalService": {
             "id": "11111111-1111-1111-1111-111111111111",
             "slug": "pixiv",
-            "kind": "PIXIV",
+            "kind": "pixiv",
             "name": "PIXIV",
             "baseUrl": "https://example.com",
             "urlPattern": r"^https://example\.com",
@@ -110,7 +110,7 @@ async fn succeeds_empty() {
             Box::pin(ok(ExternalService {
                 id: ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
                 slug: "pixiv".to_string(),
-                kind: "pixiv".to_string(),
+                kind: ExternalServiceKind::Pixiv,
                 name: "pixiv".to_string(),
                 base_url: None,
                 url_pattern: None,
@@ -177,7 +177,7 @@ async fn succeeds_none() {
             Box::pin(ok(ExternalService {
                 id: ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
                 slug: "pixiv".to_string(),
-                kind: "pixiv".to_string(),
+                kind: ExternalServiceKind::Pixiv,
                 name: "pixiv".to_string(),
                 base_url: Some("https://www.pixiv.net".to_string()),
                 url_pattern: Some(r"^https?://www\.pixiv\.net/(?:artworks/|member_illust\.php\?(?:|.+&)illust_id=)(?<id>\d+)(?:[?&#].*)?$".to_string()),

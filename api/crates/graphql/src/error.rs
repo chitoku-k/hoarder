@@ -201,7 +201,7 @@ impl From<domain::error::ErrorKind> for ErrorKind {
             },
             SourceMetadataDuplicate { id } => ErrorKind::SourceMetadataDuplicate { id },
             SourceMetadataInvalid => ErrorKind::SourceMetadataInvalid,
-            SourceMetadataNotMatch { kind } => ErrorKind::SourceMetadataNotMatch { kind },
+            SourceMetadataNotMatch { kind } => ErrorKind::SourceMetadataNotMatch { kind: kind.to_string() },
             SourceNotFound { id } => ErrorKind::SourceNotFound { id },
             TagAttachingRoot | TagDeletingRoot | TagDetachingRoot | TagUpdatingRoot => ErrorKind::TagNotFound { id: TagId::default() },
             TagAttachingToDescendant { id } => ErrorKind::TagAttachingToDescendant { id },

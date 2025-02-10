@@ -3,7 +3,7 @@ use std::collections::BTreeSet;
 use chrono::{DateTime, TimeZone, Utc};
 use domain::{
     entity::{
-        external_services::{ExternalMetadata, ExternalService, ExternalServiceId},
+        external_services::{ExternalMetadata, ExternalService, ExternalServiceId, ExternalServiceKind},
         sources::{Source, SourceId},
         tag_types::{TagType, TagTypeId},
         tags::{AliasSet, Tag, TagDepth, TagId},
@@ -95,7 +95,7 @@ async fn with_sources_succeeds(ctx: &DatabaseContext) {
             external_service: ExternalService {
                 id: ExternalServiceId::from(uuid!("4e0c68c7-e5ec-4d60-b9eb-733f47290cd3")),
                 slug: "pixiv".to_string(),
-                kind: "pixiv".to_string(),
+                kind: ExternalServiceKind::Pixiv,
                 name: "pixiv".to_string(),
                 base_url: Some("https://www.pixiv.net".to_string()),
                 url_pattern: Some(r"^https?://www\.pixiv\.net/(?:artworks/|member_illust\.php\?(?:|.+&)illust_id=)(?<id>\d+)(?:[?&#].*)?$".to_string()),
@@ -109,7 +109,7 @@ async fn with_sources_succeeds(ctx: &DatabaseContext) {
             external_service: ExternalService {
                 id: ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")),
                 slug: "x".to_string(),
-                kind: "x".to_string(),
+                kind: ExternalServiceKind::X,
                 name: "X".to_string(),
                 base_url: Some("https://x.com".to_string()),
                 url_pattern: Some(r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$".to_string()),
@@ -386,7 +386,7 @@ async fn with_sources_tags_succeeds(ctx: &DatabaseContext) {
             external_service: ExternalService {
                 id: ExternalServiceId::from(uuid!("4e0c68c7-e5ec-4d60-b9eb-733f47290cd3")),
                 slug: "pixiv".to_string(),
-                kind: "pixiv".to_string(),
+                kind: ExternalServiceKind::Pixiv,
                 name: "pixiv".to_string(),
                 base_url: Some("https://www.pixiv.net".to_string()),
                 url_pattern: Some(r"^https?://www\.pixiv\.net/(?:artworks/|member_illust\.php\?(?:|.+&)illust_id=)(?<id>\d+)(?:[?&#].*)?$".to_string()),
@@ -400,7 +400,7 @@ async fn with_sources_tags_succeeds(ctx: &DatabaseContext) {
             external_service: ExternalService {
                 id: ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")),
                 slug: "x".to_string(),
-                kind: "x".to_string(),
+                kind: ExternalServiceKind::X,
                 name: "X".to_string(),
                 base_url: Some("https://x.com".to_string()),
                 url_pattern: Some(r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$".to_string()),

@@ -3,7 +3,7 @@ use std::sync::Arc;
 use async_graphql::{value, EmptySubscription, Schema};
 use chrono::{TimeZone, Utc};
 use domain::entity::{
-    external_services::{ExternalMetadata, ExternalService, ExternalServiceId},
+    external_services::{ExternalMetadata, ExternalService, ExternalServiceId, ExternalServiceKind},
     sources::{Source, SourceId},
 };
 use futures::future::ok;
@@ -43,7 +43,7 @@ async fn succeeds() {
                 external_service: ExternalService {
                     id: ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")),
                     slug: "pixiv".to_string(),
-                    kind: "pixiv".to_string(),
+                    kind: ExternalServiceKind::Pixiv,
                     name: "pixiv".to_string(),
                     base_url: Some("https://www.pixiv.net".to_string()),
                     url_pattern: Some(r"^https?://www\.pixiv\.net/(?:artworks/|member_illust\.php\?(?:|.+&)illust_id=)(?<id>\d+)(?:[?&#].*)?$".to_string()),

@@ -1,7 +1,7 @@
 use async_graphql::{Schema, EmptyMutation, EmptySubscription, value};
 use chrono::{TimeZone, Utc};
 use domain::entity::{
-    external_services::{self, ExternalServiceId},
+    external_services::{self, ExternalServiceId, ExternalServiceKind},
     sources::{self, SourceId},
 };
 use futures::future::ok;
@@ -40,7 +40,7 @@ async fn succeeds() {
                 external_service: external_services::ExternalService {
                     id: ExternalServiceId::from(uuid!("33333333-3333-3333-3333-333333333333")),
                     slug: "x".to_string(),
-                    kind: "x".to_string(),
+                    kind: ExternalServiceKind::X,
                     name: "X".to_string(),
                     base_url: Some("https://x.com".to_string()),
                     url_pattern: Some(r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$".to_string()),

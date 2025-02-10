@@ -1,7 +1,7 @@
 use std::future::Future;
 
 use crate::{
-    entity::external_services::{ExternalService, ExternalServiceId},
+    entity::external_services::{ExternalService, ExternalServiceId, ExternalServiceKind},
     error::Result,
     iter::CloneableIterator,
     repository::DeleteResult
@@ -9,7 +9,7 @@ use crate::{
 
 pub trait ExternalServicesRepository: Send + Sync + 'static {
     /// Creates an external service.
-    fn create(&self, slug: &str, kind: &str, name: &str, base_url: Option<&str>, url_pattern: Option<&str>) -> impl Future<Output = Result<ExternalService>> + Send;
+    fn create(&self, slug: &str, kind: ExternalServiceKind, name: &str, base_url: Option<&str>, url_pattern: Option<&str>) -> impl Future<Output = Result<ExternalService>> + Send;
 
     /// Fetches the external services by their IDs.
     fn fetch_by_ids<T>(&self, ids: T) -> impl Future<Output = Result<Vec<ExternalService>>> + Send

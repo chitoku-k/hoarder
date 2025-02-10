@@ -1,5 +1,5 @@
 use domain::{
-    entity::external_services::{ExternalService, ExternalServiceId},
+    entity::external_services::{ExternalService, ExternalServiceId, ExternalServiceKind},
     repository::external_services::ExternalServicesRepository,
 };
 use postgres::external_services::PostgresExternalServicesRepository;
@@ -19,7 +19,7 @@ async fn succeeds(ctx: &DatabaseContext) {
         ExternalService {
             id: ExternalServiceId::from(uuid!("4e0c68c7-e5ec-4d60-b9eb-733f47290cd3")),
             slug: "pixiv".to_string(),
-            kind: "pixiv".to_string(),
+            kind: ExternalServiceKind::Pixiv,
             name: "pixiv".to_string(),
             base_url: Some("https://www.pixiv.net".to_string()),
             url_pattern: Some(r"^https?://www\.pixiv\.net/(?:artworks/|member_illust\.php\?(?:|.+&)illust_id=)(?<id>\d+)(?:[?&#].*)?$".to_string()),
@@ -27,7 +27,7 @@ async fn succeeds(ctx: &DatabaseContext) {
         ExternalService {
             id: ExternalServiceId::from(uuid!("2018afa2-aed9-46de-af9e-02e5fab64ed7")),
             slug: "skeb".to_string(),
-            kind: "skeb".to_string(),
+            kind: ExternalServiceKind::Skeb,
             name: "Skeb".to_string(),
             base_url: Some("https://skeb.jp".to_string()),
             url_pattern: Some(r"^https?://skeb\.jp/@(?<creatorId>[^/]+)/works/(?<id>\d+)(?:[?#].*)?$".to_string()),
@@ -35,7 +35,7 @@ async fn succeeds(ctx: &DatabaseContext) {
         ExternalService {
             id: ExternalServiceId::from(uuid!("6c07eb4d-93a1-4efd-afce-e13f8f2c0e14")),
             slug: "whatever".to_string(),
-            kind: "custom".to_string(),
+            kind: ExternalServiceKind::Custom("custom".to_string()),
             name: "Custom".to_string(),
             base_url: None,
             url_pattern: None,
@@ -43,7 +43,7 @@ async fn succeeds(ctx: &DatabaseContext) {
         ExternalService {
             id: ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")),
             slug: "x".to_string(),
-            kind: "x".to_string(),
+            kind: ExternalServiceKind::X,
             name: "X".to_string(),
             base_url: Some("https://x.com".to_string()),
             url_pattern: Some(r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$".to_string()),

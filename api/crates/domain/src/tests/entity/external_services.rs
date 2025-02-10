@@ -1,14 +1,14 @@
 use pretty_assertions::assert_eq;
 use uuid::uuid;
 
-use crate::entity::external_services::{ExternalMetadata, ExternalService, ExternalServiceId};
+use crate::entity::external_services::{ExternalMetadata, ExternalService, ExternalServiceId, ExternalServiceKind};
 
 #[test]
 fn external_service_metadata_by_url_succeeds() {
     let external_service = ExternalService {
         id: ExternalServiceId::from(uuid!("22222222-2222-2222-2222-222222222222")),
         slug: "x".to_string(),
-        kind: "x".to_string(),
+        kind: ExternalServiceKind::X,
         name: "X".to_string(),
         base_url: Some("https://x.com".to_string()),
         url_pattern: Some(r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$".to_string()),
@@ -23,7 +23,7 @@ fn external_service_metadata_by_url_succeeds_invalid_url_pattern() {
     let external_service = ExternalService {
         id: ExternalServiceId::from(uuid!("22222222-2222-2222-2222-222222222222")),
         slug: "x".to_string(),
-        kind: "x".to_string(),
+        kind: ExternalServiceKind::X,
         name: "X".to_string(),
         base_url: Some("https://x.com".to_string()),
         url_pattern: Some(r"(".to_string()),
@@ -37,7 +37,7 @@ fn external_service_metadata_by_url_succeeds_no_captures() {
     let external_service = ExternalService {
         id: ExternalServiceId::from(uuid!("22222222-2222-2222-2222-222222222222")),
         slug: "x".to_string(),
-        kind: "x".to_string(),
+        kind: ExternalServiceKind::X,
         name: "X".to_string(),
         base_url: Some("https://x.com".to_string()),
         url_pattern: Some(r"^https?://(?:twitter\.com|x\.com)/([^/]+)/status/(\d+)(?:[/?#].*)?$".to_string()),
@@ -51,7 +51,7 @@ fn external_service_metadata_by_url_succeeds_no_match() {
     let external_service = ExternalService {
         id: ExternalServiceId::from(uuid!("22222222-2222-2222-2222-222222222222")),
         slug: "x".to_string(),
-        kind: "x".to_string(),
+        kind: ExternalServiceKind::X,
         name: "X".to_string(),
         base_url: Some("https://x.com".to_string()),
         url_pattern: Some(r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$".to_string()),
@@ -62,263 +62,263 @@ fn external_service_metadata_by_url_succeeds_no_match() {
 
 #[test]
 fn external_metadata_from_metadata_succeeds_with_bluesky() {
-    let actual = ExternalMetadata::from_metadata("bluesky", "https://bsky.app/profile/creator_01/post/abcdefghi", Some("abcdefghi"), Some("creator_01")).unwrap();
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::Bluesky, "https://bsky.app/profile/creator_01/post/abcdefghi", Some("abcdefghi"), Some("creator_01")).unwrap();
     assert_eq!(actual, ExternalMetadata::Bluesky { id: "abcdefghi".to_string(), creator_id: "creator_01".to_string() });
 
-    let actual = ExternalMetadata::from_metadata("bluesky", "https://bsky.app/profile/creator_01/post/abcdefghi", Some("abcdefghi"), None);
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::Bluesky, "https://bsky.app/profile/creator_01/post/abcdefghi", Some("abcdefghi"), None);
     assert!(actual.is_none());
 
-    let actual = ExternalMetadata::from_metadata("bluesky", "https://bsky.app/profile/creator_01/post/abcdefghi", None, Some("creator_01"));
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::Bluesky, "https://bsky.app/profile/creator_01/post/abcdefghi", None, Some("creator_01"));
     assert!(actual.is_none());
 }
 
 #[test]
 fn external_metadata_from_metadata_succeeds_with_fantia() {
-    let actual = ExternalMetadata::from_metadata("fantia", "https://fantia.jp/posts/1305295", Some("1305295"), None).unwrap();
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::Fantia, "https://fantia.jp/posts/1305295", Some("1305295"), None).unwrap();
     assert_eq!(actual, ExternalMetadata::Fantia { id: 1305295 });
 
-    let actual = ExternalMetadata::from_metadata("fantia", "https://fantia.jp/posts/1305295", Some("abcdefghi"), None);
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::Fantia, "https://fantia.jp/posts/1305295", Some("abcdefghi"), None);
     assert!(actual.is_none());
 
-    let actual = ExternalMetadata::from_metadata("fantia", "https://fantia.jp/posts/1305295", None, None);
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::Fantia, "https://fantia.jp/posts/1305295", None, None);
     assert!(actual.is_none());
 }
 
 #[test]
 fn external_metadata_from_metadata_succeeds_with_mastodon() {
-    let actual = ExternalMetadata::from_metadata("mastodon", "https://mastodon.social/@creator_01/123456789", Some("123456789"), Some("creator_01")).unwrap();
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::Mastodon, "https://mastodon.social/@creator_01/123456789", Some("123456789"), Some("creator_01")).unwrap();
     assert_eq!(actual, ExternalMetadata::Mastodon { id: 123456789, creator_id: "creator_01".to_string() });
 
-    let actual = ExternalMetadata::from_metadata("mastodon", "https://mastodon.social/@creator_01/123456789", Some("123456789"), None);
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::Mastodon, "https://mastodon.social/@creator_01/123456789", Some("123456789"), None);
     assert!(actual.is_none());
 
-    let actual = ExternalMetadata::from_metadata("mastodon", "https://mastodon.social/@creator_01/123456789", Some("abcdefghi"), None);
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::Mastodon, "https://mastodon.social/@creator_01/123456789", Some("abcdefghi"), None);
     assert!(actual.is_none());
 
-    let actual = ExternalMetadata::from_metadata("mastodon", "https://mastodon.social/@creator_01/123456789", None, Some("creator_01"));
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::Mastodon, "https://mastodon.social/@creator_01/123456789", None, Some("creator_01"));
     assert!(actual.is_none());
 }
 
 #[test]
 fn external_metadata_from_metadata_succeeds_with_misskey() {
-    let actual = ExternalMetadata::from_metadata("misskey", "https://misskey.io/notes/abcdefghi", Some("abcdefghi"), None).unwrap();
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::Misskey, "https://misskey.io/notes/abcdefghi", Some("abcdefghi"), None).unwrap();
     assert_eq!(actual, ExternalMetadata::Misskey { id: "abcdefghi".to_string() });
 
-    let actual = ExternalMetadata::from_metadata("misskey", "https://misskey.io/notes/abcdefghi", None, None);
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::Misskey, "https://misskey.io/notes/abcdefghi", None, None);
     assert!(actual.is_none());
 }
 
 #[test]
 fn external_metadata_from_metadata_succeeds_with_nijie() {
-    let actual = ExternalMetadata::from_metadata("nijie", "https://nijie.info/view.php?id=323512", Some("323512"), None).unwrap();
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::Nijie, "https://nijie.info/view.php?id=323512", Some("323512"), None).unwrap();
     assert_eq!(actual, ExternalMetadata::Nijie { id: 323512 });
 
-    let actual = ExternalMetadata::from_metadata("nijie", "https://nijie.info/view.php?id=323512", Some("abcdefghi"), None);
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::Nijie, "https://nijie.info/view.php?id=323512", Some("abcdefghi"), None);
     assert!(actual.is_none());
 
-    let actual = ExternalMetadata::from_metadata("nijie", "https://nijie.info/view.php?id=323512", None, None);
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::Nijie, "https://nijie.info/view.php?id=323512", None, None);
     assert!(actual.is_none());
 }
 
 #[test]
 fn external_metadata_from_metadata_succeeds_with_pixiv() {
-    let actual = ExternalMetadata::from_metadata("pixiv", "https://www.pixiv.net/artworks/56736941", Some("56736941"), None).unwrap();
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::Pixiv, "https://www.pixiv.net/artworks/56736941", Some("56736941"), None).unwrap();
     assert_eq!(actual, ExternalMetadata::Pixiv { id: 56736941 });
 
-    let actual = ExternalMetadata::from_metadata("pixiv", "https://www.pixiv.net/artworks/56736941", Some("abcdefghi"), None);
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::Pixiv, "https://www.pixiv.net/artworks/56736941", Some("abcdefghi"), None);
     assert!(actual.is_none());
 
-    let actual = ExternalMetadata::from_metadata("pixiv", "https://www.pixiv.net/artworks/56736941", None, None);
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::Pixiv, "https://www.pixiv.net/artworks/56736941", None, None);
     assert!(actual.is_none());
 }
 
 #[test]
 fn external_metadata_from_metadata_succeeds_with_pixiv_fanbox() {
-    let actual = ExternalMetadata::from_metadata("pixiv_fanbox", "https://fairyeye.fanbox.cc/posts/178080", Some("178080"), Some("fairyeye")).unwrap();
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::PixivFanbox, "https://fairyeye.fanbox.cc/posts/178080", Some("178080"), Some("fairyeye")).unwrap();
     assert_eq!(actual, ExternalMetadata::PixivFanbox { id: 178080, creator_id: "fairyeye".to_string() });
 
-    let actual = ExternalMetadata::from_metadata("pixiv_fanbox", "https://fairyeye.fanbox.cc/posts/178080", Some("178080"), None);
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::PixivFanbox, "https://fairyeye.fanbox.cc/posts/178080", Some("178080"), None);
     assert!(actual.is_none());
 
-    let actual = ExternalMetadata::from_metadata("pixiv_fanbox", "https://fairyeye.fanbox.cc/posts/178080", Some("abcdefghi"), None);
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::PixivFanbox, "https://fairyeye.fanbox.cc/posts/178080", Some("abcdefghi"), None);
     assert!(actual.is_none());
 
-    let actual = ExternalMetadata::from_metadata("pixiv_fanbox", "https://fairyeye.fanbox.cc/posts/178080", None, Some("fairyeye"));
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::PixivFanbox, "https://fairyeye.fanbox.cc/posts/178080", None, Some("fairyeye"));
     assert!(actual.is_none());
 }
 
 #[test]
 fn external_metadata_from_metadata_succeeds_with_pleroma() {
-    let actual = ExternalMetadata::from_metadata("pleroma", "https://udongein.xyz/notice/abcdefghi", Some("abcdefghi"), None).unwrap();
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::Pleroma, "https://udongein.xyz/notice/abcdefghi", Some("abcdefghi"), None).unwrap();
     assert_eq!(actual, ExternalMetadata::Pleroma { id: "abcdefghi".to_string() });
 
-    let actual = ExternalMetadata::from_metadata("pleroma", "https://udongein.xyz/notice/abcdefghi", None, None);
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::Pleroma, "https://udongein.xyz/notice/abcdefghi", None, None);
     assert!(actual.is_none());
 }
 
 #[test]
 fn external_metadata_from_metadata_succeeds_with_seiga() {
-    let actual = ExternalMetadata::from_metadata("seiga", "https://seiga.nicovideo.jp/seiga/6452903", Some("6452903"), None).unwrap();
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::Seiga, "https://seiga.nicovideo.jp/seiga/6452903", Some("6452903"), None).unwrap();
     assert_eq!(actual, ExternalMetadata::Seiga { id: 6452903 });
 
-    let actual = ExternalMetadata::from_metadata("seiga", "https://seiga.nicovideo.jp/seiga/6452903", Some("abcdefghi"), None);
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::Seiga, "https://seiga.nicovideo.jp/seiga/6452903", Some("abcdefghi"), None);
     assert!(actual.is_none());
 
-    let actual = ExternalMetadata::from_metadata("seiga", "https://seiga.nicovideo.jp/seiga/6452903", None, None);
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::Seiga, "https://seiga.nicovideo.jp/seiga/6452903", None, None);
     assert!(actual.is_none());
 }
 
 #[test]
 fn external_metadata_from_metadata_succeeds_with_skeb() {
-    let actual = ExternalMetadata::from_metadata("skeb", "https://skeb.jp/@pieleaf_x2/works/18", Some("18"), Some("pieleaf_x2")).unwrap();
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::Skeb, "https://skeb.jp/@pieleaf_x2/works/18", Some("18"), Some("pieleaf_x2")).unwrap();
     assert_eq!(actual, ExternalMetadata::Skeb { id: 18, creator_id: "pieleaf_x2".to_string() });
 
-    let actual = ExternalMetadata::from_metadata("skeb", "https://skeb.jp/@pieleaf_x2/works/18", Some("18"), None);
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::Skeb, "https://skeb.jp/@pieleaf_x2/works/18", Some("18"), None);
     assert!(actual.is_none());
 
-    let actual = ExternalMetadata::from_metadata("skeb", "https://skeb.jp/@pieleaf_x2/works/18", Some("abcdefghi"), Some("pieleaf_x2"));
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::Skeb, "https://skeb.jp/@pieleaf_x2/works/18", Some("abcdefghi"), Some("pieleaf_x2"));
     assert!(actual.is_none());
 
-    let actual = ExternalMetadata::from_metadata("skeb", "https://skeb.jp/@pieleaf_x2/works/18", None, Some("pieleaf_x2"));
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::Skeb, "https://skeb.jp/@pieleaf_x2/works/18", None, Some("pieleaf_x2"));
     assert!(actual.is_none());
 }
 
 #[test]
 fn external_metadata_from_metadata_succeeds_with_threads() {
-    let actual = ExternalMetadata::from_metadata("threads", "https://www.threads.net/@creator_01/post/abcdefghi", Some("abcdefghi"), Some("creator_01")).unwrap();
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::Threads, "https://www.threads.net/@creator_01/post/abcdefghi", Some("abcdefghi"), Some("creator_01")).unwrap();
     assert_eq!(actual, ExternalMetadata::Threads { id: "abcdefghi".to_string(), creator_id: Some("creator_01".to_string()) });
 
-    let actual = ExternalMetadata::from_metadata("threads", "https://www.threads.net/@creator_01/post/abcdefghi", Some("abcdefghi"), None).unwrap();
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::Threads, "https://www.threads.net/@creator_01/post/abcdefghi", Some("abcdefghi"), None).unwrap();
     assert_eq!(actual, ExternalMetadata::Threads { id: "abcdefghi".to_string(), creator_id: None });
 
-    let actual = ExternalMetadata::from_metadata("threads", "https://www.threads.net/@creator_01/post/abcdefghi", None, Some("creator_01"));
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::Threads, "https://www.threads.net/@creator_01/post/abcdefghi", None, Some("creator_01"));
     assert!(actual.is_none());
 }
 
 #[test]
 fn external_metadata_from_metadata_succeeds_with_website() {
-    let actual = ExternalMetadata::from_metadata("website", "https://www.melonbooks.co.jp/corner/detail.php?corner_id=885", None, None).unwrap();
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::Website, "https://www.melonbooks.co.jp/corner/detail.php?corner_id=885", None, None).unwrap();
     assert_eq!(actual, ExternalMetadata::Website { url: "https://www.melonbooks.co.jp/corner/detail.php?corner_id=885".to_string() });
 }
 
 #[test]
 fn external_metadata_from_metadata_succeeds_with_x() {
-    let actual = ExternalMetadata::from_metadata("x", "https://x.com/_namori_/status/727620202049900544", Some("727620202049900544"), Some("_namori_")).unwrap();
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::X, "https://x.com/_namori_/status/727620202049900544", Some("727620202049900544"), Some("_namori_")).unwrap();
     assert_eq!(actual, ExternalMetadata::X { id: 727620202049900544, creator_id: Some("_namori_".to_string()) });
 
-    let actual = ExternalMetadata::from_metadata("x", "https://x.com/_namori_/status/727620202049900544", Some("727620202049900544"), None).unwrap();
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::X, "https://x.com/_namori_/status/727620202049900544", Some("727620202049900544"), None).unwrap();
     assert_eq!(actual, ExternalMetadata::X { id: 727620202049900544, creator_id: None });
 
-    let actual = ExternalMetadata::from_metadata("x", "https://x.com/_namori_/status/727620202049900544", Some("abcdefghi"), None);
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::X, "https://x.com/_namori_/status/727620202049900544", Some("abcdefghi"), None);
     assert!(actual.is_none());
 
-    let actual = ExternalMetadata::from_metadata("x", "https://x.com/_namori_/status/727620202049900544", None, None);
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::X, "https://x.com/_namori_/status/727620202049900544", None, None);
     assert!(actual.is_none());
 }
 
 #[test]
 fn external_metadata_from_metadata_succeeds_with_xfolio() {
-    let actual = ExternalMetadata::from_metadata("xfolio", "https://xfolio.jp/portfolio/creator_01/works/123456789", Some("123456789"), Some("creator_01")).unwrap();
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::Xfolio, "https://xfolio.jp/portfolio/creator_01/works/123456789", Some("123456789"), Some("creator_01")).unwrap();
     assert_eq!(actual, ExternalMetadata::Xfolio { id: 123456789, creator_id: "creator_01".to_string() });
 
-    let actual = ExternalMetadata::from_metadata("xfolio", "https://xfolio.jp/portfolio/creator_01/works/123456789", Some("123456789"), None);
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::Xfolio, "https://xfolio.jp/portfolio/creator_01/works/123456789", Some("123456789"), None);
     assert!(actual.is_none());
 
-    let actual = ExternalMetadata::from_metadata("xfolio", "https://xfolio.jp/portfolio/creator_01/works/123456789", Some("abcdefghi"), None);
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::Xfolio, "https://xfolio.jp/portfolio/creator_01/works/123456789", Some("abcdefghi"), None);
     assert!(actual.is_none());
 
-    let actual = ExternalMetadata::from_metadata("xfolio", "https://xfolio.jp/portfolio/creator_01/works/123456789", None, Some("creator_01"));
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::Xfolio, "https://xfolio.jp/portfolio/creator_01/works/123456789", None, Some("creator_01"));
     assert!(actual.is_none());
 }
 
 #[test]
 fn external_metadata_from_metadata_succeeds_with_custom() {
-    let actual = ExternalMetadata::from_metadata("custom", "https://example.com", None, None);
+    let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::Custom("custom".to_string()), "https://example.com", None, None);
     assert!(actual.is_none());
 }
 
 #[test]
 fn external_metadata_kind_succeeds_with_bluesky() {
     let actual = ExternalMetadata::Bluesky { id: "abcdefghi".to_string(), creator_id: "creator_01".to_string() }.kind().unwrap();
-    assert_eq!(actual, "bluesky");
+    assert_eq!(actual, ExternalServiceKind::Bluesky);
 }
 
 #[test]
 fn external_metadata_kind_succeeds_with_fantia() {
     let actual = ExternalMetadata::Fantia { id: 1305295 }.kind().unwrap();
-    assert_eq!(actual, "fantia");
+    assert_eq!(actual, ExternalServiceKind::Fantia);
 }
 
 #[test]
 fn external_metadata_kind_succeeds_with_mastodon() {
     let actual = ExternalMetadata::Mastodon { id: 123456789, creator_id: "creator_01".to_string() }.kind().unwrap();
-    assert_eq!(actual, "mastodon");
+    assert_eq!(actual, ExternalServiceKind::Mastodon);
 }
 
 #[test]
 fn external_metadata_kind_succeeds_with_misskey() {
     let actual = ExternalMetadata::Misskey { id: "abcdefghi".to_string() }.kind().unwrap();
-    assert_eq!(actual, "misskey");
+    assert_eq!(actual, ExternalServiceKind::Misskey);
 }
 
 #[test]
 fn external_metadata_kind_succeeds_with_nijie() {
     let actual = ExternalMetadata::Nijie { id: 323512 }.kind().unwrap();
-    assert_eq!(actual, "nijie");
+    assert_eq!(actual, ExternalServiceKind::Nijie);
 }
 
 #[test]
 fn external_metadata_kind_succeeds_with_pixiv() {
     let actual = ExternalMetadata::Pixiv { id: 56736941 }.kind().unwrap();
-    assert_eq!(actual, "pixiv");
+    assert_eq!(actual, ExternalServiceKind::Pixiv);
 }
 
 #[test]
 fn external_metadata_kind_succeeds_with_pixiv_fanbox() {
     let actual = ExternalMetadata::PixivFanbox { id: 178080, creator_id: "fairyeye".to_string() }.kind().unwrap();
-    assert_eq!(actual, "pixiv_fanbox");
+    assert_eq!(actual, ExternalServiceKind::PixivFanbox);
 }
 
 #[test]
 fn external_metadata_kind_succeeds_with_pleroma() {
     let actual = ExternalMetadata::Pleroma { id: "abcdefghi".to_string() }.kind().unwrap();
-    assert_eq!(actual, "pleroma");
+    assert_eq!(actual, ExternalServiceKind::Pleroma);
 }
 
 #[test]
 fn external_metadata_kind_succeeds_with_seiga() {
     let actual = ExternalMetadata::Seiga { id: 6452903 }.kind().unwrap();
-    assert_eq!(actual, "seiga");
+    assert_eq!(actual, ExternalServiceKind::Seiga);
 }
 
 #[test]
 fn external_metadata_kind_succeeds_with_skeb() {
     let actual = ExternalMetadata::Skeb { id: 18, creator_id: "pieleaf_x2".to_string() }.kind().unwrap();
-    assert_eq!(actual, "skeb");
+    assert_eq!(actual, ExternalServiceKind::Skeb);
 }
 
 #[test]
 fn external_metadata_kind_succeeds_with_threads() {
     let actual = ExternalMetadata::Threads { id: "abcdefghi".to_string(), creator_id: Some("creator_01".to_string()) }.kind().unwrap();
-    assert_eq!(actual, "threads");
+    assert_eq!(actual, ExternalServiceKind::Threads);
 }
 
 #[test]
 fn external_metadata_kind_succeeds_with_website() {
     let actual = ExternalMetadata::Website { url: "https://www.melonbooks.co.jp/corner/detail.php?corner_id=885".to_string() }.kind().unwrap();
-    assert_eq!(actual, "website");
+    assert_eq!(actual, ExternalServiceKind::Website);
 }
 
 #[test]
 fn external_metadata_kind_succeeds_with_x() {
     let actual = ExternalMetadata::X { id: 727620202049900544, creator_id: Some("_namori_".to_string()) }.kind().unwrap();
-    assert_eq!(actual, "x");
+    assert_eq!(actual, ExternalServiceKind::X);
 }
 
 #[test]
 fn external_metadata_kind_succeeds_with_xfolio() {
     let actual = ExternalMetadata::Xfolio { id: 123456789, creator_id: "creator_01".to_string() }.kind().unwrap();
-    assert_eq!(actual, "xfolio");
+    assert_eq!(actual, ExternalServiceKind::Xfolio);
 }
 
 #[test]
