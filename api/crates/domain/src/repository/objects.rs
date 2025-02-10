@@ -1,41 +1,23 @@
 use std::{future::Future, io::{Read, Seek, Write}};
 
+use strum::EnumIs;
+
 use crate::{
     entity::objects::{Entry, EntryUrl},
     error::Result,
     repository::DeleteResult,
 };
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, EnumIs, Eq, PartialEq)]
 pub enum ObjectOverwriteBehavior {
     Overwrite,
     Fail,
 }
 
-impl ObjectOverwriteBehavior {
-    pub const fn is_allowed(&self) -> bool {
-        matches!(self, ObjectOverwriteBehavior::Overwrite)
-    }
-
-    pub const fn is_denied(&self) -> bool {
-        matches!(self, ObjectOverwriteBehavior::Fail)
-    }
-}
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, EnumIs, Eq, PartialEq)]
 pub enum ObjectStatus {
     Created,
     Existing,
-}
-
-impl ObjectStatus {
-    pub const fn is_created(&self) -> bool {
-        matches!(self, ObjectStatus::Created)
-    }
-
-    pub const fn is_existing(&self) -> bool {
-        matches!(self, ObjectStatus::Existing)
-    }
 }
 
 pub trait ObjectsRepository: Send + Sync + 'static {

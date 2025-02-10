@@ -63,7 +63,7 @@ impl ObjectsRepository for FilesystemObjectsRepository {
             .open(&fullpath)
             .map_ok(|file| (file, ObjectStatus::Created))
             .or_else(|e| async {
-                if e.kind() == io::ErrorKind::AlreadyExists && overwrite.is_allowed() {
+                if e.kind() == io::ErrorKind::AlreadyExists && overwrite.is_overwrite() {
                     let file = File::options()
                         .write(true)
                         .open(&fullpath)
