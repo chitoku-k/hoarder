@@ -123,9 +123,9 @@ where
         slug: Option<String>,
         #[graphql(desc = "The name of the Web service.")]
         name: Option<String>,
-        #[graphql(desc = "The base URL of the Web service. Some services do not have the base URL. Pass an empty value to remove.")]
+        #[graphql(desc = "The base URL of the Web service. Some services do not have the base URL. Pass an empty value to reset.")]
         base_url: Option<String>,
-        #[graphql(desc = "The regex pattern of a URL in the Web service. Pass an empty value to remove.")]
+        #[graphql(desc = "The regex pattern of a URL in the Web service. Pass an empty value to reset.")]
         url_pattern: Option<String>,
     ) -> Result<ExternalService> {
         let external_services_service = ctx.data_unchecked::<ExternalServicesService>();
