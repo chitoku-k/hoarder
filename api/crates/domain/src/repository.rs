@@ -1,3 +1,5 @@
+use strum::EnumIs;
+
 pub mod external_services;
 pub mod media;
 pub mod objects;
@@ -18,18 +20,8 @@ pub enum Direction {
     Backward,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, EnumIs, Eq, PartialEq)]
 pub enum DeleteResult {
     NotFound,
     Deleted(u64),
-}
-
-impl DeleteResult {
-    pub const fn is_not_found(&self) -> bool {
-        matches!(self, DeleteResult::NotFound)
-    }
-
-    pub const fn is_deleted(&self) -> bool {
-        matches!(self, DeleteResult::Deleted(_))
-    }
 }
