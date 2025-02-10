@@ -61,6 +61,192 @@ fn external_service_metadata_by_url_succeeds_no_match() {
 }
 
 #[test]
+fn external_service_kind_default_base_urls_succeeds_with_bluesky() {
+    let actual = ExternalServiceKind::Bluesky.default_base_urls();
+    assert_eq!(actual, ["https://bsky.app"]);
+}
+
+#[test]
+fn external_service_kind_default_base_urls_succeeds_with_fantia() {
+    let actual = ExternalServiceKind::Fantia.default_base_urls();
+    assert_eq!(actual, ["https://fantia.jp"]);
+}
+
+#[test]
+fn external_service_kind_default_base_urls_succeeds_with_nijie() {
+    let actual = ExternalServiceKind::Nijie.default_base_urls();
+    assert_eq!(actual, ["https://nijie.info"]);
+}
+
+#[test]
+fn external_service_kind_default_base_urls_succeeds_with_pixiv() {
+    let actual = ExternalServiceKind::Pixiv.default_base_urls();
+    assert_eq!(actual, ["https://www.pixiv.net"]);
+}
+
+#[test]
+fn external_service_kind_default_base_urls_succeeds_with_seiga() {
+    let actual = ExternalServiceKind::Seiga.default_base_urls();
+    assert_eq!(actual, ["https://seiga.nicovideo.jp"]);
+}
+
+#[test]
+fn external_service_kind_default_base_urls_succeeds_with_skeb() {
+    let actual = ExternalServiceKind::Skeb.default_base_urls();
+    assert_eq!(actual, ["https://skeb.jp"]);
+}
+
+#[test]
+fn external_service_kind_default_base_urls_succeeds_with_threads() {
+    let actual = ExternalServiceKind::Threads.default_base_urls();
+    assert_eq!(actual, ["https://www.threads.net"]);
+}
+
+#[test]
+fn external_service_kind_default_base_urls_succeeds_with_x() {
+    let actual = ExternalServiceKind::X.default_base_urls();
+    assert_eq!(actual, ["https://x.com", "https://twitter.com"]);
+}
+
+#[test]
+fn external_service_kind_default_base_urls_succeeds_with_xfolio() {
+    let actual = ExternalServiceKind::Xfolio.default_base_urls();
+    assert_eq!(actual, ["https://xfolio.jp"]);
+}
+
+#[test]
+fn external_service_kind_default_base_urls_succeeds_with_custom() {
+    let actual = ExternalServiceKind::Custom("custom".to_string()).default_base_urls();
+    assert!(actual.is_empty());
+}
+
+#[test]
+fn external_service_kind_default_url_pattern_succeeds_with_bluesky() {
+    let actual = ExternalServiceKind::Bluesky.default_url_pattern(&["https://bsky.app/"]).unwrap();
+    assert_eq!(actual, r"^https?://bsky\.app/profile/(?<creatorId>[^/?#]+)/post/(?<id>[^/?#]+)(?:[?#].*)?$");
+
+    let actual = ExternalServiceKind::Bluesky.default_url_pattern(&[]);
+    assert!(actual.is_none());
+}
+
+#[test]
+fn external_service_kind_default_url_pattern_succeeds_with_fantia() {
+    let actual = ExternalServiceKind::Fantia.default_url_pattern(&["https://fantia.jp/"]).unwrap();
+    assert_eq!(actual, r"^https?://fantia\.jp/posts/(?<id>\d+)(?:[?#].*)?$");
+
+    let actual = ExternalServiceKind::Fantia.default_url_pattern(&[]);
+    assert!(actual.is_none());
+}
+
+#[test]
+fn external_service_kind_default_url_pattern_succeeds_with_mastodon() {
+    let actual = ExternalServiceKind::Mastodon.default_url_pattern(&["https://mastodon.social/"]).unwrap();
+    assert_eq!(actual, r"^https?://mastodon\.social/@(?<creatorId>[^/?#]+)/(?<id>\d+)(?:[?#].*)?$");
+
+    let actual = ExternalServiceKind::Mastodon.default_url_pattern(&[]);
+    assert!(actual.is_none());
+}
+
+#[test]
+fn external_service_kind_default_url_pattern_succeeds_with_misskey() {
+    let actual = ExternalServiceKind::Misskey.default_url_pattern(&["https://misskey.io/"]).unwrap();
+    assert_eq!(actual, r"^https?://misskey\.io/notes/(?<id>[^/?#]+)(?:[?#].*)?$");
+
+    let actual = ExternalServiceKind::Misskey.default_url_pattern(&[]);
+    assert!(actual.is_none());
+}
+
+#[test]
+fn external_service_kind_default_url_pattern_succeeds_with_nijie() {
+    let actual = ExternalServiceKind::Nijie.default_url_pattern(&["https://nijie.info/"]).unwrap();
+    assert_eq!(actual, r"^https?://nijie\.info/view\.php\?id=(?<id>\d+)(?:[?#].*)?$");
+
+    let actual = ExternalServiceKind::Nijie.default_url_pattern(&[]);
+    assert!(actual.is_none());
+}
+
+#[test]
+fn external_service_kind_default_url_pattern_succeeds_with_pixiv() {
+    let actual = ExternalServiceKind::Pixiv.default_url_pattern(&["https://www.pixiv.net"]).unwrap();
+    assert_eq!(actual, r"^https?://www\.pixiv\.net/(?:artworks/|member_illust\.php\?(?:|.+&)illust_id=)(?<id>\d+)(?:[?&#].*)?$");
+
+    let actual = ExternalServiceKind::Pixiv.default_url_pattern(&[]);
+    assert!(actual.is_none());
+}
+
+#[test]
+fn external_service_kind_default_url_pattern_succeeds_with_pixiv_fanbox() {
+    let actual = ExternalServiceKind::PixivFanbox.default_url_pattern(&[]).unwrap();
+    assert_eq!(actual, r"^https?://(?:(?<creatorId>[^.]+)\.fanbox\.cc|www\.fanbox\.cc/@(?:[^.]+))/posts/(?<id>\d+)(?:[?#].*)?$");
+}
+
+#[test]
+fn external_service_kind_default_url_pattern_succeeds_with_pleroma() {
+    let actual = ExternalServiceKind::Pleroma.default_url_pattern(&["https://udongein.xyz"]).unwrap();
+    assert_eq!(actual, r"^https?://udongein\.xyz/notice/(?<id>[^/?#]+)(?:[?#].*)?$");
+
+    let actual = ExternalServiceKind::Pleroma.default_url_pattern(&[]);
+    assert!(actual.is_none());
+}
+
+#[test]
+fn external_service_kind_default_url_pattern_succeeds_with_seiga() {
+    let actual = ExternalServiceKind::Seiga.default_url_pattern(&["https://seiga.nicovideo.jp"]).unwrap();
+    assert_eq!(actual, r"^https?://seiga\.nicovideo\.jp/seiga/(?<id>\d+)(?:[?#].*)?$");
+
+    let actual = ExternalServiceKind::Seiga.default_url_pattern(&[]);
+    assert!(actual.is_none());
+}
+
+#[test]
+fn external_service_kind_default_url_pattern_succeeds_with_skeb() {
+    let actual = ExternalServiceKind::Skeb.default_url_pattern(&["https://skeb.jp"]).unwrap();
+    assert_eq!(actual, r"^https?://skeb\.jp/@(?<creatorId>[^/]+)/works/(?<id>\d+)(?:[?#].*)?$");
+
+    let actual = ExternalServiceKind::Skeb.default_url_pattern(&[]);
+    assert!(actual.is_none());
+}
+
+#[test]
+fn external_service_kind_default_url_pattern_succeeds_with_threads() {
+    let actual = ExternalServiceKind::Threads.default_url_pattern(&["https://www.threads.net"]).unwrap();
+    assert_eq!(actual, r"^https?://www\.threads\.net/(?<creatorId>[^/]+)/post/(?<id>[^/$#]+)(?:[?#].*)?$");
+
+    let actual = ExternalServiceKind::Threads.default_url_pattern(&[]);
+    assert!(actual.is_none());
+}
+
+#[test]
+fn external_service_kind_default_url_pattern_succeeds_with_x() {
+    let actual = ExternalServiceKind::X.default_url_pattern(&["https://x.com", "https://twitter.com"]).unwrap();
+    assert_eq!(actual, r"^https?://(?:x\.com|twitter\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$");
+
+    let actual = ExternalServiceKind::X.default_url_pattern(&[]);
+    assert!(actual.is_none());
+}
+
+#[test]
+fn external_service_kind_default_url_pattern_succeeds_with_xfolio() {
+    let actual = ExternalServiceKind::Xfolio.default_url_pattern(&["https://xfolio.jp"]).unwrap();
+    assert_eq!(actual, r"^https?://xfolio\.jp/portfolio/(?<creatorId>[^/]+)/works/(?<id>\d+)(?:[?#].*)?$");
+
+    let actual = ExternalServiceKind::Xfolio.default_url_pattern(&[]);
+    assert!(actual.is_none());
+}
+
+#[test]
+fn external_service_kind_default_url_pattern_succeeds_with_website() {
+    let actual = ExternalServiceKind::Website.default_url_pattern(&["https://example.com"]);
+    assert!(actual.is_none());
+}
+
+#[test]
+fn external_service_kind_default_url_pattern_succeeds_with_custom() {
+    let actual = ExternalServiceKind::Custom("custom".to_string()).default_url_pattern(&["https://example.com"]);
+    assert!(actual.is_none());
+}
+
+#[test]
 fn external_metadata_from_metadata_succeeds_with_bluesky() {
     let actual = ExternalMetadata::from_metadata(&ExternalServiceKind::Bluesky, "https://bsky.app/profile/creator_01/post/abcdefghi", Some("abcdefghi"), Some("creator_01")).unwrap();
     assert_eq!(actual, ExternalMetadata::Bluesky { id: "abcdefghi".to_string(), creator_id: "creator_01".to_string() });
@@ -331,22 +517,22 @@ fn external_metadata_kind_succeeds_with_custom() {
 fn external_metadata_url_succeeds_with_bluesky() {
     let external_metadata = ExternalMetadata::Bluesky { id: "abcdefghi".to_string(), creator_id: "creator_01".to_string() };
 
-    let actual = external_metadata.url(Some("https://example.com/")).unwrap();
-    assert_eq!(actual, "https://example.com/profile/creator_01/post/abcdefghi");
-
-    let actual = external_metadata.url(None).unwrap();
+    let actual = external_metadata.url(Some("https://bsky.app/")).unwrap();
     assert_eq!(actual, "https://bsky.app/profile/creator_01/post/abcdefghi");
+
+    let actual = external_metadata.url(None);
+    assert!(actual.is_none());
 }
 
 #[test]
 fn external_metadata_url_succeeds_with_fantia() {
     let external_metadata = ExternalMetadata::Fantia { id: 1305295 };
 
-    let actual = external_metadata.url(Some("https://example.com/")).unwrap();
-    assert_eq!(actual, "https://example.com/posts/1305295");
-
-    let actual = external_metadata.url(None).unwrap();
+    let actual = external_metadata.url(Some("https://fantia.jp/")).unwrap();
     assert_eq!(actual, "https://fantia.jp/posts/1305295");
+
+    let actual = external_metadata.url(None);
+    assert!(actual.is_none());
 }
 
 #[test]
@@ -375,22 +561,22 @@ fn external_metadata_url_succeeds_with_misskey() {
 fn external_metadata_url_succeeds_with_nijie() {
     let external_metadata = ExternalMetadata::Nijie { id: 323512 };
 
-    let actual = external_metadata.url(Some("https://example.com/")).unwrap();
-    assert_eq!(actual, "https://example.com/view.php?id=323512");
-
-    let actual = external_metadata.url(None).unwrap();
+    let actual = external_metadata.url(Some("https://nijie.info/")).unwrap();
     assert_eq!(actual, "https://nijie.info/view.php?id=323512");
+
+    let actual = external_metadata.url(None);
+    assert!(actual.is_none());
 }
 
 #[test]
 fn external_metadata_url_succeeds_with_pixiv() {
     let external_metadata = ExternalMetadata::Pixiv { id: 56736941 };
 
-    let actual = external_metadata.url(Some("https://example.com/")).unwrap();
-    assert_eq!(actual, "https://example.com/artworks/56736941");
-
-    let actual = external_metadata.url(None).unwrap();
+    let actual = external_metadata.url(Some("https://www.pixiv.net/")).unwrap();
     assert_eq!(actual, "https://www.pixiv.net/artworks/56736941");
+
+    let actual = external_metadata.url(None);
+    assert!(actual.is_none());
 }
 
 #[test]
@@ -419,33 +605,33 @@ fn external_metadata_url_succeeds_with_pleroma() {
 fn external_metadata_url_succeeds_with_seiga() {
     let external_metadata = ExternalMetadata::Seiga { id: 6452903 };
 
-    let actual = external_metadata.url(Some("https://example.com/")).unwrap();
-    assert_eq!(actual, "https://example.com/seiga/im6452903");
-
-    let actual = external_metadata.url(None).unwrap();
+    let actual = external_metadata.url(Some("https://seiga.nicovideo.jp/")).unwrap();
     assert_eq!(actual, "https://seiga.nicovideo.jp/seiga/im6452903");
+
+    let actual = external_metadata.url(None);
+    assert!(actual.is_none());
 }
 
 #[test]
 fn external_metadata_url_succeeds_with_skeb() {
     let external_metadata = ExternalMetadata::Skeb { id: 18, creator_id: "pieleaf_x2".to_string() };
 
-    let actual = external_metadata.url(Some("https://example.com/")).unwrap();
-    assert_eq!(actual, "https://example.com/@pieleaf_x2/works/18");
-
-    let actual = external_metadata.url(None).unwrap();
+    let actual = external_metadata.url(Some("https://skeb.jp/")).unwrap();
     assert_eq!(actual, "https://skeb.jp/@pieleaf_x2/works/18");
+
+    let actual = external_metadata.url(None);
+    assert!(actual.is_none());
 }
 
 #[test]
 fn external_metadata_url_succeeds_with_threads() {
     let external_metadata = ExternalMetadata::Threads { id: "abcdefghi".to_string(), creator_id: Some("creator_01".to_string()) };
 
-    let actual = external_metadata.url(Some("https://example.com/")).unwrap();
-    assert_eq!(actual, "https://example.com/@creator_01/post/abcdefghi");
-
-    let actual = external_metadata.url(None).unwrap();
+    let actual = external_metadata.url(Some("https://www.threads.net/")).unwrap();
     assert_eq!(actual, "https://www.threads.net/@creator_01/post/abcdefghi");
+
+    let actual = external_metadata.url(None);
+    assert!(actual.is_none());
 }
 
 #[test]
@@ -463,22 +649,22 @@ fn external_metadata_url_succeeds_with_website() {
 fn external_metadata_url_succeeds_with_x() {
     let external_metadata = ExternalMetadata::X { id: 727620202049900544, creator_id: Some("_namori_".to_string()) };
 
-    let actual = external_metadata.url(Some("https://example.com/")).unwrap();
-    assert_eq!(actual, "https://example.com/_namori_/status/727620202049900544");
-
-    let actual = external_metadata.url(None).unwrap();
+    let actual = external_metadata.url(Some("https://x.com/")).unwrap();
     assert_eq!(actual, "https://x.com/_namori_/status/727620202049900544");
+
+    let actual = external_metadata.url(None);
+    assert!(actual.is_none());
 }
 
 #[test]
 fn external_metadata_url_succeeds_with_xfolio() {
     let external_metadata = ExternalMetadata::Xfolio { id: 123456789, creator_id: "creator_01".to_string() };
 
-    let actual = external_metadata.url(Some("https://example.com/")).unwrap();
-    assert_eq!(actual, "https://example.com/portfolio/creator_01/works/123456789");
-
-    let actual = external_metadata.url(None).unwrap();
+    let actual = external_metadata.url(Some("https://xfolio.jp/")).unwrap();
     assert_eq!(actual, "https://xfolio.jp/portfolio/creator_01/works/123456789");
+
+    let actual = external_metadata.url(None);
+    assert!(actual.is_none());
 }
 
 #[test]

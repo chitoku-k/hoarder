@@ -1,4 +1,4 @@
-use std::future::Future;
+use std::{borrow::Cow, future::Future};
 
 use crate::{
     entity::external_services::{ExternalMetadata, ExternalService, ExternalServiceId, ExternalServiceKind},
@@ -53,11 +53,20 @@ where
 {
     #[tracing::instrument(skip_all)]
     async fn create_external_service(&self, slug: &str, kind: ExternalServiceKind, name: &str, base_url: Option<&str>, url_pattern: Option<&str>) -> Result<ExternalService> {
-        if let Some(url_pattern) = url_pattern {
+        let base_urls = match base_url {
+            Some(base_url) => &[base_url],
+            None => kind.default_base_urls(),
+        };
+        let url_pattern = match url_pattern {
+            Some(url_pattern) => Some(url_pattern.into()),
+            None => kind.default_url_pattern(base_urls).map(Cow::from),
+        };
+
+        if let Some(url_pattern) = &url_pattern {
             validate_url_pattern(url_pattern)?;
         }
 
-        match self.external_services_repository.create(slug, kind, name, base_url, url_pattern).await {
+        match self.external_services_repository.create(slug, kind, name, base_urls.first().cloned(), url_pattern.as_deref()).await {
             Ok(service) => Ok(service),
             Err(e) => {
                 tracing::error!("failed to create an external service\nError: {e:?}");

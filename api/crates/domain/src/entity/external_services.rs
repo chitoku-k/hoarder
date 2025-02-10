@@ -57,6 +57,66 @@ pub enum ExternalServiceKind {
     Custom(String),
 }
 
+impl ExternalServiceKind {
+    pub fn default_base_urls(&self) -> &'static [&'static str] {
+        use ExternalServiceKind::*;
+        match self {
+            Bluesky => &["https://bsky.app"],
+            Fantia => &["https://fantia.jp"],
+            Nijie => &["https://nijie.info"],
+            Pixiv => &["https://www.pixiv.net"],
+            Seiga => &["https://seiga.nicovideo.jp"],
+            Skeb => &["https://skeb.jp"],
+            Threads => &["https://www.threads.net"],
+            X => &["https://x.com", "https://twitter.com"],
+            Xfolio => &["https://xfolio.jp"],
+            _ => &[],
+        }
+    }
+
+    pub fn default_url_pattern(&self, base_urls: &[&str]) -> Option<String> {
+        use ExternalServiceKind::*;
+        let (prefixes, pattern): (&[_], _) = match self {
+            Bluesky => (&[], r"/profile/(?<creatorId>[^/?#]+)/post/(?<id>[^/?#]+)(?:[?#].*)?$"),
+            Fantia => (&[], r"/posts/(?<id>\d+)(?:[?#].*)?$"),
+            Mastodon => (&[], r"/@(?<creatorId>[^/?#]+)/(?<id>\d+)(?:[?#].*)?$"),
+            Misskey => (&[], r"/notes/(?<id>[^/?#]+)(?:[?#].*)?$"),
+            Nijie => (&[], r"/view\.php\?id=(?<id>\d+)(?:[?#].*)?$"),
+            Pixiv => (&[], r"/(?:artworks/|member_illust\.php\?(?:|.+&)illust_id=)(?<id>\d+)(?:[?&#].*)?$"),
+            PixivFanbox => (&[r"(?<creatorId>[^.]+)\.fanbox\.cc", r"www\.fanbox\.cc/@(?:[^.]+)"], r"/posts/(?<id>\d+)(?:[?#].*)?$"),
+            Pleroma => (&[], r"/notice/(?<id>[^/?#]+)(?:[?#].*)?$"),
+            Seiga => (&[], r"/seiga/(?<id>\d+)(?:[?#].*)?$"),
+            Skeb => (&[], r"/@(?<creatorId>[^/]+)/works/(?<id>\d+)(?:[?#].*)?$"),
+            Threads => (&[], r"/(?<creatorId>[^/]+)/post/(?<id>[^/$#]+)(?:[?#].*)?$"),
+            X => (&[], r"/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$"),
+            Xfolio => (&[], r"/portfolio/(?<creatorId>[^/]+)/works/(?<id>\d+)(?:[?#].*)?$"),
+            Website | Custom(..) => return None,
+        };
+
+        let hostnames = prefixes
+            .iter()
+            .map(|&prefix| Cow::from(prefix))
+            .chain(base_urls
+                .iter()
+                .map(|base_url| Cow::from(
+                    regex::escape(base_url
+                        .trim_start_matches("http://")
+                        .trim_start_matches("https://")
+                        .trim_end_matches("/")))))
+            .reduce(|mut acc, s| {
+                acc.to_mut().push('|');
+                acc.to_mut().push_str(&s);
+                acc
+            })?;
+
+        if base_urls.len() == 1 {
+            Some(format!("^https?://{hostnames}{pattern}"))
+        } else {
+            Some(format!("^https?://(?:{hostnames}){pattern}"))
+        }
+    }
+}
+
 impl From<String> for ExternalServiceKind {
     fn from(value: String) -> Self {
         Self::try_from(value.as_str()).unwrap()
@@ -84,16 +144,6 @@ pub enum ExternalMetadata {
 }
 
 impl ExternalMetadata {
-    const BASE_URL_BLUESKY: &str = "https://bsky.app";
-    const BASE_URL_FANTIA: &str = "https://fantia.jp";
-    const BASE_URL_NIJIE: &str = "https://nijie.info";
-    const BASE_URL_PIXIV: &str = "https://www.pixiv.net";
-    const BASE_URL_SEIGA: &str = "https://seiga.nicovideo.jp";
-    const BASE_URL_SKEB: &str = "https://skeb.jp";
-    const BASE_URL_THREADS: &str = "https://www.threads.net";
-    const BASE_URL_X: &str = "https://x.com";
-    const BASE_URL_XFOLIO: &str = "https://xfolio.jp";
-
     pub fn from_metadata(kind: &ExternalServiceKind, url: &str, id: Option<&str>, creator_id: Option<&str>) -> Option<Self> {
         use ExternalServiceKind::*;
         let metadata = match kind {
@@ -130,20 +180,20 @@ impl ExternalMetadata {
 
         use ExternalMetadata::*;
         let url = match self {
-            Bluesky { id, creator_id } => format!("{}/profile/{creator_id}/post/{id}", base_url.unwrap_or(Self::BASE_URL_BLUESKY)).into(),
-            Fantia { id } => format!("{}/posts/{id}", base_url.unwrap_or(Self::BASE_URL_FANTIA)).into(),
+            Bluesky { id, creator_id } => format!("{}/profile/{creator_id}/post/{id}", base_url?).into(),
+            Fantia { id } => format!("{}/posts/{id}", base_url?).into(),
             Mastodon { id, creator_id } => format!("{}/@{creator_id}/{id}", base_url?).into(),
             Misskey { id } => format!("{}/notes/{id}", base_url?).into(),
-            Nijie { id } => format!("{}/view.php?id={id}", base_url.unwrap_or(Self::BASE_URL_NIJIE)).into(),
-            Pixiv { id } => format!("{}/artworks/{id}", base_url.unwrap_or(Self::BASE_URL_PIXIV)).into(),
+            Nijie { id } => format!("{}/view.php?id={id}", base_url?).into(),
+            Pixiv { id } => format!("{}/artworks/{id}", base_url?).into(),
             PixivFanbox { id, creator_id } => format!("https://{creator_id}.fanbox.cc/posts/{id}").into(),
             Pleroma { id } => format!("{}/notice/{id}", base_url?).into(),
-            Seiga { id } => format!("{}/seiga/im{id}", base_url.unwrap_or(Self::BASE_URL_SEIGA)).into(),
-            Skeb { id, creator_id } => format!("{}/@{creator_id}/works/{id}", base_url.unwrap_or(Self::BASE_URL_SKEB)).into(),
-            Threads { id, creator_id } => format!("{}/@{}/post/{id}", base_url.unwrap_or(Self::BASE_URL_THREADS), creator_id.as_deref().unwrap_or_default()).into(),
+            Seiga { id } => format!("{}/seiga/im{id}", base_url?).into(),
+            Skeb { id, creator_id } => format!("{}/@{creator_id}/works/{id}", base_url?).into(),
+            Threads { id, creator_id } => format!("{}/@{}/post/{id}", base_url?, creator_id.as_deref().unwrap_or_default()).into(),
             Website { url } => url.into(),
-            X { id, creator_id } => format!("{}/{}/status/{id}", base_url.unwrap_or(Self::BASE_URL_X), creator_id.as_deref().unwrap_or("i")).into(),
-            Xfolio { id, creator_id } => format!("{}/portfolio/{creator_id}/works/{id}", base_url.unwrap_or(Self::BASE_URL_XFOLIO)).into(),
+            X { id, creator_id } => format!("{}/{}/status/{id}", base_url?, creator_id.as_deref().unwrap_or("i")).into(),
+            Xfolio { id, creator_id } => format!("{}/portfolio/{creator_id}/works/{id}", base_url?).into(),
             Custom(..) => return None,
         };
 
