@@ -1,4 +1,4 @@
-use std::str::FromStr;
+use std::{borrow::Cow, str::FromStr};
 
 use derive_more::{Deref, Display, From};
 use regex::Regex;
@@ -125,25 +125,25 @@ impl ExternalMetadata {
         }
     }
 
-    pub fn url(&self, base_url: Option<&str>) -> Option<String> {
+    pub fn url(&self, base_url: Option<&str>) -> Option<Cow<str>> {
         let base_url = base_url.map(|b| b.trim_end_matches("/"));
 
         use ExternalMetadata::*;
         let url = match self {
-            Bluesky { id, creator_id } => format!("{}/profile/{creator_id}/post/{id}", base_url.unwrap_or(Self::BASE_URL_BLUESKY)),
-            Fantia { id } => format!("{}/posts/{id}", base_url.unwrap_or(Self::BASE_URL_FANTIA)),
-            Mastodon { id, creator_id } => format!("{}/@{creator_id}/{id}", base_url?),
-            Misskey { id } => format!("{}/notes/{id}", base_url?),
-            Nijie { id } => format!("{}/view.php?id={id}", base_url.unwrap_or(Self::BASE_URL_NIJIE)),
-            Pixiv { id } => format!("{}/artworks/{id}", base_url.unwrap_or(Self::BASE_URL_PIXIV)),
-            PixivFanbox { id, creator_id } => format!("https://{creator_id}.fanbox.cc/posts/{id}"),
-            Pleroma { id } => format!("{}/notice/{id}", base_url?),
-            Seiga { id } => format!("{}/seiga/im{id}", base_url.unwrap_or(Self::BASE_URL_SEIGA)),
-            Skeb { id, creator_id } => format!("{}/@{creator_id}/works/{id}", base_url.unwrap_or(Self::BASE_URL_SKEB)),
-            Threads { id, creator_id } => format!("{}/@{}/post/{id}", base_url.unwrap_or(Self::BASE_URL_THREADS), creator_id.as_deref().unwrap_or_default()),
-            Website { url } => url.clone(),
-            X { id, creator_id } => format!("{}/{}/status/{id}", base_url.unwrap_or(Self::BASE_URL_X), creator_id.as_deref().unwrap_or("i")),
-            Xfolio { id, creator_id } => format!("{}/portfolio/{creator_id}/works/{id}", base_url.unwrap_or(Self::BASE_URL_XFOLIO)),
+            Bluesky { id, creator_id } => format!("{}/profile/{creator_id}/post/{id}", base_url.unwrap_or(Self::BASE_URL_BLUESKY)).into(),
+            Fantia { id } => format!("{}/posts/{id}", base_url.unwrap_or(Self::BASE_URL_FANTIA)).into(),
+            Mastodon { id, creator_id } => format!("{}/@{creator_id}/{id}", base_url?).into(),
+            Misskey { id } => format!("{}/notes/{id}", base_url?).into(),
+            Nijie { id } => format!("{}/view.php?id={id}", base_url.unwrap_or(Self::BASE_URL_NIJIE)).into(),
+            Pixiv { id } => format!("{}/artworks/{id}", base_url.unwrap_or(Self::BASE_URL_PIXIV)).into(),
+            PixivFanbox { id, creator_id } => format!("https://{creator_id}.fanbox.cc/posts/{id}").into(),
+            Pleroma { id } => format!("{}/notice/{id}", base_url?).into(),
+            Seiga { id } => format!("{}/seiga/im{id}", base_url.unwrap_or(Self::BASE_URL_SEIGA)).into(),
+            Skeb { id, creator_id } => format!("{}/@{creator_id}/works/{id}", base_url.unwrap_or(Self::BASE_URL_SKEB)).into(),
+            Threads { id, creator_id } => format!("{}/@{}/post/{id}", base_url.unwrap_or(Self::BASE_URL_THREADS), creator_id.as_deref().unwrap_or_default()).into(),
+            Website { url } => url.into(),
+            X { id, creator_id } => format!("{}/{}/status/{id}", base_url.unwrap_or(Self::BASE_URL_X), creator_id.as_deref().unwrap_or("i")).into(),
+            Xfolio { id, creator_id } => format!("{}/portfolio/{creator_id}/works/{id}", base_url.unwrap_or(Self::BASE_URL_XFOLIO)).into(),
             Custom(..) => return None,
         };
 

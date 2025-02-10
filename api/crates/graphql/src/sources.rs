@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 use async_graphql::{InputObject, OneofObject, SimpleObject};
 use chrono::{DateTime, Utc};
 use domain::entity::{external_services, sources};
@@ -166,7 +168,7 @@ impl TryFrom<sources::Source> for Source {
     type Error = Error;
 
     fn try_from(source: sources::Source) -> Result<Self, Self::Error> {
-        let url = source.url();
+        let url = source.url().map(Cow::into_owned);
         let external_metadata = ExternalMetadata::try_from(source.external_metadata)?;
 
         Ok(Self {
