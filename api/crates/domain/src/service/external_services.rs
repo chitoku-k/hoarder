@@ -66,7 +66,10 @@ where
             validate_url_pattern(url_pattern)?;
         }
 
-        match self.external_services_repository.create(slug, kind, name, base_urls.first().cloned(), url_pattern.as_deref()).await {
+        let base_url = base_urls.first().cloned();
+        let url_pattern = url_pattern.as_deref();
+
+        match self.external_services_repository.create(slug, kind, name, base_url, url_pattern).await {
             Ok(service) => Ok(service),
             Err(e) => {
                 tracing::error!("failed to create an external service\nError: {e:?}");
@@ -122,9 +125,26 @@ where
 
     #[tracing::instrument(skip_all)]
     async fn update_external_service_by_id(&self, id: ExternalServiceId, slug: Option<&str>, name: Option<&str>, base_url: Option<Option<&str>>, url_pattern: Option<Option<&str>>) -> Result<ExternalService> {
-        if let Some(Some(url_pattern)) = url_pattern {
-            validate_url_pattern(url_pattern)?;
+        let external_service = match self.external_services_repository.fetch_by_ids([id].into_iter()).await {
+            Ok(external_services) => external_services.into_iter().next().ok_or(ErrorKind::ExternalServiceNotFound { id })?,
+            Err(e) => return Err(e),
+        };
+
+        let new_base_urls = match base_url {
+            Some(Some(base_url)) => &[base_url],
+            Some(None) | None => external_service.kind.default_base_urls(),
+        };
+        let new_url_pattern = match url_pattern {
+            Some(Some(url_pattern)) => Some(url_pattern.into()),
+            Some(None) | None => external_service.kind.default_url_pattern(new_base_urls).map(Cow::from),
+        };
+
+        if let (Some(_), Some(new_url_pattern)) = (url_pattern, &new_url_pattern) {
+            validate_url_pattern(new_url_pattern)?;
         }
+
+        let base_url = base_url.map(|_| new_base_urls.first().cloned());
+        let url_pattern = url_pattern.map(|_| new_url_pattern.as_deref());
 
         match self.external_services_repository.update_by_id(id, slug, name, base_url, url_pattern).await {
             Ok(service) => Ok(service),
