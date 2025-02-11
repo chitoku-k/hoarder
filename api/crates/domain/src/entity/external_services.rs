@@ -109,7 +109,7 @@ impl ExternalServiceKind {
                 acc
             })?;
 
-        if base_urls.len() == 1 {
+        if prefixes.len() + base_urls.len() == 1 {
             Some(format!("^https?://{hostnames}{pattern}"))
         } else {
             Some(format!("^https?://(?:{hostnames}){pattern}"))
