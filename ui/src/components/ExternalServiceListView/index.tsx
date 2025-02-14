@@ -40,25 +40,27 @@ const ExternalServiceListView: FunctionComponent<ExternalServiceListViewProps> =
 
   const closeCreateExternalService = useCallback(() => {
     setCreating(false)
-    setShowingExternalService(column.active)
+    setShowingExternalService(null)
     setEditingExternalService(null)
     setColumn(column => ({
       ...column,
       creating: false,
       editing: null,
+      active: null,
     }))
-  }, [ column ])
+  }, [])
 
   const closeEditExternalService = useCallback(() => {
     setCreating(false)
-    setShowingExternalService(column.active)
+    setShowingExternalService(null)
     setEditingExternalService(null)
     setColumn(column => ({
       ...column,
       creating: false,
       editing: null,
+      active: null,
     }))
-  }, [ column ])
+  }, [])
 
   const closeShowExternalService = useCallback(() => {
     setCreating(false)
