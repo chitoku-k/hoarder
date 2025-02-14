@@ -57,7 +57,7 @@ const ExternalServiceListColumnBodyShow: FunctionComponent<ExternalServiceListCo
         <TextField
           margin="normal"
           label="ベース URL"
-          value={externalService.baseUrl}
+          value={externalService.baseUrl ?? ''}
           onDoubleClick={handleClickEdit}
           slotProps={{
             htmlInput: {
@@ -68,7 +68,7 @@ const ExternalServiceListColumnBodyShow: FunctionComponent<ExternalServiceListCo
         <TextField
           margin="normal"
           label="URL 正規表現"
-          value={externalService.urlPattern}
+          value={externalService.urlPattern ?? ''}
           onDoubleClick={handleClickEdit}
           slotProps={{
             htmlInput: {
