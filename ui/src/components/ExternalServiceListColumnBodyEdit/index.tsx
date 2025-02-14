@@ -158,7 +158,7 @@ const ExternalServiceListColumnBodyEdit: FunctionComponent<ExternalServiceListCo
           margin="normal"
           label="ベース URL"
           disabled={loading}
-          value={externalService.baseUrl}
+          value={externalService.baseUrl ?? ''}
           onChange={handleChangeBaseUrl}
         />
         {isUrlPatternInvalid ? (
@@ -184,7 +184,7 @@ const ExternalServiceListColumnBodyEdit: FunctionComponent<ExternalServiceListCo
               },
             }}
             disabled={loading}
-            value={externalService.urlPattern}
+            value={externalService.urlPattern ?? ''}
             onChange={handleChangeUrlPattern}
           />
         ) : (
@@ -213,7 +213,7 @@ const ExternalServiceListColumnBodyEdit: FunctionComponent<ExternalServiceListCo
               },
             }}
             disabled={loading}
-            value={externalService.urlPattern}
+            value={externalService.urlPattern ?? ''}
             onChange={handleChangeUrlPattern}
             inputRef={urlPatternRef}
           />
