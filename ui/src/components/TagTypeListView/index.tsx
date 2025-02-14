@@ -40,25 +40,27 @@ const TagTypeListView: FunctionComponent<TagTypeListViewProps> = ({
 
   const closeCreateTagType = useCallback(() => {
     setCreating(false)
-    setShowingTagType(column.active)
+    setShowingTagType(null)
     setEditingTagType(null)
     setColumn(column => ({
       ...column,
       creating: false,
       editing: null,
+      active: null,
     }))
-  }, [ column ])
+  }, [])
 
   const closeEditTagType = useCallback(() => {
     setCreating(false)
-    setShowingTagType(column.active)
+    setShowingTagType(null)
     setEditingTagType(null)
     setColumn(column => ({
       ...column,
       creating: false,
       editing: null,
+      active: null,
     }))
-  }, [ column ])
+  }, [])
 
   const closeShowTagType = useCallback(() => {
     setCreating(false)
