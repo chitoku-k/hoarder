@@ -11,7 +11,7 @@ mockall::mock! {
     pub(crate) ExternalServicesRepository {}
 
     impl ExternalServicesRepository for ExternalServicesRepository {
-        fn create<'a>(&self, slug: &str, kind: ExternalServiceKind, name: &str, base_url: Option<&'a str>, url_pattern: Option<&'a str>) -> impl Future<Output = Result<ExternalService>> + Send;
+        fn create<'a, 'b>(&self, slug: &str, kind: ExternalServiceKind, name: &str, base_url: Option<&'a str>, url_pattern: Option<&'b str>) -> impl Future<Output = Result<ExternalService>> + Send;
 
         #[mockall::concretize]
         fn fetch_by_ids<T>(&self, ids: T) -> impl Future<Output = Result<Vec<ExternalService>>> + Send
@@ -20,7 +20,7 @@ mockall::mock! {
 
         fn fetch_all(&self) -> impl Future<Output = Result<Vec<ExternalService>>> + Send;
 
-        fn update_by_id<'a>(&self, id: ExternalServiceId, slug: Option<&'a str>, name: Option<&'a str>, base_url: Option<Option<&'a str>>, url_pattern: Option<Option<&'a str>>) -> impl Future<Output = Result<ExternalService>> + Send;
+        fn update_by_id<'a, 'b, 'c, 'd>(&self, id: ExternalServiceId, slug: Option<&'a str>, name: Option<&'b str>, base_url: Option<Option<&'c str>>, url_pattern: Option<Option<&'d str>>) -> impl Future<Output = Result<ExternalService>> + Send;
 
         fn delete_by_id(&self, id: ExternalServiceId) -> impl Future<Output = Result<DeleteResult>> + Send;
     }

@@ -52,7 +52,7 @@ mockall::mock! {
             T: CloneableIterator<Item = String> + Send,
             U: CloneableIterator<Item = String> + Send;
 
-        fn update_tag_type_by_id<'a>(&self, id: TagTypeId, slug: Option<&'a str>, name: Option<&'a str>, kana: Option<&'a str>) -> impl Future<Output = Result<TagType>> + Send;
+        fn update_tag_type_by_id<'a, 'b, 'c>(&self, id: TagTypeId, slug: Option<&'a str>, name: Option<&'b str>, kana: Option<&'c str>) -> impl Future<Output = Result<TagType>> + Send;
 
         fn attach_tag_by_id(&self, id: TagId, parent_id: TagId, depth: TagDepth) -> impl Future<Output = Result<Tag>> + Send;
 

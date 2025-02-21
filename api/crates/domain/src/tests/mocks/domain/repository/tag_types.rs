@@ -20,7 +20,7 @@ mockall::mock! {
 
         fn fetch_all(&self) -> impl Future<Output = Result<Vec<TagType>>> + Send;
 
-        fn update_by_id<'a>(&self, id: TagTypeId, slug: Option<&'a str>, name: Option<&'a str>, kana: Option<&'a str>) -> impl Future<Output = Result<TagType>> + Send;
+        fn update_by_id<'a, 'b, 'c>(&self, id: TagTypeId, slug: Option<&'a str>, name: Option<&'b str>, kana: Option<&'c str>) -> impl Future<Output = Result<TagType>> + Send;
 
         fn delete_by_id(&self, id: TagTypeId) -> impl Future<Output = Result<DeleteResult>> + Send;
     }
