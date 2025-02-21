@@ -34,7 +34,7 @@ version = "2.3.1"
 version = "1.11.1"
 
 [dependencies.serde]
-version = "1.0.217"
+version = "1.0.218"
 features = ["derive"]
 
 [dependencies.strum]
