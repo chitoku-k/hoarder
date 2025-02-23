@@ -1,5 +1,3 @@
-use std::future::Future;
-
 use derive_more::Constructor;
 
 use crate::{

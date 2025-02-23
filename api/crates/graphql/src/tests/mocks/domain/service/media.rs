@@ -1,4 +1,4 @@
-use std::{future::Future, io::{Seek, Read}};
+use std::io::{Seek, Read};
 
 use chrono::{DateTime, Utc};
 use domain::{

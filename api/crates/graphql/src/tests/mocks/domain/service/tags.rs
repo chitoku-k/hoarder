@@ -1,5 +1,3 @@
-use std::future::Future;
-
 use domain::{
     entity::{
         tag_types::{TagType, TagTypeId},

@@ -1,4 +1,4 @@
-use std::{future::Future, sync::Arc};
+use std::sync::Arc;
 
 use axum::{extract::{Query, State}, response::Response};
 use serde::Deserialize;

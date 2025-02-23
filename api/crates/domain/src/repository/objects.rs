@@ -1,4 +1,4 @@
-use std::{future::Future, io::{Read, Seek, Write}};
+use std::io::{Read, Seek, Write};
 
 use strum::EnumIs;
 

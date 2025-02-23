@@ -1,5 +1,3 @@
-use std::future::Future;
-
 use crate::{
     entity::external_services::{ExternalService, ExternalServiceId, ExternalServiceKind},
     error::Result,

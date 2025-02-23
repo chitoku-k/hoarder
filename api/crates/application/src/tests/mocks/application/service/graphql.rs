@@ -1,5 +1,3 @@
-use std::future::Future;
-
 use axum::{body::Body, http::Request, response::Response};
 
 use crate::service::graphql::{GraphQLEndpoints, GraphQLServiceInterface};

@@ -1,5 +1,3 @@
-use std::future::Future;
-
 use chrono::{DateTime, Utc};
 use futures::Stream;
 

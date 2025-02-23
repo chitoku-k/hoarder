@@ -1,4 +1,4 @@
-use std::{future::Future, io::{Cursor, Read}};
+use std::io::{Cursor, Read};
 
 use crate::{
     entity::objects::{Entry, EntryUrl},

@@ -1,4 +1,4 @@
-use std::{future::Future, io::{BufReader, Read, Seek}};
+use std::io::{BufReader, Read, Seek};
 
 use chrono::{DateTime, Utc};
 use derive_more::Constructor;

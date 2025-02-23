@@ -1,5 +1,3 @@
-use std::future::Future;
-
 use domain::{
     entity::external_services::{ExternalMetadata, ExternalService, ExternalServiceId, ExternalServiceKind},
     error::Result,

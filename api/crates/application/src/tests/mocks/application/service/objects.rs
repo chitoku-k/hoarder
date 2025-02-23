@@ -1,5 +1,3 @@
-use std::future::Future;
-
 use axum::response::Response;
 
 use crate::service::objects::ObjectsServiceInterface;

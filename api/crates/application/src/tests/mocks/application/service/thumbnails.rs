@@ -1,5 +1,3 @@
-use std::future::Future;
-
 use axum::response::Response;
 use domain::entity::replicas::ThumbnailId;
 
