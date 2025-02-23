@@ -1,5 +1,3 @@
-use std::future::Future;
-
 use crate::{
     entity::tag_types::{TagType, TagTypeId},
     error::Result,
