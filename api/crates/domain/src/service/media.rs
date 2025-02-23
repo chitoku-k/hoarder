@@ -226,7 +226,7 @@ where
     MediumImageProcessor: processor::media::MediumImageProcessor + Clone,
     ObjectsRepository: objects::ObjectsRepository + Clone,
 {
-    async fn extract_medium_source<R>(&self, medium_source: MediumSource<R>) -> Result<(EntryUrl, objects::ObjectStatus, impl FnOnce() -> Result<(OriginalImage, ThumbnailImage)> + Send)>
+    async fn extract_medium_source<R>(&self, medium_source: MediumSource<R>) -> Result<(EntryUrl, objects::ObjectStatus, impl FnOnce() -> Result<(OriginalImage, ThumbnailImage)> + Send + use<R, MediaRepository, ObjectsRepository, ReplicasRepository, SourcesRepository, MediumImageProcessor>)>
     where
         for<'a> R: Read + Seek + Send + 'a,
     {
@@ -292,7 +292,7 @@ where
     ReplicasRepository: replicas::ReplicasRepository + Clone,
     ObjectsRepository: objects::ObjectsRepository + Clone,
 {
-    async fn create_replica_source<R>(&self, medium_source: MediumSource<R>) -> Result<(EntryUrl, objects::ObjectStatus, impl FnOnce() -> Result<(OriginalImage, ThumbnailImage)> + Send)>
+    async fn create_replica_source<R>(&self, medium_source: MediumSource<R>) -> Result<(EntryUrl, objects::ObjectStatus, impl FnOnce() -> Result<(OriginalImage, ThumbnailImage)> + Send + use<R, MediaRepository, ObjectsRepository, ReplicasRepository, SourcesRepository, MediumImageProcessor>)>
     where
         for<'a> R: Read + Seek + Send + 'a,
     {
@@ -315,7 +315,7 @@ where
         }
     }
 
-    fn process_replica_by_id<F>(&self, id: ReplicaId, process: F) -> impl Future<Output = Result<Replica>> + Send
+    fn process_replica_by_id<F>(&self, id: ReplicaId, process: F) -> impl Future<Output = Result<Replica>> + Send + use<F, MediaRepository, ObjectsRepository, ReplicasRepository, SourcesRepository, MediumImageProcessor>
     where
         for<'a> F: FnOnce() -> Result<(OriginalImage, ThumbnailImage)> + Send + 'a,
     {
