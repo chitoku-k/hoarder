@@ -28,12 +28,12 @@ where
 {
     /// Subscribes to a medium.
     #[tracing::instrument(skip_all)]
-    async fn medium<'a>(
+    async fn medium(
         &self,
-        ctx: &Context<'a>,
+        ctx: &Context<'_>,
         #[graphql(desc = "The ID of the Medium object.")]
         id: Uuid,
-    ) -> Result<impl Stream<Item = Medium> + 'a> {
+    ) -> Result<impl Stream<Item = Medium>> {
         let media_service = ctx.data_unchecked::<MediaService>();
 
         let node = ctx.look_ahead();
