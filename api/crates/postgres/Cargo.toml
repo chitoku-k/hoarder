@@ -62,7 +62,7 @@ features = ["chrono", "json", "migrate", "postgres", "runtime-tokio", "uuid"]
 default-features = false
 
 [dependencies.sqlx_migrator]
-version = "0.16.2"
+version = "0.17.0"
 features = ["postgres"]
 
 [dependencies.tracing]
