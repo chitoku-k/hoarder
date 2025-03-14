@@ -2872,22 +2872,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-aria/i18n@npm:^3.12.6":
-  version: 3.12.6
-  resolution: "@react-aria/i18n@npm:3.12.6"
+"@react-aria/i18n@npm:^3.12.7":
+  version: 3.12.7
+  resolution: "@react-aria/i18n@npm:3.12.7"
   dependencies:
     "@internationalized/date": "npm:^3.7.0"
     "@internationalized/message": "npm:^3.1.6"
     "@internationalized/number": "npm:^3.6.0"
     "@internationalized/string": "npm:^3.2.5"
     "@react-aria/ssr": "npm:^3.9.7"
-    "@react-aria/utils": "npm:^3.28.0"
+    "@react-aria/utils": "npm:^3.28.1"
     "@react-types/shared": "npm:^3.28.0"
     "@swc/helpers": "npm:^0.5.0"
   peerDependencies:
     react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
     react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
-  checksum: 10/aee3f99abbe93034f1a768e1ca3fd835eb0e9fd82d993e85b2259cdd0886a59b33f4171bc393314807de8b0d73148182a1d752f3ddb5f4db3801e4d3013969c4
+  checksum: 10/5f086ccc0a7e03637a4c74b2178aa8da9d5992eb15bc55f6ae804692bce01eeca89cc05e967eda6f2705ffb61404c5f9f995f9907063fba212685a7145f54d3d
   languageName: node
   linkType: hard
 
@@ -2902,9 +2902,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-aria/utils@npm:^3.28.0":
-  version: 3.28.0
-  resolution: "@react-aria/utils@npm:3.28.0"
+"@react-aria/utils@npm:^3.28.1":
+  version: 3.28.1
+  resolution: "@react-aria/utils@npm:3.28.1"
   dependencies:
     "@react-aria/ssr": "npm:^3.9.7"
     "@react-stately/flags": "npm:^3.1.0"
@@ -2915,7 +2915,7 @@ __metadata:
   peerDependencies:
     react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
     react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
-  checksum: 10/c28412c0e5da8a2453e774cfa3fb2747aae186751713c3e9b1c4a90892619d8279dde0fcc6fdb82e09d5ee709cc8020cb40598b9a71ff1c89a6f55ad98e259b1
+  checksum: 10/80c1ecf6a570a57aec5ef4eaa2a8715b12bcd4d5b2de26934e7e5af5a2c38cdd229cac116624ecd3e7c97271e534111f600d0baf1976675b778799f8711ce9bf
   languageName: node
   linkType: hard
 
@@ -5854,7 +5854,7 @@ __metadata:
     "@mui/system": "npm:^6.4.7"
     "@mui/x-date-pickers": "npm:^7.27.3"
     "@parcel/watcher": "npm:^2.5.1"
-    "@react-aria/i18n": "npm:^3.12.6"
+    "@react-aria/i18n": "npm:^3.12.7"
     "@types/apollo-upload-client": "npm:^18.0.0"
     "@types/deep-equal": "npm:^1.0.4"
     "@types/historykana": "npm:^1.0.4"
