@@ -1,3 +1,5 @@
+use domain::error::{Error, Result};
+
 use sqlx::Postgres;
 use sqlx_migrator::{migrator::{self, Info}, vec_box};
 
@@ -14,7 +16,7 @@ mod v9;
 pub struct Migrator(migrator::Migrator<Postgres>);
 
 impl Migrator {
-    pub fn new() -> Self {
+    pub fn new() -> Result<Self> {
         let mut migrator = migrator::Migrator::new();
         migrator.add_migrations(vec_box![
             v1::V1Migration,
@@ -26,18 +28,12 @@ impl Migrator {
             v7::V7Migration,
             v8::V8Migration,
             v9::V9Migration,
-        ]);
+        ]).map_err(Error::other)?;
 
-        Self(migrator)
+        Ok(Self(migrator))
     }
 
     pub fn into_boxed_migrator(self) -> Box<migrator::Migrator<Postgres>> {
         Box::new(self.0)
-    }
-}
-
-impl Default for Migrator {
-    fn default() -> Self {
-        Self::new()
     }
 }

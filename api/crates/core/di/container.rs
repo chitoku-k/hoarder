@@ -239,7 +239,7 @@ impl Application {
             Commands::Migration(migration) => {
                 let pg_pool = pg_pool().await?;
 
-                let migrator = Migrator::new();
+                let migrator = Migrator::new()?;
                 let mut conn = pg_pool.acquire().await?;
                 migration.command.run(&mut *conn, migrator.into_boxed_migrator()).await?;
             },
