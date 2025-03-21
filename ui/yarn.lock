@@ -29,17 +29,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/client-react-streaming@npm:0.11.10":
-  version: 0.11.10
-  resolution: "@apollo/client-react-streaming@npm:0.11.10"
+"@apollo/client-react-streaming@npm:0.11.11":
+  version: 0.11.11
+  resolution: "@apollo/client-react-streaming@npm:0.11.11"
   dependencies:
+    "@wry/equality": "npm:^0.5.6"
     ts-invariant: "npm:^0.10.3"
   peerDependencies:
     "@apollo/client": ^3.10.4
     graphql: ^16 || >=17.0.0-alpha.2
     react: ^18 || >=19.0.0-rc
     react-dom: ^18 || >=19.0.0-rc
-  checksum: 10/dbae4aac1f562a938c3a9dd4bb45958e975299d5c2e69877679c6aea0c438430c8bbcd909066d45e014c32b46b75b2e0f5b38e8fba05ef4be83680c03818494a
+  checksum: 10/ddd701d14727378d47a8fe6b4a4ddba4ff1c9e07d0898a95c6551365193783b4275a58571f6bacf07e3acd9b8c6cdeb376a9d3ecd419b08d6d7926be59502beb
   languageName: node
   linkType: hard
 
@@ -79,16 +80,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/experimental-nextjs-app-support@npm:^0.11.10":
-  version: 0.11.10
-  resolution: "@apollo/experimental-nextjs-app-support@npm:0.11.10"
+"@apollo/experimental-nextjs-app-support@npm:^0.11.11":
+  version: 0.11.11
+  resolution: "@apollo/experimental-nextjs-app-support@npm:0.11.11"
   dependencies:
-    "@apollo/client-react-streaming": "npm:0.11.10"
+    "@apollo/client-react-streaming": "npm:0.11.11"
   peerDependencies:
     "@apollo/client": ^3.10.4
     next: ^13.4.1 || ^14.0.0 || ^15.0.0-rc.0
     react: ^18 || >=19.0.0-rc
-  checksum: 10/ee45cd68d30f0790e7930f76903d0a4a94d050cfb881f8fb9852d40df0f1e73ede5f0c715233b97e35b5e37f74619f14047c16f1885abfe1b66319825f8bd4c2
+  checksum: 10/a415556060b73d984f3bf0125487e53346983ffb3b8bbeec125aafd3457986ce76a0407c0c4ea4f5b1e7645453ce7cfc54be48628ce0b5c889c9e61e367dc95a
   languageName: node
   linkType: hard
 
@@ -5854,7 +5855,7 @@ __metadata:
   resolution: "hoarder-ui@workspace:."
   dependencies:
     "@apollo/client": "npm:^3.13.4"
-    "@apollo/experimental-nextjs-app-support": "npm:^0.11.10"
+    "@apollo/experimental-nextjs-app-support": "npm:^0.11.11"
     "@date-fns/tz": "npm:^1.2.0"
     "@emotion/cache": "npm:^11.14.0"
     "@emotion/react": "npm:^11.14.0"
