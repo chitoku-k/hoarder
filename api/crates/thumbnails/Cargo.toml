@@ -21,7 +21,7 @@ version = "2.0.1"
 features = ["constructor"]
 
 [dependencies.image]
-version = "0.25.5"
+version = "0.25.6"
 features = ["bmp", "gif", "jpeg", "png", "webp"]
 default-features = false
 
