@@ -8,7 +8,7 @@
 }
 
 .wrapper {
-  &:global(.MuiGrid2-root) {
+  &:global(.MuiGrid-root) {
     flex-wrap: nowrap;
     height: inherit;
     overflow: hidden visible;
@@ -16,7 +16,7 @@
 }
 
 .column {
-  &:global(.MuiGrid2-root) {
+  &:global(.MuiGrid-root) {
     position: relative;
     flex-shrink: 0;
     height: inherit;
@@ -24,7 +24,7 @@
 }
 
 .listColumn {
-  &:global(.MuiGrid2-root) {
+  &:global(.MuiGrid-root) {
     border-right: 1px solid rgba(0, 0, 0, 0.12);
   }
 }

@@ -1,5 +1,5 @@
 .container {
-  &:global(.MuiGrid2-root) {
+  &:global(.MuiGrid-root) {
     margin: 0;
   }
 }
@@ -10,7 +10,7 @@
 }
 
 .metadataContainer {
-  &:global(.MuiGrid2-root) {
+  &:global(.MuiGrid-root) {
     position: sticky;
     top: 64px;
     height: calc(100vh - 64px);

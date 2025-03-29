@@ -9,7 +9,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import type { SvgIconProps } from '@mui/material/SvgIcon'
 import type { TextFieldVariants } from '@mui/material/TextField'
 import TextField from '@mui/material/TextField'
-import debounce from '@mui/material/utils/debounce'
+import { debounce } from '@mui/material/utils'
 
 import type { ExternalMetadataInput } from '@/graphql/types.generated'
 import { useSource, useSourceSkip } from '@/hooks'

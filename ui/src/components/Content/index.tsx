@@ -1,6 +1,6 @@
 import type { FunctionComponent, ReactNode } from 'react'
-import type { Grid2Props } from '@mui/material/Grid2'
-import Grid from '@mui/material/Grid2'
+import type { GridProps } from '@mui/material/Grid'
+import Grid from '@mui/material/Grid'
 import Toolbar from '@mui/material/Toolbar'
 
 import styles from './styles.module.scss'
@@ -17,7 +17,7 @@ const Content: FunctionComponent<ContentProps> = ({
   </Grid>
 )
 
-export interface ContentProps extends Grid2Props {
+export interface ContentProps extends GridProps {
   children: ReactNode
 }
 

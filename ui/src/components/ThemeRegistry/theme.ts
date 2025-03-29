@@ -1,5 +1,5 @@
 import { createTheme } from '@mui/material'
-import cyan from '@mui/material/colors/cyan'
+import { cyan } from '@mui/material/colors'
 import { jaJP } from '@mui/material/locale'
 
 const theme = createTheme(

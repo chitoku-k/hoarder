@@ -3,7 +3,7 @@
 import type { FunctionComponent } from 'react'
 import { useCallback, useState } from 'react'
 import clsx from 'clsx'
-import Grid from '@mui/material/Grid2'
+import Grid from '@mui/material/Grid'
 
 import TagDeleteDialog from '@/components/TagDeleteDialog'
 import type { TagColumn, TagColumnSelectable } from '@/components/TagListColumn'

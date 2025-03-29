@@ -12,7 +12,7 @@ import type { SvgIconProps } from '@mui/material/SvgIcon'
 import type { TextFieldVariants } from '@mui/material/TextField'
 import TextField from '@mui/material/TextField'
 import ArrowOutwardIcon from '@mui/icons-material/ArrowOutward'
-import debounce from '@mui/material/utils/debounce'
+import { debounce } from '@mui/material/utils'
 
 import TagSelectDialog from '@/components/TagSelectDialog'
 import { useMetadataLike, useMetadataLikeSkip, useAllTagTypes } from '@/hooks'
