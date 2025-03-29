@@ -4,7 +4,7 @@ import type { FunctionComponent } from 'react'
 import { useCallback, useState } from 'react'
 import clsx from 'clsx'
 import Card from '@mui/material/Card'
-import Grid from '@mui/material/Grid2'
+import Grid from '@mui/material/Grid'
 
 import type { TagTypeColumn } from '@/components/TagTypeListColumn'
 import TagTypeDeleteDialog from '@/components/TagTypeDeleteDialog'

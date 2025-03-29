@@ -3,8 +3,8 @@
 import type { FunctionComponent, ReactNode } from 'react'
 import { Suspense, useCallback } from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
-import type { Grid2Props } from '@mui/material/Grid2'
-import Grid from '@mui/material/Grid2'
+import type { GridProps } from '@mui/material/Grid'
+import Grid from '@mui/material/Grid'
 
 import TagListColumnError from '@/components/TagListColumnError'
 import TagListColumnLoading from '@/components/TagListColumnLoading'
@@ -53,7 +53,7 @@ const TagListColumn: FunctionComponent<TagListColumnProps> = ({
   )
 }
 
-export interface TagListColumnProps extends Grid2Props {
+export interface TagListColumnProps extends GridProps {
   className?: string
   focus?: boolean
   children?: ReactNode

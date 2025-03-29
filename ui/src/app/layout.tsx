@@ -1,6 +1,6 @@
 import type { FunctionComponent, ReactNode } from 'react'
 import type { Metadata } from 'next'
-import Grid from '@mui/material/Grid2'
+import Grid from '@mui/material/Grid'
 
 import Header from '@/components/Header'
 import ApolloWrapper from '@/components/ApolloWrapper'

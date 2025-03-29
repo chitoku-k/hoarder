@@ -13,7 +13,7 @@ import type { TextFieldVariants } from '@mui/material/TextField'
 import TextField from '@mui/material/TextField'
 import Tooltip from '@mui/material/Tooltip'
 import ArrowOutwardIcon from '@mui/icons-material/ArrowOutward'
-import debounce from '@mui/material/utils/debounce'
+import { debounce } from '@mui/material/utils'
 
 import TagSelectDialog from '@/components/TagSelectDialog'
 import { useTagsLike, useTagsLikeSkip } from '@/hooks'
