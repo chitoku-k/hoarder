@@ -52,7 +52,7 @@
     "react-error-boundary": "^5.0.0",
     "react-virtuoso": "^4.12.5",
     "sass": "^1.86.0",
-    "sharp": "^0.33.5",
+    "sharp": "^0.34.0",
     "strict-uri-encode": "^2.0.0",
     "typescript": "^5.8.2",
     "uuid": "^11.1.0"
