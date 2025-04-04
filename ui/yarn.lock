@@ -5897,7 +5897,7 @@ __metadata:
     graphql: "npm:^16.10.0"
     graphql-ws: "npm:^6.0.4"
     historykana: "npm:^1.0.6"
-    image-size: "npm:^2.0.1"
+    image-size: "npm:^2.0.2"
     next: "npm:^15.2.4"
     react: "npm:^19.0.0"
     react-dom: "npm:^19.0.0"
@@ -6020,12 +6020,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"image-size@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "image-size@npm:2.0.1"
+"image-size@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "image-size@npm:2.0.2"
   bin:
     image-size: bin/image-size.js
-  checksum: 10/8b9d1f3cfebfd1887dcd7761901fa4cb116b52ea036f25dcfc7b2ab426693d9029cc216a59498d41db81511a5cb283bd4d229da2c64980e88056975b0d7d6eef
+  checksum: 10/d15203279fe7ada01252d8c56ba97516385d6d5ac2cbf3d734580fc88db4f5272b9b3f7f378ad63abc7d06b5500c43b90d9f84626e2bda1cab403c16eb469592
   languageName: node
   linkType: hard
 
