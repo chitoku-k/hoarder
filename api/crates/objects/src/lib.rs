@@ -53,7 +53,7 @@ where
                     .unwrap()
                     .into_response()
             },
-            Err(e) if matches!(e.kind(), ErrorKind::ObjectPathInvalid { .. }) => {
+            Err(e) if matches!(e.kind(), ErrorKind::ObjectPathInvalid) => {
                 HttpResponse::builder()
                     .status(StatusCode::BAD_REQUEST)
                     .header(CONTENT_TYPE, "text/plain; charset=utf-8")
