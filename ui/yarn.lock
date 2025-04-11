@@ -58,7 +58,43 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/client@npm:^3.13.5, @apollo/client@npm:^3.8.0":
+"@apollo/client@npm:^3.13.7":
+  version: 3.13.7
+  resolution: "@apollo/client@npm:3.13.7"
+  dependencies:
+    "@graphql-typed-document-node/core": "npm:^3.1.1"
+    "@wry/caches": "npm:^1.0.0"
+    "@wry/equality": "npm:^0.5.6"
+    "@wry/trie": "npm:^0.5.0"
+    graphql-tag: "npm:^2.12.6"
+    hoist-non-react-statics: "npm:^3.3.2"
+    optimism: "npm:^0.18.0"
+    prop-types: "npm:^15.7.2"
+    rehackt: "npm:^0.1.0"
+    symbol-observable: "npm:^4.0.0"
+    ts-invariant: "npm:^0.10.3"
+    tslib: "npm:^2.3.0"
+    zen-observable-ts: "npm:^1.2.5"
+  peerDependencies:
+    graphql: ^15.0.0 || ^16.0.0
+    graphql-ws: ^5.5.5 || ^6.0.3
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || >=19.0.0-rc
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || >=19.0.0-rc
+    subscriptions-transport-ws: ^0.9.0 || ^0.11.0
+  peerDependenciesMeta:
+    graphql-ws:
+      optional: true
+    react:
+      optional: true
+    react-dom:
+      optional: true
+    subscriptions-transport-ws:
+      optional: true
+  checksum: 10/55795661c920c604c9836f47af0f73585b3d29b771b2e613ea1ee8e59dd0b56ac5a41997ffd668a599e9c4aa218ff4ba87cfe0c251723d58d674964f1dde2945
+  languageName: node
+  linkType: hard
+
+"@apollo/client@npm:^3.8.0":
   version: 3.13.5
   resolution: "@apollo/client@npm:3.13.5"
   dependencies:
@@ -6063,7 +6099,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "hoarder-ui@workspace:."
   dependencies:
-    "@apollo/client": "npm:^3.13.5"
+    "@apollo/client": "npm:^3.13.7"
     "@apollo/experimental-nextjs-app-support": "npm:^0.12.0"
     "@date-fns/tz": "npm:^1.2.0"
     "@emotion/cache": "npm:^11.14.0"
