@@ -25,7 +25,7 @@ default-features = false
 version = "0.3.3"
 
 [dependencies.ordermap]
-version = "0.5.6"
+version = "0.5.7"
 
 [dependencies.percent-encoding]
 version = "2.3.1"
