@@ -33,7 +33,7 @@ features = ["sync"]
 version = "0.2.1"
 
 [dependencies.tokio]
-version = "1.44.1"
+version = "1.44.2"
 features = ["fs", "rt-multi-thread"]
 
 [dependencies.tokio-stream]
