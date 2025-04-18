@@ -98,7 +98,7 @@ workspace = true
 version = "0.6.18"
 
 [dependencies.anyhow]
-version = "1.0.97"
+version = "1.0.98"
 
 [dependencies.clap]
 version = "4.5.35"
