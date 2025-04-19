@@ -3,7 +3,7 @@
 import type { FunctionComponent, ReactNode } from 'react'
 import { I18nProvider } from '@react-aria/i18n'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3'
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { ja } from 'date-fns/locale/ja'
 
 const LocalizationWrapper: FunctionComponent<LocalizationWrapperProps> = ({
