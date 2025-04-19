@@ -721,21 +721,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.0.0, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.18.3, @babel/runtime@npm:^7.25.7, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.8.7":
+"@babel/runtime@npm:^7.0.0, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.18.3, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.8.7":
   version: 7.26.0
   resolution: "@babel/runtime@npm:7.26.0"
   dependencies:
     regenerator-runtime: "npm:^0.14.0"
   checksum: 10/9f4ea1c1d566c497c052d505587554e782e021e6ccd302c2ad7ae8291c8e16e3f19d4a7726fb64469e057779ea2081c28b7dbefec6d813a22f08a35712c0f699
-  languageName: node
-  linkType: hard
-
-"@babel/runtime@npm:^7.26.10":
-  version: 7.26.10
-  resolution: "@babel/runtime@npm:7.26.10"
-  dependencies:
-    regenerator-runtime: "npm:^0.14.0"
-  checksum: 10/9d7ff8e96abe3791047c1138789c742411e3ef19c4d7ca18ce916f83cec92c06ec5dc64401759f6dd1e377cf8a01bbd2c62e033eb7550f435cf6579768d0d4a5
   languageName: node
   linkType: hard
 
@@ -2387,20 +2378,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/types@npm:^7.3.1":
-  version: 7.3.1
-  resolution: "@mui/types@npm:7.3.1"
-  dependencies:
-    "@babel/runtime": "npm:^7.26.10"
-  peerDependencies:
-    "@types/react": ^17.0.0 || ^18.0.0 || ^19.0.0
-  peerDependenciesMeta:
-    "@types/react":
-      optional: true
-  checksum: 10/fdb9c9e856866e545856bc7d331f0df3fdaeb5f337ecde001edfdba14f265d317be711a9def9a66ec136c5f9f587d088582482afbb38d48a17bc343366389486
-  languageName: node
-  linkType: hard
-
 "@mui/types@npm:^7.4.1":
   version: 7.4.1
   resolution: "@mui/types@npm:7.4.1"
@@ -2412,26 +2389,6 @@ __metadata:
     "@types/react":
       optional: true
   checksum: 10/34ec01b01b161f9df82e40ddd53ef0f52af1fba645a0ecdc7f93bacb48727433d0f60726647a4e2fe03749ee0a7bb85957f8ec48f7b28f691263d9db99c891a4
-  languageName: node
-  linkType: hard
-
-"@mui/utils@npm:^5.16.6 || ^6.0.0 || ^7.0.0 || ^7.0.0-beta":
-  version: 7.0.0-rc.0
-  resolution: "@mui/utils@npm:7.0.0-rc.0"
-  dependencies:
-    "@babel/runtime": "npm:^7.26.10"
-    "@mui/types": "npm:^7.3.1"
-    "@types/prop-types": "npm:^15.7.14"
-    clsx: "npm:^2.1.1"
-    prop-types: "npm:^15.8.1"
-    react-is: "npm:^19.0.0"
-  peerDependencies:
-    "@types/react": ^17.0.0 || ^18.0.0 || ^19.0.0
-    react: ^17.0.0 || ^18.0.0 || ^19.0.0
-  peerDependenciesMeta:
-    "@types/react":
-      optional: true
-  checksum: 10/16a8bff18acf997a40681280c351fb5253cb0b5f5ab5b6f58203f3e3333748d7135527fdb7066b108ec36d63c481a51484aa0e8c97233f1401372ef7a2b8891e
   languageName: node
   linkType: hard
 
@@ -2455,22 +2412,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-date-pickers@npm:^7.28.3":
-  version: 7.28.3
-  resolution: "@mui/x-date-pickers@npm:7.28.3"
+"@mui/x-date-pickers@npm:^8.0.0":
+  version: 8.0.0
+  resolution: "@mui/x-date-pickers@npm:8.0.0"
   dependencies:
-    "@babel/runtime": "npm:^7.25.7"
-    "@mui/utils": "npm:^5.16.6 || ^6.0.0 || ^7.0.0 || ^7.0.0-beta"
-    "@mui/x-internals": "npm:7.28.0"
-    "@types/react-transition-group": "npm:^4.4.11"
+    "@babel/runtime": "npm:^7.27.0"
+    "@mui/utils": "npm:^7.0.2"
+    "@mui/x-internals": "npm:8.0.0"
+    "@types/react-transition-group": "npm:^4.4.12"
     clsx: "npm:^2.1.1"
     prop-types: "npm:^15.8.1"
     react-transition-group: "npm:^4.4.5"
   peerDependencies:
     "@emotion/react": ^11.9.0
     "@emotion/styled": ^11.8.1
-    "@mui/material": ^5.15.14 || ^6.0.0 || ^7.0.0 || ^7.0.0-beta
-    "@mui/system": ^5.15.14 || ^6.0.0 || ^7.0.0 || ^7.0.0-beta
+    "@mui/material": ^5.15.14 || ^6.0.0 || ^7.0.0
+    "@mui/system": ^5.15.14 || ^6.0.0 || ^7.0.0
     date-fns: ^2.25.0 || ^3.2.0 || ^4.0.0
     date-fns-jalali: ^2.13.0-0 || ^3.2.0-0 || ^4.0.0-0
     dayjs: ^1.10.7
@@ -2499,19 +2456,19 @@ __metadata:
       optional: true
     moment-jalaali:
       optional: true
-  checksum: 10/f221b1bf346bea360a6cb9edbb4c3025d4371e4d6fd8d94791623953883a468f9a49de215fe8f0a461f5ee827b94b65d057049baba4d58325896758d59c639e3
+  checksum: 10/c4fa8483d2910ec5c8c8de2862733c467dc64484af4d52632a9f7e26ceb08a7aea1f7eaf7a1b1e81f8abc9d2ab955377385bcde032e091c576faca71f15fed8b
   languageName: node
   linkType: hard
 
-"@mui/x-internals@npm:7.28.0":
-  version: 7.28.0
-  resolution: "@mui/x-internals@npm:7.28.0"
+"@mui/x-internals@npm:8.0.0":
+  version: 8.0.0
+  resolution: "@mui/x-internals@npm:8.0.0"
   dependencies:
-    "@babel/runtime": "npm:^7.25.7"
-    "@mui/utils": "npm:^5.16.6 || ^6.0.0 || ^7.0.0 || ^7.0.0-beta"
+    "@babel/runtime": "npm:^7.27.0"
+    "@mui/utils": "npm:^7.0.2"
   peerDependencies:
     react: ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10/7f366dec77aa19cd06f1d33f5fbe74844e4c9fbef370c511779f23e69b455dfdaf7378f0ab4b0e190acb26ffcf353a7927ba5d5ede700031a83b9a9f39cfc8f5
+  checksum: 10/33f1591089a2b37cabfbbca18eedc885c6dc15c5bd94dc7b3bf60c3d3576eb705a27b5096bddfe0c1862f6883a120cbc801c9e5958f7c33c1602a42ba725a56a
   languageName: node
   linkType: hard
 
@@ -3218,7 +3175,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-transition-group@npm:^4.4.11, @types/react-transition-group@npm:^4.4.12":
+"@types/react-transition-group@npm:^4.4.12":
   version: 4.4.12
   resolution: "@types/react-transition-group@npm:4.4.12"
   peerDependencies:
@@ -5915,7 +5872,7 @@ __metadata:
     "@mui/material": "npm:^7.0.2"
     "@mui/material-nextjs": "npm:^7.0.2"
     "@mui/system": "npm:^7.0.2"
-    "@mui/x-date-pickers": "npm:^7.28.3"
+    "@mui/x-date-pickers": "npm:^8.0.0"
     "@parcel/watcher": "npm:^2.5.1"
     "@react-aria/i18n": "npm:^3.12.8"
     "@types/apollo-upload-client": "npm:^18.0.0"
@@ -7951,13 +7908,6 @@ __metadata:
   version: 16.13.1
   resolution: "react-is@npm:16.13.1"
   checksum: 10/5aa564a1cde7d391ac980bedee21202fc90bdea3b399952117f54fb71a932af1e5902020144fb354b4690b2414a0c7aafe798eb617b76a3d441d956db7726fdf
-  languageName: node
-  linkType: hard
-
-"react-is@npm:^19.0.0":
-  version: 19.0.0
-  resolution: "react-is@npm:19.0.0"
-  checksum: 10/6cd3695c462ec3f0d4db98583f0c1b9a439248d60214f6c42c2b0e2951a1066339d0eefa74707f03484042e043fca87750282a35b652492c035f5f3da0d6498a
   languageName: node
   linkType: hard
 
