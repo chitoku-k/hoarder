@@ -2412,13 +2412,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-date-pickers@npm:^8.1.0":
-  version: 8.1.0
-  resolution: "@mui/x-date-pickers@npm:8.1.0"
+"@mui/x-date-pickers@npm:^8.2.0":
+  version: 8.2.0
+  resolution: "@mui/x-date-pickers@npm:8.2.0"
   dependencies:
     "@babel/runtime": "npm:^7.27.0"
     "@mui/utils": "npm:^7.0.2"
-    "@mui/x-internals": "npm:8.0.0"
+    "@mui/x-internals": "npm:8.2.0"
     "@types/react-transition-group": "npm:^4.4.12"
     clsx: "npm:^2.1.1"
     prop-types: "npm:^15.8.1"
@@ -2456,19 +2456,19 @@ __metadata:
       optional: true
     moment-jalaali:
       optional: true
-  checksum: 10/2edaf719e7f026f8254805524827c67c30b24db90d9467cc7abc72e300741246e48d395a0a7d713e5fcd6c6915392ad22fedc619e7796fef5ccaf6a57e9dc068
+  checksum: 10/e5d74405848445b01fe5032b9fda103a5a0e244b79f3c8a95e64c3bc42e38c009c9cdf4c9aa102f0d2825d082ec78f90ceff3c17ed0361cfeb79889038f51e7f
   languageName: node
   linkType: hard
 
-"@mui/x-internals@npm:8.0.0":
-  version: 8.0.0
-  resolution: "@mui/x-internals@npm:8.0.0"
+"@mui/x-internals@npm:8.2.0":
+  version: 8.2.0
+  resolution: "@mui/x-internals@npm:8.2.0"
   dependencies:
     "@babel/runtime": "npm:^7.27.0"
     "@mui/utils": "npm:^7.0.2"
   peerDependencies:
     react: ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10/33f1591089a2b37cabfbbca18eedc885c6dc15c5bd94dc7b3bf60c3d3576eb705a27b5096bddfe0c1862f6883a120cbc801c9e5958f7c33c1602a42ba725a56a
+  checksum: 10/8aab2266613ad5b948cf32981afb8fd8c150f27f28aa505f9a863f7be6da140ba198c2e5e8f128accd703c8e214dae6a9f5e11b1ddbad5164329086f129cc15b
   languageName: node
   linkType: hard
 
@@ -5872,7 +5872,7 @@ __metadata:
     "@mui/material": "npm:^7.0.2"
     "@mui/material-nextjs": "npm:^7.0.2"
     "@mui/system": "npm:^7.0.2"
-    "@mui/x-date-pickers": "npm:^8.1.0"
+    "@mui/x-date-pickers": "npm:^8.2.0"
     "@parcel/watcher": "npm:^2.5.1"
     "@react-aria/i18n": "npm:^3.12.8"
     "@types/apollo-upload-client": "npm:^18.0.0"
