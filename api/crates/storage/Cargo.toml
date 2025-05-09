@@ -23,10 +23,10 @@ features = ["std"]
 default-features = false
 
 [dependencies.icu_collator]
-version = "1.5.0"
+version = "2.0.0"
 
 [dependencies.icu_provider]
-version = "1.5.0"
+version = "2.0.0"
 features = ["sync"]
 
 [dependencies.normalize-path]

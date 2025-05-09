@@ -7,7 +7,7 @@ use domain::{
     repository::{objects::{ObjectOverwriteBehavior, ObjectStatus, ObjectsRepository}, DeleteResult},
 };
 use futures::{TryFutureExt, TryStreamExt};
-use icu_collator::Collator;
+use icu_collator::CollatorBorrowed;
 use tokio::fs::{canonicalize, read_dir, remove_file, DirBuilder, File};
 use tokio_stream::wrappers::ReadDirStream;
 
@@ -18,7 +18,7 @@ mod url;
 
 #[derive(Clone, Constructor)]
 pub struct FilesystemObjectsRepository {
-    collator: Arc<Collator>,
+    collator: Arc<CollatorBorrowed<'static>>,
     root_dir: String,
 }
 

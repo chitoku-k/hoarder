@@ -14,8 +14,7 @@ use domain::{
     },
 };
 use graphql::{mutation::Mutation, query::Query, subscription::Subscription, GraphQLService, Schema, SchemaBuilder, Tracing};
-use icu_collator::{Collator, CollatorOptions};
-use icu_provider::DataLocale;
+use icu_collator::CollatorBorrowed;
 use media::{FileMediaURLFactory, NoopMediaURLFactory};
 use normalizer::Normalizer;
 use objects::ObjectsService;
@@ -102,7 +101,7 @@ fn tag_types_repository(pg_pool: PgPool) -> TagTypesRepositoryImpl {
     PostgresTagTypesRepository::new(pg_pool)
 }
 
-fn objects_repository(collator: Collator, root_dir: String) -> ObjectsRepositoryImpl {
+fn objects_repository(collator: CollatorBorrowed<'static>, root_dir: String) -> ObjectsRepositoryImpl {
     FilesystemObjectsRepository::new(Arc::new(collator), root_dir)
 }
 
@@ -171,7 +170,7 @@ pub struct Application;
 impl Application {
     pub async fn start() -> anyhow::Result<()> {
         let config = env::init();
-        let collator = Collator::try_new(&DataLocale::from(config.global.locale), CollatorOptions::new())
+        let collator = CollatorBorrowed::try_new(config.global.locale.into(), Default::default())
             .context("error instantiating collator")?;
 
         match config.command {

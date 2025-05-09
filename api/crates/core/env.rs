@@ -2,7 +2,7 @@ use std::io::stdout;
 
 use anstream::{AutoStream, ColorChoice};
 use clap::{crate_version, Parser};
-use icu_locid::Locale;
+use icu_locale_core::Locale;
 use tracing_subscriber::{fmt, prelude::*, EnvFilter};
 
 pub mod commands;
@@ -34,7 +34,7 @@ struct ServeConfig {
 #[derive(Debug, Parser)]
 pub struct Global {
     /// Locale
-    #[arg(long, env, default_value_t)]
+    #[arg(long, env, default_value = "und")]
     #[arg(global = true)]
     pub locale: Locale,
 
