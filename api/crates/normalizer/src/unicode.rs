@@ -1,8 +1,8 @@
 use std::borrow::Cow;
 
-use icu_normalizer::ComposingNormalizer;
+use icu_normalizer::ComposingNormalizerBorrowed;
 
-const NFC: ComposingNormalizer = ComposingNormalizer::new_nfc();
+const NFC: ComposingNormalizerBorrowed<'_> = ComposingNormalizerBorrowed::new_nfc();
 
 fn should_normalize(c: char) -> bool {
     // https://developer.apple.com/library/archive/qa/qa1173/_index.html
