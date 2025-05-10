@@ -14,7 +14,7 @@ use domain::{
 };
 use futures::TryStreamExt;
 use ordermap::{OrderMap, OrderSet};
-use sea_query::{extension::postgres::PgExpr, Alias, Asterisk, BinOper, Cond, Expr, Iden, JoinType, LikeExpr, LockType, Order, PostgresQueryBuilder, Query, SelectStatement};
+use sea_query::{extension::postgres::PgExpr, Asterisk, BinOper, Cond, Expr, Iden, JoinType, LikeExpr, LockType, Order, PostgresQueryBuilder, Query, SelectStatement};
 use sea_query_binder::SqlxBinder;
 use sqlx::{Acquire, FromRow, PgPool, Postgres, Transaction, PgConnection, Row};
 
@@ -232,8 +232,9 @@ where
     T: IntoIterator<Item = TagId>,
 {
     let ids: HashSet<_> = ids.into_iter().collect();
-    let tag_ancestors = Alias::new("tag_ancestors");
-    let tag_descendants = Alias::new("tag_descendants");
+
+    const TAG_ANCESTORS: &str = "tag_ancestors";
+    const TAG_DESCENDANTS: &str = "tag_descendants";
 
     let relatives = {
         let conditions = Cond::any()
@@ -267,37 +268,37 @@ where
 
     let (sql, values) = Query::select()
         .column(PostgresTagPath::Distance)
-        .expr_as(Expr::col((tag_ancestors.clone(), PostgresTag::Id)), PostgresTagRelation::AncestorId)
-        .expr_as(Expr::col((tag_ancestors.clone(), PostgresTag::Name)), PostgresTagRelation::AncestorName)
-        .expr_as(Expr::col((tag_ancestors.clone(), PostgresTag::Kana)), PostgresTagRelation::AncestorKana)
-        .expr_as(Expr::col((tag_ancestors.clone(), PostgresTag::Aliases)), PostgresTagRelation::AncestorAliases)
-        .expr_as(Expr::col((tag_ancestors.clone(), PostgresTag::CreatedAt)), PostgresTagRelation::AncestorCreatedAt)
-        .expr_as(Expr::col((tag_ancestors.clone(), PostgresTag::UpdatedAt)), PostgresTagRelation::AncestorUpdatedAt)
-        .expr_as(Expr::col((tag_descendants.clone(), PostgresTag::Id)), PostgresTagRelation::DescendantId)
-        .expr_as(Expr::col((tag_descendants.clone(), PostgresTag::Name)), PostgresTagRelation::DescendantName)
-        .expr_as(Expr::col((tag_descendants.clone(), PostgresTag::Kana)), PostgresTagRelation::DescendantKana)
-        .expr_as(Expr::col((tag_descendants.clone(), PostgresTag::Aliases)), PostgresTagRelation::DescendantAliases)
-        .expr_as(Expr::col((tag_descendants.clone(), PostgresTag::CreatedAt)), PostgresTagRelation::DescendantCreatedAt)
-        .expr_as(Expr::col((tag_descendants.clone(), PostgresTag::UpdatedAt)), PostgresTagRelation::DescendantUpdatedAt)
+        .expr_as(Expr::col((TAG_ANCESTORS, PostgresTag::Id)), PostgresTagRelation::AncestorId)
+        .expr_as(Expr::col((TAG_ANCESTORS, PostgresTag::Name)), PostgresTagRelation::AncestorName)
+        .expr_as(Expr::col((TAG_ANCESTORS, PostgresTag::Kana)), PostgresTagRelation::AncestorKana)
+        .expr_as(Expr::col((TAG_ANCESTORS, PostgresTag::Aliases)), PostgresTagRelation::AncestorAliases)
+        .expr_as(Expr::col((TAG_ANCESTORS, PostgresTag::CreatedAt)), PostgresTagRelation::AncestorCreatedAt)
+        .expr_as(Expr::col((TAG_ANCESTORS, PostgresTag::UpdatedAt)), PostgresTagRelation::AncestorUpdatedAt)
+        .expr_as(Expr::col((TAG_DESCENDANTS, PostgresTag::Id)), PostgresTagRelation::DescendantId)
+        .expr_as(Expr::col((TAG_DESCENDANTS, PostgresTag::Name)), PostgresTagRelation::DescendantName)
+        .expr_as(Expr::col((TAG_DESCENDANTS, PostgresTag::Kana)), PostgresTagRelation::DescendantKana)
+        .expr_as(Expr::col((TAG_DESCENDANTS, PostgresTag::Aliases)), PostgresTagRelation::DescendantAliases)
+        .expr_as(Expr::col((TAG_DESCENDANTS, PostgresTag::CreatedAt)), PostgresTagRelation::DescendantCreatedAt)
+        .expr_as(Expr::col((TAG_DESCENDANTS, PostgresTag::UpdatedAt)), PostgresTagRelation::DescendantUpdatedAt)
         .from(PostgresTagPath::Table)
         .join_as(
             JoinType::InnerJoin,
             PostgresTag::Table,
-            tag_ancestors.clone(),
-            Expr::col((tag_ancestors.clone(), PostgresTag::Id))
+            TAG_ANCESTORS,
+            Expr::col((TAG_ANCESTORS, PostgresTag::Id))
                 .equals((PostgresTagPath::Table, PostgresTagPath::AncestorId)),
         )
         .join_as(
             JoinType::InnerJoin,
             PostgresTag::Table,
-            tag_descendants.clone(),
-            Expr::col((tag_descendants.clone(), PostgresTag::Id))
+            TAG_DESCENDANTS,
+            Expr::col((TAG_DESCENDANTS, PostgresTag::Id))
                 .equals((PostgresTagPath::Table, PostgresTagPath::DescendantId)),
         )
         .and_where(Expr::col(PostgresTagPath::Distance).lte(1i32))
         .order_by(PostgresTagPath::Distance, Order::Asc)
-        .order_by((tag_ancestors, PostgresTag::Kana), Order::Asc)
-        .order_by((tag_descendants, PostgresTag::Kana), Order::Asc)
+        .order_by((TAG_ANCESTORS, PostgresTag::Kana), Order::Asc)
+        .order_by((TAG_DESCENDANTS, PostgresTag::Kana), Order::Asc)
         .cond_where(relatives)
         .build_sqlx(PostgresQueryBuilder);
 
@@ -342,28 +343,28 @@ fn ancestor_relations(id: TagId) -> SelectStatement {
 }
 
 fn descendant_relations(id: TagId) -> SelectStatement {
-    let tag_path_ancestors = Alias::new("tag_path_ancestors");
-    let tag_path_descendants = Alias::new("tag_path_descendants");
+    const TAG_PATH_ANCESTORS: &str = "tag_path_ancestors";
+    const TAG_PATH_DESCENDANTS: &str = "tag_path_descendants";
 
     Query::select()
-        .expr(Expr::col((tag_path_ancestors.clone(), PostgresTagPath::AncestorId)))
-        .expr(Expr::col((tag_path_descendants.clone(), PostgresTagPath::DescendantId)))
-        .expr(Expr::col((tag_path_ancestors.clone(), PostgresTagPath::Distance))
-            .add(Expr::col((tag_path_descendants.clone(), PostgresTagPath::Distance))))
-        .from_as(PostgresTagPath::Table, tag_path_ancestors.clone())
+        .expr(Expr::col((TAG_PATH_ANCESTORS, PostgresTagPath::AncestorId)))
+        .expr(Expr::col((TAG_PATH_DESCENDANTS, PostgresTagPath::DescendantId)))
+        .expr(Expr::col((TAG_PATH_ANCESTORS, PostgresTagPath::Distance))
+            .add(Expr::col((TAG_PATH_DESCENDANTS, PostgresTagPath::Distance))))
+        .from_as(PostgresTagPath::Table, TAG_PATH_ANCESTORS)
         .join_as(
             JoinType::InnerJoin,
             PostgresTagPath::Table,
-            tag_path_descendants.clone(),
-            Expr::col((tag_path_ancestors.clone(), PostgresTagPath::DescendantId))
-                .equals((tag_path_descendants.clone(), PostgresTagPath::AncestorId)),
+            TAG_PATH_DESCENDANTS,
+            Expr::col((TAG_PATH_ANCESTORS, PostgresTagPath::DescendantId))
+                .equals((TAG_PATH_DESCENDANTS, PostgresTagPath::AncestorId)),
         )
         .cond_where(
             Cond::all()
-                .add(Expr::col((tag_path_ancestors.clone(), PostgresTagPath::DescendantId)).eq(PostgresTagId::from(id)))
-                .add(Expr::col((tag_path_descendants.clone(), PostgresTagPath::AncestorId)).eq(PostgresTagId::from(id)))
-                .add(Expr::col((tag_path_ancestors, PostgresTagPath::AncestorId)).ne(PostgresTagId::from(id)))
-                .add(Expr::col((tag_path_descendants, PostgresTagPath::DescendantId)).ne(PostgresTagId::from(id)))
+                .add(Expr::col((TAG_PATH_ANCESTORS, PostgresTagPath::DescendantId)).eq(PostgresTagId::from(id)))
+                .add(Expr::col((TAG_PATH_DESCENDANTS, PostgresTagPath::AncestorId)).eq(PostgresTagId::from(id)))
+                .add(Expr::col((TAG_PATH_ANCESTORS, PostgresTagPath::AncestorId)).ne(PostgresTagId::from(id)))
+                .add(Expr::col((TAG_PATH_DESCENDANTS, PostgresTagPath::DescendantId)).ne(PostgresTagId::from(id)))
         )
         .take()
 }
@@ -544,8 +545,8 @@ impl TagsRepository for PostgresTagsRepository {
     async fn fetch_by_name_or_alias_like(&self, name_or_alias_like: &str, depth: TagDepth) -> Result<Vec<Tag>> {
         let mut conn = self.pool.acquire().await.map_err(Error::other)?;
 
-        let tags_aliases = Alias::new("tags_aliases");
-        let alias = Alias::new("alias");
+        const TAGS_ALIASES: &str = "tags_aliases";
+        const ALIAS: &str = "alias";
 
         let name_or_alias_like = format!(
             "%{}%",
@@ -569,17 +570,17 @@ impl TagsRepository for PostgresTagsRepository {
                 JoinType::LeftJoin,
                 Query::select()
                     .column(PostgresTag::Id)
-                    .expr_as(ArrayExpr::unnest(Expr::col(PostgresTag::Aliases)), alias.clone())
+                    .expr_as(ArrayExpr::unnest(Expr::col(PostgresTag::Aliases)), ALIAS)
                     .from(PostgresTag::Table)
                     .take(),
-                tags_aliases.clone(),
-                Expr::col((tags_aliases, PostgresTag::Id)).equals((PostgresTag::Table, PostgresTag::Id)),
+                TAGS_ALIASES,
+                Expr::col((TAGS_ALIASES, PostgresTag::Id)).equals((PostgresTag::Table, PostgresTag::Id)),
             )
             .cond_where(
                 Cond::any()
                     .add(Expr::col(PostgresTag::Name).ilike(LikeExpr::new(name_or_alias_like.clone())))
                     .add(Expr::col(PostgresTag::Kana).ilike(LikeExpr::new(name_or_alias_like.clone())))
-                    .add(Expr::col(alias).ilike(LikeExpr::new(name_or_alias_like))),
+                    .add(Expr::col(ALIAS).ilike(LikeExpr::new(name_or_alias_like))),
             )
             .build_sqlx(PostgresQueryBuilder);
 

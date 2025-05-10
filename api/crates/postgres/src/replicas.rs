@@ -11,7 +11,7 @@ use domain::{
     error::{Error, ErrorKind, Result},
     repository::{replicas::ReplicasRepository, DeleteResult},
 };
-use sea_query::{Alias, Asterisk, Expr, Iden, JoinType, Keyword, LockType, OnConflict, Order, PostgresQueryBuilder, Query, Value};
+use sea_query::{Asterisk, Expr, Iden, JoinType, Keyword, LockType, OnConflict, Order, PostgresQueryBuilder, Query, Value};
 use sea_query_binder::SqlxBinder;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
@@ -636,31 +636,31 @@ impl ReplicasRepository for PostgresReplicasRepository {
     async fn delete_by_id(&self, id: ReplicaId) -> Result<DeleteResult> {
         let mut tx = self.pool.begin().await.map_err(Error::other)?;
 
-        let siblings = Alias::new("siblings");
+        const SIBLINGS: &str = "siblings";
         let (sql, values) = Query::select()
             .columns([
-                (siblings.clone(), PostgresReplica::Id),
-                (siblings.clone(), PostgresReplica::MediumId),
-                (siblings.clone(), PostgresReplica::DisplayOrder),
-                (siblings.clone(), PostgresReplica::OriginalUrl),
-                (siblings.clone(), PostgresReplica::MimeType),
-                (siblings.clone(), PostgresReplica::Width),
-                (siblings.clone(), PostgresReplica::Height),
-                (siblings.clone(), PostgresReplica::Phase),
-                (siblings.clone(), PostgresReplica::CreatedAt),
-                (siblings.clone(), PostgresReplica::UpdatedAt),
+                (SIBLINGS, PostgresReplica::Id),
+                (SIBLINGS, PostgresReplica::MediumId),
+                (SIBLINGS, PostgresReplica::DisplayOrder),
+                (SIBLINGS, PostgresReplica::OriginalUrl),
+                (SIBLINGS, PostgresReplica::MimeType),
+                (SIBLINGS, PostgresReplica::Width),
+                (SIBLINGS, PostgresReplica::Height),
+                (SIBLINGS, PostgresReplica::Phase),
+                (SIBLINGS, PostgresReplica::CreatedAt),
+                (SIBLINGS, PostgresReplica::UpdatedAt),
             ])
             .from(PostgresReplica::Table)
             .join_as(
                 JoinType::InnerJoin,
                 PostgresReplica::Table,
-                siblings.clone(),
-                Expr::col((siblings.clone(), PostgresReplica::MediumId))
+                SIBLINGS,
+                Expr::col((SIBLINGS, PostgresReplica::MediumId))
                     .equals((PostgresReplica::Table, PostgresReplica::MediumId)),
             )
             .and_where(Expr::col((PostgresReplica::Table, PostgresReplica::Id)).eq(PostgresReplicaId::from(id)))
-            .order_by((siblings.clone(), PostgresReplica::DisplayOrder), Order::Asc)
-            .lock_with_tables(LockType::Update, [siblings])
+            .order_by((SIBLINGS, PostgresReplica::DisplayOrder), Order::Asc)
+            .lock_with_tables(LockType::Update, [SIBLINGS])
             .build_sqlx(PostgresQueryBuilder);
 
         let siblings: Vec<Replica> = sqlx::query_as_with::<_, PostgresReplicaRow, _>(&sql, values)
