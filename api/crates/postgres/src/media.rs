@@ -16,7 +16,7 @@ use domain::{
 };
 use futures::{future::ready, stream, Stream, StreamExt, TryStreamExt};
 use ordermap::{OrderMap, OrderSet};
-use sea_query::{Alias, BinOper, Expr, Iden, JoinType, Keyword, LockType, OnConflict, Order, PostgresQueryBuilder, Query};
+use sea_query::{BinOper, Expr, Iden, JoinType, Keyword, LockType, OnConflict, Order, PostgresQueryBuilder, Query};
 use sea_query_binder::SqlxBinder;
 use sqlx::{postgres::PgListener, types::Json, FromRow, PgConnection, PgPool};
 use tracing_futures::Instrument;
@@ -198,8 +198,8 @@ async fn fetch_tags<T>(conn: &mut PgConnection, ids: T, tag_depth: TagDepth) -> 
 where
     T: IntoIterator<Item = MediumId>,
 {
-    let ancestors = Alias::new("ancestors");
-    let display_order = Alias::new("display_order");
+    const ANCESTORS: &str = "ancestors";
+    const DISPLAY_ORDER: &str = "display_order";
 
     let (sql, values) = Query::select()
         .expr(Expr::col((PostgresMediumTag::Table, PostgresMediumTag::MediumId)))
@@ -221,10 +221,10 @@ where
                 .expr(Expr::col((PostgresTag::Table, PostgresTag::Id)))
                 .expr_as(
                     ArrayExpr::agg(Expr::cust_with_exprs("$1 ORDER BY $2 DESC", [
-                        Expr::col((ancestors.clone(), PostgresTag::Kana)).into(),
+                        Expr::col((ANCESTORS, PostgresTag::Kana)).into(),
                         Expr::col((PostgresTagPath::Table, PostgresTagPath::Distance)).into(),
                     ])),
-                    display_order.clone(),
+                    DISPLAY_ORDER,
                 )
                 .from(PostgresTag::Table)
                 .join(
@@ -236,22 +236,22 @@ where
                 .join_as(
                     JoinType::InnerJoin,
                     PostgresTag::Table,
-                    ancestors.clone(),
+                    ANCESTORS,
                     Expr::col((PostgresTagPath::Table, PostgresTagPath::AncestorId))
-                        .equals((ancestors.clone(), PostgresTag::Id)),
+                        .equals((ANCESTORS, PostgresTag::Id)),
                 )
                 .and_where(Expr::col(PostgresTagPath::AncestorId).ne(PostgresTagId::from(TagId::root())))
                 .group_by_col((PostgresTag::Table, PostgresTag::Id))
-                .order_by(display_order.clone(), Order::Asc)
+                .order_by(DISPLAY_ORDER, Order::Asc)
                 .take(),
-            ancestors.clone(),
-            Expr::col((ancestors, PostgresTag::Id))
+            ANCESTORS,
+            Expr::col((ANCESTORS, PostgresTag::Id))
                 .equals((PostgresMediumTag::Table, PostgresMediumTag::TagId)),
         )
         .and_where(Expr::col((PostgresMediumTag::Table, PostgresMediumTag::MediumId)).is_in(ids.into_iter().map(PostgresMediumId::from)))
         .order_by((PostgresMediumTag::Table, PostgresMediumTag::MediumId), Order::Asc)
         .order_by((PostgresTagType::Table, PostgresTagType::Kana), Order::Asc)
-        .order_by(display_order, Order::Asc)
+        .order_by(DISPLAY_ORDER, Order::Asc)
         .build_sqlx(PostgresQueryBuilder);
 
     let rows: Vec<_> = sqlx::query_as_with::<_, PostgresMediumTagTypeRow, _>(&sql, values)
