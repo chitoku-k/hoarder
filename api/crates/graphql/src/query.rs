@@ -102,10 +102,10 @@ where
     ) -> Result<Connection<MediumCursor, Medium>> {
         let media_service = ctx.data_unchecked::<MediaService>();
 
-        let node = ctx.look_ahead().field("nodes");
-        let node = node.exists()
-            .then_some(node)
-            .unwrap_or_else(|| ctx.look_ahead().field("edges").field("node"));
+        let node = match ctx.look_ahead().field("nodes") {
+            node if node.exists() => node,
+            _ => ctx.look_ahead().field("edges").field("node"),
+        };
 
         let tags = node.field("tags").field("tag");
         let tag_depth = tags.exists().then(|| get_tag_depth(&tags));
@@ -318,10 +318,10 @@ where
     ) -> Result<Connection<TagCursor, Tag>> {
         let tags_service = ctx.data_unchecked::<TagsService>();
 
-        let node = ctx.look_ahead().field("nodes");
-        let node = node.exists()
-            .then_some(node)
-            .unwrap_or_else(|| ctx.look_ahead().field("edges").field("node"));
+        let node = match ctx.look_ahead().field("nodes") {
+            node if node.exists() => node,
+            _ => ctx.look_ahead().field("edges").field("node"),
+        };
 
         let depth = get_tag_depth(&node);
 
