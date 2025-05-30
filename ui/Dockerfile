@@ -1,5 +1,5 @@
 # syntax = docker/dockerfile:1
-FROM node:24.0.2-bookworm AS base
+FROM node:24.1.0-bookworm AS base
 WORKDIR /usr/src
 COPY package.json yarn.lock .yarnrc.yml /usr/src/
 
