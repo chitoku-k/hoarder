@@ -36,7 +36,7 @@ version = "1.45.1"
 features = ["macros", "net", "process", "rt-multi-thread", "signal"]
 
 [dependencies.tower-http]
-version = "0.6.4"
+version = "0.6.6"
 features = ["trace"]
 
 [dependencies.tracing]
