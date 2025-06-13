@@ -737,7 +737,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.27.4":
+"@babel/runtime@npm:^7.27.6":
   version: 7.27.6
   resolution: "@babel/runtime@npm:7.27.6"
   checksum: 10/cc957a12ba3781241b83d528eb69ddeb86ca5ac43179a825e83aa81263a6b3eb88c57bed8a937cdeacfc3192e07ec24c73acdfea4507d0c0428c8e23d6322bfe
@@ -2540,13 +2540,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-date-pickers@npm:^8.5.1":
-  version: 8.5.1
-  resolution: "@mui/x-date-pickers@npm:8.5.1"
+"@mui/x-date-pickers@npm:^8.5.2":
+  version: 8.5.2
+  resolution: "@mui/x-date-pickers@npm:8.5.2"
   dependencies:
-    "@babel/runtime": "npm:^7.27.4"
+    "@babel/runtime": "npm:^7.27.6"
     "@mui/utils": "npm:^7.1.1"
-    "@mui/x-internals": "npm:8.5.1"
+    "@mui/x-internals": "npm:8.5.2"
     "@types/react-transition-group": "npm:^4.4.12"
     clsx: "npm:^2.1.1"
     prop-types: "npm:^15.8.1"
@@ -2584,20 +2584,21 @@ __metadata:
       optional: true
     moment-jalaali:
       optional: true
-  checksum: 10/ec8a473c024f4e3a73a4fdcc50ec08073f611bbe229ff41e8b424722cbc5af87819001325f018e590a5fb1b33a24152a4f9943b726c6f260f257ad10f56547b3
+  checksum: 10/c2d0b9550282bdead1a22bde2e297a2675714f2ba0077590dfe2274c500af342d8572478b937b05d2c4e13dfc96c08bf551499469f5223776fd186456e2edb4c
   languageName: node
   linkType: hard
 
-"@mui/x-internals@npm:8.5.1":
-  version: 8.5.1
-  resolution: "@mui/x-internals@npm:8.5.1"
+"@mui/x-internals@npm:8.5.2":
+  version: 8.5.2
+  resolution: "@mui/x-internals@npm:8.5.2"
   dependencies:
-    "@babel/runtime": "npm:^7.27.4"
+    "@babel/runtime": "npm:^7.27.6"
     "@mui/utils": "npm:^7.1.1"
+    reselect: "npm:^5.1.1"
   peerDependencies:
     "@mui/system": ^5.15.14 || ^6.0.0 || ^7.0.0
     react: ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10/b5cf1f42f72fbaf8d6a6c78cce802dfe1f887a5c0c09c7fd995dabdede03d3b943cc57f57ad4afeecc9ebc58ef55e3acdf67e510d03923957b5d5108560a6011
+  checksum: 10/da2412aea97a8f82d69ab14190c7f7298df46b8de80997a394f897616ed5e9a8b1ecb68724421533f6995836d5b3329e64e69d62e5b6d29a390e07bb8ee380fb
   languageName: node
   linkType: hard
 
@@ -6018,7 +6019,7 @@ __metadata:
     "@mui/material": "npm:^7.1.1"
     "@mui/material-nextjs": "npm:^7.1.1"
     "@mui/system": "npm:^7.1.1"
-    "@mui/x-date-pickers": "npm:^8.5.1"
+    "@mui/x-date-pickers": "npm:^8.5.2"
     "@parcel/watcher": "npm:^2.5.1"
     "@react-aria/i18n": "npm:^3.12.10"
     "@types/apollo-upload-client": "npm:^18.0.0"
@@ -8217,6 +8218,13 @@ __metadata:
   version: 2.0.0
   resolution: "require-main-filename@npm:2.0.0"
   checksum: 10/8604a570c06a69c9d939275becc33a65676529e1c3e5a9f42d58471674df79357872b96d70bb93a0380a62d60dc9031c98b1a9dad98c946ffdd61b7ac0c8cedd
+  languageName: node
+  linkType: hard
+
+"reselect@npm:^5.1.1":
+  version: 5.1.1
+  resolution: "reselect@npm:5.1.1"
+  checksum: 10/1fdae11a39ed9c8d85a24df19517c8372ee24fefea9cce3fae9eaad8e9cefbba5a3d4940c6fe31296b6addf76e035588c55798f7e6e147e1b7c0855f119e7fa5
   languageName: node
   linkType: hard
 
