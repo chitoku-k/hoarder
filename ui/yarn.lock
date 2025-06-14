@@ -3314,12 +3314,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^19.1.6":
-  version: 19.1.6
-  resolution: "@types/react@npm:19.1.6"
+"@types/react@npm:^19.1.8":
+  version: 19.1.8
+  resolution: "@types/react@npm:19.1.8"
   dependencies:
     csstype: "npm:^3.0.2"
-  checksum: 10/722a8efb36dedaf5cfe226287214df0982d612ff33ebf005dbbb646279647e5987da661f2d9fe6b8a4516d3b29dd6cb3a708641265861251abb682e8e90540cf
+  checksum: 10/a3e6fe0f60f22828ef887f30993aa147b71532d7b1219dd00d246277eb7a9ca01ec533096237fa21ca1bccb3653373b4e8e59e5ae59f9c793058384bbc1f4d5c
   languageName: node
   linkType: hard
 
@@ -6026,7 +6026,7 @@ __metadata:
     "@types/deep-equal": "npm:^1.0.4"
     "@types/historykana": "npm:^1.0.4"
     "@types/node": "npm:^24.0.1"
-    "@types/react": "npm:^19.1.6"
+    "@types/react": "npm:^19.1.8"
     "@types/react-dom": "npm:^19.1.6"
     "@types/strict-uri-encode": "npm:^2.0.2"
     "@types/uuid": "npm:^10.0.0"
