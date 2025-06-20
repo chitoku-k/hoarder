@@ -2356,26 +2356,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/core-downloads-tracker@npm:^7.1.1":
-  version: 7.1.1
-  resolution: "@mui/core-downloads-tracker@npm:7.1.1"
-  checksum: 10/473b3b3758e6833a05d856bcb272c529c478f185674bfad34c835e3459efd346825e71b96b79e37b84e747bb0967fa86210d7e69492108ca8030b52ac10efd4c
+"@mui/core-downloads-tracker@npm:^7.1.2":
+  version: 7.1.2
+  resolution: "@mui/core-downloads-tracker@npm:7.1.2"
+  checksum: 10/42b10f453c5f86f687edbb463ebe110dc1b50e2fe9d628878646c2f6c84daadc083c671c36be8fb4e4179fda43147a650db823c53c390af76987309a9289a5c2
   languageName: node
   linkType: hard
 
-"@mui/icons-material@npm:^7.1.1":
-  version: 7.1.1
-  resolution: "@mui/icons-material@npm:7.1.1"
+"@mui/icons-material@npm:^7.1.2":
+  version: 7.1.2
+  resolution: "@mui/icons-material@npm:7.1.2"
   dependencies:
     "@babel/runtime": "npm:^7.27.1"
   peerDependencies:
-    "@mui/material": ^7.1.1
+    "@mui/material": ^7.1.2
     "@types/react": ^17.0.0 || ^18.0.0 || ^19.0.0
     react: ^17.0.0 || ^18.0.0 || ^19.0.0
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 10/84d17de54c12e47105d4fcaead9b048d003a68df768adbc965b4d2374656c1b50d34080bb736cedac6e82703a8024157c7c87720bde723fb393363eac78f80e9
+  checksum: 10/2f0f85562bf9783530e3fe694c29e7d98c266a464f2d67586c043ef6346959b12e25781d08813896970a72e02b1e7d2f8d30ae078345c11bd23fc44765d1677a
   languageName: node
   linkType: hard
 
@@ -2402,12 +2402,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/material@npm:^7.1.1":
-  version: 7.1.1
-  resolution: "@mui/material@npm:7.1.1"
+"@mui/material@npm:^7.1.2":
+  version: 7.1.2
+  resolution: "@mui/material@npm:7.1.2"
   dependencies:
     "@babel/runtime": "npm:^7.27.1"
-    "@mui/core-downloads-tracker": "npm:^7.1.1"
+    "@mui/core-downloads-tracker": "npm:^7.1.2"
     "@mui/system": "npm:^7.1.1"
     "@mui/types": "npm:^7.4.3"
     "@mui/utils": "npm:^7.1.1"
@@ -2434,7 +2434,7 @@ __metadata:
       optional: true
     "@types/react":
       optional: true
-  checksum: 10/f0e72c50cb903b1ed8bcf710209b298d381f66d3bb514cf2e73b47edafded2e1441286d920f8c38ffd9b3efdd0aa5f01fab86b085c211561223d0c324381fe35
+  checksum: 10/f9a39c296de9f66946b3ae7b2600e7c10a97e62889705debbd26a3696781ccc54bd5082de58fde48b0e9f897167932cfd18130b08bdbdc0192829fcba65947b9
   languageName: node
   linkType: hard
 
@@ -2540,13 +2540,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-date-pickers@npm:^8.5.2":
-  version: 8.5.2
-  resolution: "@mui/x-date-pickers@npm:8.5.2"
+"@mui/x-date-pickers@npm:^8.5.3":
+  version: 8.5.3
+  resolution: "@mui/x-date-pickers@npm:8.5.3"
   dependencies:
     "@babel/runtime": "npm:^7.27.6"
     "@mui/utils": "npm:^7.1.1"
-    "@mui/x-internals": "npm:8.5.2"
+    "@mui/x-internals": "npm:8.5.3"
     "@types/react-transition-group": "npm:^4.4.12"
     clsx: "npm:^2.1.1"
     prop-types: "npm:^15.8.1"
@@ -2584,13 +2584,13 @@ __metadata:
       optional: true
     moment-jalaali:
       optional: true
-  checksum: 10/c2d0b9550282bdead1a22bde2e297a2675714f2ba0077590dfe2274c500af342d8572478b937b05d2c4e13dfc96c08bf551499469f5223776fd186456e2edb4c
+  checksum: 10/e6fba77a54bc1eff29b503b23cf355efacd83a67740a03509c42d7c3132a7339026330fdda007bee403682a7aaeae6e9b40aceb80482523571ed56f68d4af013
   languageName: node
   linkType: hard
 
-"@mui/x-internals@npm:8.5.2":
-  version: 8.5.2
-  resolution: "@mui/x-internals@npm:8.5.2"
+"@mui/x-internals@npm:8.5.3":
+  version: 8.5.3
+  resolution: "@mui/x-internals@npm:8.5.3"
   dependencies:
     "@babel/runtime": "npm:^7.27.6"
     "@mui/utils": "npm:^7.1.1"
@@ -2598,7 +2598,7 @@ __metadata:
   peerDependencies:
     "@mui/system": ^5.15.14 || ^6.0.0 || ^7.0.0
     react: ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10/da2412aea97a8f82d69ab14190c7f7298df46b8de80997a394f897616ed5e9a8b1ecb68724421533f6995836d5b3329e64e69d62e5b6d29a390e07bb8ee380fb
+  checksum: 10/ad7c3bebdb095aa5b3f0e43922984bfd15a1ca21fb0bc8e65e08658a5e609bcdd4beac0c9e230751cd0eb398bc1329610ed5d86783fe00b8c8c16f74ad6648e1
   languageName: node
   linkType: hard
 
@@ -6015,11 +6015,11 @@ __metadata:
     "@graphql-codegen/typescript-operations": "npm:^4.6.1"
     "@graphql-codegen/typescript-resolvers": "npm:^4.5.1"
     "@lifeomic/axios-fetch": "npm:^3.1.0"
-    "@mui/icons-material": "npm:^7.1.1"
-    "@mui/material": "npm:^7.1.1"
+    "@mui/icons-material": "npm:^7.1.2"
+    "@mui/material": "npm:^7.1.2"
     "@mui/material-nextjs": "npm:^7.1.1"
     "@mui/system": "npm:^7.1.1"
-    "@mui/x-date-pickers": "npm:^8.5.2"
+    "@mui/x-date-pickers": "npm:^8.5.3"
     "@parcel/watcher": "npm:^2.5.1"
     "@react-aria/i18n": "npm:^3.12.10"
     "@types/apollo-upload-client": "npm:^18.0.0"
