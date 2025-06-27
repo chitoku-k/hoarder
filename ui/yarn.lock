@@ -1237,9 +1237,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/near-operation-file-preset@npm:^3.0.1":
-  version: 3.0.1
-  resolution: "@graphql-codegen/near-operation-file-preset@npm:3.0.1"
+"@graphql-codegen/near-operation-file-preset@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "@graphql-codegen/near-operation-file-preset@npm:3.1.0"
   dependencies:
     "@graphql-codegen/add": "npm:^3.2.1"
     "@graphql-codegen/plugin-helpers": "npm:^3.0.0"
@@ -1249,7 +1249,7 @@ __metadata:
     tslib: "npm:^2.8.1"
   peerDependencies:
     graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
-  checksum: 10/b1d36af6f9496de7ed659df1a54bd7b7a995b4bff2dd91deb6622f41e68234a82b28bc645e87eddeb651899daaf7b6c28595311275fdab47fdedb96365c78314
+  checksum: 10/37753188258e8a4b98edb25429aa144e94553134c740bb3a1ab6de6381e88a0b1863514f763e075067a546ba75a01a2daf5f170d5972f8fbd63d1ee38d001d8d
   languageName: node
   linkType: hard
 
@@ -1326,6 +1326,21 @@ __metadata:
   peerDependencies:
     graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
   checksum: 10/213983a6c10173dc61041f331c19d6152a7e1bb07ab10c70355d49a7048a367ccee30428eda652b514c32431f938606b1db5c04f0d2c9dd93abb0096187cb91a
+  languageName: node
+  linkType: hard
+
+"@graphql-codegen/typed-document-node@npm:^5.1.2":
+  version: 5.1.2
+  resolution: "@graphql-codegen/typed-document-node@npm:5.1.2"
+  dependencies:
+    "@graphql-codegen/plugin-helpers": "npm:^5.1.0"
+    "@graphql-codegen/visitor-plugin-common": "npm:5.8.0"
+    auto-bind: "npm:~4.0.0"
+    change-case-all: "npm:1.0.15"
+    tslib: "npm:~2.6.0"
+  peerDependencies:
+    graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
+  checksum: 10/9c24ed2f4f76e616d335386cf78401b52b1766705dc972513066a5145f06781502e758cb3d138cbe7faae2b9f9e108cf3f8b74bf7936d838b59314a1e29ee1eb
   languageName: node
   linkType: hard
 
@@ -6036,8 +6051,8 @@ __metadata:
     "@emotion/styled": "npm:^11.14.0"
     "@fontsource/roboto": "npm:^5.2.6"
     "@graphql-codegen/cli": "npm:^5.0.7"
-    "@graphql-codegen/near-operation-file-preset": "npm:^3.0.1"
-    "@graphql-codegen/typed-document-node": "npm:^5.1.1"
+    "@graphql-codegen/near-operation-file-preset": "npm:^3.1.0"
+    "@graphql-codegen/typed-document-node": "npm:^5.1.2"
     "@graphql-codegen/typescript": "npm:^4.1.6"
     "@graphql-codegen/typescript-operations": "npm:^4.6.1"
     "@graphql-codegen/typescript-resolvers": "npm:^4.5.1"
