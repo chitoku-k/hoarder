@@ -2555,13 +2555,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-date-pickers@npm:^8.5.3":
-  version: 8.5.3
-  resolution: "@mui/x-date-pickers@npm:8.5.3"
+"@mui/x-date-pickers@npm:^8.6.0":
+  version: 8.6.0
+  resolution: "@mui/x-date-pickers@npm:8.6.0"
   dependencies:
     "@babel/runtime": "npm:^7.27.6"
     "@mui/utils": "npm:^7.1.1"
-    "@mui/x-internals": "npm:8.5.3"
+    "@mui/x-internals": "npm:8.6.0"
     "@types/react-transition-group": "npm:^4.4.12"
     clsx: "npm:^2.1.1"
     prop-types: "npm:^15.8.1"
@@ -2599,13 +2599,13 @@ __metadata:
       optional: true
     moment-jalaali:
       optional: true
-  checksum: 10/e6fba77a54bc1eff29b503b23cf355efacd83a67740a03509c42d7c3132a7339026330fdda007bee403682a7aaeae6e9b40aceb80482523571ed56f68d4af013
+  checksum: 10/d77eac82a8c4bfb40ec3151dd5589f8f681464d9b13bd5d09beb324901b81f2be61e11b20766335ca83f23e445a58d22939a6afe9a56c4e0beabadde93d03065
   languageName: node
   linkType: hard
 
-"@mui/x-internals@npm:8.5.3":
-  version: 8.5.3
-  resolution: "@mui/x-internals@npm:8.5.3"
+"@mui/x-internals@npm:8.6.0":
+  version: 8.6.0
+  resolution: "@mui/x-internals@npm:8.6.0"
   dependencies:
     "@babel/runtime": "npm:^7.27.6"
     "@mui/utils": "npm:^7.1.1"
@@ -2613,7 +2613,7 @@ __metadata:
   peerDependencies:
     "@mui/system": ^5.15.14 || ^6.0.0 || ^7.0.0
     react: ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10/ad7c3bebdb095aa5b3f0e43922984bfd15a1ca21fb0bc8e65e08658a5e609bcdd4beac0c9e230751cd0eb398bc1329610ed5d86783fe00b8c8c16f74ad6648e1
+  checksum: 10/58a1cc353a748d0c0ed030dbf0e30472548f65336ce5683812caf0f09086763bb0789c7385885bca127fa0505dc30774d7210ca6f05d6b6508fdc43cea699519
   languageName: node
   linkType: hard
 
@@ -6061,7 +6061,7 @@ __metadata:
     "@mui/material": "npm:^7.1.2"
     "@mui/material-nextjs": "npm:^7.1.1"
     "@mui/system": "npm:^7.1.1"
-    "@mui/x-date-pickers": "npm:^8.5.3"
+    "@mui/x-date-pickers": "npm:^8.6.0"
     "@parcel/watcher": "npm:^2.5.1"
     "@react-aria/i18n": "npm:^3.12.10"
     "@types/apollo-upload-client": "npm:^18.0.0"
