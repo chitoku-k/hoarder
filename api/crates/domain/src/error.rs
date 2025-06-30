@@ -81,13 +81,13 @@ impl fmt::Debug for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let source = match (&self.kind, &self.error) {
             (ErrorKind::Other, Some(source)) => {
-                write!(f, "{}", source)?;
+                write!(f, "{source}")?;
                 source.source()
             },
             (kind, error) => {
-                writeln!(f, "{}", kind)?;
+                writeln!(f, "{kind}")?;
                 writeln!(f, "Details:")?;
-                write!(indented(f).with_str("      "), "{:#?}", kind)?;
+                write!(indented(f).with_str("      "), "{kind:#?}")?;
                 error.as_deref().map(|e| e as _)
             },
         };
@@ -100,9 +100,9 @@ impl fmt::Debug for Error {
                 writeln!(f)?;
 
                 if multiple {
-                    write!(indented(f).ind(i), "{}", error)?;
+                    write!(indented(f).ind(i), "{error}")?;
                 } else {
-                    write!(indented(f).with_str("      "), "{}", error)?;
+                    write!(indented(f).with_str("      "), "{error}")?;
                 }
             }
         }

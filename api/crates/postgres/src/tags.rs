@@ -210,8 +210,8 @@ fn extract(rc: Rc<RefCell<TagRelation>>, depth: TagDepth) -> Tag {
     let children = depth
         .has_children()
         .then_some(relation.children)
-        .unwrap_or_default()
         .into_iter()
+        .flatten()
         .map(|relation| extract(relation, TagDepth::new(0, depth.children() - 1)))
         .collect();
 

@@ -26,7 +26,7 @@ pub(crate) struct DatabaseContext {
 
 async fn create_database(name: &str) -> Result<PgConnection, BoxDynError> {
     let mut conn = PgConnection::connect_with(&PgConnectOptions::new()).await?;
-    conn.execute(&*format!(r#"CREATE DATABASE "{}""#, &name)).await?;
+    conn.execute(&*format!(r#"CREATE DATABASE "{name}""#)).await?;
 
     Ok(conn)
 }
@@ -67,7 +67,7 @@ async fn teardown_database(pool: PgPool) -> Result<(), BoxDynError> {
 }
 
 async fn drop_database(conn: &mut PgConnection, name: &str) -> Result<(), BoxDynError> {
-    conn.execute(&*format!(r#"DROP DATABASE "{}" WITH (FORCE)"#, name)).await?;
+    conn.execute(&*format!(r#"DROP DATABASE "{name}" WITH (FORCE)"#)).await?;
 
     Ok(())
 }
