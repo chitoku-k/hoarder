@@ -1,7 +1,7 @@
 #![allow(clippy::too_many_arguments)]
 
 use application::service::graphql::{GraphQLEndpoints, GraphQLServiceInterface};
-use async_graphql::{http::GraphiQLSource, Enum, ObjectType, SubscriptionType};
+use async_graphql::{http::GraphiQLSource, Enum, ObjectType, SDLExportOptions, SubscriptionType};
 use async_graphql_axum::{GraphQL, GraphQLSubscription};
 use axum::{
     body::Body,
@@ -61,7 +61,9 @@ where
     }
 
     fn definitions(&self) -> String {
-        self.schema.sdl()
+        self.schema.sdl_with_options(SDLExportOptions::new()
+            .use_space_ident()
+            .indent_width(4))
     }
 }
 
