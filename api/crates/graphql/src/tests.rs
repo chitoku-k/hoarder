@@ -43,7 +43,7 @@ fn graphql_definitions() {
     let actual = service.definitions();
     assert!(actual.contains(indoc! {"
         type Query {
-        	value: String!
+            value: String!
         }
     "}));
 }
