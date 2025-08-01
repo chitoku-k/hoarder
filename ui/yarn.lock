@@ -737,6 +737,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.28.2":
+  version: 7.28.2
+  resolution: "@babel/runtime@npm:7.28.2"
+  checksum: 10/a0965fbdd6aaa40709290923bbe05e1c4314021f0cef608eb1d69f04f717c41829e50a53d79c4a0f461512b4be9b3c0190dc19387b219bcdaacdd793b2fe1b8a
+  languageName: node
+  linkType: hard
+
 "@babel/template@npm:^7.18.10, @babel/template@npm:^7.20.7, @babel/template@npm:^7.22.5, @babel/template@npm:^7.25.0":
   version: 7.25.0
   resolution: "@babel/template@npm:7.25.0"
@@ -2432,13 +2439,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-date-pickers@npm:^8.9.0":
-  version: 8.9.0
-  resolution: "@mui/x-date-pickers@npm:8.9.0"
+"@mui/x-date-pickers@npm:^8.9.2":
+  version: 8.9.2
+  resolution: "@mui/x-date-pickers@npm:8.9.2"
   dependencies:
-    "@babel/runtime": "npm:^7.27.6"
+    "@babel/runtime": "npm:^7.28.2"
     "@mui/utils": "npm:^7.2.0"
-    "@mui/x-internals": "npm:8.8.0"
+    "@mui/x-internals": "npm:8.9.2"
     "@types/react-transition-group": "npm:^4.4.12"
     clsx: "npm:^2.1.1"
     prop-types: "npm:^15.8.1"
@@ -2476,21 +2483,22 @@ __metadata:
       optional: true
     moment-jalaali:
       optional: true
-  checksum: 10/711c22ff9e8cd3d4a1b818ab34467b80de22f72685342d37340b33674a998c22992acc0b13bf9254f4303c269675c3728e55150387a92134aa2b480fae77ed89
+  checksum: 10/f163bc600b5ccd893ed7a9a9e7d24cb85d705131f2526b886b18ee707abba0410be66bcfb269afa3abd032c0e4665146e605487b194ad75aeee636898e055f5a
   languageName: node
   linkType: hard
 
-"@mui/x-internals@npm:8.8.0":
-  version: 8.8.0
-  resolution: "@mui/x-internals@npm:8.8.0"
+"@mui/x-internals@npm:8.9.2":
+  version: 8.9.2
+  resolution: "@mui/x-internals@npm:8.9.2"
   dependencies:
-    "@babel/runtime": "npm:^7.27.6"
+    "@babel/runtime": "npm:^7.28.2"
     "@mui/utils": "npm:^7.2.0"
     reselect: "npm:^5.1.1"
+    use-sync-external-store: "npm:^1.5.0"
   peerDependencies:
     "@mui/system": ^5.15.14 || ^6.0.0 || ^7.0.0
     react: ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10/72ac258b603f7d905b06af6df8013a732ccdfcceb2f41ddc1ec7c8d4e5c11601dae2c59580d7c7a609335953eb759f3cdbbf0f8282a016dc9645e0421eae6b22
+  checksum: 10/7c99c9623c695ad50ed531618955544db5a9d882ab7e246041c96f5b4a79ed5547226f79981f5ceb197caee3d18d7fb1190e81e3bbbec90eb65d3b0bd9de76c6
   languageName: node
   linkType: hard
 
@@ -6028,7 +6036,7 @@ __metadata:
     "@mui/material": "npm:^7.2.0"
     "@mui/material-nextjs": "npm:^7.2.0"
     "@mui/system": "npm:^7.2.0"
-    "@mui/x-date-pickers": "npm:^8.9.0"
+    "@mui/x-date-pickers": "npm:^8.9.2"
     "@parcel/watcher": "npm:^2.5.1"
     "@react-aria/i18n": "npm:^3.12.11"
     "@types/apollo-upload-client": "npm:^18.0.0"
@@ -9478,6 +9486,15 @@ __metadata:
   version: 10.0.0
   resolution: "urlpattern-polyfill@npm:10.0.0"
   checksum: 10/346819dbe718e929988298d02a988b8ddfa601d08daaa7e69b1148eab699c86c0f0f933d68d8c8cf913166fe64156ed28904e673200d18ef7e9ed6b58cea3fc7
+  languageName: node
+  linkType: hard
+
+"use-sync-external-store@npm:^1.5.0":
+  version: 1.5.0
+  resolution: "use-sync-external-store@npm:1.5.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 10/ddae7c4572511f7f641d6977bd0725340aa7dbeda8250418b54c1a57ec285083d96cf50d1a1acbd6cf729f7a87071b2302c6fbd29310432bf1b21a961a313279
   languageName: node
   linkType: hard
 
