@@ -24,21 +24,23 @@ RUN --mount=type=tmpfs,target=/tmp \
 
 FROM scratch AS production
 WORKDIR /app
+ARG DEB_BUILD_MULTIARCH
+ARG LD
 ARG PORT=3000
 ENV PORT=$PORT
 ENV NODE_ENV=production
 ENV HOSTNAME=
-COPY --link --from=release /lib/x86_64-linux-gnu/ld-linux-x86-64.* /lib/x86_64-linux-gnu/
-COPY --link --from=release /lib/x86_64-linux-gnu/libc.so* /lib/x86_64-linux-gnu/
-COPY --link --from=release /lib/x86_64-linux-gnu/libcrypto.so* /lib/x86_64-linux-gnu/
-COPY --link --from=release /lib/x86_64-linux-gnu/libdl.so.* /lib/x86_64-linux-gnu/
-COPY --link --from=release /lib/x86_64-linux-gnu/libgcc_s.so* /lib/x86_64-linux-gnu/
-COPY --link --from=release /lib/x86_64-linux-gnu/libm.so* /lib/x86_64-linux-gnu/
-COPY --link --from=release /lib/x86_64-linux-gnu/libpthread.so* /lib/x86_64-linux-gnu/
-COPY --link --from=release /lib/x86_64-linux-gnu/libresolv.so* /lib/x86_64-linux-gnu/
-COPY --link --from=release /lib/x86_64-linux-gnu/libssl.so* /lib/x86_64-linux-gnu/
-COPY --link --from=release /lib/x86_64-linux-gnu/libstdc++.so.* /lib/x86_64-linux-gnu/
-COPY --link --from=release /lib64 /lib64
+COPY --link --from=release $LD $LD
+COPY --link --from=release /lib/$DEB_BUILD_MULTIARCH/ld-linux-x86-64.* /lib/$DEB_BUILD_MULTIARCH/
+COPY --link --from=release /lib/$DEB_BUILD_MULTIARCH/libc.so* /lib/$DEB_BUILD_MULTIARCH/
+COPY --link --from=release /lib/$DEB_BUILD_MULTIARCH/libcrypto.so* /lib/$DEB_BUILD_MULTIARCH/
+COPY --link --from=release /lib/$DEB_BUILD_MULTIARCH/libdl.so.* /lib/$DEB_BUILD_MULTIARCH/
+COPY --link --from=release /lib/$DEB_BUILD_MULTIARCH/libgcc_s.so* /lib/$DEB_BUILD_MULTIARCH/
+COPY --link --from=release /lib/$DEB_BUILD_MULTIARCH/libm.so* /lib/$DEB_BUILD_MULTIARCH/
+COPY --link --from=release /lib/$DEB_BUILD_MULTIARCH/libpthread.so* /lib/$DEB_BUILD_MULTIARCH/
+COPY --link --from=release /lib/$DEB_BUILD_MULTIARCH/libresolv.so* /lib/$DEB_BUILD_MULTIARCH/
+COPY --link --from=release /lib/$DEB_BUILD_MULTIARCH/libssl.so* /lib/$DEB_BUILD_MULTIARCH/
+COPY --link --from=release /lib/$DEB_BUILD_MULTIARCH/libstdc++.so.* /lib/$DEB_BUILD_MULTIARCH/
 COPY --link --from=release /usr/local/bin/node /node
 COPY --link --from=release /etc/group /etc/group
 COPY --link --from=release /etc/passwd /etc/passwd
