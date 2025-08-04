@@ -117,6 +117,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build
         uses: docker/bake-action@v6
+        id: build
         with:
           source: .
           files: docker-bake.hcl
