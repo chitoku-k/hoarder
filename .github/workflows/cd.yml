@@ -100,7 +100,7 @@ jobs:
         run: |
           docker buildx imagetools create \
             --tag=ghcr.io/chitoku-k/hoarder/${{ matrix.app }}:${{ github.ref_name }} \
-            $(printf 'ghcr.io/chitoku-k/hoarder/${{ matrix.app }}@sha256:%s' *)
+            $(printf 'ghcr.io/chitoku-k/hoarder/${{ matrix.app }}@sha256:%s ' *)
 
   deploy:
     name: Deploy

@@ -176,7 +176,7 @@ jobs:
         run: |
           docker buildx imagetools create \
             --tag=ghcr.io/chitoku-k/hoarder/${{ matrix.app }}:latest \
-            $(printf 'ghcr.io/chitoku-k/hoarder/${{ matrix.app }}@sha256:%s' *)
+            $(printf 'ghcr.io/chitoku-k/hoarder/${{ matrix.app }}@sha256:%s ' *)
 
   update-schema:
     name: Update GraphQL Schema
