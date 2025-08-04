@@ -140,7 +140,7 @@ jobs:
         if: ${{ github.ref_name == 'master' }}
         uses: actions/upload-artifact@v4
         with:
-          name: digests-${{ matrix.app }}-${{ matrix.target.platform }}
+          name: digests-${{ matrix.app }}-${{ matrix.target.multiarch }}
           path: ${{ runner.temp }}/digests/*
           if-no-files-found: error
           retention-days: 1
