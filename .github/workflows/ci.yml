@@ -122,7 +122,7 @@ jobs:
           files: docker-bake.hcl
           targets: ${{ matrix.app }}
           set: |
-            ${{ matrix.app }}.tags=ghcr.io/chitoku-k/hoarder/${{ matrix.app }}:latest
+            ${{ matrix.app }}.tags=ghcr.io/chitoku-k/hoarder/${{ matrix.app }}
             *.platform=${{ matrix.target.platform }}
             *.args.DEB_BUILD_MULTIARCH=${{ matrix.target.multiarch }}
             *.args.LD=${{ matrix.target.ld }}
