@@ -31,7 +31,6 @@ ENV PORT=$PORT
 ENV NODE_ENV=production
 ENV HOSTNAME=
 COPY --link --from=release $LD $LD
-COPY --link --from=release /lib/$DEB_BUILD_MULTIARCH/ld-linux-x86-64.* /lib/$DEB_BUILD_MULTIARCH/
 COPY --link --from=release /lib/$DEB_BUILD_MULTIARCH/libc.so* /lib/$DEB_BUILD_MULTIARCH/
 COPY --link --from=release /lib/$DEB_BUILD_MULTIARCH/libcrypto.so* /lib/$DEB_BUILD_MULTIARCH/
 COPY --link --from=release /lib/$DEB_BUILD_MULTIARCH/libdl.so.* /lib/$DEB_BUILD_MULTIARCH/
