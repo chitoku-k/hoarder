@@ -32,7 +32,6 @@ ARG PORT=80
 ENV PORT=$PORT
 ENV PATH=/
 COPY --link --from=release $LD $LD
-COPY --link --from=release /lib/$DEB_BUILD_MULTIARCH/ld-linux-x86-64.so.* /lib/$DEB_BUILD_MULTIARCH/
 COPY --link --from=release /lib/$DEB_BUILD_MULTIARCH/libc.so.* /lib/$DEB_BUILD_MULTIARCH/
 COPY --link --from=release /lib/$DEB_BUILD_MULTIARCH/libcrypto.so.* /lib/$DEB_BUILD_MULTIARCH/
 COPY --link --from=release /lib/$DEB_BUILD_MULTIARCH/libgcc_s.so.* /lib/$DEB_BUILD_MULTIARCH/
