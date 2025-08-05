@@ -24,8 +24,8 @@ RUN --mount=type=tmpfs,target=/tmp \
 
 FROM scratch AS production
 WORKDIR /app
-ARG DEB_BUILD_MULTIARCH
-ARG LD
+ARG DEB_BUILD_MULTIARCH=x86_64-linux-gnu
+ARG LD=/lib64/ld-linux-x86-64.so.2
 ARG PORT=3000
 ENV PORT=$PORT
 ENV NODE_ENV=production
