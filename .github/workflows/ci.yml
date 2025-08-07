@@ -46,7 +46,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:17.2
+        image: postgres:17.5
         env:
           PGDATA: /dev/shm/pgdata/data
           POSTGRES_DB: hoarder_test
