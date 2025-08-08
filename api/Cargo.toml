@@ -118,7 +118,7 @@ optional = true
 version = "1.45.1"
 
 [dependencies.tokio-util]
-version = "0.7.15"
+version = "0.7.16"
 features = ["rt"]
 
 [dependencies.tracing]
