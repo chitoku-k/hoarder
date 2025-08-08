@@ -20,7 +20,7 @@ pub struct Source {
 }
 
 impl Source {
-    pub fn url(&self) -> Option<Cow<str>> {
+    pub fn url(&self) -> Option<Cow<'_, str>> {
         self.external_metadata.url(self.external_service.base_url.as_deref())
     }
 

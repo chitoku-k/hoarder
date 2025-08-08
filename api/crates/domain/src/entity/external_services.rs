@@ -175,7 +175,7 @@ impl ExternalMetadata {
         }
     }
 
-    pub fn url(&self, base_url: Option<&str>) -> Option<Cow<str>> {
+    pub fn url(&self, base_url: Option<&str>) -> Option<Cow<'_, str>> {
         let base_url = base_url.map(|b| b.trim_end_matches("/"));
 
         use ExternalMetadata::*;
