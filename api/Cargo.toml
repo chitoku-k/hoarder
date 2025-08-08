@@ -95,7 +95,7 @@ workspace = true
 workspace = true
 
 [dependencies.anstream]
-version = "0.6.19"
+version = "0.6.20"
 
 [dependencies.anyhow]
 version = "1.0.98"
