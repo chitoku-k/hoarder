@@ -38,7 +38,7 @@ version = "0.5.8"
 features = ["serde"]
 
 [dependencies.sea-query]
-version = "0.32.6"
+version = "0.32.7"
 features = ["derive", "backend-postgres", "thread-safe"]
 default-features = false
 
