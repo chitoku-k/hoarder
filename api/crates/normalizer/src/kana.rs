@@ -167,7 +167,7 @@ const SEMI_VOICED_FULLWIDTH: Map<char, &str> = phf_map! {
     'ホ' => "ポ",
 };
 
-pub(crate) fn normalize(text: &str) -> Cow<str> {
+pub(crate) fn normalize(text: &str) -> Cow<'_, str> {
     text.char_indices().fold(Cow::Borrowed(""), |s, (i, c)| {
         match SOUND_MARKS.get(&c).and_then(|v| s.chars().last().and_then(|c| v.get(&c))) {
             Some(v) => {

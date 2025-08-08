@@ -11,7 +11,7 @@ fn should_normalize(c: char) -> bool {
         && !('\u{2F800}'..='\u{2FAFF}').contains(&c)
 }
 
-pub(crate) fn normalize(text: &str) -> Cow<str> {
+pub(crate) fn normalize(text: &str) -> Cow<'_, str> {
     let (s, last_match) = text.match_indices(should_normalize).fold((Cow::Borrowed(""), 0), |(s, last_match), (i, m)| {
         let s = if !NFC.is_normalized(m) {
             let mut s = match s {

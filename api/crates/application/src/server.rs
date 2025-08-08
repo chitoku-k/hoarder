@@ -132,10 +132,8 @@ fn enable_auto_reload(config: OpenSSLConfig, tls_cert: String, tls_key: String) 
 
         for event in rx {
             let event = event.map_err(Error::other)?;
-            if event.kind.is_modify() {
-                if let Err(e) = config.reload_from_pem_file(&tls_cert, &tls_key) {
-                    return Err(Error::new(ErrorKind::ServerCertificateInvalid { cert: tls_cert, key: tls_key }, e));
-                }
+            if event.kind.is_modify() && let Err(e) = config.reload_from_pem_file(&tls_cert, &tls_key) {
+                return Err(Error::new(ErrorKind::ServerCertificateInvalid { cert: tls_cert, key: tls_key }, e));
             }
         }
         Ok(())
