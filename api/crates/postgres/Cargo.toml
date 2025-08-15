@@ -14,7 +14,7 @@ tls = ["sqlx/tls-native-tls"]
 workspace = true
 
 [dependencies.async-trait]
-version = "0.1.88"
+version = "0.1.89"
 
 [dependencies.chrono]
 version = "0.4.41"
