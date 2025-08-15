@@ -55,7 +55,7 @@ features = ["derive"]
 version = "1.0.142"
 
 [dependencies.thiserror]
-version = "2.0.12"
+version = "2.0.14"
 
 [dependencies.tokio-util]
 version = "0.7.16"
