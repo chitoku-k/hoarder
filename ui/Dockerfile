@@ -1,5 +1,5 @@
 # syntax = docker/dockerfile:1
-FROM node:24.5.0-bookworm AS base
+FROM node:24.5.0-trixie AS base
 WORKDIR /usr/src
 COPY package.json yarn.lock .yarnrc.yml /usr/src/
 
@@ -40,6 +40,8 @@ COPY --link --from=release /lib/$DEB_BUILD_MULTIARCH/libpthread.so* /lib/$DEB_BU
 COPY --link --from=release /lib/$DEB_BUILD_MULTIARCH/libresolv.so* /lib/$DEB_BUILD_MULTIARCH/
 COPY --link --from=release /lib/$DEB_BUILD_MULTIARCH/libssl.so* /lib/$DEB_BUILD_MULTIARCH/
 COPY --link --from=release /lib/$DEB_BUILD_MULTIARCH/libstdc++.so.* /lib/$DEB_BUILD_MULTIARCH/
+COPY --link --from=release /lib/$DEB_BUILD_MULTIARCH/libz.so.* /lib/$DEB_BUILD_MULTIARCH/
+COPY --link --from=release /lib/$DEB_BUILD_MULTIARCH/libzstd.so.* /lib/$DEB_BUILD_MULTIARCH/
 COPY --link --from=release /usr/local/bin/node /node
 COPY --link --from=release /etc/group /etc/group
 COPY --link --from=release /etc/passwd /etc/passwd
