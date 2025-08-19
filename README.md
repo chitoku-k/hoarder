@@ -35,9 +35,12 @@ $ docker run --rm -it ghcr.io/chitoku-k/hoarder/api migration apply
 The following environment variables can be used to configure PostgreSQL connection:
 
 - `PGHOST`: Hostname
+- `PGHOSTADDR`: IP address
 - `PGPORT`: Port number
 - `PGUSER`: Username
 - `PGPASSWORD`: Password
+- `PGPASSFILE`: Path to [the password file](https://www.postgresql.org/docs/current/libpq-pgpass.html)
+- `PGOPTIONS`: Command-line options
 - `PGDATABASE`: Database name
 - `PGSSLROOTCERT`: Path to the root CA
 - `PGSSLCERT`/`PGSSLKEY`: Path to the client certificate and private key in PKCS#8 format
@@ -79,8 +82,8 @@ $ hoarder migration [OPTIONS] (apply | drop | list | revert)
 
 The following environment variables can be used to configure UI:
 
-- `API_URL`: URL for API (**required**)
-- `BASE_URL`: Base URL for UI (**required**)
+- `API_URL`: Internal URL for API (**required**)
+- `BASE_URL`: Internal base URL for UI (**required**)
 
 ## Testing
 
