@@ -1,5 +1,5 @@
 # syntax = docker/dockerfile:1
-FROM rust:1.89.0-bookworm AS base
+FROM rust:1.89.0-trixie AS base
 WORKDIR /usr/src
 RUN --mount=type=cache,id=api:/var/cache/apt,target=/var/cache/apt \
     --mount=type=cache,id=api:/var/lib/apt/lists,target=/var/lib/apt/lists \
@@ -39,6 +39,8 @@ COPY --link --from=release /lib/$DEB_BUILD_MULTIARCH/libjemalloc.so.* /lib/$DEB_
 COPY --link --from=release /lib/$DEB_BUILD_MULTIARCH/libm.so.* /lib/$DEB_BUILD_MULTIARCH/
 COPY --link --from=release /lib/$DEB_BUILD_MULTIARCH/libssl.so.* /lib/$DEB_BUILD_MULTIARCH/
 COPY --link --from=release /lib/$DEB_BUILD_MULTIARCH/libstdc++.so.* /lib/$DEB_BUILD_MULTIARCH/
+COPY --link --from=release /lib/$DEB_BUILD_MULTIARCH/libz.so.* /lib/$DEB_BUILD_MULTIARCH/
+COPY --link --from=release /lib/$DEB_BUILD_MULTIARCH/libzstd.so.* /lib/$DEB_BUILD_MULTIARCH/
 COPY --link --from=release /usr/local/bin/hoarder /hoarder
 COPY --link --from=release /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --link --from=release /usr/share/zoneinfo /usr/share/zoneinfo
