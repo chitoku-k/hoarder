@@ -29,7 +29,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/client-integration-nextjs@npm:0.12.3":
+"@apollo/client-integration-nextjs@npm:^0.12.3":
   version: 0.12.3
   resolution: "@apollo/client-integration-nextjs@npm:0.12.3"
   dependencies:
@@ -91,19 +91,6 @@ __metadata:
     subscriptions-transport-ws:
       optional: true
   checksum: 10/1eb44b971a9577018a93c3429fd18cc96340766dc5e5cdf002ff4bd0c0755d130d6994d4a15ff159243b7d2ac0261100382c2ae803d471909150fb33e873a3f4
-  languageName: node
-  linkType: hard
-
-"@apollo/experimental-nextjs-app-support@npm:^0.12.3":
-  version: 0.12.3
-  resolution: "@apollo/experimental-nextjs-app-support@npm:0.12.3"
-  dependencies:
-    "@apollo/client-integration-nextjs": "npm:0.12.3"
-  peerDependencies:
-    "@apollo/client": ^3.13.0
-    next: ^15.2.3
-    react: ^19
-  checksum: 10/c698de78668a8e23f5c15153f625d3d47137ac5e44f81c87cfec61cd8c45dee09aaf7874738efd15af4d32d658601d41843889256829605904b11e0c9138a137
   languageName: node
   linkType: hard
 
@@ -6052,7 +6039,7 @@ __metadata:
   resolution: "hoarder-ui@workspace:."
   dependencies:
     "@apollo/client": "npm:^3.13.9"
-    "@apollo/experimental-nextjs-app-support": "npm:^0.12.3"
+    "@apollo/client-integration-nextjs": "npm:^0.12.3"
     "@date-fns/tz": "npm:^1.4.1"
     "@emotion/cache": "npm:^11.14.0"
     "@emotion/react": "npm:^11.14.0"
