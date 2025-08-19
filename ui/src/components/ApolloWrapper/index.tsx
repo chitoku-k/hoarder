@@ -1,7 +1,7 @@
 'use client'
 
 import type { FunctionComponent, ReactNode } from 'react'
-import { ApolloNextAppProvider } from '@apollo/experimental-nextjs-app-support'
+import { ApolloNextAppProvider } from '@apollo/client-integration-nextjs'
 
 import { makeClient } from '@/graphql'
 

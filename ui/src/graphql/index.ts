@@ -6,7 +6,7 @@ import { buildAxiosFetch } from '@lifeomic/axios-fetch'
 import { disableFragmentWarnings, split } from '@apollo/client'
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions'
 import { getMainDefinition, relayStylePagination } from '@apollo/client/utilities'
-import { ApolloClient, InMemoryCache } from '@apollo/experimental-nextjs-app-support'
+import { ApolloClient, InMemoryCache } from '@apollo/client-integration-nextjs'
 
 interface ApolloRequestInit extends RequestInit {
   onUploadProgress?: AxiosRequestConfig['onUploadProgress']
