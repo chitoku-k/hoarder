@@ -58,7 +58,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/client@npm:^3.13.9, @apollo/client@npm:^3.8.0":
+"@apollo/client@npm:^3.8.0":
   version: 3.13.9
   resolution: "@apollo/client@npm:3.13.9"
   dependencies:
@@ -91,6 +91,37 @@ __metadata:
     subscriptions-transport-ws:
       optional: true
   checksum: 10/1eb44b971a9577018a93c3429fd18cc96340766dc5e5cdf002ff4bd0c0755d130d6994d4a15ff159243b7d2ac0261100382c2ae803d471909150fb33e873a3f4
+  languageName: node
+  linkType: hard
+
+"@apollo/client@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "@apollo/client@npm:4.0.0"
+  dependencies:
+    "@graphql-typed-document-node/core": "npm:^3.1.1"
+    "@wry/caches": "npm:^1.0.0"
+    "@wry/equality": "npm:^0.5.6"
+    "@wry/trie": "npm:^0.5.0"
+    graphql-tag: "npm:^2.12.6"
+    optimism: "npm:^0.18.0"
+    tslib: "npm:^2.3.0"
+  peerDependencies:
+    graphql: ^16.0.0
+    graphql-ws: ^5.5.5 || ^6.0.3
+    react: ^17.0.0 || ^18.0.0 || >=19.0.0-rc
+    react-dom: ^17.0.0 || ^18.0.0 || >=19.0.0-rc
+    rxjs: ^7.3.0
+    subscriptions-transport-ws: ^0.9.0 || ^0.11.0
+  peerDependenciesMeta:
+    graphql-ws:
+      optional: true
+    react:
+      optional: true
+    react-dom:
+      optional: true
+    subscriptions-transport-ws:
+      optional: true
+  checksum: 10/c90a2e37229257644abf8f78b92dda712ecf2606139a81631b79ec63523d8db7bc834920b558dd88fa3a59119a0adc240dfe657e1877ef5e28bcb00421a6b7df
   languageName: node
   linkType: hard
 
@@ -6038,7 +6069,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "hoarder-ui@workspace:."
   dependencies:
-    "@apollo/client": "npm:^3.13.9"
+    "@apollo/client": "npm:^4.0.0"
     "@apollo/client-integration-nextjs": "npm:^0.12.3"
     "@date-fns/tz": "npm:^1.4.1"
     "@emotion/cache": "npm:^11.14.0"
