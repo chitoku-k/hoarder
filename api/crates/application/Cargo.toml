@@ -60,7 +60,7 @@ version = "0.13.1"
 version = "1.4.1"
 
 [dev-dependencies.serde_json]
-version = "1.0.142"
+version = "1.0.143"
 
 [dev-dependencies.tower]
 version = "0.5.2"
