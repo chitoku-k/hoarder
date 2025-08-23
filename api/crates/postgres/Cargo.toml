@@ -34,7 +34,7 @@ features = ["std"]
 default-features = false
 
 [dependencies.ordermap]
-version = "0.5.8"
+version = "0.5.9"
 features = ["serde"]
 
 [dependencies.sea-query]
