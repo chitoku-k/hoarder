@@ -19,7 +19,7 @@ version = "2.0.0"
 features = ["sync"]
 
 [dependencies.phf]
-version = "0.12.1"
+version = "0.13.1"
 features = ["macros"]
 
 [dev-dependencies.pretty_assertions]
