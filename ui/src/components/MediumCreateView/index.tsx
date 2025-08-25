@@ -24,15 +24,14 @@ import MediumItemMetadataSummaryShow from '@/components/MediumItemMetadataSummar
 import MediumItemMetadataTagCreate from '@/components/MediumItemMetadataTagCreate'
 import MediumItemMetadataTagEdit from '@/components/MediumItemMetadataTagEdit'
 import MediumItemMetadataTagList from '@/components/MediumItemMetadataTagList'
-import MediumItemReplicaDeleteDialog from '@/components/MediumItemReplicaDeleteDialog'
 import type { TagTagTypeInput } from '@/graphql/types.generated'
-import { useBeforeUnload, useCreateMedium, useDeleteReplica, useUpdateMedium } from '@/hooks'
+import { useBeforeUnload, useCreateMedium, useUpdateMedium } from '@/hooks'
 import type { Medium, Replica } from '@/types'
 
 import styles from './styles.module.scss'
 
-const hasChanges = (medium: Medium | null, replicas: (Replica | ReplicaCreate)[], removingReplicas: Replica[]) => {
-  if ((medium?.replicas?.length ?? 0) !== replicas.length || removingReplicas.length > 0) {
+const hasChanges = (medium: Medium | null, replicas: (Replica | ReplicaCreate)[]) => {
+  if ((medium?.replicas?.length ?? 0) !== replicas.length) {
     return true
   }
 
@@ -56,7 +55,6 @@ const MediumCreateView: FunctionComponent = () => {
   const [ resolveMedium, setResolveMedium ] = useState(() => () => Promise.reject<Medium>())
   const [ createMedium, { loading: createLoading } ] = useCreateMedium()
   const [ updateMedium, { loading: updateLoading } ] = useUpdateMedium()
-  const [ deleteReplica ] = useDeleteReplica()
 
   const [ editingSummary, setEditingSummary ] = useState(true)
   const [ editingSources, setEditingSources ] = useState(true)
@@ -65,8 +63,6 @@ const MediumCreateView: FunctionComponent = () => {
   const [ resolveSourceIDs, setResolveSourceIDs ] = useState(() => () => Promise.resolve<string[]>([]))
   const [ tagTagTypeIDs, setTagTagTypeIDs ] = useState<TagTagTypeInput[]>([])
   const [ replicas, setReplicas ] = useState<(Replica | ReplicaCreate)[]>([])
-  const [ removingReplicas, setRemovingReplicas ] = useState<Replica[]>([])
-  const [ deletingObjects, setDeletingObjects ] = useState<MediumDeleteObjects | null>(null)
 
   const [ uploading, setUploading ] = useState(false)
   const [ uploadAborting, setUploadAborting ] = useState(false)
@@ -88,33 +84,6 @@ const MediumCreateView: FunctionComponent = () => {
 
       return replicas.toSpliced(idx, 1)
     })
-
-    setRemovingReplicas(removingReplicas => {
-      if (!isReplica(replica)) {
-        return removingReplicas
-      }
-
-      const idx = removingReplicas.findIndex(({ id }) => id === replica.id)
-      if (idx >= 0) {
-        return removingReplicas
-      }
-
-      return [
-        ...removingReplicas,
-        replica,
-      ]
-    })
-  }, [])
-
-  const restoreReplica = useCallback((replica: Replica) => {
-    setRemovingReplicas(removingReplicas => {
-      const idx = removingReplicas.findIndex(({ id }) => id === replica.id)
-      if (idx < 0) {
-        return removingReplicas
-      }
-
-      return removingReplicas.toSpliced(idx, 1)
-    })
   }, [])
 
   const editSummary = useCallback(() => {
@@ -124,7 +93,6 @@ const MediumCreateView: FunctionComponent = () => {
   const closeEditSummary = useCallback((newReplicas?: Replica[]) => {
     setEditingSummary(false)
     setReplicas(() => newReplicas ?? medium?.replicas ?? [])
-    setRemovingReplicas([])
   }, [ medium ])
 
   const editSources = useCallback(() => {
@@ -192,33 +160,7 @@ const MediumCreateView: FunctionComponent = () => {
     setUploading(false)
     setUploadAborting(false)
 
-    let deleteObject: boolean | null = null
-    if (removingReplicas.length) {
-      const { promise: confirm, resolve: onConfirm, reject: onCancel } = Promise.withResolvers<boolean>()
-      setDeletingObjects({ onConfirm, onCancel })
-
-      try {
-        deleteObject = await confirm
-      } catch {
-        return
-      }
-    }
-
-    const newReplicas: Promise<Replica | void>[] = []
-    for (const replica of replicas) {
-      if (removingReplicas.some(({ id }) => id === replica.id)) {
-        newReplicas.push(deleteReplica({ id: replica.id }).then(
-          () => {},
-          e => {
-            throw new Error('error deleting replica', { cause: e })
-          },
-        ))
-      } else {
-        newReplicas.push(Promise.resolve(replica))
-      }
-    }
-
-    await Promise.all(newReplicas)
+    await Promise.all(replicas)
       .then(
         results => {
           return updateMedium({
@@ -240,7 +182,7 @@ const MediumCreateView: FunctionComponent = () => {
           setError(e)
         },
       )
-  }, [ updateMedium, deleteReplica, removingReplicas, router ])
+  }, [ updateMedium, router ])
 
   const save = useCallback(async (current: MediumCreate) => {
     const newResolveMedium = async () => {
@@ -293,7 +235,7 @@ const MediumCreateView: FunctionComponent = () => {
   }, [ router ])
 
   const loading = createLoading || updateLoading
-  const changed = hasChanges(medium, replicas, removingReplicas)
+  const changed = hasChanges(medium, replicas)
   useBeforeUnload(changed)
 
   return (
@@ -305,9 +247,7 @@ const MediumCreateView: FunctionComponent = () => {
             gap={32}
             replicas={replicas}
             setReplicas={setReplicas}
-            removingReplicas={removingReplicas}
             removeReplica={removeReplica}
-            restoreReplica={restoreReplica}
           />
         ) : (
           <MediumItemImageList
@@ -365,18 +305,6 @@ const MediumCreateView: FunctionComponent = () => {
           abort={closeUpload}
         />
       ) : null}
-      {deletingObjects ? (
-        <MediumItemReplicaDeleteDialog
-          close={() => {
-            deletingObjects.onCancel()
-            setDeletingObjects(null)
-          }}
-          save={result => {
-            deletingObjects.onConfirm(result)
-            setDeletingObjects(null)
-          }}
-        />
-      ) : null}
       {error ? (
         <Portal>
           <Snackbar
@@ -392,11 +320,6 @@ const MediumCreateView: FunctionComponent = () => {
 
 export interface MediumCreate {
   createdAt: string | null
-}
-
-interface MediumDeleteObjects {
-  onConfirm: (result: boolean) => void
-  onCancel: () => void
 }
 
 export default MediumCreateView
