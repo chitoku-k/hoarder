@@ -7,6 +7,7 @@ const nextConfig = {
   },
   images: {
     minimumCacheTTL: 7 * 86_400,
+    qualities: [100],
   },
   output: 'standalone',
   rewrites: async () => [
