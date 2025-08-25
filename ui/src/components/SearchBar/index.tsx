@@ -4,7 +4,7 @@ import type { FunctionComponent, ComponentPropsWithoutRef, SyntheticEvent } from
 import { useMemo, useState } from 'react'
 import { useCallback } from 'react'
 import clsx from 'clsx'
-import type { AutocompleteRenderGetTagProps } from '@mui/material/Autocomplete'
+import type { AutocompleteRenderValueGetItemProps } from '@mui/material/Autocomplete'
 import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
 import LabelIcon from '@mui/icons-material/Label'
@@ -61,7 +61,7 @@ const SearchBar: FunctionComponent<SearchBarProps> = ({
     </li>
   ), [])
 
-  const renderMetadataTags = useCallback((metadata: Metadata[], getTagProps: AutocompleteRenderGetTagProps) => metadata.map((option, index) => {
+  const renderMetadataValue = useCallback((metadata: Metadata[], getTagProps: AutocompleteRenderValueGetItemProps<true>) => metadata.map((option, index) => {
     const { key, ...props } = getTagProps({ index })
     return (
       <Chip key={key} label={<MetadataOption className={styles.chip} metadata={option} />} {...props} />
@@ -133,7 +133,7 @@ const SearchBar: FunctionComponent<SearchBarProps> = ({
         openOnFocus
         placeholder={placeholder}
         renderOption={renderMetadataOption}
-        renderTags={renderMetadataTags}
+        renderValue={renderMetadataValue}
         value={value}
         inputValue={inputValue}
         icon={({ ...props }) => <SearchIcon fontSize="small" {...props} />}
