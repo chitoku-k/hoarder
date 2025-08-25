@@ -85,7 +85,7 @@ const MediumItemImageEdit: FunctionComponent<MediumItemImageEditProps> = ({
   }, [ removeReplica ])
 
   const handleRestore = useCallback((replica: Replica) => {
-    restoreReplica(replica)
+    restoreReplica?.(replica)
   }, [ restoreReplica ])
 
   const handleAppendFiles = useCallback((files: File[]) => {
@@ -263,12 +263,12 @@ const MediumItemImageEdit: FunctionComponent<MediumItemImageEditProps> = ({
 
   const itemSize = useCallback((el: HTMLElement) => el.getBoundingClientRect().height, [])
 
-  const currentReplicas = replicas.filter(r => !isReplica(r) || !removingReplicas.some(({ id }) => id === r.id))
+  const currentReplicas = replicas.filter(r => !isReplica(r) || !removingReplicas?.some(({ id }) => id === r.id))
   const currentItems = replicas.map((current): ReplicaItem => ({
     total: replicas.length,
     current,
     currentIndex: currentReplicas.indexOf(current),
-    currentTotal: replicas.length - removingReplicas.length,
+    currentTotal: replicas.length - (removingReplicas?.length ?? 0),
     removing: isReplica(current) && !currentReplicas.includes(current),
   }))
 
@@ -360,9 +360,9 @@ export interface MediumItemImageEditProps {
   gap?: number
   replicas: (Replica | ReplicaCreate)[]
   setReplicas: (setReplicas: (replicas: (Replica | ReplicaCreate)[]) => (Replica | ReplicaCreate)[]) => void
-  removingReplicas: Replica[]
+  removingReplicas?: Replica[]
   removeReplica: (replica: Replica | ReplicaCreate) => void
-  restoreReplica: (replica: Replica) => void
+  restoreReplica?: (replica: Replica) => void
 }
 
 export default MediumItemImageEdit
