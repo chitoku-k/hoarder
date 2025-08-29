@@ -2419,13 +2419,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-date-pickers@npm:^8.10.2":
-  version: 8.10.2
-  resolution: "@mui/x-date-pickers@npm:8.10.2"
+"@mui/x-date-pickers@npm:^8.11.0":
+  version: 8.11.0
+  resolution: "@mui/x-date-pickers@npm:8.11.0"
   dependencies:
     "@babel/runtime": "npm:^7.28.2"
     "@mui/utils": "npm:^7.3.1"
-    "@mui/x-internals": "npm:8.10.2"
+    "@mui/x-internals": "npm:8.11.0"
     "@types/react-transition-group": "npm:^4.4.12"
     clsx: "npm:^2.1.1"
     prop-types: "npm:^15.8.1"
@@ -2463,13 +2463,13 @@ __metadata:
       optional: true
     moment-jalaali:
       optional: true
-  checksum: 10/3af019724632604186963d8d4a1b9354d83a0e14a73e2e256c1d340f9d83a2fbdd046165a48a6035edb53d651ca59847852879feb9eb80fff6d6a12b92410549
+  checksum: 10/3b68519ac2d7b8f5f975f8e258675b877cbe10511f576122041cc8559f902cc75a5a4f535b2e2b54dcfc9848658910c70f2d55efca00d89258b62dc3ace5ff29
   languageName: node
   linkType: hard
 
-"@mui/x-internals@npm:8.10.2":
-  version: 8.10.2
-  resolution: "@mui/x-internals@npm:8.10.2"
+"@mui/x-internals@npm:8.11.0":
+  version: 8.11.0
+  resolution: "@mui/x-internals@npm:8.11.0"
   dependencies:
     "@babel/runtime": "npm:^7.28.2"
     "@mui/utils": "npm:^7.3.1"
@@ -2477,7 +2477,7 @@ __metadata:
     use-sync-external-store: "npm:^1.5.0"
   peerDependencies:
     react: ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10/a6100403ea0b91464f68fc4f7d1109b33b299f8dba6c190c2fb100ea94fb5d00027bc89dde6b30c4b4ce91a22c747a6a465883dd5cddf9ac1b184674f03b3931
+  checksum: 10/be506292ecccc3776ccb3e03353771a26747847127df91d3acec4256e14a6246bb1b596a99df3dee4145b799e854b0452bdd15da3b4d56da80d517a9a6873502
   languageName: node
   linkType: hard
 
@@ -6015,7 +6015,7 @@ __metadata:
     "@mui/material": "npm:^7.3.1"
     "@mui/material-nextjs": "npm:^7.3.0"
     "@mui/system": "npm:^7.3.1"
-    "@mui/x-date-pickers": "npm:^8.10.2"
+    "@mui/x-date-pickers": "npm:^8.11.0"
     "@parcel/watcher": "npm:^2.5.1"
     "@react-aria/i18n": "npm:^3.12.11"
     "@types/apollo-upload-client": "npm:^18.0.0"
