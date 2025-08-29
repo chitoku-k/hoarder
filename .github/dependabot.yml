@@ -39,6 +39,7 @@ updates:
     apollo:
       patterns:
       - "@apollo/*"
+      - apollo-upload-client
     date-fns:
       patterns:
       - date-fns
