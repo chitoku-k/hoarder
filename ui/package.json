@@ -27,7 +27,7 @@
     "@mui/material": "^7.3.1",
     "@mui/material-nextjs": "^7.3.0",
     "@mui/system": "^7.3.1",
-    "@mui/x-date-pickers": "^8.10.2",
+    "@mui/x-date-pickers": "^8.11.0",
     "@react-aria/i18n": "^3.12.11",
     "@types/apollo-upload-client": "^18.0.0",
     "@types/deep-equal": "^1.0.4",
