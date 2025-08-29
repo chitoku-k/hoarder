@@ -3578,15 +3578,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"apollo-upload-client@npm:^18.0.1":
-  version: 18.0.1
-  resolution: "apollo-upload-client@npm:18.0.1"
+"apollo-upload-client@npm:^19.0.0":
+  version: 19.0.0
+  resolution: "apollo-upload-client@npm:19.0.0"
   dependencies:
     extract-files: "npm:^13.0.0"
   peerDependencies:
-    "@apollo/client": ^3.8.0
+    "@apollo/client": ^4.0.0
     graphql: 14 - 16
-  checksum: 10/9c777f4fe4631a0983c39271b857358e3ecc49c6a8c979e9f71fd84beed12a42243482bf26333e94648e0c9d7d7c5678e434c2c605a24ebb927f0bc660f39d27
+    rxjs: ^7.3.0
+  checksum: 10/d1b23fb55d1d74ee16950686dd0d7cde3cf2ded9ad1a8a01d66e40d58c4e3f533351137bcf3b4fd568e6d76195d26ca73cbbabce527ba2ace17fe0328f51cf92
   languageName: node
   linkType: hard
 
@@ -6026,7 +6027,7 @@ __metadata:
     "@types/react-dom": "npm:^19.1.7"
     "@types/strict-uri-encode": "npm:^2.0.2"
     "@types/uuid": "npm:^10.0.0"
-    apollo-upload-client: "npm:^18.0.1"
+    apollo-upload-client: "npm:^19.0.0"
     axios: "npm:^1.11.0"
     clsx: "npm:^2.1.1"
     date-fns: "npm:^4.1.0"
