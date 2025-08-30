@@ -1,9 +1,9 @@
 import type { AxiosRequestConfig } from 'axios'
 import axios from 'axios'
-import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'
+import UploadHttpLink from 'apollo-upload-client/UploadHttpLink.mjs'
 import { createClient } from 'graphql-ws'
 import { buildAxiosFetch } from '@lifeomic/axios-fetch'
-import { disableFragmentWarnings, split } from '@apollo/client'
+import { ApolloLink, disableFragmentWarnings } from '@apollo/client'
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions'
 import { getMainDefinition, relayStylePagination } from '@apollo/client/utilities'
 import { ApolloClient, InMemoryCache } from '@apollo/client-integration-nextjs'
@@ -25,7 +25,7 @@ export const makeClient = () => new ApolloClient({
       },
     },
   }),
-  link: split(
+  link: ApolloLink.split(
     ({ query }) => {
       const definition = getMainDefinition(query)
       return definition.kind === 'OperationDefinition' && definition.operation === 'subscription'
@@ -33,7 +33,7 @@ export const makeClient = () => new ApolloClient({
     new GraphQLWsLink(createClient({
       url: typeof window === 'undefined' ? `${process.env.BASE_URL}/graphql/subscriptions` : '/graphql/subscriptions',
     })),
-    createUploadLink({
+    new UploadHttpLink({
       uri: typeof window === 'undefined' ? `${process.env.BASE_URL}/graphql` : '/graphql',
       fetch: buildAxiosFetch(axios, (config, _input, init: ApolloRequestInit = {}) => ({
         ...config,

@@ -35,6 +35,7 @@
       ]
     },
     "allowJs": true,
+    "maxNodeModuleJsDepth": 10,
     "esModuleInterop": true
   },
   "include": [
