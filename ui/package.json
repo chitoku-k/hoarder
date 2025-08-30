@@ -29,7 +29,6 @@
     "@mui/system": "^7.3.1",
     "@mui/x-date-pickers": "^8.11.0",
     "@react-aria/i18n": "^3.12.12",
-    "@types/apollo-upload-client": "^18.0.0",
     "@types/deep-equal": "^1.0.4",
     "@types/historykana": "^1.0.4",
     "@types/node": "^24.3.0",
