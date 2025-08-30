@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
-import type { ApolloError } from '@apollo/client'
-import { useMutation } from '@apollo/client'
+import type { ErrorLike } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 
 import { MediumDocument } from '@/graphql/Medium'
 import type { UpdateMediumMutation, UpdateMediumMutationVariables } from '@/graphql/UpdateMedium'
@@ -10,7 +10,7 @@ type UpdateMedium = UpdateMediumMutation['updateMedium']
 
 export function useUpdateMedium(): [
   (variables: UpdateMediumMutationVariables) => Promise<UpdateMedium>,
-  { data?: UpdateMedium, loading: boolean, error?: ApolloError },
+  { data?: UpdateMedium, loading: boolean, error?: ErrorLike },
 ] {
   const [ updateMedium, { data, loading, error } ] = useMutation(UpdateMediumDocument, {
     update(cache, { data }) {
@@ -34,10 +34,13 @@ export function useUpdateMedium(): [
 
   return [
     useCallback(async (variables: UpdateMediumMutationVariables) => {
-      const { data } = await updateMedium({
+      const { data, error } = await updateMedium({
         variables,
       })
-      return data?.updateMedium!
+      if (!data) {
+        throw error
+      }
+      return data.updateMedium
     }, [ updateMedium ]),
     {
       data: data?.updateMedium,

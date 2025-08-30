@@ -1,31 +1,32 @@
 import { useCallback } from 'react'
-import type { ApolloError } from '@apollo/client'
-import { useMutation } from '@apollo/client'
+import type { ErrorLike } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 
 import type { AttachTagMutation, AttachTagMutationVariables } from '@/graphql/AttachTag'
 import { AttachTagDocument } from '@/graphql/AttachTag'
-import { TagDocument } from '@/graphql/Tag'
 import { AllTagsDocument, TagsDocument } from '@/graphql/Tags'
 
 type AttachTag = AttachTagMutation['attachTag']
 
 export function useAttachTag(): [
   (variables: AttachTagMutationVariables) => Promise<AttachTag>,
-  { data?: AttachTag, loading: boolean, error?: ApolloError },
+  { data?: AttachTag, loading: boolean, error?: ErrorLike },
 ] {
   const [ attachTag, { data, loading, error } ] = useMutation(AttachTagDocument)
   return [
     useCallback(async (variables: AttachTagMutationVariables) => {
-      const { data } = await attachTag({
+      const { data, error } = await attachTag({
         variables,
         awaitRefetchQueries: true,
         refetchQueries: [
           AllTagsDocument,
-          TagDocument,
           TagsDocument,
         ],
       })
-      return data?.attachTag!
+      if (!data) {
+        throw error
+      }
+      return data.attachTag
     }, [ attachTag ]),
     {
       data: data?.attachTag,

@@ -5,7 +5,9 @@ import { forwardRef, useCallback, useMemo, useState } from 'react'
 import type { TableComponents } from 'react-virtuoso'
 import { TableVirtuoso } from 'react-virtuoso'
 import strictUriEncode from 'strict-uri-encode'
-import { ApolloError, Observable } from '@apollo/client'
+import { AxiosError, isAxiosError } from 'axios'
+import { filter, from, mergeMap } from 'rxjs'
+import { Observable } from '@apollo/client'
 import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
 import DialogActions from '@mui/material/DialogActions'
@@ -155,7 +157,7 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
 
       const { promise, resolve, reject } = Promise.withResolvers<void>()
       const subscription = observable
-        .filter(({ id }) => id === newReplica.id)
+        .pipe(filter(({ id }) => id === newReplica.id))
         .subscribe(replica => {
           switch (replica.status.phase) {
             case ReplicaPhase.Ready: {
@@ -217,7 +219,7 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
         return await processReplicaUpload(medium, replica, observable, true)
       }
 
-      if (e instanceof ApolloError && e.networkError?.name === 'CanceledError') {
+      if (isAxiosError(e) && e.code === AxiosError.ERR_CANCELED) {
         handleUploadProgress(replica, { status: 'aborted' })
       } else {
         handleUploadProgress(replica, { status: 'error', error: e })
@@ -240,7 +242,7 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
     onProgress?.('uploading')
 
     const observable = watchMedium({ id: medium.id })
-      .flatMap(({ data }) => Observable.from(data?.medium.replicas ?? []))
+      .pipe(mergeMap(({ data }) => from(data?.medium.replicas ?? [])))
 
     await Promise.allSettled(
       replicas.map(replica => isReplica(replica)

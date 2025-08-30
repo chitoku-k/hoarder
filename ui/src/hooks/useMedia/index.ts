@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { useSuspenseQuery } from '@apollo/client'
+import { useSuspenseQuery } from '@apollo/client/react'
 
 import type { AllMediaQuery } from '@/graphql/Media'
 import { AllMediaDocument } from '@/graphql/Media'

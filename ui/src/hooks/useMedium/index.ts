@@ -1,4 +1,4 @@
-import { useSuspenseQuery } from '@apollo/client'
+import { useSuspenseQuery } from '@apollo/client/react'
 
 import type { MediumQuery, MediumQueryVariables } from '@/graphql/Medium'
 import { MediumDocument } from '@/graphql/Medium'

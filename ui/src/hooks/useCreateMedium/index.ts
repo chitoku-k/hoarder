@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
-import type { ApolloError, Reference } from '@apollo/client'
-import { useMutation } from '@apollo/client'
+import type { ErrorLike, Reference } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 
 import type { CreateMediumMutation, CreateMediumMutationVariables } from '@/graphql/CreateMedium'
 import { CreateMediumDocument } from '@/graphql/CreateMedium'
@@ -12,7 +12,7 @@ type MediumNode = AllMediaQuery['allMedia']['edges'][number]['node']
 
 export function useCreateMedium(): [
   (variables: CreateMediumMutationVariables) => Promise<CreateMedium>,
-  { data?: CreateMedium, loading: boolean, error?: ApolloError },
+  { data?: CreateMedium, loading: boolean, error?: ErrorLike },
 ] {
   const [ createMedium, { data, loading, error } ] = useMutation(CreateMediumDocument, {
     update(cache, { data }) {
@@ -56,10 +56,13 @@ export function useCreateMedium(): [
 
   return [
     useCallback(async (variables: CreateMediumMutationVariables) => {
-      const { data } = await createMedium({
+      const { data, error } = await createMedium({
         variables,
       })
-      return data?.createMedium!
+      if (!data) {
+        throw error
+      }
+      return data.createMedium
     }, [ createMedium ]),
     {
       data: data?.createMedium,

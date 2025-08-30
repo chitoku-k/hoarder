@@ -30,7 +30,7 @@ const fetchSearchQuery = async (sourceIDs: string[], tagIDs: string[]): Promise<
       ? [ { tagTypeID, tagID } ]
       : [])
 
-  const { data } = await query({
+  const { data, error } = await query({
     query: SearchDocument,
     variables: {
       sourceIDs,
@@ -38,6 +38,9 @@ const fetchSearchQuery = async (sourceIDs: string[], tagIDs: string[]): Promise<
       tagTypeIDs: tagTagTypeIDs.map(({ tagTypeID }) => tagTypeID),
     },
   })
+  if (!data) {
+    throw error
+  }
   switch (true) {
     case data.sources.length > 0: {
       return {

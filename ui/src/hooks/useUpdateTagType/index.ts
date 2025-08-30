@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
-import type { ApolloError } from '@apollo/client'
-import { useMutation } from '@apollo/client'
+import type { ErrorLike } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 
 import { AllTagTypesDocument } from '@/graphql/AllTagTypes'
 import type { UpdateTagTypeMutation, UpdateTagTypeMutationVariables } from '@/graphql/UpdateTagType'
@@ -10,19 +10,22 @@ type UpdateTagType = UpdateTagTypeMutation['updateTagType']
 
 export function useUpdateTagType(): [
   (variables: UpdateTagTypeMutationVariables) => Promise<UpdateTagType>,
-  { data?: UpdateTagType, loading: boolean, error?: ApolloError },
+  { data?: UpdateTagType, loading: boolean, error?: ErrorLike },
 ] {
   const [ updateTagType, { data, loading, error } ] = useMutation(UpdateTagTypeDocument)
   return [
     useCallback(async (variables: UpdateTagTypeMutationVariables) => {
-      const { data } = await updateTagType({
+      const { data, error } = await updateTagType({
         variables,
         awaitRefetchQueries: true,
         refetchQueries: [
           AllTagTypesDocument,
         ],
       })
-      return data?.updateTagType!
+      if (!data) {
+        throw error
+      }
+      return data.updateTagType
     }, [ updateTagType ]),
     {
       data: data?.updateTagType,
