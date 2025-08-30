@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
-import type { ApolloError } from '@apollo/client'
-import { useMutation } from '@apollo/client'
+import type { ErrorLike } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 
 import { AllExternalServicesDocument } from '@/graphql/AllExternalServices'
 import type { CreateExternalServiceMutation, CreateExternalServiceMutationVariables } from '@/graphql/CreateExternalService'
@@ -10,19 +10,22 @@ type CreateExternalService = CreateExternalServiceMutation['createExternalServic
 
 export function useCreateExternalService(): [
   (variables: CreateExternalServiceMutationVariables) => Promise<CreateExternalService>,
-  { data?: CreateExternalService, loading: boolean, error?: ApolloError },
+  { data?: CreateExternalService, loading: boolean, error?: ErrorLike },
 ] {
   const [ createExternalService, { data, loading, error } ] = useMutation(CreateExternalServiceDocument)
   return [
     useCallback(async (variables: CreateExternalServiceMutationVariables) => {
-      const { data } = await createExternalService({
+      const { data, error } = await createExternalService({
         variables,
         awaitRefetchQueries: true,
         refetchQueries: [
           AllExternalServicesDocument,
         ],
       })
-      return data?.createExternalService!
+      if (!data) {
+        throw error
+      }
+      return data.createExternalService
     }, [ createExternalService ]),
     {
       data: data?.createExternalService,

@@ -1,4 +1,4 @@
-import { skipToken, useSuspenseQuery } from '@apollo/client'
+import { skipToken, useSuspenseQuery } from '@apollo/client/react'
 
 import type { TagQuery, TagQueryVariables } from '@/graphql/Tag'
 import { TagDocument } from '@/graphql/Tag'

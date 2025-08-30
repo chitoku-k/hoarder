@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
-import type { ApolloError } from '@apollo/client'
-import { useMutation } from '@apollo/client'
+import type { ErrorLike } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 
 import { AllTagTypesDocument } from '@/graphql/AllTagTypes'
 import type { CreateTagTypeMutation, CreateTagTypeMutationVariables } from '@/graphql/CreateTagType'
@@ -10,19 +10,22 @@ type CreateTagType = CreateTagTypeMutation['createTagType']
 
 export function useCreateTagType(): [
   (variables: CreateTagTypeMutationVariables) => Promise<CreateTagType>,
-  { data?: CreateTagType, loading: boolean, error?: ApolloError },
+  { data?: CreateTagType, loading: boolean, error?: ErrorLike },
 ] {
   const [ createTagType, { data, loading, error } ] = useMutation(CreateTagTypeDocument)
   return [
     useCallback(async (variables: CreateTagTypeMutationVariables) => {
-      const { data } = await createTagType({
+      const { data, error } = await createTagType({
         variables,
         awaitRefetchQueries: true,
         refetchQueries: [
           AllTagTypesDocument,
         ],
       })
-      return data?.createTagType!
+      if (!data) {
+        throw error
+      }
+      return data.createTagType
     }, [ createTagType ]),
     {
       data: data?.createTagType,

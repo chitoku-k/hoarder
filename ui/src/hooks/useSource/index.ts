@@ -1,4 +1,4 @@
-import { skipToken, useSuspenseQuery } from '@apollo/client'
+import { skipToken, useSuspenseQuery } from '@apollo/client/react'
 
 import type { SourceQuery, SourceQueryVariables } from '@/graphql/Source'
 import { SourceDocument } from '@/graphql/Source'

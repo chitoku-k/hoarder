@@ -1,4 +1,4 @@
-import { skipToken, useSuspenseQuery } from '@apollo/client'
+import { skipToken, useSuspenseQuery } from '@apollo/client/react'
 
 import type { AllTagTypesQuery } from '@/graphql/AllTagTypes'
 import { AllTagTypesDocument } from '@/graphql/AllTagTypes'

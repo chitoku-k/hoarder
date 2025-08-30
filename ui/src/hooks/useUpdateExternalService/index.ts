@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
-import type { ApolloError } from '@apollo/client'
-import { useMutation } from '@apollo/client'
+import type { ErrorLike } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 
 import { AllExternalServicesDocument } from '@/graphql/AllExternalServices'
 import type { UpdateExternalServiceMutation, UpdateExternalServiceMutationVariables } from '@/graphql/UpdateExternalService'
@@ -10,19 +10,22 @@ type UpdateExternalService = UpdateExternalServiceMutation['updateExternalServic
 
 export function useUpdateExternalService(): [
   (variables: UpdateExternalServiceMutationVariables) => Promise<UpdateExternalService>,
-  { data?: UpdateExternalService, loading: boolean, error?: ApolloError },
+  { data?: UpdateExternalService, loading: boolean, error?: ErrorLike },
 ] {
   const [ updateExternalService, { data, loading, error } ] = useMutation(UpdateExternalServiceDocument)
   return [
     useCallback(async (variables: UpdateExternalServiceMutationVariables) => {
-      const { data } = await updateExternalService({
+      const { data, error } = await updateExternalService({
         variables,
         awaitRefetchQueries: true,
         refetchQueries: [
           AllExternalServicesDocument,
         ],
       })
-      return data?.updateExternalService!
+      if (!data) {
+        throw error
+      }
+      return data.updateExternalService
     }, [ updateExternalService ]),
     {
       data: data?.updateExternalService,

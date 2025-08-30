@@ -1,4 +1,4 @@
-import { skipToken, useSuspenseQuery } from '@apollo/client'
+import { skipToken, useSuspenseQuery } from '@apollo/client/react'
 
 import type { AllExternalServicesQuery } from '@/graphql/AllExternalServices'
 import { AllExternalServicesDocument } from '@/graphql/AllExternalServices'

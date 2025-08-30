@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { skipToken, useSuspenseQuery } from '@apollo/client'
+import { skipToken, useSuspenseQuery } from '@apollo/client/react'
 
 import type { AllTagsQuery, AllTagsLikeQuery, TagsQuery, AllTagsLikeQueryVariables } from '@/graphql/Tags'
 import { AllTagsDocument, AllTagsLikeDocument, TagsDocument } from '@/graphql/Tags'

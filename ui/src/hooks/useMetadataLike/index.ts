@@ -1,4 +1,4 @@
-import { skipToken, useSuspenseQuery } from '@apollo/client'
+import { skipToken, useSuspenseQuery } from '@apollo/client/react'
 
 import type { MetadataLikeQuery } from '@/graphql/MetadataLike'
 import { MetadataLikeDocument } from '@/graphql/MetadataLike'

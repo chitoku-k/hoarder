@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
-import type { ApolloError } from '@apollo/client'
-import { useMutation } from '@apollo/client'
+import type { ErrorLike } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 
 import type { DeleteTagMutation, DeleteTagMutationVariables } from '@/graphql/DeleteTag'
 import { DeleteTagDocument } from '@/graphql/DeleteTag'
@@ -10,19 +10,22 @@ type DeleteTag = DeleteTagMutation['deleteTag']
 
 export function useDeleteTag(): [
   (variables: DeleteTagMutationVariables) => Promise<DeleteTag>,
-  { data?: DeleteTag, loading: boolean, error?: ApolloError },
+  { data?: DeleteTag, loading: boolean, error?: ErrorLike },
 ] {
   const [ deleteTag, { data, loading, error } ] = useMutation(DeleteTagDocument)
   return [
     useCallback(async (variables: DeleteTagMutationVariables) => {
-      const { data } = await deleteTag({
+      const { data, error } = await deleteTag({
         variables,
         refetchQueries: [
           AllTagsDocument,
           TagsDocument,
         ],
       })
-      return data?.deleteTag!
+      if (!data) {
+        throw error
+      }
+      return data.deleteTag
     }, [ deleteTag ]),
     {
       data: data?.deleteTag,
