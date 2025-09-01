@@ -23,7 +23,7 @@ export function useCreateTagType(): [
         ],
       })
       if (!data) {
-        throw error
+        throw new Error('invalid data', { cause: error })
       }
       return data.createTagType
     }, [ createTagType ]),
