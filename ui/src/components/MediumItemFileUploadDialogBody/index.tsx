@@ -1,7 +1,7 @@
 'use client'
 
-import type { ComponentPropsWithoutRef, FunctionComponent } from 'react'
-import { forwardRef, useCallback, useMemo, useState } from 'react'
+import type { FunctionComponent } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import type { TableComponents } from 'react-virtuoso'
 import { TableVirtuoso } from 'react-virtuoso'
 import strictUriEncode from 'strict-uri-encode'
@@ -281,21 +281,21 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
   const tableComputeItemKey = useCallback((_index: number, replica: ReplicaCreate) => replica.tempid, [])
 
   const tableComponents: TableComponents<ReplicaCreate> = useMemo(() => ({
-    Scroller: forwardRef(({ ...rest }: ComponentPropsWithoutRef<'div'>, ref) => (
-      <TableContainer ref={ref} component={Paper} {...rest} />
-    )),
-    Table: ({ ...rest }) => (
-      <Table className={styles.table} {...rest} />
+    Scroller: props => (
+      <TableContainer component={Paper} {...props} />
     ),
-    TableHead: forwardRef(({ ...rest }: ComponentPropsWithoutRef<'thead'>, ref) => (
-      <TableHead ref={ref} {...rest} />
-    )),
+    Table: props => (
+      <Table className={styles.table} {...props} />
+    ),
+    TableHead: props => (
+      <TableHead {...props} />
+    ),
     TableRow: ({ item, ...rest }) => (
       <TableRow {...rest} />
     ),
-    TableBody: forwardRef(({ ...rest }: ComponentPropsWithoutRef<'tbody'>, ref) => (
-      <TableBody ref={ref} {...rest} />
-    )),
+    TableBody: props => (
+      <TableBody {...props} />
+    ),
   }), [])
 
   const tableFixedHeaderContent = useCallback(() => (
