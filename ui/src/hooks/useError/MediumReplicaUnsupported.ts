@@ -6,8 +6,6 @@ export interface MediumReplicaUnsupported extends GraphQLError {
   extensions: {
     details: {
       code: typeof MEDIUM_REPLICA_UNSUPPORTED
-      data: {
-      }
     }
   }
 }
