@@ -88,7 +88,7 @@ export const generateMetadata = async (
         return {}
       }
     }
-  } catch (e) {
+  } catch {
     return {}
   }
 }

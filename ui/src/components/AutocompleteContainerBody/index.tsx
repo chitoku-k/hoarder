@@ -3,7 +3,6 @@
 import type { ComponentPropsWithoutRef, ComponentType, FunctionComponent, KeyboardEvent, SyntheticEvent } from 'react'
 import { useCallback, useMemo, useState, useTransition } from 'react'
 import { useFilter } from '@react-aria/i18n'
-import type { FilterOptionsState } from '@mui/material'
 import type { AutocompleteProps } from '@mui/material/Autocomplete'
 import Autocomplete from '@mui/material/Autocomplete'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -104,7 +103,7 @@ const AutocompleteContainerBody: FunctionComponent<AutocompleteContainerBodyProp
     </li>
   ), [ Icon ])
 
-  const filterOptions = useCallback((options: string[], _state: FilterOptionsState<string>): string[] => {
+  const filterOptions = useCallback((options: string[]): string[] => {
     const value = inputValue.substring(inputValue.lastIndexOf('/') + 1)
     if (!value.length) {
       return options
