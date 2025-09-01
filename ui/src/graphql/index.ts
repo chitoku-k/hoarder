@@ -14,38 +14,45 @@ interface ApolloRequestInit extends RequestInit {
 
 disableFragmentWarnings()
 
-export const makeClient = () => new ApolloClient({
-  cache: new InMemoryCache({
-    typePolicies: {
-      Query: {
-        fields: {
-          allMedia: relayStylePagination(['sourceIds', 'tagIds', 'order']),
-          allTags: relayStylePagination(['root']),
+export const makeClient = () => {
+  const BASE_URL = typeof window === 'undefined' ? process.env.BASE_URL : ''
+  if (typeof BASE_URL === 'undefined') {
+    throw new Error('BASE_URL must be set')
+  }
+
+  return new ApolloClient({
+    cache: new InMemoryCache({
+      typePolicies: {
+        Query: {
+          fields: {
+            allMedia: relayStylePagination(['sourceIds', 'tagIds', 'order']),
+            allTags: relayStylePagination(['root']),
+          },
         },
       },
-    },
-  }),
-  link: ApolloLink.split(
-    ({ query }) => {
-      const definition = getMainDefinition(query)
-      return definition.kind === 'OperationDefinition' && definition.operation === 'subscription'
-    },
-    new GraphQLWsLink(createClient({
-      url: typeof window === 'undefined' ? `${process.env.BASE_URL}/graphql/subscriptions` : '/graphql/subscriptions',
-    })),
-    new UploadHttpLink({
-      uri: typeof window === 'undefined' ? `${process.env.BASE_URL}/graphql` : '/graphql',
-      fetch: buildAxiosFetch(axios, (config, _input, init: ApolloRequestInit = {}) => ({
-        ...config,
-        signal: init.signal,
-        onUploadProgress: init.onUploadProgress,
-      })) as typeof fetch,
-      fetchOptions: {
-        cache: 'no-store',
-      },
-      headers: {
-        'Apollo-Require-Preflight': 'true',
-      },
     }),
-  ),
-})
+    link: ApolloLink.split(
+      ({ query }) => {
+        const definition = getMainDefinition(query)
+        return definition.kind === 'OperationDefinition' && definition.operation === 'subscription'
+      },
+      new GraphQLWsLink(createClient({
+        url: `${BASE_URL}/graphql/subscriptions`,
+      })),
+      new UploadHttpLink({
+        uri: `${BASE_URL}/graphql`,
+        fetch: buildAxiosFetch(axios, (config, _input, init: ApolloRequestInit = {}) => ({
+          ...config,
+          signal: init.signal,
+          onUploadProgress: init.onUploadProgress,
+        })) as typeof fetch,
+        fetchOptions: {
+          cache: 'no-store',
+        },
+        headers: {
+          'Apollo-Require-Preflight': 'true',
+        },
+      }),
+    ),
+  })
+}

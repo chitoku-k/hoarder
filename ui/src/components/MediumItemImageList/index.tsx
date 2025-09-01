@@ -37,7 +37,9 @@ const MediumItemImageList: FunctionComponent<MediumItemImageListProps> = ({
       <ImageListItem
         className={styles.imageListItem}
         sx={{
-          height: `min(100%, ${item.height}px) !important`,
+          height: typeof item.height === 'number' && Number.isFinite(item.height)
+            ? `min(100%, ${item.height.toString()}px) !important`
+            : null,
         }}
         {...rest}
       />

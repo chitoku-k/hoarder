@@ -157,7 +157,7 @@ const MediumItemMetadataSourceCreate: FunctionComponent<MediumItemMetadataSource
       <Stack spacing={4}>
         {addingExternalServices.map(externalService => (
           <MediumItemMetadataSourceGroupEdit
-            key={`${externalService.id}-${addingSources.get(externalService.id)?.length ?? 0}`}
+            key={`${externalService.id}-${String(addingSources.get(externalService.id)?.length ?? 0)}`}
             loading={loading}
             externalService={externalService}
             sources={[]}
