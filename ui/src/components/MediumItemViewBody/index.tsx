@@ -198,11 +198,11 @@ const MediumItemViewBody: FunctionComponent<MediumItemViewBodyProps> = ({
       }
     }
 
-    const newReplicas: Promise<Replica | void>[] = []
+    const newReplicas: Promise<Replica | null>[] = []
     for (const replica of replicas) {
       if (removingReplicas.some(({ id }) => id === replica.id)) {
         newReplicas.push(deleteReplica({ id: replica.id, deleteObject }).then(
-          () => {},
+          () => null,
           (e: unknown) => {
             throw new Error('error deleting replica', { cause: e })
           },
@@ -217,7 +217,7 @@ const MediumItemViewBody: FunctionComponent<MediumItemViewBodyProps> = ({
         results => {
           return updateMedium({
             id: current.id,
-            replicaOrders: results.filter(r => r !== undefined).map(({ id }) => id),
+            replicaOrders: results.filter(r => r !== null).map(({ id }) => id),
             createdAt: current.createdAt,
           })
         },
