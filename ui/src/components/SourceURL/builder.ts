@@ -1,5 +1,4 @@
 import type {
-  ExternalMetadata,
   ExternalMetadataBluesky,
   ExternalMetadataFantia,
   ExternalMetadataMastodon,
@@ -127,7 +126,7 @@ const builders: Builder[] = [
   },
 ]
 
-export const buildURL = (externalService: ExternalService, externalMetadata: ExternalMetadata): string | null => {
+export const buildURL = (externalService: ExternalService, externalMetadata: unknown): string | null => {
   for (const { kind, build } of builders) {
     if (externalService.kind === kind) {
       return build(externalService, externalMetadata)

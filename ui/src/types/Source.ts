@@ -3,29 +3,11 @@ import { ExternalService } from '@/types'
 export interface Source {
   id: string
   externalService: ExternalService
-  externalMetadata: ExternalMetadata
+  externalMetadata: unknown
   url?: string | null
   createdAt: string
   updatedAt: string
 }
-
-export type ExternalMetadata =
-  | unknown
-  | ExternalMetadataBluesky
-  | ExternalMetadataFantia
-  | ExternalMetadataMastodon
-  | ExternalMetadataMisskey
-  | ExternalMetadataNijie
-  | ExternalMetadataPixiv
-  | ExternalMetadataPixivFanbox
-  | ExternalMetadataPleroma
-  | ExternalMetadataSeiga
-  | ExternalMetadataSkeb
-  | ExternalMetadataThreads
-  | ExternalMetadataWebsite
-  | ExternalMetadataX
-  | ExternalMetadataXfolio
-  | ExternalMetadataCustom
 
 export interface ExternalMetadataBluesky {
   bluesky: {

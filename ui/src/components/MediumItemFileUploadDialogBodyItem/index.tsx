@@ -131,7 +131,7 @@ export interface MediumItemFileUploadDialogBodyItemProps {
   replica: ReplicaCreate
   status: ReplicaUploadStatus
   progress: ReplicaUploadProgress | null
-  error: unknown | null
+  error: unknown
   nameValidationError?: string | null
   onChangeName?: (name: string) => void
 }
