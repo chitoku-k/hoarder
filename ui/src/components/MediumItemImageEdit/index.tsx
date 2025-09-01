@@ -107,10 +107,10 @@ const MediumItemImageEdit: FunctionComponent<MediumItemImageEditProps> = ({
         worker.addEventListener('error', reject)
         worker.postMessage(buffer, [ buffer ])
 
-        let { width, height, orientation } = await promise
-        if (orientation && orientation > 4) {
-          [ width, height ] = [ height, width ]
-        }
+        const size = await promise
+        const [ width, height ] = !size.orientation || size.orientation <= 4
+          ? [ size.width, size.height ]
+          : [ size.height, size.width ]
         return {
           tempid: uuid(),
           name: file.name,
