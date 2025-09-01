@@ -28,7 +28,7 @@ const ExternalServiceDeleteDialogBody: FunctionComponent<ExternalServiceDeleteDi
         close()
         onDelete(externalService)
       },
-      e => {
+      (e: unknown) => {
         console.error('Error deleting external service\n', e)
       },
     )

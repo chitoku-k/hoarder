@@ -125,7 +125,7 @@ const ExternalServiceListColumnBodyCreate: FunctionComponent<ExternalServiceList
       () => {
         close()
       },
-      e => {
+      (e: unknown) => {
         console.error('Error creating external service\n', e)
       },
     )

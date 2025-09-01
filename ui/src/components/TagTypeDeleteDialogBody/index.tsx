@@ -24,7 +24,7 @@ const TagTypeDeleteDialogBody: FunctionComponent<TagTypeDeleteDialogBodyProps> =
         close()
         onDelete(tagType)
       },
-      e => {
+      (e: unknown) => {
         console.error('Error deleting tag type\n', e)
       },
     )
