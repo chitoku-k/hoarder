@@ -153,10 +153,10 @@ const TagListColumnBodyList: FunctionComponent<TagListColumnBodyListProps> = ({
   }, [])
 
   const tagSecondaryNode = useCallback((kana: string, aliases: string[]) => {
-    if (!kana && !aliases?.length) {
+    if (!kana && !aliases.length) {
       return null
     }
-    if (!aliases?.length) {
+    if (!aliases.length) {
       return kana
     }
     return (

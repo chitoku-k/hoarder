@@ -22,7 +22,7 @@ const TagTypeListColumnBodyCreate: FunctionComponent<TagTypeListColumnBodyCreate
   const { graphQLError } = useError()
   const extractKana = useHistorykana()
 
-  const ref = useCallback((input: HTMLElement) => {
+  const ref = useCallback((input: HTMLElement | null) => {
     input?.focus({
       preventScroll: true,
     })

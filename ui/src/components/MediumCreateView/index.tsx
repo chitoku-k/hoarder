@@ -165,7 +165,7 @@ const MediumCreateView: FunctionComponent = () => {
         results => {
           return updateMedium({
             id: current.id,
-            replicaOrders: results.filter(r => r !== undefined).map(({ id }) => id),
+            replicaOrders: results.map(({ id }) => id),
             createdAt: current.createdAt,
           })
         },
