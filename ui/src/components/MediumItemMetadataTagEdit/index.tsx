@@ -52,7 +52,7 @@ const MediumItemMetadataTagEdit: FunctionComponent<MediumItemMetadataTagEditProp
   const [ removingTags, setRemovingTags ] = useState(new Map<TagTypeID, Tag[]>())
 
   const tags = medium.tags ?? []
-  const groups = tags.reduce((groups, { tag, type }) => {
+  const groups = tags.reduce<TagGroup[]>((groups, { tag, type }) => {
     const group = groups.find(t => t.type.id === type.id)
     if (group) {
       group.tags.push(tag)
@@ -63,7 +63,7 @@ const MediumItemMetadataTagEdit: FunctionComponent<MediumItemMetadataTagEditProp
       })
     }
     return groups
-  }, [] as TagGroup[])
+  }, [])
 
   const handleChangeNewTagType = useCallback((type: TagType | null) => {
     if (!type) {
