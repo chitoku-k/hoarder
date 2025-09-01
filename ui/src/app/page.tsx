@@ -8,10 +8,10 @@ import MediumList from '@/components/MediumList'
 import SearchQueryList from '@/components/SearchQueryList'
 import type { Source, Tag, TagType } from '@/types'
 
-const searchParamsToArray = <T extends Partial<Record<string, string | string[]>>>(
+const searchParamsToArray = <T extends Record<string, string | string[]>>(
   searchParams: Promise<T>,
-): Promise<Partial<Record<string, string[]>>> => searchParams.then(
-  params => Object.entries(params).reduce(
+): Promise<Record<string, string[]>> => searchParams.then(
+  params => Object.entries(params).reduce<Record<string, string[]>>(
     (obj, [ k, v ]) => ({
       ...obj,
       [ k ]: Array.isArray(v) ? v : [ v ],
@@ -114,10 +114,7 @@ const Page: FunctionComponent<PageProps> = async ({
   }
 }
 
-export interface SearchParams extends Partial<Record<string, string | string[]>> {
-  source?: string | string[]
-  tag?: string | string[]
-}
+export type SearchParams = Record<string, string | string[]>
 
 export interface PageProps {
   searchParams: Promise<SearchParams>

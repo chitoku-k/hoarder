@@ -60,7 +60,7 @@ const MediumItemMetadataSourceEdit: FunctionComponent<MediumItemMetadataSourceEd
   const [ removingSources, setRemovingSources ] = useState(new Map<ExternalServiceID, Source[]>())
 
   const sources = medium.sources ?? []
-  const groups = sources.reduce((groups, source) => {
+  const groups = sources.reduce<SourceGroup[]>((groups, source) => {
     const group = groups.find(s => s.externalService.id === source.externalService.id)
     if (group) {
       group.sources.push(source)
@@ -71,7 +71,7 @@ const MediumItemMetadataSourceEdit: FunctionComponent<MediumItemMetadataSourceEd
       })
     }
     return groups
-  }, [] as SourceGroup[])
+  }, [])
 
   const handleChangeNewExternalService = useCallback((type: ExternalService | null) => {
     if (!type) {

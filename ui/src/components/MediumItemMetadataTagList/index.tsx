@@ -21,7 +21,7 @@ const MediumItemMetadataTagList: FunctionComponent<MediumItemMetadataTagListProp
   }, [ edit ])
 
   const tags = medium.tags ?? []
-  const groups = tags.reduce((groups, { tag, type }) => {
+  const groups = tags.reduce<TagGroup[]>((groups, { tag, type }) => {
     const group = groups.find(t => t.type.id === type.id)
     if (group) {
       group.tags.push(tag)
@@ -32,7 +32,7 @@ const MediumItemMetadataTagList: FunctionComponent<MediumItemMetadataTagListProp
       })
     }
     return groups
-  }, [] as TagGroup[])
+  }, [])
 
   return (
     <Stack>
