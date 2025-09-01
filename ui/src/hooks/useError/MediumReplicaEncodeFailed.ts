@@ -6,8 +6,6 @@ export interface MediumReplicaEncodeFailed extends GraphQLError {
   extensions: {
     details: {
       code: typeof MEDIUM_REPLICA_ENCODE_FAILED
-      data: {
-      }
     }
   }
 }
