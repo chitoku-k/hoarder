@@ -39,7 +39,7 @@ const fetchSearchQuery = async (sourceIDs: string[], tagIDs: string[]): Promise<
     },
   })
   if (!data) {
-    throw error
+    throw new Error('invalid data', { cause: error })
   }
   switch (true) {
     case data.sources.length > 0: {

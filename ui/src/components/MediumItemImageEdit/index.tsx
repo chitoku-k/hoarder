@@ -96,7 +96,7 @@ const MediumItemImageEdit: FunctionComponent<MediumItemImageEditProps> = ({
 
     setAppending(files.length)
 
-    Promise.allSettled(files.map(async (file): Promise<ReplicaCreate> => {
+    Promise.all(files.map(async (file): Promise<ReplicaMetadataResult> => {
       try {
         const blob = file.slice(0, FILE_MAX_INPUT_SIZE)
         const buffer = await Promise.race([ blob.arrayBuffer(), rejectOnAbort ])
@@ -112,17 +112,23 @@ const MediumItemImageEdit: FunctionComponent<MediumItemImageEditProps> = ({
           ? [ size.width, size.height ]
           : [ size.height, size.width ]
         return {
-          tempid: uuid(),
-          name: file.name,
-          size: file.size,
-          width,
-          height,
-          lastModified: new Date(file.lastModified),
-          blob: new Blob([ await file.arrayBuffer() ]),
+          status: 'succeeded',
+          value: {
+            tempid: uuid(),
+            name: file.name,
+            size: file.size,
+            width,
+            height,
+            lastModified: new Date(file.lastModified),
+            blob: new Blob([ await file.arrayBuffer() ]),
+          }
         }
       } catch (e) {
-        console.warn('Error reading a file\n', file, '\n', e)
-        throw file
+        console.warn('Error reading a file\n', file, e)
+        return {
+          status: 'failed',
+          file,
+        }
       }
     })).then(results => {
       setAppending(0)
@@ -135,12 +141,11 @@ const MediumItemImageEdit: FunctionComponent<MediumItemImageEditProps> = ({
       const newErrorFiles: File[] = []
 
       for (const result of results) {
-        if (result.status === 'rejected') {
-          newErrorFiles.push(result.reason as File)
-          continue
+        if (result.status === 'succeeded') {
+          newReplicas.push(result.value)
+        } else {
+          newErrorFiles.push(result.file)
         }
-
-        newReplicas.push(result.value)
       }
 
       setAppended(newReplicas.length)
@@ -353,6 +358,14 @@ export interface ReplicaCreate {
   height?: number
   lastModified: Date
   blob: Blob
+}
+
+type ReplicaMetadataResult = {
+  status: 'succeeded'
+  value: ReplicaCreate
+} | {
+  status: 'failed'
+  file: File
 }
 
 export interface MediumItemImageEditProps {
