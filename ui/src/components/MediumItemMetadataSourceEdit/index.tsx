@@ -209,7 +209,7 @@ const MediumItemMetadataSourceEdit: FunctionComponent<MediumItemMetadataSourceEd
             newSource => {
               addingSourceIDs.push(newSource.id)
             },
-            e => {
+            (e: unknown) => {
               const sourceMetadataDuplicate = graphQLError(e, SOURCE_METADATA_DUPLICATE)
               if (!sourceMetadataDuplicate?.extensions.details.data.id) {
                 throw e
@@ -231,14 +231,14 @@ const MediumItemMetadataSourceEdit: FunctionComponent<MediumItemMetadataSourceEd
         () => {
           return save(medium.id, addingSourceIDs, removingSourceIDs)
         },
-        e => {
+        (e: unknown) => {
           throw new Error('error creating sources', { cause: e })
         },
       ).then(
         () => {
           close?.()
         },
-        e => {
+        (e: unknown) => {
           console.error('Error updating medium\n', e)
         },
       )

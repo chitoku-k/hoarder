@@ -179,7 +179,7 @@ const MediumItemImageEdit: FunctionComponent<MediumItemImageEditProps> = ({
         handleCloseAppendFiles(id)
         return []
       },
-      e => {
+      (e: unknown) => {
         console.error('Error appending selected files\n', e)
 
         if (!(e instanceof Error) || e.name !== 'AbortError') {

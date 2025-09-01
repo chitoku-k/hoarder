@@ -40,7 +40,7 @@ const TagDeleteDialogBody: FunctionComponent<TagDeleteDialogBodyProps> = ({
         close()
         onDelete(tag)
       },
-      e => {
+      (e: unknown) => {
         console.error('Error deleting tag\n', e)
       },
     )
