@@ -155,13 +155,13 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
         },
       )
 
-      const { promise, resolve, reject } = Promise.withResolvers<void>()
+      const { promise, resolve, reject } = Promise.withResolvers<null>()
       const subscription = observable
         .pipe(filter(({ id }) => id === newReplica.id))
         .subscribe(replica => {
           switch (replica.status.phase) {
             case ReplicaPhase.Ready: {
-              return resolve()
+              return resolve(null)
             }
             case ReplicaPhase.Error: {
               return reject()
@@ -197,15 +197,15 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
         const uploading = replica
         const existing = extractEntry(objectAlreadyExists)
 
-        const { promise: confirm, resolve: onConfirm, reject: onCancel } = Promise.withResolvers<void>()
+        const { promise: confirm, resolve, reject } = Promise.withResolvers<null>()
 
         setOverwriting(overwriting => [
           ...overwriting,
           {
             uploading,
             existing,
-            onConfirm,
-            onCancel,
+            onConfirm: () => resolve(null),
+            onCancel: () => reject(),
           },
         ])
 
