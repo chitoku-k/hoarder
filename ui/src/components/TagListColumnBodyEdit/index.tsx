@@ -99,7 +99,7 @@ const TagListColumnBodyEdit: FunctionComponent<TagListColumnBodyEditProps> = ({
       () => {
         close()
       },
-      e => {
+      (e: unknown) => {
         console.error('Error updating tag\n', e)
       },
     )

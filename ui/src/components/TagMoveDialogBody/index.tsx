@@ -38,7 +38,7 @@ const TagMoveDialogBody: FunctionComponent<TagMoveDialogBodyProps> = ({
         close()
         onMove(tag)
       },
-      e => {
+      (e: unknown) => {
         console.error('Error moving tag\n', e)
       },
     )

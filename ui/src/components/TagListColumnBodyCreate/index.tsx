@@ -94,7 +94,7 @@ const TagListColumnBodyCreate: FunctionComponent<TagListColumnBodyCreateProps> =
         close()
         onCreate?.(newTag)
       },
-      e => {
+      (e: unknown) => {
         console.error('Error creating tag\n', e)
       },
     )
