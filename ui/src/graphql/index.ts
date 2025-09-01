@@ -1,6 +1,7 @@
 import type { AxiosRequestConfig } from 'axios'
 import axios from 'axios'
 import UploadHttpLink from 'apollo-upload-client/UploadHttpLink.mjs'
+import { Kind, OperationTypeNode } from 'graphql'
 import { createClient } from 'graphql-ws'
 import { buildAxiosFetch } from '@lifeomic/axios-fetch'
 import { ApolloLink, disableFragmentWarnings } from '@apollo/client'
@@ -34,7 +35,7 @@ export const makeClient = () => {
     link: ApolloLink.split(
       ({ query }) => {
         const definition = getMainDefinition(query)
-        return definition.kind === 'OperationDefinition' && definition.operation === 'subscription'
+        return definition.kind === Kind.OPERATION_DEFINITION && definition.operation === OperationTypeNode.SUBSCRIPTION
       },
       new GraphQLWsLink(createClient({
         url: `${BASE_URL}/graphql/subscriptions`,
