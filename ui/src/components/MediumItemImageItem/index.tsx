@@ -20,8 +20,8 @@ const MediumItemImageItem: FunctionComponent<MediumItemImageItemProps> = ({
   replica,
   children,
 }) => {
-  const aspectRatio = replica.width && replica.height
-    ? `${replica.width} / ${replica.height}`
+  const aspectRatio = typeof replica.width === 'number' && Number.isFinite(replica.width) && typeof replica.height === 'number' && Number.isFinite(replica.height)
+    ? `${replica.width.toString()} / ${replica.height.toString()}`
     : undefined
 
   const style: CSSProperties = { aspectRatio }

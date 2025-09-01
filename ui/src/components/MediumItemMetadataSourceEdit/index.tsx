@@ -270,7 +270,7 @@ const MediumItemMetadataSourceEdit: FunctionComponent<MediumItemMetadataSourceEd
       <Stack spacing={4}>
         {groups.map(({ externalService, sources }) => (
           <MediumItemMetadataSourceGroupEdit
-            key={`${externalService.id}-${addingSources.get(externalService.id)?.length ?? 0}`}
+            key={`${externalService.id}-${String(addingSources.get(externalService.id)?.length ?? 0)}`}
             loading={loading}
             externalService={externalService}
             sources={sources}
@@ -287,7 +287,7 @@ const MediumItemMetadataSourceEdit: FunctionComponent<MediumItemMetadataSourceEd
         ))}
         {addingExternalServices.map(externalService => (
           <MediumItemMetadataSourceGroupEdit
-            key={`${externalService.id}-${addingSources.get(externalService.id)?.length ?? 0}`}
+            key={`${externalService.id}-${String(addingSources.get(externalService.id)?.length ?? 0)}`}
             loading={loading}
             externalService={externalService}
             sources={[]}

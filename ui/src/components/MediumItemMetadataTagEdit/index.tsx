@@ -226,7 +226,7 @@ const MediumItemMetadataTagEdit: FunctionComponent<MediumItemMetadataTagEditProp
       <Stack spacing={4}>
         {groups.map(({ type, tags }) => (
           <MediumItemMetadataTagGroupEdit
-            key={`${type.id}-${addingTags.get(type.id)?.length ?? 0}`}
+            key={`${type.id}-${String(addingTags.get(type.id)?.length ?? 0)}`}
             loading={loading}
             type={type}
             tags={tags}
@@ -243,7 +243,7 @@ const MediumItemMetadataTagEdit: FunctionComponent<MediumItemMetadataTagEditProp
         ))}
         {addingTagTypes.map(type => (
           <MediumItemMetadataTagGroupEdit
-            key={`${type.id}-${addingTags.get(type.id)?.length ?? 0}`}
+            key={`${type.id}-${String(addingTags.get(type.id)?.length ?? 0)}`}
             loading={loading}
             type={type}
             tags={[]}

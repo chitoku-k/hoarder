@@ -226,7 +226,9 @@ const MediumItemImageEdit: FunctionComponent<MediumItemImageEditProps> = ({
       <ImageListItem
         className={styles.imageListItem}
         sx={{
-          height: `min(100%, ${item.current.height}px) !important`,
+          height: typeof item.current.height === 'number' && Number.isFinite(item.current.height)
+            ? `min(100%, ${item.current.height.toString()}px) !important`
+            : null,
         }}
         {...rest}
       />
@@ -319,7 +321,7 @@ const MediumItemImageEdit: FunctionComponent<MediumItemImageEditProps> = ({
           <Snackbar
             open
             anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-            message={`${appending} 件のメディアを追加しています...`}
+            message={`${appending.toString()} 件のメディアを追加しています...`}
             action={
               <Button color="secondary" onClick={handleCancelAppendFiles}>
                 キャンセル
@@ -333,7 +335,7 @@ const MediumItemImageEdit: FunctionComponent<MediumItemImageEditProps> = ({
             open
             onClose={handleCloseAppended}
             anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-            message={`${appended} 件のメディアを追加しました`}
+            message={`${appended.toString()} 件のメディアを追加しました`}
             autoHideDuration={3000}
           />
         </Portal>
