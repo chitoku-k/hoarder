@@ -106,7 +106,7 @@ const SearchBar: FunctionComponent<SearchBarProps> = ({
     }
   }, [ tagType, appendQuery, removeQuery ])
 
-  const handleInputChange = useCallback((_e: SyntheticEvent<Element>, value: string) => {
+  const handleInputChange = useCallback((_e: SyntheticEvent, value: string) => {
     setInputValue(value)
   }, [])
 
