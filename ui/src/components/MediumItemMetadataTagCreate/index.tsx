@@ -126,7 +126,7 @@ const MediumItemMetadataTagCreate: FunctionComponent<MediumItemMetadataTagCreate
       <Stack spacing={4}>
         {addingTagTypes.map(type => (
           <MediumItemMetadataTagGroupEdit
-            key={`${type.id}-${addingTags.get(type.id)?.length ?? 0}`}
+            key={`${type.id}-${String(addingTags.get(type.id)?.length ?? 0)}`}
             loading={loading}
             type={type}
             tags={[]}
