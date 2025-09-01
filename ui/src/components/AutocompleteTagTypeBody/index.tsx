@@ -1,7 +1,7 @@
 'use client'
 
 import type { ComponentType, FunctionComponent, SyntheticEvent } from 'react'
-import { useCallback, useState, useTransition } from 'react'
+import { useCallback, useMemo, useState, useTransition } from 'react'
 import clsx from 'clsx'
 import type { AutocompleteProps } from '@mui/material/Autocomplete'
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete'
@@ -36,7 +36,7 @@ const AutocompleteTagTypeBody: FunctionComponent<AutocompleteTagTypeBodyProps> =
     input?.focus()
   }, [ focus ])
 
-  const filterOptions = useCallback(createFilterOptions<TagType>({
+  const filterOptions = useMemo(() => createFilterOptions<TagType>({
     stringify: ({ name, kana }) => `${name} ${kana}`,
   }), [])
 
