@@ -20,30 +20,22 @@ const Header: FunctionComponent = () => (
           Hoarder
         </Typography>
         <Stack className={styles.nav} spacing={1} direction="row">
-          <Link href="/" passHref legacyBehavior>
-            <Button color="inherit">
-              ホーム
-            </Button>
-          </Link>
-          <Link href="/tags" passHref legacyBehavior>
-            <Button color="inherit">
-              タグ
-            </Button>
-          </Link>
-          <Link href="/sources" passHref legacyBehavior>
-            <Button color="inherit">
-              サービス
-            </Button>
-          </Link>
+          <Button href="/" LinkComponent={Link} color="inherit">
+            ホーム
+          </Button>
+          <Button href="/tags" LinkComponent={Link} color="inherit">
+            タグ
+          </Button>
+          <Button href="/sources" LinkComponent={Link} color="inherit">
+            サービス
+          </Button>
         </Stack>
       </Stack>
       <SearchBar className={styles.inner} />
       <Stack className={styles.inner} justifyContent="end" direction="row">
-        <Link href="/media/new" passHref legacyBehavior>
-          <IconButton size="large" color="inherit">
-            <LibraryAddOutlinedIcon />
-          </IconButton>
-        </Link>
+        <IconButton href="/media/new" LinkComponent={Link} size="large" color="inherit">
+          <LibraryAddOutlinedIcon />
+        </IconButton>
       </Stack>
     </Toolbar>
   </AppBar>
