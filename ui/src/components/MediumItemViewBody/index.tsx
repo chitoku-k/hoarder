@@ -176,7 +176,7 @@ const MediumItemViewBody: FunctionComponent<MediumItemViewBodyProps> = ({
         id: current.id,
         replicaOrders: replicas.filter(isReplica).map(({ id }) => id),
         createdAt: current.createdAt,
-      }).catch(e => {
+      }).catch((e: unknown) => {
         console.error('Error updating medium\n', e)
         setError(e)
       })
@@ -203,7 +203,7 @@ const MediumItemViewBody: FunctionComponent<MediumItemViewBodyProps> = ({
       if (removingReplicas.some(({ id }) => id === replica.id)) {
         newReplicas.push(deleteReplica({ id: replica.id, deleteObject }).then(
           () => {},
-          e => {
+          (e: unknown) => {
             throw new Error('error deleting replica', { cause: e })
           },
         ))
@@ -226,7 +226,7 @@ const MediumItemViewBody: FunctionComponent<MediumItemViewBodyProps> = ({
           closeEditSummary()
           setReplicas(newMedium.replicas)
         },
-        e => {
+        (e: unknown) => {
           console.error('Error updating medium\n', e)
           setError(e)
         },

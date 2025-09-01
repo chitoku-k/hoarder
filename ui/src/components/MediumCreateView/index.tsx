@@ -148,7 +148,7 @@ const MediumCreateView: FunctionComponent = () => {
         newMedium => {
           setMedium(newMedium)
         },
-        e => {
+        (e: unknown) => {
           console.error('Error updating medium\n', e)
           setMedium(current)
           setError(e)
@@ -173,7 +173,7 @@ const MediumCreateView: FunctionComponent = () => {
         () => {
           router.refresh()
         },
-        e => {
+        (e: unknown) => {
           console.error('Error updating medium\n', e)
           setMedium({
             ...current,

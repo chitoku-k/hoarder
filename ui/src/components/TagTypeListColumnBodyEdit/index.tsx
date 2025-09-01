@@ -70,7 +70,7 @@ const TagTypeListColumnBodyEdit: FunctionComponent<TagTypeListColumnBodyEditProp
         close()
         onEdit(newTagType)
       },
-      e => {
+      (e: unknown) => {
         console.error('Error updating tag type\n', e)
       },
     )

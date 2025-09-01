@@ -96,7 +96,7 @@ const MediumItemMetadataSourceCreate: FunctionComponent<MediumItemMetadataSource
             newSource => {
               addingSourceIDs.push(newSource.id)
             },
-            e => {
+            (e: unknown) => {
               const sourceMetadataDuplicate = graphQLError(e, SOURCE_METADATA_DUPLICATE)
               if (!sourceMetadataDuplicate?.extensions.details.data.id) {
                 throw e

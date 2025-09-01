@@ -84,7 +84,7 @@ const TagTypeListColumnBodyCreate: FunctionComponent<TagTypeListColumnBodyCreate
       () => {
         close()
       },
-      e => {
+      (e: unknown) => {
         console.error('Error creating tag type\n', e)
       },
     )

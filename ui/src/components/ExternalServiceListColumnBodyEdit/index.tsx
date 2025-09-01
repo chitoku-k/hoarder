@@ -114,7 +114,7 @@ const ExternalServiceListColumnBodyEdit: FunctionComponent<ExternalServiceListCo
         close()
         onEdit(newExternalService)
       },
-      e => {
+      (e: unknown) => {
         console.error('Error updating external service\n', e)
       },
     )
