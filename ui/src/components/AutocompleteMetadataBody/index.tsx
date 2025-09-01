@@ -37,7 +37,7 @@ function* useMetadata(
 ): Generator<Metadata> {
   const collator = useCollator()
 
-  if (sources && !options?.noSources) {
+  if (!options?.noSources) {
     for (const source of sources.id) {
       yield { source }
     }
@@ -47,7 +47,7 @@ function* useMetadata(
     }
   }
 
-  if (tags && !options?.noTags) {
+  if (!options?.noTags) {
     const allTags = tags
       .toSorted((a, b) => collator.compare(a.kana, b.kana))
       .flatMap(tag => [ tag, ...tag.children.map(child => ({ ...child, parent: tag })) ])
@@ -61,7 +61,7 @@ function* useMetadata(
     }
   }
 
-  if (tagTypes && !options?.noTagTypes) {
+  if (!options?.noTagTypes) {
     for (const tagType of tagTypes) {
       yield { tagType }
     }

@@ -19,7 +19,7 @@ const MediumItemFileAppendDialogBody: FunctionComponent<MediumItemFileAppendDial
   }, [ close ])
 
   const handleClickAppend = useCallback(() => {
-    onAppend?.(files)
+    onAppend(files)
     close()
   }, [ onAppend, close, files ])
 

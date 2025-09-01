@@ -21,7 +21,7 @@ export function useFileSystemEntry<Flatten extends boolean | undefined>(options?
 
   const readDirectoryEntry = useCallback(async function* (entry: FileSystemDirectoryEntry) {
     const reader = entry.createReader()
-    while (true) {
+    for (;;) {
       signal?.throwIfAborted()
 
       const value = await new Promise<FileSystemEntry[]>((resolve, reject) => reader.readEntries(resolve, reject))

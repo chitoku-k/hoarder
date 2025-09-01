@@ -39,7 +39,7 @@ const TagListColumnBodyEdit: FunctionComponent<TagListColumnBodyEditProps> = ({
   const [ updateTag, { error, loading } ] = useUpdateTag()
   const collator = useCollator()
 
-  const ref = useCallback((input: HTMLElement) => {
+  const ref = useCallback((input: HTMLElement | null) => {
     input?.focus({
       preventScroll: true,
     })
