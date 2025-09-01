@@ -281,21 +281,31 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
   const tableComputeItemKey = useCallback((_index: number, replica: ReplicaCreate) => replica.tempid, [])
 
   const tableComponents: TableComponents<ReplicaCreate> = useMemo(() => ({
-    Scroller: forwardRef(({ ...rest }: ComponentPropsWithoutRef<'div'>, ref) => (
-      <TableContainer ref={ref} component={Paper} {...rest} />
-    )),
-    Table: ({ ...rest }) => (
-      <Table className={styles.table} {...rest} />
-    ),
-    TableHead: forwardRef(({ ...rest }: ComponentPropsWithoutRef<'thead'>, ref) => (
-      <TableHead ref={ref} {...rest} />
-    )),
-    TableRow: ({ item, ...rest }) => (
-      <TableRow {...rest} />
-    ),
-    TableBody: forwardRef(({ ...rest }: ComponentPropsWithoutRef<'tbody'>, ref) => (
-      <TableBody ref={ref} {...rest} />
-    )),
+    Scroller: forwardRef(function VirtuosoScroller({ ...rest }: ComponentPropsWithoutRef<'div'>, ref) {
+      return (
+        <TableContainer ref={ref} component={Paper} {...rest} />
+      )
+    }),
+    Table: function VirtuosoTable({ ...rest }) {
+      return (
+        <Table className={styles.table} {...rest} />
+      )
+    },
+    TableHead: forwardRef(function VirtuosoTableHead({ ...rest }: ComponentPropsWithoutRef<'thead'>, ref) {
+      return (
+        <TableHead ref={ref} {...rest} />
+      )
+    }),
+    TableRow: function VirtuosoTableRow({ item, ...rest }) {
+      return (
+        <TableRow {...rest} />
+      )
+    },
+    TableBody: forwardRef(function VirtuosoTableBody({ ...rest }: ComponentPropsWithoutRef<'tbody'>, ref) {
+      return (
+        <TableBody ref={ref} {...rest} />
+      )
+    }),
   }), [])
 
   const tableFixedHeaderContent = useCallback(() => (

@@ -212,28 +212,32 @@ const MediumItemImageEdit: FunctionComponent<MediumItemImageEditProps> = ({
   const computeItemKey = useCallback((_index: number, { current }: ReplicaItem) => isReplica(current) ? current.id : current.tempid, [])
 
   const components: Components<ReplicaItem> = useMemo(() => ({
-    List: forwardRef(({ children, ...rest }: ComponentPropsWithoutRef<'ul'>, ref) => (
-      <ImageList
-        ref={ref as Ref<HTMLUListElement>}
-        className={clsx(styles.imageList, className)}
-        gap={gap}
-        cols={1}
-        {...rest}
-      >
-        {children ?? []}
-      </ImageList>
-    )),
-    Item: ({ item, ...rest }) => (
-      <ImageListItem
-        className={styles.imageListItem}
-        sx={{
-          height: typeof item.current.height === 'number' && Number.isFinite(item.current.height)
-            ? `min(100%, ${item.current.height.toString()}px) !important`
-            : null,
-        }}
-        {...rest}
-      />
-    ),
+    List: forwardRef(function VirtuosoList({ children, ...rest }: ComponentPropsWithoutRef<'ul'>, ref) {
+      return (
+        <ImageList
+          ref={ref as Ref<HTMLUListElement>}
+          className={clsx(styles.imageList, className)}
+          gap={gap}
+          cols={1}
+          {...rest}
+        >
+          {children ?? []}
+        </ImageList>
+      )
+    }),
+    Item: function VirtuosoItem({ item, ...rest }) {
+      return (
+        <ImageListItem
+          className={styles.imageListItem}
+          sx={{
+            height: typeof item.current.height === 'number' && Number.isFinite(item.current.height)
+              ? `min(100%, ${item.current.height.toString()}px) !important`
+              : null,
+          }}
+          {...rest}
+        />
+      )
+    },
   }), [ className, gap ])
 
   const itemContent = useCallback((index: number, item: ReplicaItem) => isReplica(item.current) ? (
