@@ -1,7 +1,7 @@
 'use client'
 
-import type { ComponentPropsWithoutRef, FunctionComponent, Ref } from 'react'
-import { forwardRef, useCallback, useMemo } from 'react'
+import type { FunctionComponent, Ref } from 'react'
+import { useCallback, useMemo } from 'react'
 import clsx from 'clsx'
 import type { Components } from 'react-virtuoso'
 import { Virtuoso } from 'react-virtuoso'
@@ -22,7 +22,7 @@ const MediumItemImageList: FunctionComponent<MediumItemImageListProps> = ({
   const computeItemKey = useCallback((_index: number, current: Replica) => current.id, [])
 
   const components: Components<Replica> = useMemo(() => ({
-    List: forwardRef(({ children, ...rest }: ComponentPropsWithoutRef<'ul'>, ref) => (
+    List: ({ children, ref, ...rest }) => (
       <ImageList
         ref={ref as Ref<HTMLUListElement>}
         className={clsx(styles.imageList, className)}
@@ -32,7 +32,7 @@ const MediumItemImageList: FunctionComponent<MediumItemImageListProps> = ({
       >
         {children ?? []}
       </ImageList>
-    )),
+    ),
     Item: ({ item, ...rest }) => (
       <ImageListItem
         className={styles.imageListItem}

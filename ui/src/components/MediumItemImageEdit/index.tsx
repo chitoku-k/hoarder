@@ -1,7 +1,7 @@
 'use client'
 
-import type { ComponentPropsWithoutRef, FunctionComponent, Ref } from 'react'
-import { forwardRef, useCallback, useMemo, useState } from 'react'
+import type { FunctionComponent, Ref } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import type { Components } from 'react-virtuoso'
 import { Virtuoso } from 'react-virtuoso'
 import clsx from 'clsx'
@@ -212,7 +212,7 @@ const MediumItemImageEdit: FunctionComponent<MediumItemImageEditProps> = ({
   const computeItemKey = useCallback((_index: number, { current }: ReplicaItem) => isReplica(current) ? current.id : current.tempid, [])
 
   const components: Components<ReplicaItem> = useMemo(() => ({
-    List: forwardRef(({ children, ...rest }: ComponentPropsWithoutRef<'ul'>, ref) => (
+    List: ({ children, ref, ...rest }) => (
       <ImageList
         ref={ref as Ref<HTMLUListElement>}
         className={clsx(styles.imageList, className)}
@@ -222,7 +222,7 @@ const MediumItemImageEdit: FunctionComponent<MediumItemImageEditProps> = ({
       >
         {children ?? []}
       </ImageList>
-    )),
+    ),
     Item: ({ item, ...rest }) => (
       <ImageListItem
         className={styles.imageListItem}
