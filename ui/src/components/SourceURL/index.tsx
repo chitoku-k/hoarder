@@ -61,7 +61,7 @@ const SourceURL: FunctionComponent<SourceURLProps> = ({
             <LaunchIcon className={styles.launch} fontSize="inherit" />
           ) : null}
         </Link>
-      ) : externalMetadata && typeof externalMetadata === 'object' && 'custom' in externalMetadata ? (
+      ) : typeof externalMetadata === 'object' && 'custom' in externalMetadata ? (
         <span className={clsx(styles.item, styles.noLink)}>
           <span className={styles.text}>
             {typeof externalMetadata.custom === 'string' ? externalMetadata.custom : JSON.stringify(externalMetadata)}

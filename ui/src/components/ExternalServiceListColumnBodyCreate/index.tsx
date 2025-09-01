@@ -20,7 +20,7 @@ const ExternalServiceListColumnBodyCreate: FunctionComponent<ExternalServiceList
   const [ createExternalService, { error, loading } ] = useCreateExternalService()
   const { graphQLError } = useError()
 
-  const ref = useCallback((input: HTMLElement) => {
+  const ref = useCallback((input: HTMLElement | null) => {
     input?.focus({
       preventScroll: true,
     })
@@ -108,7 +108,7 @@ const ExternalServiceListColumnBodyCreate: FunctionComponent<ExternalServiceList
     }
 
     const [ selectionStart, selectionEnd ] = urlPatternSelection
-    if (selectionStart === null || selectionEnd === null) {
+    if (selectionStart === null) {
       return
     }
 

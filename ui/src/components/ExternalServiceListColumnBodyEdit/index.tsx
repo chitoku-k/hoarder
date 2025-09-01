@@ -22,7 +22,7 @@ const ExternalServiceListColumnBodyEdit: FunctionComponent<ExternalServiceListCo
   const [ updateExternalService, { error, loading } ] = useUpdateExternalService()
   const { graphQLError } = useError()
 
-  const ref = useCallback((input: HTMLElement) => {
+  const ref = useCallback((input: HTMLElement | null) => {
     input?.focus({
       preventScroll: true,
     })
@@ -96,7 +96,7 @@ const ExternalServiceListColumnBodyEdit: FunctionComponent<ExternalServiceListCo
     }
 
     const [ selectionStart, selectionEnd ] = urlPatternSelection
-    if (selectionStart === null || selectionEnd === null) {
+    if (selectionStart === null) {
       return
     }
 
