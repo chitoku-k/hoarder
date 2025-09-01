@@ -226,7 +226,7 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
       }
       throw new Error('error creating replica', { cause: e })
     }
-  }, [ container, abortSignal, createReplica, graphQLError, handleUploadProgress, onProgress ])
+  }, [ container, abortSignal, createReplica, graphQLError, handleUploadProgress ])
 
   const handleClickUpload = useCallback(async () => {
     setUploading(true)
@@ -276,7 +276,7 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
       })
       subscription.unsubscribe()
     })
-  }, [ resolveMedium, watchMedium, replicas, processReplicaUpload, onComplete ])
+  }, [ resolveMedium, watchMedium, replicas, processReplicaUpload, onComplete, onProgress ])
 
   const tableComputeItemKey = useCallback((_index: number, replica: ReplicaCreate) => replica.tempid, [])
 

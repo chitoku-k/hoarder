@@ -52,7 +52,7 @@ const TagTypeListColumnBodyCreate: FunctionComponent<TagTypeListColumnBodyCreate
       name,
       kana,
     }))
-  }, [ tagType, nameHistory, kanaChanged ])
+  }, [ tagType, nameHistory, kanaChanged, extractKana ])
 
   const handleChangeKana = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     const kana = e.currentTarget.value

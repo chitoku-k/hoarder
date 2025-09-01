@@ -148,7 +148,7 @@ const AutocompleteMetadataBody: FunctionComponent<AutocompleteMetadataBodyProps>
     return ''
   }, [])
 
-  const filterOptions = useCallback(createFilterOptions<Metadata>({
+  const filterOptions = useMemo(() => createFilterOptions<Metadata>({
     stringify: option => {
       if (isMetadataSource(option)) {
         return option.source.url ?? ''

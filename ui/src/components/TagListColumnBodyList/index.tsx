@@ -115,7 +115,7 @@ const TagListColumnBodyList: FunctionComponent<TagListColumnBodyListProps> = ({
       hit: null,
       hitInput: value,
     })
-  }, [ onHitTag, index, creating, editing, selected, parent, active, hit ])
+  }, [ onHitTag, setColumn, index, creating, editing, selected, parent, active ])
 
   const handleClickSelectTag = useCallback(() => {
     onSelectTag?.(parent)
