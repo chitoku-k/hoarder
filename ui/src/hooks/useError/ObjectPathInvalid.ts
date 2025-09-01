@@ -6,8 +6,6 @@ export interface ObjectPathInvalid extends GraphQLError {
   extensions: {
     details: {
       code: typeof OBJECT_PATH_INVALID
-      data: {
-      }
     }
   }
 }

@@ -6,8 +6,6 @@ export interface SourceMetadataInvalid extends GraphQLError {
   extensions: {
     details: {
       code: typeof SOURCE_METADATA_INVALID
-      data: {
-      }
     }
   }
 }
