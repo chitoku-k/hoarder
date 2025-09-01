@@ -53,7 +53,7 @@ const SearchBar: FunctionComponent<SearchBarProps> = ({
 }) => {
   const [ inputValue, setInputValue ] = useState('')
   const [ tagType, setTagType ] = useState<TagType | null>(null)
-  const { appendQuery, removeQuery } = useSearch()
+  const { appendQuery } = useSearch()
 
   const renderMetadataOption = useCallback(({ key, ...props }: ComponentPropsWithoutRef<'li'>, option: Metadata) => (
     <li key={key} {...props}>
@@ -104,7 +104,7 @@ const SearchBar: FunctionComponent<SearchBarProps> = ({
         break
       }
     }
-  }, [ tagType, appendQuery, removeQuery ])
+  }, [ tagType, appendQuery ])
 
   const handleInputChange = useCallback((_e: SyntheticEvent, value: string) => {
     setInputValue(value)

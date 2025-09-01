@@ -1,7 +1,7 @@
 'use client'
 
 import type { FunctionComponent } from 'react'
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import clsx from 'clsx'
 import Grid from '@mui/material/Grid'
 
@@ -35,7 +35,7 @@ const TagListViewBody: FunctionComponent<TagListViewBodyProps> = ({
   onSelect,
   selectable,
 }) => {
-  const initialColumns: TagColumn[] = initial
+  const initialColumns: TagColumn[] = useMemo(() => initial
     ? [ ...ancestors(useTag({ id: initial.id })) ]
       .map((tag, index, hierarchy) => ({
         index,
@@ -58,7 +58,9 @@ const TagListViewBody: FunctionComponent<TagListViewBodyProps> = ({
         hit: null,
         hitInput: '',
       },
-    ]
+    ],
+    [ initial ],
+  )
 
   const [ columns, setColumns ] = useState(initialColumns)
   const [ creating, setCreating ] = useState(false)
@@ -273,7 +275,7 @@ const TagListViewBody: FunctionComponent<TagListViewBodyProps> = ({
     } else {
       setColumns(initialColumns)
     }
-  }, [ closeCreateTag, closeEditTag, setColumn, initialColumns ])
+  }, [ closeCreateTag, closeEditTag, setColumns, initialColumns ])
 
   const handleSelectTag = useCallback((tag: Tag | null) => {
     onSelect?.(tag)
