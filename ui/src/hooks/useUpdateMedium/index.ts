@@ -38,7 +38,7 @@ export function useUpdateMedium(): [
         variables,
       })
       if (!data) {
-        throw error
+        throw new Error('invalid data', { cause: error })
       }
       return data.updateMedium
     }, [ updateMedium ]),

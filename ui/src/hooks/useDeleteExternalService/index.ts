@@ -23,7 +23,7 @@ export function useDeleteExternalService(): [
         ],
       })
       if (!data) {
-        throw error
+        throw new Error('invalid data', { cause: error })
       }
       return data.deleteExternalService
     }, [ deleteExternalService ]),

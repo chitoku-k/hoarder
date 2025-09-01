@@ -24,7 +24,7 @@ export function useCreateTag(): [
         ],
       })
       if (!data) {
-        throw error
+        throw new Error('invalid data', { cause: error })
       }
       return data.createTag
     }, [ createTag ]),
