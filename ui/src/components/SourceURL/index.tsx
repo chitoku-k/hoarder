@@ -11,9 +11,9 @@ import LinkIcon from '@mui/icons-material/Link'
 import { buildURL } from './builder'
 import styles from './styles.module.scss'
 
-import type { ExternalService, ExternalMetadata, Source } from '@/types'
+import type { ExternalService, Source } from '@/types'
 
-const extractProps = (props: SourceURLProps): [ ExternalService, ExternalMetadata ] | [ null, null ] => {
+const extractProps = (props: SourceURLProps): [ ExternalService, unknown ] | [ null, null ] => {
   if ('source' in props) {
     return [ props.source.externalService, props.source.externalMetadata ]
   }
@@ -85,7 +85,7 @@ interface SourceURLPropsBySource extends SourceURLPropsBase {
 
 interface SourceURLPropsByExternalMetadata extends SourceURLPropsBase {
   externalService: ExternalService
-  externalMetadata: ExternalMetadata
+  externalMetadata: unknown
 }
 
 export type SourceURLProps = SourceURLPropsBySource | SourceURLPropsByExternalMetadata
