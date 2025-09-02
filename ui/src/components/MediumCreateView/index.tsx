@@ -52,7 +52,7 @@ const MediumCreateView: FunctionComponent = () => {
   const router = useRouter()
 
   const [ medium, setMedium ] = useState<Medium | null>(null)
-  const [ resolveMedium, setResolveMedium ] = useState(() => () => Promise.reject<Medium>())
+  const [ resolveMedium, setResolveMedium ] = useState<(() => Promise<Medium>) | null>(null)
   const [ createMedium, { loading: createLoading } ] = useCreateMedium()
   const [ updateMedium, { loading: updateLoading } ] = useUpdateMedium()
 
@@ -288,7 +288,7 @@ const MediumCreateView: FunctionComponent = () => {
           )}
         </Stack>
       </Grid>
-      {uploading ? (
+      {resolveMedium && uploading ? (
         <MediumItemFileUploadDialog
           abortSignal={uploadAbortController.signal}
           resolveMedium={resolveMedium}
