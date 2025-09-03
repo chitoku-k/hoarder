@@ -233,11 +233,11 @@ const MediumItemViewBody: FunctionComponent<MediumItemViewBodyProps> = ({
       )
   }, [ updateMedium, deleteReplica, removingReplicas, closeEditSummary ])
 
-  const save = useCallback((current: Medium) => {
+  const save = useCallback(async (current: Medium) => {
     if (replicas.some(r => !isReplica(r))) {
       setUploading(true)
     } else {
-      handleComplete(current, replicas)
+      await handleComplete(current, replicas)
     }
   }, [ replicas, handleComplete ])
 

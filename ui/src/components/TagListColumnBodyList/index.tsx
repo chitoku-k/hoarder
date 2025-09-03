@@ -125,8 +125,8 @@ const TagListColumnBodyList: FunctionComponent<TagListColumnBodyListProps> = ({
     if (!fetchMore) {
       throw new Error('No handler found to fetch more')
     }
-    startTransition(() => {
-      fetchMore()
+    startTransition(async () => {
+      await fetchMore()
     })
   }, [ fetchMore ])
 
