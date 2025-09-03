@@ -35,7 +35,7 @@ const MediumItemMetadataTagGroupEdit: FunctionComponent<MediumItemMetadataTagGro
       return
     }
 
-    restoreTagType(type)
+    restoreTagType?.(type)
     addTag(type, tag)
   }, [ restoreTagType, type, addTag ])
 
@@ -52,10 +52,10 @@ const MediumItemMetadataTagGroupEdit: FunctionComponent<MediumItemMetadataTagGro
   }, [ removeTagType, type, removeTag, tags, addingTags ])
 
   const handleClickRestoreTagType = useCallback(() => {
-    restoreTagType(type)
+    restoreTagType?.(type)
 
     for (const tag of tags) {
-      restoreTag(type, tag)
+      restoreTag?.(type, tag)
     }
   }, [ restoreTagType, restoreTag, type, tags ])
 
@@ -64,8 +64,8 @@ const MediumItemMetadataTagGroupEdit: FunctionComponent<MediumItemMetadataTagGro
   }
 
   const handleClickRestoreTag = (tag: Tag) => {
-    restoreTagType(type)
-    restoreTag(type, tag)
+    restoreTagType?.(type)
+    restoreTag?.(type, tag)
   }
 
   const renderTagOption = useCallback(({ key, ...props }: ComponentPropsWithoutRef<'li'>, option: Tag) => (
@@ -172,12 +172,12 @@ export interface MediumItemMetadataTagGroupEditProps {
   focus?: boolean
   removingTagType: boolean
   removeTagType: (type: TagType) => void
-  restoreTagType: (type: TagType) => void
+  restoreTagType?: (type: TagType) => void
   addingTags: Tag[]
   removingTags: Tag[]
   addTag: (type: TagType, tag: Tag) => void
   removeTag: (type: TagType, tag: Tag) => void
-  restoreTag: (type: TagType, tag: Tag) => void
+  restoreTag?: (type: TagType, tag: Tag) => void
 }
 
 export default MediumItemMetadataTagGroupEdit
