@@ -116,7 +116,7 @@ const TagListViewBody: FunctionComponent<TagListViewBodyProps> = ({
       }
       return newColumns.map(c => ({
         ...c,
-        active: c.active ?? (navigating && columns[c.index]?.active || null),
+        active: c.active ?? (navigating ? columns[c.index]?.active ?? null : null),
         selected: c.index === column.index,
       }))
     })
