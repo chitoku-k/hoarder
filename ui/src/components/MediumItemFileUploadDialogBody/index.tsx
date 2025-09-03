@@ -270,9 +270,10 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
 
       setUploading(false)
     }).finally(() => {
-      // This seems to be a redundant subscription, but it is here to ensure that it
-      // unsubscribes from the medium when no subscriptions were created.
-      const subscription = observable.subscribe(() => {})
+      const subscription = observable.subscribe(() => {
+        // This seems to be a redundant subscription, but it is here to ensure that it
+        // unsubscribes from the medium when no subscriptions were created.
+      })
       subscription.unsubscribe()
     })
   }, [ resolveMedium, watchMedium, replicas, processReplicaUpload, onComplete ])
