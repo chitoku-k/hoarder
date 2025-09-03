@@ -75,10 +75,6 @@ const MediumItemMetadataSourceCreate: FunctionComponent<MediumItemMetadataSource
     })
   }, [])
 
-  const restoreExternalService = useCallback(() => {}, [])
-
-  const restoreSource = useCallback(() => {}, [])
-
   const resolveSourceIDs = useCallback((addingSources: Map<ExternalServiceID, (Source | SourceCreate)[]>) => async () => {
     const addingSourceIDs: string[] = []
     const createSources: Promise<void>[] = []
@@ -164,12 +160,10 @@ const MediumItemMetadataSourceCreate: FunctionComponent<MediumItemMetadataSource
             focus={focusedExternalService?.id === externalService.id}
             removingExternalService={false}
             removeExternalService={removeExternalService}
-            restoreExternalService={restoreExternalService}
             addingSources={addingSources.get(externalService.id) ?? []}
             removingSources={[]}
             addSource={addSource}
             removeSource={removeSource}
-            restoreSource={restoreSource}
           />
         ))}
         <Stack spacing={0.5} direction="row" alignItems="center" justifyContent="space-between">
