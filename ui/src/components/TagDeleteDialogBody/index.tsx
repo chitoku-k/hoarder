@@ -47,7 +47,7 @@ const TagDeleteDialogBody: FunctionComponent<TagDeleteDialogBodyProps> = ({
   }, [ deleteTag, tag, recursive, onDelete, close ])
 
   const tagChildrenExist = graphQLError(error, TAG_CHILDREN_EXIST)
-  const hasChildren = Boolean(children?.length || tagChildrenExist)
+  const hasChildren = Boolean(children?.length ?? tagChildrenExist)
 
   return error && !tagChildrenExist ? (
     <>
