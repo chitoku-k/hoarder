@@ -202,7 +202,7 @@ const MediumCreateView: FunctionComponent = () => {
         setUploading(true)
       } else {
         const newMedium = medium ?? await newResolveMedium()
-        handleComplete(newMedium, replicas)
+        await handleComplete(newMedium, replicas)
       }
     } catch (e) {
       console.error('Error creating medium\n', e)
