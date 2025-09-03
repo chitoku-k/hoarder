@@ -54,7 +54,7 @@ const TagMoveDialogBody: FunctionComponent<TagMoveDialogBodyProps> = ({
   }, [])
 
   const loading = attachLoading || detachLoading
-  const error = attachError || detachError
+  const error = attachError ?? detachError
   const tagAttachingToItself = graphQLError(attachError, TAG_ATTACHING_TO_ITSELF)
   const tagAttachingToDescendant = graphQLError(attachError, TAG_ATTACHING_TO_DESCENDANT)
 
