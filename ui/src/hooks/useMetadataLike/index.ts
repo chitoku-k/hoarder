@@ -1,6 +1,7 @@
-import { skipToken, useSuspenseQuery } from '@apollo/client/react'
+import type { SkipToken } from '@apollo/client/react'
+import { useSuspenseQuery } from '@apollo/client/react'
 
-import type { MetadataLikeQuery } from '@/graphql/MetadataLike'
+import type { MetadataLikeQuery, MetadataLikeQueryVariables } from '@/graphql/MetadataLike'
 import { MetadataLikeDocument } from '@/graphql/MetadataLike'
 
 export interface MetadataLike {
@@ -11,28 +12,20 @@ export interface MetadataLike {
   tags: MetadataLikeQuery['allTagsLike']
 }
 
-export function useMetadataLike(like: string): MetadataLike {
-  const { data } = useSuspenseQuery(MetadataLikeDocument, {
-    variables: {
-      like,
-    },
-  })
+export function useMetadataLike(variables: MetadataLikeQueryVariables | SkipToken): Partial<MetadataLike> {
+  const options = typeof variables === 'symbol'
+    ? variables
+    : { variables } satisfies useSuspenseQuery.Options<MetadataLikeQueryVariables>
+
+  const { data } = useSuspenseQuery(MetadataLikeDocument, options)
+  if (!data) {
+    return {}
+  }
   return {
     sources: {
       id: data.allSourcesLikeId,
       url: data.allSourcesLikeUrl,
     },
     tags: data.allTagsLike,
-  }
-}
-
-export function useMetadataLikeSkip(): MetadataLike {
-  useSuspenseQuery(MetadataLikeDocument, skipToken)
-  return {
-    sources: {
-      id: [],
-      url: [],
-    },
-    tags: [],
   }
 }

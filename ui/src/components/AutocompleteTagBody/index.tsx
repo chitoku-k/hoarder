@@ -4,6 +4,7 @@ import type { ComponentType, FunctionComponent, SyntheticEvent } from 'react'
 import { useCallback, useEffect, useMemo, useState, useTransition } from 'react'
 import { useCollator } from '@react-aria/i18n'
 import clsx from 'clsx'
+import { skipToken } from '@apollo/client/react'
 import type { AutocompleteInputChangeReason, AutocompleteProps } from '@mui/material/Autocomplete'
 import Autocomplete from '@mui/material/Autocomplete'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -16,7 +17,7 @@ import ArrowOutwardIcon from '@mui/icons-material/ArrowOutward'
 import { debounce } from '@mui/material/utils'
 
 import TagSelectDialog from '@/components/TagSelectDialog'
-import { useTagsLike, useTagsLikeSkip } from '@/hooks'
+import { useTagsLike } from '@/hooks'
 import type { Tag } from '@/types'
 
 import styles from './styles.module.scss'
@@ -92,11 +93,10 @@ const AutocompleteTagBody: FunctionComponent<AutocompleteTagBodyProps> = ({
     setSelecting(false)
   }, [])
 
-  const allTags = value.length
-    ? useTagsLike({ nameOrAliasLike: value })
-        .toSorted((a, b) => collator.compare(a.kana, b.kana))
-        .flatMap(tag => [ tag, ...tag.children.map(child => ({ ...child, parent: tag })) ])
-    : useTagsLikeSkip()
+  const tagsLike = useTagsLike(value.length ? { nameOrAliasLike: value } : skipToken) ?? []
+  const allTags = tagsLike
+    .toSorted((a, b) => collator.compare(a.kana, b.kana))
+    .flatMap(tag => [ tag, ...tag.children.map(child => ({ ...child, parent: tag })) ])
 
   const tags: Tag[] = []
   const ids = new Set<string>()

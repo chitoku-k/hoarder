@@ -112,6 +112,10 @@ const ExternalServiceListColumnBodyList: FunctionComponent<ExternalServiceListCo
     </li>
   ), [])
 
+  if (!allExternalServices) {
+    throw new Error('unreachable')
+  }
+
   return (
     <Stack className={styles.container}>
       <Stack className={clsx(styles.title, !readonly && styles.buttons)}>

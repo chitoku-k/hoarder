@@ -1,21 +1,19 @@
-import { skipToken, useSuspenseQuery } from '@apollo/client/react'
+import type { SkipToken } from '@apollo/client/react'
+import { useSuspenseQuery } from '@apollo/client/react'
 
 import type { TagQuery, TagQueryVariables } from '@/graphql/Tag'
 import { TagDocument } from '@/graphql/Tag'
 
 type Tag = TagQuery['tags'][number]
 
-export function useTag(variables: TagQueryVariables): Tag {
-  const { data } = useSuspenseQuery(TagDocument, {
-    variables,
-  })
-  if (!data.tags[0]) {
-    throw new Error('tag not found')
-  }
-  return data.tags[0]
-}
+export function useTag(variables: TagQueryVariables | SkipToken): Tag | null {
+  const options = typeof variables === 'symbol'
+    ? variables
+    : { variables } satisfies useSuspenseQuery.Options<TagQueryVariables>
 
-export function useTagSkip(): null {
-  useSuspenseQuery(TagDocument, skipToken)
-  return null
+  const { data } = useSuspenseQuery(TagDocument, options)
+  if (!data) {
+    return null
+  }
+  return data.tags[0] ?? null
 }
