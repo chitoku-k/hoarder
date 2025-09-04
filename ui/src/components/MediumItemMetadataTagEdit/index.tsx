@@ -197,7 +197,7 @@ const MediumItemMetadataTagEdit: FunctionComponent<MediumItemMetadataTagEditProp
       },
       (e: unknown) => {
         console.error('Error updating medium\n', e)
-      }
+      },
     )
   }, [ save, medium, addingTags, removingTags, close ])
 

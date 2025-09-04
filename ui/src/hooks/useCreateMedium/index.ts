@@ -24,8 +24,8 @@ export function useCreateMedium(): [
         query: MediumDocument,
         data: {
           media: [
-            data.createMedium
-          ]
+            data.createMedium,
+          ],
         },
         variables: {
           id: data.createMedium.id,
