@@ -37,30 +37,31 @@ const TagListViewBody: FunctionComponent<TagListViewBodyProps> = ({
   selectable,
 }) => {
   const tag = useTag(initial ? { id: initial.id } : skipToken)
-  const initialColumns: TagColumn[] = useMemo(() => tag
-    ? [ ...ancestors(tag) ]
-      .map((tag, index, hierarchy) => ({
-        index,
-        creating: false,
-        editing: null,
-        selected: index === hierarchy.length - 1,
-        parent: tag.parent ?? null,
-        active: index === hierarchy.length - 1 ? null : tag,
-        hit: null,
-        hitInput: '',
-      }))
-    : [
-      {
-        index: 0,
-        creating: false,
-        editing: null,
-        selected: true,
-        parent: null,
-        active: null,
-        hit: null,
-        hitInput: '',
-      },
-    ],
+  const initialColumns: TagColumn[] = useMemo(
+    () => tag
+      ? [ ...ancestors(tag) ]
+          .map((tag, index, hierarchy) => ({
+            index,
+            creating: false,
+            editing: null,
+            selected: index === hierarchy.length - 1,
+            parent: tag.parent ?? null,
+            active: index === hierarchy.length - 1 ? null : tag,
+            hit: null,
+            hitInput: '',
+          }))
+      : [
+          {
+            index: 0,
+            creating: false,
+            editing: null,
+            selected: true,
+            parent: null,
+            active: null,
+            hit: null,
+            hitInput: '',
+          },
+        ],
     [ tag ],
   )
 

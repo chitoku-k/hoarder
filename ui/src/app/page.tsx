@@ -16,7 +16,7 @@ const searchParamsToArray = <T extends Record<string, string | string[]>>(
       ...obj,
       [ k ]: Array.isArray(v) ? v : [ v ],
     }),
-   {},
+    {},
   ),
   () => ({}),
 )
