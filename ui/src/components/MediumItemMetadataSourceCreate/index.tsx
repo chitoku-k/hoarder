@@ -99,7 +99,7 @@ const MediumItemMetadataSourceCreate: FunctionComponent<MediumItemMetadataSource
               }
               addingSourceIDs.push(sourceMetadataDuplicate.extensions.details.data.id)
             },
-          )
+          ),
         )
       }
     }

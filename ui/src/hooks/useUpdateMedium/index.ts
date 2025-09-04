@@ -22,8 +22,8 @@ export function useUpdateMedium(): [
         query: MediumDocument,
         data: {
           media: [
-            data.updateMedium
-          ]
+            data.updateMedium,
+          ],
         },
         variables: {
           id: data.updateMedium.id,
