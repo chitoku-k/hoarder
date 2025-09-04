@@ -26,8 +26,8 @@ export const makeClient = () => {
       typePolicies: {
         Query: {
           fields: {
-            allMedia: relayStylePagination(['sourceIds', 'tagIds', 'order']),
-            allTags: relayStylePagination(['root']),
+            allMedia: relayStylePagination([ 'sourceIds', 'tagIds', 'order' ]),
+            allTags: relayStylePagination([ 'root' ]),
           },
         },
       },
