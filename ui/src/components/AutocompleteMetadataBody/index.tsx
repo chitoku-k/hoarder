@@ -31,9 +31,9 @@ function* useMetadata(
   tags: MetadataLike['tags'] | null | undefined,
   tagTypes: TagType[] | null | undefined,
   options?: {
-    noSources?: boolean,
-    noTags?: boolean,
-    noTagTypes?: boolean,
+    noSources?: boolean
+    noTags?: boolean
+    noTagTypes?: boolean
   },
 ): Generator<Metadata> {
   const collator = useCollator()
@@ -306,7 +306,7 @@ export interface AutocompleteMetadataBodyProps extends Omit<AutocompleteProps<Me
   label?: string
   placeholder?: string
   variant?: TextFieldVariants
-  icon?: ComponentType<SvgIconProps>,
+  icon?: ComponentType<SvgIconProps>
   onChange?: (metadata: Metadata[]) => void
   noSources?: boolean
   noTags?: boolean
