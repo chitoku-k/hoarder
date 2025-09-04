@@ -13,4 +13,3 @@ export interface ExternalServiceUrlPatternInvalid extends GraphQLError {
     }
   }
 }
-
