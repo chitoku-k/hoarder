@@ -29,7 +29,7 @@ const ExternalServiceListColumnBodyEdit: FunctionComponent<ExternalServiceListCo
   }, [])
 
   const urlPatternRef = useRef<HTMLInputElement>(null)
-  const [ urlPatternSelection, setUrlPatternSelection ] = useState<[number, number] | [null, null]>([null, null])
+  const [ urlPatternSelection, setUrlPatternSelection ] = useState<[ number, number ] | [ null, null ]>([ null, null ])
 
   const [ externalService, setExternalService ] = useState(current)
 
@@ -63,7 +63,7 @@ const ExternalServiceListColumnBodyEdit: FunctionComponent<ExternalServiceListCo
       ...externalService,
       urlPattern,
     }))
-    setUrlPatternSelection([null, null])
+    setUrlPatternSelection([ null, null ])
   }, [])
 
   const handleClickInsertCaptureGroup = useCallback((name: string) => {
@@ -86,7 +86,7 @@ const ExternalServiceListColumnBodyEdit: FunctionComponent<ExternalServiceListCo
       ...externalService,
       urlPattern,
     }))
-    setUrlPatternSelection([selectionStart + prefix.length, selectionEnd + prefix.length])
+    setUrlPatternSelection([ selectionStart + prefix.length, selectionEnd + prefix.length ])
   }, [ urlPatternRef ])
 
   useEffect(() => {
@@ -195,7 +195,7 @@ const ExternalServiceListColumnBodyEdit: FunctionComponent<ExternalServiceListCo
               <Stack spacing={0.5}>
                 パターンに名前付きキャプチャーグループを使用してソースを検索対象にします
                 <Stack direction="row" spacing={0.5}>
-                  {['id', 'creatorId'].map(name => (
+                  {[ 'id', 'creatorId' ].map(name => (
                     <Chip
                       key={name}
                       label={`(?<${name}>)`}
