@@ -1,7 +1,7 @@
 import historykana from 'historykana'
 
 const options = {
-  kanaRegexp: /^[ 　ぁ-ゔー]*[nｎ]?$/,
+  kanaRegexp: /^[\u0020\u3000ぁ-ゔー]*[nｎ]?$/,
 }
 
 function preprocess(s: string): string {
