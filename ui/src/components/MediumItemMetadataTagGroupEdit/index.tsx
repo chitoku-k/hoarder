@@ -123,7 +123,7 @@ const MediumItemMetadataTagGroupEdit: FunctionComponent<MediumItemMetadataTagGro
               <>
                 <TagBreadcrumbsList tag={tag} />
                 <Tooltip title="削除" placement="right">
-                  <IconButton size="small" disabled={loading} onClick={() => handleClickRemoveTag(tag)} >
+                  <IconButton size="small" disabled={loading} onClick={() => handleClickRemoveTag(tag)}>
                     <RemoveCircleOutlineIcon fontSize="inherit" />
                   </IconButton>
                 </Tooltip>
