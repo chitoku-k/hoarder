@@ -168,7 +168,7 @@ export interface AutocompleteContainerBodyProps extends Omit<AutocompleteProps<s
   label?: string
   placeholder?: string
   variant?: TextFieldVariants
-  icon?: ComponentType<SvgIconProps>,
+  icon?: ComponentType<SvgIconProps>
   onChange?: (container: string | null) => void
 }
 

@@ -65,7 +65,7 @@ const MediumItemMetadataTagList: FunctionComponent<MediumItemMetadataTagListProp
 }
 
 export interface MediumItemMetadataTagListProps {
-  medium: Medium,
+  medium: Medium
   edit: () => void
 }
 
