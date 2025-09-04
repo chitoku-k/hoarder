@@ -22,7 +22,7 @@ const TagTypeListColumnBodyCreate: FunctionComponent<TagTypeListColumnBodyCreate
   const { graphQLError } = useError()
   const extractKana = useHistorykana()
 
-  const ref = useCallback((input: HTMLElement) => {
+  const ref = useCallback((input: HTMLElement | null) => {
     input?.focus({
       preventScroll: true,
     })
@@ -52,7 +52,7 @@ const TagTypeListColumnBodyCreate: FunctionComponent<TagTypeListColumnBodyCreate
       name,
       kana,
     }))
-  }, [ tagType, nameHistory, kanaChanged ])
+  }, [ tagType, nameHistory, kanaChanged, extractKana ])
 
   const handleChangeKana = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     const kana = e.currentTarget.value
@@ -84,7 +84,7 @@ const TagTypeListColumnBodyCreate: FunctionComponent<TagTypeListColumnBodyCreate
       () => {
         close()
       },
-      e => {
+      (e: unknown) => {
         console.error('Error creating tag type\n', e)
       },
     )

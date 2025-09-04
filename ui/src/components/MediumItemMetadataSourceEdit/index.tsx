@@ -60,7 +60,7 @@ const MediumItemMetadataSourceEdit: FunctionComponent<MediumItemMetadataSourceEd
   const [ removingSources, setRemovingSources ] = useState(new Map<ExternalServiceID, Source[]>())
 
   const sources = medium.sources ?? []
-  const groups = sources.reduce((groups, source) => {
+  const groups = sources.reduce<SourceGroup[]>((groups, source) => {
     const group = groups.find(s => s.externalService.id === source.externalService.id)
     if (group) {
       group.sources.push(source)
@@ -71,7 +71,7 @@ const MediumItemMetadataSourceEdit: FunctionComponent<MediumItemMetadataSourceEd
       })
     }
     return groups
-  }, [] as SourceGroup[])
+  }, [])
 
   const handleChangeNewExternalService = useCallback((type: ExternalService | null) => {
     if (!type) {
@@ -209,14 +209,14 @@ const MediumItemMetadataSourceEdit: FunctionComponent<MediumItemMetadataSourceEd
             newSource => {
               addingSourceIDs.push(newSource.id)
             },
-            e => {
+            (e: unknown) => {
               const sourceMetadataDuplicate = graphQLError(e, SOURCE_METADATA_DUPLICATE)
               if (!sourceMetadataDuplicate?.extensions.details.data.id) {
                 throw e
               }
               addingSourceIDs.push(sourceMetadataDuplicate.extensions.details.data.id)
             },
-          )
+          ),
         )
       }
     }
@@ -231,14 +231,14 @@ const MediumItemMetadataSourceEdit: FunctionComponent<MediumItemMetadataSourceEd
         () => {
           return save(medium.id, addingSourceIDs, removingSourceIDs)
         },
-        e => {
+        (e: unknown) => {
           throw new Error('error creating sources', { cause: e })
         },
       ).then(
         () => {
           close?.()
         },
-        e => {
+        (e: unknown) => {
           console.error('Error updating medium\n', e)
         },
       )
@@ -270,7 +270,7 @@ const MediumItemMetadataSourceEdit: FunctionComponent<MediumItemMetadataSourceEd
       <Stack spacing={4}>
         {groups.map(({ externalService, sources }) => (
           <MediumItemMetadataSourceGroupEdit
-            key={`${externalService.id}-${addingSources.get(externalService.id)?.length ?? 0}`}
+            key={`${externalService.id}-${String(addingSources.get(externalService.id)?.length ?? 0)}`}
             loading={loading}
             externalService={externalService}
             sources={sources}
@@ -287,7 +287,7 @@ const MediumItemMetadataSourceEdit: FunctionComponent<MediumItemMetadataSourceEd
         ))}
         {addingExternalServices.map(externalService => (
           <MediumItemMetadataSourceGroupEdit
-            key={`${externalService.id}-${addingSources.get(externalService.id)?.length ?? 0}`}
+            key={`${externalService.id}-${String(addingSources.get(externalService.id)?.length ?? 0)}`}
             loading={loading}
             externalService={externalService}
             sources={[]}

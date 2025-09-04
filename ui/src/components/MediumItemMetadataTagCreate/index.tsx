@@ -69,8 +69,6 @@ const MediumItemMetadataTagCreate: FunctionComponent<MediumItemMetadataTagCreate
     })
   }, [])
 
-  const restoreTagType = useCallback(() => {}, [])
-
   const addTag = useCallback((type: TagType, tag: Tag) => {
     setFocusedTagType(type)
 
@@ -98,8 +96,6 @@ const MediumItemMetadataTagCreate: FunctionComponent<MediumItemMetadataTagCreate
     setTagTagTypeIDs(() => resolveTagTagTypeIDs(newAddingTags))
   }, [ addingTags, setTagTagTypeIDs ])
 
-  const restoreTag = useCallback(() => {}, [])
-
   const resolveTagTagTypeIDs = (addingTags: Map<TagTypeID, Tag[]>) => {
     const addTagTagTypeIDs: TagTagTypeInput[] = []
     for (const [ tagTypeId, tags ] of addingTags) {
@@ -126,19 +122,17 @@ const MediumItemMetadataTagCreate: FunctionComponent<MediumItemMetadataTagCreate
       <Stack spacing={4}>
         {addingTagTypes.map(type => (
           <MediumItemMetadataTagGroupEdit
-            key={`${type.id}-${addingTags.get(type.id)?.length ?? 0}`}
+            key={`${type.id}-${String(addingTags.get(type.id)?.length ?? 0)}`}
             loading={loading}
             type={type}
             tags={[]}
             focus={focusedTagType?.id === type.id}
             removingTagType={false}
             removeTagType={removeTagType}
-            restoreTagType={restoreTagType}
             addingTags={addingTags.get(type.id) ?? []}
             removingTags={[]}
             addTag={addTag}
             removeTag={removeTag}
-            restoreTag={restoreTag}
           />
         ))}
         <Stack spacing={0.5} direction="row" alignItems="center" justifyContent="space-between">

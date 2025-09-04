@@ -88,7 +88,7 @@ const MediumItemImageEdit: FunctionComponent<MediumItemImageEditProps> = ({
     restoreReplica?.(replica)
   }, [ restoreReplica ])
 
-  const handleAppendFiles = useCallback((files: File[]) => {
+  const handleAppendFiles = useCallback(async (files: File[]) => {
     const { signal } = abortController
     const rejectOnAbort = new Promise<never>((_resolve, reject) => {
       signal.addEventListener('abort', reject, { once: true })
@@ -96,7 +96,7 @@ const MediumItemImageEdit: FunctionComponent<MediumItemImageEditProps> = ({
 
     setAppending(files.length)
 
-    Promise.allSettled(files.map(async (file): Promise<ReplicaCreate> => {
+    const results = await Promise.all(files.map(async (file): Promise<ReplicaMetadataResult> => {
       try {
         const blob = file.slice(0, FILE_MAX_INPUT_SIZE)
         const buffer = await Promise.race([ blob.arrayBuffer(), rejectOnAbort ])
@@ -107,58 +107,64 @@ const MediumItemImageEdit: FunctionComponent<MediumItemImageEditProps> = ({
         worker.addEventListener('error', reject)
         worker.postMessage(buffer, [ buffer ])
 
-        let { width, height, orientation } = await promise
-        if (orientation && orientation > 4) {
-          [ width, height ] = [ height, width ]
-        }
+        const size = await promise
+        const [ width, height ] = !size.orientation || size.orientation <= 4
+          ? [ size.width, size.height ]
+          : [ size.height, size.width ]
         return {
-          tempid: uuid(),
-          name: file.name,
-          size: file.size,
-          width,
-          height,
-          lastModified: new Date(file.lastModified),
-          blob: new Blob([ await file.arrayBuffer() ]),
+          status: 'succeeded',
+          value: {
+            tempid: uuid(),
+            name: file.name,
+            size: file.size,
+            width,
+            height,
+            lastModified: new Date(file.lastModified),
+            blob: new Blob([ await file.arrayBuffer() ]),
+          },
         }
       } catch (e) {
-        console.warn('Error reading a file\n', file, '\n', e)
-        throw file
-      }
-    })).then(results => {
-      setAppending(0)
-
-      if (signal.aborted) {
-        return
-      }
-
-      const newReplicas: ReplicaCreate[] = []
-      const newErrorFiles: File[] = []
-
-      for (const result of results) {
-        if (result.status === 'rejected') {
-          newErrorFiles.push(result.reason as File)
-          continue
+        console.warn('Error reading a file\n', file, e)
+        return {
+          status: 'failed',
+          file,
         }
-
-        newReplicas.push(result.value)
       }
+    }))
 
-      setAppended(newReplicas.length)
-      setErrorFiles(errorFiles => [
-        ...errorFiles,
-        ...newErrorFiles,
-      ])
-      setReplicas(replicas => [
-        ...replicas,
-        ...newReplicas,
-      ])
-    })
+    setAppending(0)
+
+    if (signal.aborted) {
+      return
+    }
+
+    const newReplicas: ReplicaCreate[] = []
+    const newErrorFiles: File[] = []
+
+    for (const result of results) {
+      if (result.status === 'succeeded') {
+        newReplicas.push(result.value)
+      } else {
+        newErrorFiles.push(result.file)
+      }
+    }
+
+    setAppended(newReplicas.length)
+    setErrorFiles(errorFiles => [
+      ...errorFiles,
+      ...newErrorFiles,
+    ])
+    setReplicas(replicas => [
+      ...replicas,
+      ...newReplicas,
+    ])
   }, [ abortController, setReplicas ])
 
   const handleCloseAppendFiles = useCallback((id: string) => {
     setAppendFiles(appendFiles => {
-      appendFiles.delete(id)
-      return new Map([ ...appendFiles ])
+      const newAppendFiles = new Map(appendFiles)
+      newAppendFiles.delete(id)
+      return newAppendFiles
     })
   }, [])
 
@@ -170,11 +176,11 @@ const MediumItemImageEdit: FunctionComponent<MediumItemImageEditProps> = ({
           return files
         }
 
-        handleAppendFiles(files)
+        void handleAppendFiles(files)
         handleCloseAppendFiles(id)
         return []
       },
-      e => {
+      (e: unknown) => {
         console.error('Error appending selected files\n', e)
 
         if (!(e instanceof Error) || e.name !== 'AbortError') {
@@ -206,26 +212,32 @@ const MediumItemImageEdit: FunctionComponent<MediumItemImageEditProps> = ({
   const computeItemKey = useCallback((_index: number, { current }: ReplicaItem) => isReplica(current) ? current.id : current.tempid, [])
 
   const components: Components<ReplicaItem> = useMemo(() => ({
-    List: forwardRef(({ children, ...rest }: ComponentPropsWithoutRef<'ul'>, ref) => (
-      <ImageList
-        ref={ref as Ref<HTMLUListElement>}
-        className={clsx(styles.imageList, className)}
-        gap={gap}
-        cols={1}
-        {...rest}
-      >
-        {children ?? []}
-      </ImageList>
-    )),
-    Item: ({ item, ...rest }) => (
-      <ImageListItem
-        className={styles.imageListItem}
-        sx={{
-          height: `min(100%, ${item.current.height}px) !important`,
-        }}
-        {...rest}
-      />
-    ),
+    List: forwardRef(function VirtuosoList({ children, ...rest }: ComponentPropsWithoutRef<'ul'>, ref) {
+      return (
+        <ImageList
+          ref={ref as Ref<HTMLUListElement>}
+          className={clsx(styles.imageList, className)}
+          gap={gap}
+          cols={1}
+          {...rest}
+        >
+          {children ?? []}
+        </ImageList>
+      )
+    }),
+    Item: function VirtuosoItem({ item, ...rest }) {
+      return (
+        <ImageListItem
+          className={styles.imageListItem}
+          sx={{
+            height: typeof item.current.height === 'number' && Number.isFinite(item.current.height)
+              ? `min(100%, ${item.current.height.toString()}px) !important`
+              : null,
+          }}
+          {...rest}
+        />
+      )
+    },
   }), [ className, gap ])
 
   const itemContent = useCallback((index: number, item: ReplicaItem) => isReplica(item.current) ? (
@@ -314,7 +326,7 @@ const MediumItemImageEdit: FunctionComponent<MediumItemImageEditProps> = ({
           <Snackbar
             open
             anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-            message={`${appending} 件のメディアを追加しています...`}
+            message={`${appending.toString()} 件のメディアを追加しています...`}
             action={
               <Button color="secondary" onClick={handleCancelAppendFiles}>
                 キャンセル
@@ -328,7 +340,7 @@ const MediumItemImageEdit: FunctionComponent<MediumItemImageEditProps> = ({
             open
             onClose={handleCloseAppended}
             anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-            message={`${appended} 件のメディアを追加しました`}
+            message={`${appended.toString()} 件のメディアを追加しました`}
             autoHideDuration={3000}
           />
         </Portal>
@@ -353,6 +365,14 @@ export interface ReplicaCreate {
   height?: number
   lastModified: Date
   blob: Blob
+}
+
+type ReplicaMetadataResult = {
+  status: 'succeeded'
+  value: ReplicaCreate
+} | {
+  status: 'failed'
+  file: File
 }
 
 export interface MediumItemImageEditProps {

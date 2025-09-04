@@ -33,7 +33,7 @@ export function useDeleteMedium(): [
         variables,
       })
       if (!data) {
-        throw error
+        throw new Error('invalid data', { cause: error })
       }
       return data.deleteMedium
     }, [ deleteMedium ]),

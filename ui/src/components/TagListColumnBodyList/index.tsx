@@ -50,9 +50,7 @@ const TagListColumnBodyList: FunctionComponent<TagListColumnBodyListProps> = ({
     type: 'conjunction',
   })
 
-  const [ children, hasNextPage, fetchMore ] = parent
-    ? useTags(parent.id)
-    : useTags(50)
+  const [ children, hasNextPage, fetchMore ] = useTags(parent ? parent.id : 50)
 
   const [ scrollTop, setScrollTop ] = useState(0)
   const ref = useCallback((node: HTMLElement | null) => {
@@ -115,7 +113,7 @@ const TagListColumnBodyList: FunctionComponent<TagListColumnBodyListProps> = ({
       hit: null,
       hitInput: value,
     })
-  }, [ onHitTag, index, creating, editing, selected, parent, active, hit ])
+  }, [ onHitTag, setColumn, index, creating, editing, selected, parent, active ])
 
   const handleClickSelectTag = useCallback(() => {
     onSelectTag?.(parent)
@@ -125,8 +123,8 @@ const TagListColumnBodyList: FunctionComponent<TagListColumnBodyListProps> = ({
     if (!fetchMore) {
       throw new Error('No handler found to fetch more')
     }
-    startTransition(() => {
-      fetchMore()
+    startTransition(async () => {
+      await fetchMore()
     })
   }, [ fetchMore ])
 
@@ -153,10 +151,10 @@ const TagListColumnBodyList: FunctionComponent<TagListColumnBodyListProps> = ({
   }, [])
 
   const tagSecondaryNode = useCallback((kana: string, aliases: string[]) => {
-    if (!kana && !aliases?.length) {
+    if (!kana && !aliases.length) {
       return null
     }
-    if (!aliases?.length) {
+    if (!aliases.length) {
       return kana
     }
     return (

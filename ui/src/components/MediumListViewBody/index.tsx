@@ -28,8 +28,8 @@ const MediumListViewBody: FunctionComponent<MediumListViewBodyProps> = ({
   const [ media, hasNextPage, fetchMore ] = useMedia(number, { sourceIDs, tagTagTypeIDs })
 
   const handleClickMore = useCallback(() => {
-    startTransition(() => {
-      fetchMore()
+    startTransition(async () => {
+      await fetchMore()
     })
   }, [ fetchMore ])
 

@@ -28,7 +28,7 @@ const TagListColumnBodyCreate: FunctionComponent<TagListColumnBodyCreateProps> =
   const collator = useCollator()
   const extractKana = useHistorykana()
 
-  const ref = useCallback((input: HTMLElement) => {
+  const ref = useCallback((input: HTMLElement | null) => {
     input?.focus({
       preventScroll: true,
     })
@@ -58,7 +58,7 @@ const TagListColumnBodyCreate: FunctionComponent<TagListColumnBodyCreateProps> =
       name,
       kana,
     }))
-  }, [ tag, nameHistory, kanaChanged ])
+  }, [ tag, nameHistory, kanaChanged, extractKana ])
 
   const handleChangeKana = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     const kana = e.currentTarget.value
@@ -70,6 +70,7 @@ const TagListColumnBodyCreate: FunctionComponent<TagListColumnBodyCreateProps> =
   }, [])
 
   const handleChangeAliases = useCallback((_e: SyntheticEvent, value: string[]) => {
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     const aliases = value.toSorted(collator.compare)
     setTag(tag => ({
       ...tag,
@@ -93,7 +94,7 @@ const TagListColumnBodyCreate: FunctionComponent<TagListColumnBodyCreateProps> =
         close()
         onCreate?.(newTag)
       },
-      e => {
+      (e: unknown) => {
         console.error('Error creating tag\n', e)
       },
     )

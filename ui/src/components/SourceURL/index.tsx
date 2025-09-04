@@ -11,9 +11,9 @@ import LinkIcon from '@mui/icons-material/Link'
 import { buildURL } from './builder'
 import styles from './styles.module.scss'
 
-import type { ExternalService, ExternalMetadata, Source } from '@/types'
+import type { ExternalService, Source } from '@/types'
 
-const extractProps = (props: SourceURLProps): [ ExternalService, ExternalMetadata ] | [ null, null ] => {
+const extractProps = (props: SourceURLProps): [ ExternalService, unknown ] | [ null, null ] => {
   if ('source' in props) {
     return [ props.source.externalService, props.source.externalMetadata ]
   }
@@ -61,7 +61,7 @@ const SourceURL: FunctionComponent<SourceURLProps> = ({
             <LaunchIcon className={styles.launch} fontSize="inherit" />
           ) : null}
         </Link>
-      ) : externalMetadata && typeof externalMetadata === 'object' && 'custom' in externalMetadata ? (
+      ) : typeof externalMetadata === 'object' && 'custom' in externalMetadata ? (
         <span className={clsx(styles.item, styles.noLink)}>
           <span className={styles.text}>
             {typeof externalMetadata.custom === 'string' ? externalMetadata.custom : JSON.stringify(externalMetadata)}
@@ -74,7 +74,7 @@ const SourceURL: FunctionComponent<SourceURLProps> = ({
 
 interface SourceURLPropsBase {
   className?: string
-  icon?: ComponentType<SvgIconProps>,
+  icon?: ComponentType<SvgIconProps>
   noLink?: boolean
   noLaunch?: boolean
 }
@@ -85,7 +85,7 @@ interface SourceURLPropsBySource extends SourceURLPropsBase {
 
 interface SourceURLPropsByExternalMetadata extends SourceURLPropsBase {
   externalService: ExternalService
-  externalMetadata: ExternalMetadata
+  externalMetadata: unknown
 }
 
 export type SourceURLProps = SourceURLPropsBySource | SourceURLPropsByExternalMetadata

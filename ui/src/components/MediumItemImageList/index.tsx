@@ -22,26 +22,32 @@ const MediumItemImageList: FunctionComponent<MediumItemImageListProps> = ({
   const computeItemKey = useCallback((_index: number, current: Replica) => current.id, [])
 
   const components: Components<Replica> = useMemo(() => ({
-    List: forwardRef(({ children, ...rest }: ComponentPropsWithoutRef<'ul'>, ref) => (
-      <ImageList
-        ref={ref as Ref<HTMLUListElement>}
-        className={clsx(styles.imageList, className)}
-        cols={1}
-        {...rest}
-        {...props}
-      >
-        {children ?? []}
-      </ImageList>
-    )),
-    Item: ({ item, ...rest }) => (
-      <ImageListItem
-        className={styles.imageListItem}
-        sx={{
-          height: `min(100%, ${item.height}px) !important`,
-        }}
-        {...rest}
-      />
-    ),
+    List: forwardRef(function VirtuosoList({ children, ...rest }: ComponentPropsWithoutRef<'ul'>, ref) {
+      return (
+        <ImageList
+          ref={ref as Ref<HTMLUListElement>}
+          className={clsx(styles.imageList, className)}
+          cols={1}
+          {...rest}
+          {...props}
+        >
+          {children ?? []}
+        </ImageList>
+      )
+    }),
+    Item: function VirtuosoItem({ item, ...rest }) {
+      return (
+        <ImageListItem
+          className={styles.imageListItem}
+          sx={{
+            height: typeof item.height === 'number' && Number.isFinite(item.height)
+              ? `min(100%, ${item.height.toString()}px) !important`
+              : null,
+          }}
+          {...rest}
+        />
+      )
+    },
   }), [ props, className ])
 
   const itemContent = useCallback((_index: number, item: Replica) => (

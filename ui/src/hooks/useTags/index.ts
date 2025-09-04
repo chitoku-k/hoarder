@@ -1,42 +1,35 @@
 import { useCallback } from 'react'
+import type { SkipToken } from '@apollo/client/react'
 import { skipToken, useSuspenseQuery } from '@apollo/client/react'
 
-import type { AllTagsQuery, AllTagsLikeQuery, TagsQuery, AllTagsLikeQueryVariables } from '@/graphql/Tags'
+import type { AllTagsLikeQuery, AllTagsLikeQueryVariables, AllTagsQuery, AllTagsQueryVariables, TagsQuery, TagsQueryVariables } from '@/graphql/Tags'
 import { AllTagsDocument, AllTagsLikeDocument, TagsDocument } from '@/graphql/Tags'
 
 type RootTags = AllTagsQuery['allTags']['edges'][number]['node'][]
 type TagsLike = AllTagsLikeQuery['allTagsLike']
 type Tags = TagsQuery['tags'][number]['children']
 
-export function useTags(parent: string): [ Tags, boolean, null ]
-
-export function useTags(number: number): [ RootTags, boolean, () => Promise<void> ]
-
 export function useTags(parentOrNumber: string | number): [ Tags, boolean, null ] | [ RootTags, boolean, () => Promise<void> ] {
-  return typeof parentOrNumber === 'string'
-    ? useTagsChildren(parentOrNumber)
-    : useTagsRoot(parentOrNumber)
+  const children = useTagsChildren(typeof parentOrNumber === 'string' ? { ids: [ parentOrNumber ] } : skipToken)
+  const root = useTagsRoot(typeof parentOrNumber === 'number' ? { number: parentOrNumber } : skipToken)
+
+  const result = children ?? root
+  if (!result) {
+    throw new Error('unreachable')
+  }
+
+  return result
 }
 
-export function useTagsLike(variables: AllTagsLikeQueryVariables): TagsLike {
-  const { data } = useSuspenseQuery(AllTagsLikeDocument, {
-    variables,
-    fetchPolicy: 'no-cache',
-  })
-  return data.allTagsLike
-}
+function useTagsChildren(variables: TagsQueryVariables | SkipToken): [ Tags, boolean, null ] | null {
+  const options = typeof variables === 'symbol'
+    ? variables
+    : { variables } satisfies useSuspenseQuery.Options<TagsQueryVariables>
 
-export function useTagsLikeSkip(): TagsLike {
-  useSuspenseQuery(AllTagsLikeDocument, skipToken)
-  return []
-}
-
-function useTagsChildren(id: string): [ Tags, boolean, null ] {
-  const { data } = useSuspenseQuery(TagsDocument, {
-    variables: {
-      ids: [ id ],
-    },
-  })
+  const { data } = useSuspenseQuery(TagsDocument, options)
+  if (!data) {
+    return null
+  }
   if (!data.tags[0]) {
     throw new Error('tag not found')
   }
@@ -47,14 +40,17 @@ function useTagsChildren(id: string): [ Tags, boolean, null ] {
   ]
 }
 
-function useTagsRoot(number: number): [ RootTags, boolean, () => Promise<void> ] {
-  const { data, fetchMore } = useSuspenseQuery(AllTagsDocument, {
-    variables: {
-      number,
-    },
-  })
+function useTagsRoot(variables: AllTagsQueryVariables | SkipToken): [ RootTags, boolean, () => Promise<void> ] | null {
+  const options = typeof variables === 'symbol'
+    ? variables
+    : { variables } satisfies useSuspenseQuery.Options<AllTagsQueryVariables>
+
+  const { data, fetchMore } = useSuspenseQuery(AllTagsDocument, options)
 
   const fetchNextPage = useCallback(async () => {
+    if (!data) {
+      throw new Error('unreachable')
+    }
     await fetchMore({
       variables: {
         after: data.allTags.pageInfo.endCursor,
@@ -62,9 +58,22 @@ function useTagsRoot(number: number): [ RootTags, boolean, () => Promise<void> ]
     })
   }, [ data, fetchMore ])
 
+  if (!data) {
+    return null
+  }
+
   return [
     data.allTags.edges.map(({ node }) => node),
     data.allTags.pageInfo.hasNextPage,
     fetchNextPage,
   ]
+}
+
+export function useTagsLike(variables: AllTagsLikeQueryVariables | SkipToken): TagsLike | null {
+  const options = typeof variables === 'symbol'
+    ? variables
+    : { variables, fetchPolicy: 'no-cache' } satisfies useSuspenseQuery.Options<AllTagsLikeQueryVariables>
+
+  const { data } = useSuspenseQuery(AllTagsLikeDocument, options)
+  return data?.allTagsLike ?? null
 }

@@ -22,8 +22,8 @@ export function useUpdateMedium(): [
         query: MediumDocument,
         data: {
           media: [
-            data.updateMedium
-          ]
+            data.updateMedium,
+          ],
         },
         variables: {
           id: data.updateMedium.id,
@@ -38,7 +38,7 @@ export function useUpdateMedium(): [
         variables,
       })
       if (!data) {
-        throw error
+        throw new Error('invalid data', { cause: error })
       }
       return data.updateMedium
     }, [ updateMedium ]),

@@ -52,7 +52,7 @@ const MediumItemMetadataTagEdit: FunctionComponent<MediumItemMetadataTagEditProp
   const [ removingTags, setRemovingTags ] = useState(new Map<TagTypeID, Tag[]>())
 
   const tags = medium.tags ?? []
-  const groups = tags.reduce((groups, { tag, type }) => {
+  const groups = tags.reduce<TagGroup[]>((groups, { tag, type }) => {
     const group = groups.find(t => t.type.id === type.id)
     if (group) {
       group.tags.push(tag)
@@ -63,7 +63,7 @@ const MediumItemMetadataTagEdit: FunctionComponent<MediumItemMetadataTagEditProp
       })
     }
     return groups
-  }, [] as TagGroup[])
+  }, [])
 
   const handleChangeNewTagType = useCallback((type: TagType | null) => {
     if (!type) {
@@ -195,9 +195,9 @@ const MediumItemMetadataTagEdit: FunctionComponent<MediumItemMetadataTagEditProp
       () => {
         close?.()
       },
-      e => {
+      (e: unknown) => {
         console.error('Error updating medium\n', e)
-      }
+      },
     )
   }, [ save, medium, addingTags, removingTags, close ])
 
@@ -226,7 +226,7 @@ const MediumItemMetadataTagEdit: FunctionComponent<MediumItemMetadataTagEditProp
       <Stack spacing={4}>
         {groups.map(({ type, tags }) => (
           <MediumItemMetadataTagGroupEdit
-            key={`${type.id}-${addingTags.get(type.id)?.length ?? 0}`}
+            key={`${type.id}-${String(addingTags.get(type.id)?.length ?? 0)}`}
             loading={loading}
             type={type}
             tags={tags}
@@ -243,7 +243,7 @@ const MediumItemMetadataTagEdit: FunctionComponent<MediumItemMetadataTagEditProp
         ))}
         {addingTagTypes.map(type => (
           <MediumItemMetadataTagGroupEdit
-            key={`${type.id}-${addingTags.get(type.id)?.length ?? 0}`}
+            key={`${type.id}-${String(addingTags.get(type.id)?.length ?? 0)}`}
             loading={loading}
             type={type}
             tags={[]}

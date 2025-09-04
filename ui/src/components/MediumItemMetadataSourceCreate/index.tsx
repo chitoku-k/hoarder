@@ -75,10 +75,6 @@ const MediumItemMetadataSourceCreate: FunctionComponent<MediumItemMetadataSource
     })
   }, [])
 
-  const restoreExternalService = useCallback(() => {}, [])
-
-  const restoreSource = useCallback(() => {}, [])
-
   const resolveSourceIDs = useCallback((addingSources: Map<ExternalServiceID, (Source | SourceCreate)[]>) => async () => {
     const addingSourceIDs: string[] = []
     const createSources: Promise<void>[] = []
@@ -96,14 +92,14 @@ const MediumItemMetadataSourceCreate: FunctionComponent<MediumItemMetadataSource
             newSource => {
               addingSourceIDs.push(newSource.id)
             },
-            e => {
+            (e: unknown) => {
               const sourceMetadataDuplicate = graphQLError(e, SOURCE_METADATA_DUPLICATE)
               if (!sourceMetadataDuplicate?.extensions.details.data.id) {
                 throw e
               }
               addingSourceIDs.push(sourceMetadataDuplicate.extensions.details.data.id)
             },
-          )
+          ),
         )
       }
     }
@@ -157,19 +153,17 @@ const MediumItemMetadataSourceCreate: FunctionComponent<MediumItemMetadataSource
       <Stack spacing={4}>
         {addingExternalServices.map(externalService => (
           <MediumItemMetadataSourceGroupEdit
-            key={`${externalService.id}-${addingSources.get(externalService.id)?.length ?? 0}`}
+            key={`${externalService.id}-${String(addingSources.get(externalService.id)?.length ?? 0)}`}
             loading={loading}
             externalService={externalService}
             sources={[]}
             focus={focusedExternalService?.id === externalService.id}
             removingExternalService={false}
             removeExternalService={removeExternalService}
-            restoreExternalService={restoreExternalService}
             addingSources={addingSources.get(externalService.id) ?? []}
             removingSources={[]}
             addSource={addSource}
             removeSource={removeSource}
-            restoreSource={restoreSource}
           />
         ))}
         <Stack spacing={0.5} direction="row" alignItems="center" justifyContent="space-between">

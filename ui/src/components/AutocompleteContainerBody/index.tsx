@@ -2,8 +2,8 @@
 
 import type { ComponentPropsWithoutRef, ComponentType, FunctionComponent, KeyboardEvent, SyntheticEvent } from 'react'
 import { useCallback, useMemo, useState, useTransition } from 'react'
+import { skipToken } from '@apollo/client/react'
 import { useFilter } from '@react-aria/i18n'
-import type { FilterOptionsState } from '@mui/material'
 import type { AutocompleteProps } from '@mui/material/Autocomplete'
 import Autocomplete from '@mui/material/Autocomplete'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -13,7 +13,7 @@ import TextField from '@mui/material/TextField'
 import { debounce } from '@mui/material/utils'
 
 import { ObjectKind } from '@/graphql/types.generated'
-import { useObjects, useObjectsSkip } from '@/hooks'
+import { useObjects } from '@/hooks'
 
 import styles from './styles.module.scss'
 
@@ -32,6 +32,7 @@ const AutocompleteContainerBody: FunctionComponent<AutocompleteContainerBodyProp
   const [ highlight, setHighlight ] = useState<string | null>(null)
 
   const [ loading, startTransition ] = useTransition()
+  // eslint-disable-next-line @typescript-eslint/unbound-method
   const { contains } = useFilter({
     usage: 'search',
     sensitivity: 'accent',
@@ -103,7 +104,7 @@ const AutocompleteContainerBody: FunctionComponent<AutocompleteContainerBodyProp
     </li>
   ), [ Icon ])
 
-  const filterOptions = useCallback((options: string[], _state: FilterOptionsState<string>): string[] => {
+  const filterOptions = useCallback((options: string[]): string[] => {
     const value = inputValue.substring(inputValue.lastIndexOf('/') + 1)
     if (!value.length) {
       return options
@@ -112,9 +113,9 @@ const AutocompleteContainerBody: FunctionComponent<AutocompleteContainerBodyProp
     return options.filter(option => contains(option.substring(option.lastIndexOf('/') + 1), value))
   }, [ inputValue, contains ])
 
-  const containers = open || value.length
-    ? useObjects({ prefix: `/${value}`, kind: ObjectKind.Container })
-    : useObjectsSkip()
+  const containers = useObjects(open || value.length
+    ? { prefix: `/${value}`, kind: ObjectKind.Container }
+    : skipToken)
 
   return (
     <Autocomplete
@@ -167,7 +168,7 @@ export interface AutocompleteContainerBodyProps extends Omit<AutocompleteProps<s
   label?: string
   placeholder?: string
   variant?: TextFieldVariants
-  icon?: ComponentType<SvgIconProps>,
+  icon?: ComponentType<SvgIconProps>
   onChange?: (container: string | null) => void
 }
 

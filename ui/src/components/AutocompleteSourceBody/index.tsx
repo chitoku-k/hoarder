@@ -3,6 +3,7 @@
 import type { ComponentType, FunctionComponent, SyntheticEvent } from 'react'
 import { useCallback, useMemo, useState, useTransition } from 'react'
 import clsx from 'clsx'
+import { skipToken } from '@apollo/client/react'
 import type { AutocompleteProps } from '@mui/material/Autocomplete'
 import Autocomplete from '@mui/material/Autocomplete'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -12,7 +13,7 @@ import TextField from '@mui/material/TextField'
 import { debounce } from '@mui/material/utils'
 
 import type { ExternalMetadataInput } from '@/graphql/types.generated'
-import { useSource, useSourceSkip } from '@/hooks'
+import { useSource } from '@/hooks'
 import type { ExternalService, Source } from '@/types'
 
 import styles from './styles.module.scss'
@@ -23,7 +24,7 @@ const builders: Builder[] = [
   {
     kind: 'bluesky',
     patterns: [
-      /^https?:\/\/bsky\.app\/profile\/(?<creatorId>[^\/?#]+)\/post\/(?<id>[^\/?#]+)(?:[?#].*)?$/,
+      /^https?:\/\/bsky\.app\/profile\/(?<creatorId>[^/?#]+)\/post\/(?<id>[^/?#]+)(?:[?#].*)?$/,
     ],
     build: ({ id, creatorId }) => ({ id, creatorId }),
   },
@@ -38,15 +39,15 @@ const builders: Builder[] = [
   {
     kind: 'mastodon',
     patterns: [
-      /^https?:\/\/(?:[^\/]+)\/@(?<creatorId>[^\/?#]+)\/(?<id>\d+)(?:[?#].*)?$/,
+      /^https?:\/\/(?:[^/]+)\/@(?<creatorId>[^/?#]+)\/(?<id>\d+)(?:[?#].*)?$/,
     ],
     build: ({ id, creatorId }) => ({ id, creatorId }),
   },
   {
     kind: 'misskey',
     patterns: [
-      /^(?<id>[^\/?#]+)$/,
-      /^https?:\/\/(?:[^\/]+)\/notes\/(?<id>[^\/?#]+)(?:[?#].*)?$/,
+      /^(?<id>[^/?#]+)$/,
+      /^https?:\/\/(?:[^/]+)\/notes\/(?<id>[^/?#]+)(?:[?#].*)?$/,
     ],
     build: ({ id }) => ({ id }),
   },
@@ -77,8 +78,8 @@ const builders: Builder[] = [
   {
     kind: 'pleroma',
     patterns: [
-      /^(?<id>[^\/?#]+)$/,
-      /^https?:\/\/(?:[^\/]+)\/notice\/(?<id>[^\/?#]+)(?:[?#].*)?$/,
+      /^(?<id>[^/?#]+)$/,
+      /^https?:\/\/(?:[^/]+)\/notice\/(?<id>[^/?#]+)(?:[?#].*)?$/,
     ],
     build: ({ id }) => ({ id }),
   },
@@ -93,15 +94,15 @@ const builders: Builder[] = [
   {
     kind: 'skeb',
     patterns: [
-      /^https?:\/\/skeb\.jp\/@(?<creatorId>[^\/]+)\/works\/(?<id>\d+)(?:[?#].*)?$/,
+      /^https?:\/\/skeb\.jp\/@(?<creatorId>[^/]+)\/works\/(?<id>\d+)(?:[?#].*)?$/,
     ],
     build: ({ id, creatorId }) => ({ id, creatorId }),
   },
   {
     kind: 'threads',
     patterns: [
-      /^(?<id>[^\/?#]+)$/,
-      /^https?:\/\/(?:www\.threads\.net)\/(?<creatorId>[^\/]+)\/post\/(?<id>[^\/$#]+)(?:[?#].*)?$/,
+      /^(?<id>[^/?#]+)$/,
+      /^https?:\/\/(?:www\.threads\.net)\/(?<creatorId>[^/]+)\/post\/(?<id>[^/$#]+)(?:[?#].*)?$/,
     ],
     build: ({ id, creatorId }) => ({ id, creatorId }),
   },
@@ -116,14 +117,14 @@ const builders: Builder[] = [
     kind: 'x',
     patterns: [
       /^(?<id>\d+)$/,
-      /^https?:\/\/(?:twitter\.com|x\.com)\/(?<creatorId>[^\/]+)\/status\/(?<id>\d+)(?:[\/?#].*)?$/,
+      /^https?:\/\/(?:twitter\.com|x\.com)\/(?<creatorId>[^/]+)\/status\/(?<id>\d+)(?:[/?#].*)?$/,
     ],
     build: ({ id, creatorId }) => ({ id, creatorId: creatorId !== 'i' ? creatorId : null }),
   },
   {
     kind: 'xfolio',
     patterns: [
-      /^https?:\/\/xfolio\.jp\/portfolio\/(?<creatorId>[^\/]+)\/works\/(?<id>\d+)(?:[?#].*)?$/,
+      /^https?:\/\/xfolio\.jp\/portfolio\/(?<creatorId>[^/]+)\/works\/(?<id>\d+)(?:[?#].*)?$/,
     ],
     build: ({ id, creatorId }) => ({ id, creatorId }),
   },
@@ -195,9 +196,7 @@ const AutocompleteSourceBody: FunctionComponent<AutocompleteSourceBodyProps> = (
   }, [ onChangeSource ])
 
   const externalMetadata = buildExternalMetadata(externalService, value)
-  const source = externalMetadata
-    ? useSource({ externalServiceID: externalService.id, externalMetadata })
-    : useSourceSkip()
+  const source = useSource(externalMetadata ? { externalServiceID: externalService.id, externalMetadata } : skipToken)
 
   const options: (Source | SourceCreate)[] = source
     ? [ source ]
@@ -247,12 +246,12 @@ const AutocompleteSourceBody: FunctionComponent<AutocompleteSourceBodyProps> = (
 export type SourceCreate = Pick<Source, 'externalService' | 'externalMetadata'>
 
 export interface AutocompleteSourceBodyProps extends Omit<AutocompleteProps<Source | SourceCreate, false, boolean | undefined, false>, 'onChange' | 'options' | 'renderInput'> {
-  externalService: ExternalService,
+  externalService: ExternalService
   focus?: boolean
   label?: string
   placeholder?: string
   variant?: TextFieldVariants
-  icon?: ComponentType<SvgIconProps>,
+  icon?: ComponentType<SvgIconProps>
   onChange?: (source: Source | SourceCreate | null) => void
 }
 
