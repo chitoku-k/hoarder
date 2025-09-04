@@ -41,7 +41,7 @@ const SearchQueryList: FunctionComponent<SearchQueryListProps> = ({
                 <TagBreadcrumbsList tag={tag} />
               </Stack>
             }
-            onDelete={() => removeQuery({ tagTagTypeIDs: [ { tagID: tag.id, typeID: type.id } ]})}
+            onDelete={() => removeQuery({ tagTagTypeIDs: [ { tagID: tag.id, typeID: type.id } ] })}
           />
         ))}
       </Stack>
