@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 
-const units = ['B', 'KB', 'MB', 'GB', 'TB']
+const units = [ 'B', 'KB', 'MB', 'GB', 'TB' ]
 
 export function useFilesize(k = 1024): (n: number) => string {
   return useCallback((n: number) => {
