@@ -8,7 +8,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "codegen": "graphql-codegen --config=codegen.ts"
   },
   "resolutions": {
@@ -58,6 +58,7 @@
     "uuid": "^11.1.0"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.1",
     "@graphql-codegen/cli": "^5.0.7",
     "@graphql-codegen/near-operation-file-preset": "^3.1.0",
     "@graphql-codegen/typed-document-node": "^5.1.2",
@@ -65,9 +66,11 @@
     "@graphql-codegen/typescript-operations": "^4.6.1",
     "@graphql-codegen/typescript-resolvers": "^4.5.1",
     "@parcel/watcher": "^2.5.1",
+    "@stylistic/eslint-plugin": "^5.3.1",
     "eslint": "^9.34.0",
     "eslint-config-next": "^15.5.2",
     "ts-node": "^10.9.2",
+    "typescript-eslint": "^8.42.0",
     "typescript-plugin-css-modules": "^5.2.0"
   }
 }
