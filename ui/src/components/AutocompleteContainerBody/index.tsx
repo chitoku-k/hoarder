@@ -2,6 +2,7 @@
 
 import type { ComponentPropsWithoutRef, ComponentType, FunctionComponent, KeyboardEvent, SyntheticEvent } from 'react'
 import { useCallback, useMemo, useState, useTransition } from 'react'
+import { skipToken } from '@apollo/client/react'
 import { useFilter } from '@react-aria/i18n'
 import type { AutocompleteProps } from '@mui/material/Autocomplete'
 import Autocomplete from '@mui/material/Autocomplete'
@@ -12,7 +13,7 @@ import TextField from '@mui/material/TextField'
 import { debounce } from '@mui/material/utils'
 
 import { ObjectKind } from '@/graphql/types.generated'
-import { useObjects, useObjectsSkip } from '@/hooks'
+import { useObjects } from '@/hooks'
 
 import styles from './styles.module.scss'
 
@@ -112,9 +113,9 @@ const AutocompleteContainerBody: FunctionComponent<AutocompleteContainerBodyProp
     return options.filter(option => contains(option.substring(option.lastIndexOf('/') + 1), value))
   }, [ inputValue, contains ])
 
-  const containers = open || value.length
-    ? useObjects({ prefix: `/${value}`, kind: ObjectKind.Container })
-    : useObjectsSkip()
+  const containers = useObjects(open || value.length
+    ? { prefix: `/${value}`, kind: ObjectKind.Container }
+    : skipToken)
 
   return (
     <Autocomplete

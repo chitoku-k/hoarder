@@ -1,16 +1,12 @@
-import { skipToken, useSuspenseQuery } from '@apollo/client/react'
+import type { SkipToken } from '@apollo/client/react'
+import { useSuspenseQuery } from '@apollo/client/react'
 
 import type { AllExternalServicesQuery } from '@/graphql/AllExternalServices'
 import { AllExternalServicesDocument } from '@/graphql/AllExternalServices'
 
 type AllExternalServices = AllExternalServicesQuery['allExternalServices']
 
-export function useAllExternalServices(): AllExternalServices {
-  const { data } = useSuspenseQuery(AllExternalServicesDocument)
-  return data.allExternalServices
-}
-
-export function useAllExternalServicesSkip(): AllExternalServices {
-  useSuspenseQuery(AllExternalServicesDocument, skipToken)
-  return []
+export function useAllExternalServices(variables?: null | SkipToken): AllExternalServices | null {
+  const { data } = useSuspenseQuery(AllExternalServicesDocument, variables ?? {})
+  return data?.allExternalServices ?? null
 }

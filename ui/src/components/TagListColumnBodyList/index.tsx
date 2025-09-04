@@ -50,9 +50,7 @@ const TagListColumnBodyList: FunctionComponent<TagListColumnBodyListProps> = ({
     type: 'conjunction',
   })
 
-  const [ children, hasNextPage, fetchMore ] = parent
-    ? useTags(parent.id)
-    : useTags(50)
+  const [ children, hasNextPage, fetchMore ] = useTags(parent ? parent.id : 50)
 
   const [ scrollTop, setScrollTop ] = useState(0)
   const ref = useCallback((node: HTMLElement | null) => {

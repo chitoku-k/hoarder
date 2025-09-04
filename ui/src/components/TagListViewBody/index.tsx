@@ -3,6 +3,7 @@
 import type { FunctionComponent } from 'react'
 import { useCallback, useMemo, useState } from 'react'
 import clsx from 'clsx'
+import { skipToken } from '@apollo/client/react'
 import Grid from '@mui/material/Grid'
 
 import TagDeleteDialog from '@/components/TagDeleteDialog'
@@ -35,8 +36,9 @@ const TagListViewBody: FunctionComponent<TagListViewBodyProps> = ({
   onSelect,
   selectable,
 }) => {
-  const initialColumns: TagColumn[] = useMemo(() => initial
-    ? [ ...ancestors(useTag({ id: initial.id })) ]
+  const tag = useTag(initial ? { id: initial.id } : skipToken)
+  const initialColumns: TagColumn[] = useMemo(() => tag
+    ? [ ...ancestors(tag) ]
       .map((tag, index, hierarchy) => ({
         index,
         creating: false,
@@ -59,7 +61,7 @@ const TagListViewBody: FunctionComponent<TagListViewBodyProps> = ({
         hitInput: '',
       },
     ],
-    [ initial ],
+    [ tag ],
   )
 
   const [ columns, setColumns ] = useState(initialColumns)

@@ -2,6 +2,7 @@
 
 import type { ChangeEvent, FunctionComponent } from 'react'
 import { useCallback, useState } from 'react'
+import { skipToken } from '@apollo/client/react'
 import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
 import DialogActions from '@mui/material/DialogActions'
@@ -16,13 +17,28 @@ import type { Tag } from '@/types'
 
 import styles from './styles.module.scss'
 
+const useTagByProps = (props: Pick<TagDeleteDialogBodyProps, 'tag'>): Tag | null => {
+  let result: Tag | null = null
+  let id: string | null = null
+
+  if (props.tag.children) {
+    result = props.tag
+  } else {
+    id = props.tag.id
+  }
+
+  const tag = useTag(id === null ? skipToken : { id })
+  return result ?? tag
+}
+
 const TagDeleteDialogBody: FunctionComponent<TagDeleteDialogBodyProps> = ({
-  tag,
   close,
   onDelete,
+  ...props
 }) => {
   const [ deleteTag, { error, loading } ] = useDeleteTag()
-  const { children } = tag.children ? tag : useTag({ id: tag.id })
+  const { tag } = props
+  const children = useTagByProps(props)?.children
 
   const { graphQLError } = useError()
   const [ recursive, setRecursive ] = useState(false)
