@@ -23,7 +23,7 @@ const builders: Builder[] = [
   {
     kind: 'bluesky',
     patterns: [
-      /^https?:\/\/bsky\.app\/profile\/(?<creatorId>[^\/?#]+)\/post\/(?<id>[^\/?#]+)(?:[?#].*)?$/,
+      /^https?:\/\/bsky\.app\/profile\/(?<creatorId>[^/?#]+)\/post\/(?<id>[^/?#]+)(?:[?#].*)?$/,
     ],
     build: ({ id, creatorId }) => ({ id, creatorId }),
   },
@@ -38,15 +38,15 @@ const builders: Builder[] = [
   {
     kind: 'mastodon',
     patterns: [
-      /^https?:\/\/(?:[^\/]+)\/@(?<creatorId>[^\/?#]+)\/(?<id>\d+)(?:[?#].*)?$/,
+      /^https?:\/\/(?:[^/]+)\/@(?<creatorId>[^/?#]+)\/(?<id>\d+)(?:[?#].*)?$/,
     ],
     build: ({ id, creatorId }) => ({ id, creatorId }),
   },
   {
     kind: 'misskey',
     patterns: [
-      /^(?<id>[^\/?#]+)$/,
-      /^https?:\/\/(?:[^\/]+)\/notes\/(?<id>[^\/?#]+)(?:[?#].*)?$/,
+      /^(?<id>[^/?#]+)$/,
+      /^https?:\/\/(?:[^/]+)\/notes\/(?<id>[^/?#]+)(?:[?#].*)?$/,
     ],
     build: ({ id }) => ({ id }),
   },
@@ -77,8 +77,8 @@ const builders: Builder[] = [
   {
     kind: 'pleroma',
     patterns: [
-      /^(?<id>[^\/?#]+)$/,
-      /^https?:\/\/(?:[^\/]+)\/notice\/(?<id>[^\/?#]+)(?:[?#].*)?$/,
+      /^(?<id>[^/?#]+)$/,
+      /^https?:\/\/(?:[^/]+)\/notice\/(?<id>[^/?#]+)(?:[?#].*)?$/,
     ],
     build: ({ id }) => ({ id }),
   },
@@ -93,15 +93,15 @@ const builders: Builder[] = [
   {
     kind: 'skeb',
     patterns: [
-      /^https?:\/\/skeb\.jp\/@(?<creatorId>[^\/]+)\/works\/(?<id>\d+)(?:[?#].*)?$/,
+      /^https?:\/\/skeb\.jp\/@(?<creatorId>[^/]+)\/works\/(?<id>\d+)(?:[?#].*)?$/,
     ],
     build: ({ id, creatorId }) => ({ id, creatorId }),
   },
   {
     kind: 'threads',
     patterns: [
-      /^(?<id>[^\/?#]+)$/,
-      /^https?:\/\/(?:www\.threads\.net)\/(?<creatorId>[^\/]+)\/post\/(?<id>[^\/$#]+)(?:[?#].*)?$/,
+      /^(?<id>[^/?#]+)$/,
+      /^https?:\/\/(?:www\.threads\.net)\/(?<creatorId>[^/]+)\/post\/(?<id>[^/$#]+)(?:[?#].*)?$/,
     ],
     build: ({ id, creatorId }) => ({ id, creatorId }),
   },
@@ -116,14 +116,14 @@ const builders: Builder[] = [
     kind: 'x',
     patterns: [
       /^(?<id>\d+)$/,
-      /^https?:\/\/(?:twitter\.com|x\.com)\/(?<creatorId>[^\/]+)\/status\/(?<id>\d+)(?:[\/?#].*)?$/,
+      /^https?:\/\/(?:twitter\.com|x\.com)\/(?<creatorId>[^/]+)\/status\/(?<id>\d+)(?:[/?#].*)?$/,
     ],
     build: ({ id, creatorId }) => ({ id, creatorId: creatorId !== 'i' ? creatorId : null }),
   },
   {
     kind: 'xfolio',
     patterns: [
-      /^https?:\/\/xfolio\.jp\/portfolio\/(?<creatorId>[^\/]+)\/works\/(?<id>\d+)(?:[?#].*)?$/,
+      /^https?:\/\/xfolio\.jp\/portfolio\/(?<creatorId>[^/]+)\/works\/(?<id>\d+)(?:[?#].*)?$/,
     ],
     build: ({ id, creatorId }) => ({ id, creatorId }),
   },
