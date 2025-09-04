@@ -3,6 +3,7 @@
 import type { ComponentType, FunctionComponent, SyntheticEvent } from 'react'
 import { useCallback, useState, useTransition } from 'react'
 import clsx from 'clsx'
+import { skipToken } from '@apollo/client/react'
 import type { AutocompleteProps } from '@mui/material/Autocomplete'
 import Autocomplete from '@mui/material/Autocomplete'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -10,7 +11,7 @@ import type { SvgIconProps } from '@mui/material/SvgIcon'
 import type { TextFieldVariants } from '@mui/material/TextField'
 import TextField from '@mui/material/TextField'
 
-import { useAllExternalServices, useAllExternalServicesSkip } from '@/hooks'
+import { useAllExternalServices } from '@/hooks'
 import { ExternalService } from '@/types'
 
 import styles from './styles.module.scss'
@@ -53,9 +54,7 @@ const AutocompleteExternalServiceBody: FunctionComponent<AutocompleteExternalSer
     onChangeExternalService?.(type)
   }, [ onChangeExternalService ])
 
-  const externalServices = open || !loadOnOpen
-    ? useAllExternalServices()
-    : useAllExternalServicesSkip()
+  const externalServices = useAllExternalServices(open || !loadOnOpen ? null : skipToken)
 
   return (
     <Autocomplete
@@ -64,7 +63,7 @@ const AutocompleteExternalServiceBody: FunctionComponent<AutocompleteExternalSer
       isOptionEqualToValue={(option, value) => option.id === value.id}
       getOptionLabel={option => option.name}
       getOptionKey={option => option.id}
-      options={externalServices}
+      options={externalServices ?? []}
       loading={loading}
       open={open}
       onOpen={handleOpen}

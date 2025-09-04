@@ -3,6 +3,7 @@
 import type { ComponentType, FunctionComponent, SyntheticEvent } from 'react'
 import { useCallback, useMemo, useState, useTransition } from 'react'
 import clsx from 'clsx'
+import { skipToken } from '@apollo/client/react'
 import type { AutocompleteProps } from '@mui/material/Autocomplete'
 import Autocomplete from '@mui/material/Autocomplete'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -12,7 +13,7 @@ import TextField from '@mui/material/TextField'
 import { debounce } from '@mui/material/utils'
 
 import type { ExternalMetadataInput } from '@/graphql/types.generated'
-import { useSource, useSourceSkip } from '@/hooks'
+import { useSource } from '@/hooks'
 import type { ExternalService, Source } from '@/types'
 
 import styles from './styles.module.scss'
@@ -195,9 +196,7 @@ const AutocompleteSourceBody: FunctionComponent<AutocompleteSourceBodyProps> = (
   }, [ onChangeSource ])
 
   const externalMetadata = buildExternalMetadata(externalService, value)
-  const source = externalMetadata
-    ? useSource({ externalServiceID: externalService.id, externalMetadata })
-    : useSourceSkip()
+  const source = useSource(externalMetadata ? { externalServiceID: externalService.id, externalMetadata } : skipToken)
 
   const options: (Source | SourceCreate)[] = source
     ? [ source ]

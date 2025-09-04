@@ -17,8 +17,9 @@ import SearchIcon from '@mui/icons-material/Search'
 
 import AutocompleteTag from '@/components/AutocompleteTag'
 import TagBreadcrumbsList from '@/components/TagBreadcrumbsList'
+import TagListColumnBodyListChildren from '@/components/TagListColumnBodyListChildren'
 import TagListColumnBodyListItem from '@/components/TagListColumnBodyListItem'
-import { useTags } from '@/hooks'
+import TagListColumnBodyListRoot from '@/components/TagListColumnBodyListRoot'
 import type { Tag } from '@/types'
 
 import styles from './styles.module.scss'
@@ -50,10 +51,6 @@ const TagListColumnBodyList: FunctionComponent<TagListColumnBodyListProps> = ({
     type: 'conjunction',
   })
 
-  const [ children, hasNextPage, fetchMore ] = parent
-    ? useTags(parent.id)
-    : useTags(50)
-
   const [ scrollTop, setScrollTop ] = useState(0)
   const ref = useCallback((node: HTMLElement | null) => {
     if (!node) {
@@ -73,7 +70,7 @@ const TagListColumnBodyList: FunctionComponent<TagListColumnBodyListProps> = ({
     }
   }, [ creating, scrollTop ])
 
-  const handleClickTag = (tag: Tag) => {
+  const handleClickTag = useCallback((tag: Tag) => {
     onSelectTag?.(tag)
     setColumn({
       index,
@@ -95,7 +92,7 @@ const TagListColumnBodyList: FunctionComponent<TagListColumnBodyListProps> = ({
       hit: null,
       hitInput: '',
     })
-  }
+  }, [ appendColumn, onSelectTag, setColumn, index, parent ])
 
   const handleHitTag = useCallback((tag: Tag | null) => {
     onHitTag?.(tag)
@@ -121,28 +118,25 @@ const TagListColumnBodyList: FunctionComponent<TagListColumnBodyListProps> = ({
     onSelectTag?.(parent)
   }, [ onSelectTag, parent ])
 
-  const handleClickMore = useCallback(() => {
-    if (!fetchMore) {
-      throw new Error('No handler found to fetch more')
-    }
+  const handleClickMore = useCallback((fetchMore: () => Promise<void>) => {
     startTransition(async () => {
       await fetchMore()
     })
-  }, [ fetchMore ])
+  }, [])
 
   const handleClickCreateTag = useCallback(() => {
     createTag(parent, index)
   }, [ createTag, parent, index ])
 
-  const handleClickEditTag = (e: MouseEvent<HTMLButtonElement>, tag: Tag) => {
+  const handleClickEditTag = useCallback((e: MouseEvent<HTMLButtonElement>, tag: Tag) => {
     editTag(tag, index)
     e.stopPropagation()
-  }
+  }, [ editTag, index ])
 
-  const handleClickDeleteTag = (e: MouseEvent<HTMLButtonElement>, tag: Tag) => {
+  const handleClickDeleteTag = useCallback((e: MouseEvent<HTMLButtonElement>, tag: Tag) => {
     deleteTag(tag, index)
     e.stopPropagation()
-  }
+  }, [ deleteTag, index ])
 
   const handleMouseDownEditTag = useCallback((e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
@@ -166,15 +160,86 @@ const TagListColumnBodyList: FunctionComponent<TagListColumnBodyListProps> = ({
     )
   }, [ formatter ])
 
+  const renderTagItem = useCallback((tag: Tag) => (
+    <TagListColumnBodyListItem
+      key={tag.id}
+      className={styles.tag}
+      dense={dense}
+      disabled={Boolean(disabledTag?.(tag))}
+      selected={!creating && (editing ?? active)?.id === tag.id}
+      primary={tag.name}
+      secondary={dense ? null : tagSecondaryNode(tag.kana, tag.aliases)}
+      onClick={() => handleClickTag(tag)}
+    >
+      {!readonly ? (
+        <>
+          <IconButton
+            className={styles.tagButton}
+            size="small"
+            onMouseDown={handleMouseDownEditTag}
+            onClick={e => handleClickEditTag(e, tag)}
+          >
+            <EditOutlinedIcon fontSize={dense ? 'small' : 'medium'} />
+          </IconButton>
+          <IconButton
+            className={styles.tagButton}
+            size="small"
+            onMouseDown={handleMouseDownDeleteTag}
+            onClick={e => handleClickDeleteTag(e, tag)}
+          >
+            <DeleteOutlinedIcon fontSize={dense ? 'small' : 'medium'} />
+          </IconButton>
+        </>
+      ) : null}
+    </TagListColumnBodyListItem>
+  ), [
+    readonly,
+    dense,
+    creating,
+    editing,
+    active,
+    disabledTag,
+    tagSecondaryNode,
+    handleClickTag,
+    handleMouseDownEditTag,
+    handleClickEditTag,
+    handleMouseDownDeleteTag,
+    handleClickDeleteTag,
+  ])
+
+  const renderTagItems = useCallback((tags: Tag[], hasNextPage?: boolean, fetchMore?: () => Promise<void>) => (
+    <List ref={ref} className={styles.tags} dense={dense}>
+      {tags.map(tag => renderTagItem(tag))}
+      {active && tags.every(({ id }) => id !== active.id) ? renderTagItem(active) : null}
+      {creating ? (
+        <TagListColumnBodyListItem
+          className={styles.tag}
+          dense={dense}
+          selected
+          primary="新しいタグ"
+        />
+      ) : null}
+      {hasNextPage && fetchMore ? (
+        <Stack className={styles.tagMoreContainer}>
+          <Button
+            className={styles.tagMoreButton}
+            color="inherit"
+            loading={loading}
+            endIcon={<ExpandMoreIcon />}
+            onClick={() => handleClickMore(fetchMore)}
+          >
+            次へ
+          </Button>
+        </Stack>
+      ) : null}
+    </List>
+  ), [ dense, creating, active, loading, ref, handleClickMore, renderTagItem ])
+
   const renderTagOption = useCallback(({ key, ...props }: ComponentPropsWithoutRef<'li'>, option: Tag) => (
     <li key={key} {...props}>
       <TagBreadcrumbsList tag={option} />
     </li>
   ), [])
-
-  const tags = !active || children.some(({ id }) => id === active.id)
-    ? children
-    : [ ...children, active ]
 
   return (
     <Stack className={styles.container}>
@@ -217,62 +282,11 @@ const TagListColumnBodyList: FunctionComponent<TagListColumnBodyListProps> = ({
           ) : null}
         </Stack>
       </Stack>
-      <List ref={ref} dense={dense} className={styles.tags}>
-        {tags.map(tag => (
-          <TagListColumnBodyListItem
-            key={tag.id}
-            className={styles.tag}
-            dense={dense}
-            disabled={Boolean(disabledTag?.(tag))}
-            selected={!creating && (editing ?? active)?.id === tag.id}
-            primary={tag.name}
-            secondary={dense ? null : tagSecondaryNode(tag.kana, tag.aliases)}
-            onClick={() => handleClickTag(tag)}
-          >
-            {!readonly ? (
-              <>
-                <IconButton
-                  className={styles.tagButton}
-                  size="small"
-                  onMouseDown={handleMouseDownEditTag}
-                  onClick={e => handleClickEditTag(e, tag)}
-                >
-                  <EditOutlinedIcon fontSize={dense ? 'small' : 'medium'} />
-                </IconButton>
-                <IconButton
-                  className={styles.tagButton}
-                  size="small"
-                  onMouseDown={handleMouseDownDeleteTag}
-                  onClick={e => handleClickDeleteTag(e, tag)}
-                >
-                  <DeleteOutlinedIcon fontSize={dense ? 'small' : 'medium'} />
-                </IconButton>
-              </>
-            ) : null}
-          </TagListColumnBodyListItem>
-        ))}
-        {creating ? (
-          <TagListColumnBodyListItem
-            className={styles.tag}
-            dense={dense}
-            selected
-            primary="新しいタグ"
-          />
-        ) : null}
-        {hasNextPage ? (
-          <Stack className={styles.tagMoreContainer}>
-            <Button
-              className={styles.tagMoreButton}
-              color="inherit"
-              loading={loading}
-              endIcon={<ExpandMoreIcon />}
-              onClick={handleClickMore}
-            >
-              次へ
-            </Button>
-          </Stack>
-        ) : null}
-      </List>
+      {parent ? (
+        <TagListColumnBodyListChildren id={parent.id} component={renderTagItems} />
+      ) : (
+        <TagListColumnBodyListRoot number={50} component={renderTagItems} />
+      )}
       {selectable === 'column' ? (
         <Stack className={styles.selectButtonContainer}>
           <Button onClick={handleClickSelectTag}>
