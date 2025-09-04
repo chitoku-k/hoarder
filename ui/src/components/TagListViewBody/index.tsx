@@ -333,7 +333,7 @@ const TagListViewBody: FunctionComponent<TagListViewBodyProps> = ({
 }
 
 export interface TagListViewBodyProps {
-  initial?: Tag,
+  initial?: Tag
   readonly?: boolean
   dense?: boolean
   disabled?: (tag: Tag) => boolean

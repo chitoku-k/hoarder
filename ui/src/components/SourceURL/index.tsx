@@ -74,7 +74,7 @@ const SourceURL: FunctionComponent<SourceURLProps> = ({
 
 interface SourceURLPropsBase {
   className?: string
-  icon?: ComponentType<SvgIconProps>,
+  icon?: ComponentType<SvgIconProps>
   noLink?: boolean
   noLaunch?: boolean
 }

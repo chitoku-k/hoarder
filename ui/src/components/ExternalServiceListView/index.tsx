@@ -188,7 +188,7 @@ const ExternalServiceListView: FunctionComponent<ExternalServiceListViewProps> =
 
 export interface ExternalServiceListViewProps {
   className?: string
-  initial?: ExternalService,
+  initial?: ExternalService
   readonly?: boolean
   dense?: boolean
   disabled?: (externalService: ExternalService) => boolean

@@ -167,7 +167,7 @@ export interface AutocompleteTagBodyProps extends Omit<AutocompleteProps<Tag, fa
   label?: string
   placeholder?: string
   variant?: TextFieldVariants
-  icon?: ComponentType<SvgIconProps>,
+  icon?: ComponentType<SvgIconProps>
   onChange?: (tag: Tag | null) => void
 }
 

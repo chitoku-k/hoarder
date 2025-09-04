@@ -246,12 +246,12 @@ const AutocompleteSourceBody: FunctionComponent<AutocompleteSourceBodyProps> = (
 export type SourceCreate = Pick<Source, 'externalService' | 'externalMetadata'>
 
 export interface AutocompleteSourceBodyProps extends Omit<AutocompleteProps<Source | SourceCreate, false, boolean | undefined, false>, 'onChange' | 'options' | 'renderInput'> {
-  externalService: ExternalService,
+  externalService: ExternalService
   focus?: boolean
   label?: string
   placeholder?: string
   variant?: TextFieldVariants
-  icon?: ComponentType<SvgIconProps>,
+  icon?: ComponentType<SvgIconProps>
   onChange?: (source: Source | SourceCreate | null) => void
 }
 

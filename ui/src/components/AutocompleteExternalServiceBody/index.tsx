@@ -102,7 +102,7 @@ export interface AutocompleteExternalServiceBodyProps extends Omit<AutocompleteP
   label?: string
   placeholder?: string
   variant?: TextFieldVariants
-  icon?: ComponentType<SvgIconProps>,
+  icon?: ComponentType<SvgIconProps>
   onChange?: (type: ExternalService | null) => void
 }
 

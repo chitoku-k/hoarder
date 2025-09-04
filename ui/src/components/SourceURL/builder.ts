@@ -138,5 +138,5 @@ export const buildURL = (externalService: ExternalService, externalMetadata: unk
 
 interface Builder {
   kind: string
-  build: (externalService: ExternalService, params: unknown) => string | null,
+  build: (externalService: ExternalService, params: unknown) => string | null
 }
