@@ -318,8 +318,8 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
         nameValidationError={!isValidName(replica.name)
           ? 'ファイル名が入力されていません'
           : !isUniqueName(replica.name, replicas)
-            ? '同じファイル名は使用できません'
-            : null}
+              ? '同じファイル名は使用できません'
+              : null}
         onChangeName={name => handleChangeName(replica, name)}
       />
     )
