@@ -2,6 +2,7 @@
 
 import type { FunctionComponent } from 'react'
 import clsx from 'clsx'
+import { skipToken } from '@apollo/client/react'
 import Breadcrumbs from '@mui/material/Breadcrumbs'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -9,7 +10,7 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext'
 import SellIcon from '@mui/icons-material/Sell'
 
 import { ancestors } from '@/components/TagListView'
-import { useTag, useTagSkip } from '@/hooks'
+import { useTag } from '@/hooks'
 import type { Tag } from '@/types'
 
 import styles from './styles.module.scss'
@@ -19,21 +20,21 @@ const TagBreadcrumbsListIcon: FunctionComponent = () => (
 )
 
 const useTagByProps = (props: TagBreadcrumbsListBodyProps): Tag | null => {
+  let result: Tag | null = null
+  let id: string | null = null
+
   if ('tag' in props) {
     if (props.tag.parent !== void 0) {
-      useTagSkip()
-      return props.tag
+      result = props.tag
+    } else {
+      id = props.tag.id
     }
-
-    return useTag({ id: props.tag.id })
+  } else if ('id' in props) {
+    id = props.id
   }
 
-  if ('id' in props) {
-    return useTag({ id: props.id })
-  }
-
-  useTagSkip()
-  return null
+  const tag = useTag(id === null ? skipToken : { id })
+  return result ?? tag
 }
 
 const TagBreadcrumbsListBody: FunctionComponent<TagBreadcrumbsListBodyProps> = ({

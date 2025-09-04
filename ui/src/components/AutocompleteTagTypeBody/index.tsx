@@ -3,6 +3,7 @@
 import type { ComponentType, FunctionComponent, SyntheticEvent } from 'react'
 import { useCallback, useMemo, useState, useTransition } from 'react'
 import clsx from 'clsx'
+import { skipToken } from '@apollo/client/react'
 import type { AutocompleteProps } from '@mui/material/Autocomplete'
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -10,7 +11,7 @@ import type { SvgIconProps } from '@mui/material/SvgIcon'
 import type { TextFieldVariants } from '@mui/material/TextField'
 import TextField from '@mui/material/TextField'
 
-import { useAllTagTypes, useAllTagTypesSkip } from '@/hooks'
+import { useAllTagTypes } from '@/hooks'
 import { TagType } from '@/types'
 
 import styles from './styles.module.scss'
@@ -57,9 +58,7 @@ const AutocompleteTagTypeBody: FunctionComponent<AutocompleteTagTypeBodyProps> =
     onChangeTagType?.(type)
   }, [ onChangeTagType ])
 
-  const tagTypes = open || !loadOnOpen
-    ? useAllTagTypes()
-    : useAllTagTypesSkip()
+  const tagTypes = useAllTagTypes(open || !loadOnOpen ? null : skipToken)
 
   return (
     <Autocomplete
@@ -69,7 +68,7 @@ const AutocompleteTagTypeBody: FunctionComponent<AutocompleteTagTypeBodyProps> =
       getOptionLabel={option => option.name}
       getOptionKey={option => option.id}
       filterOptions={filterOptions}
-      options={tagTypes}
+      options={tagTypes ?? []}
       loading={loading}
       open={open}
       onOpen={handleOpen}

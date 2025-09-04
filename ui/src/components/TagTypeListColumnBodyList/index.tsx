@@ -112,6 +112,10 @@ const TagTypeListColumnBodyList: FunctionComponent<TagTypeListColumnBodyListProp
     </li>
   ), [])
 
+  if (!allTagTypes) {
+    throw new Error('unreachable')
+  }
+
   return (
     <Stack className={styles.container}>
       <Stack className={clsx(styles.title, !readonly && styles.buttons)}>
