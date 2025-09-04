@@ -121,7 +121,7 @@ const MediumItemImageEdit: FunctionComponent<MediumItemImageEditProps> = ({
             height,
             lastModified: new Date(file.lastModified),
             blob: new Blob([ await file.arrayBuffer() ]),
-          }
+          },
         }
       } catch (e) {
         console.warn('Error reading a file\n', file, e)

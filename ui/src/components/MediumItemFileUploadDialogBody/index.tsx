@@ -247,7 +247,7 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
     await Promise.allSettled(
       replicas.map(replica => isReplica(replica)
         ? Promise.resolve(replica)
-        : processReplicaUpload(medium, replica, observable)
+        : processReplicaUpload(medium, replica, observable),
       ),
     ).then(results => {
       const newReplicas: (Replica | ReplicaCreate)[] = []

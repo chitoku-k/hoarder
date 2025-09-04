@@ -216,7 +216,7 @@ const MediumItemMetadataSourceEdit: FunctionComponent<MediumItemMetadataSourceEd
               }
               addingSourceIDs.push(sourceMetadataDuplicate.extensions.details.data.id)
             },
-          )
+          ),
         )
       }
     }
