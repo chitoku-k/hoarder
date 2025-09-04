@@ -130,7 +130,7 @@ const MediumItemMetadataSourceGroupEdit: FunctionComponent<MediumItemMetadataSou
               <>
                 <SourceURL source={source} noLink />
                 <Tooltip title="削除" placement="right">
-                  <IconButton size="small" disabled={loading} onClick={() => handleClickRemoveSource(source)} >
+                  <IconButton size="small" disabled={loading} onClick={() => handleClickRemoveSource(source)}>
                     <RemoveCircleOutlineIcon fontSize="inherit" />
                   </IconButton>
                 </Tooltip>
@@ -139,7 +139,7 @@ const MediumItemMetadataSourceGroupEdit: FunctionComponent<MediumItemMetadataSou
               <>
                 <SourceURL icon={AddLinkIcon} externalService={source.externalService} externalMetadata={source.externalMetadata} noLink />
                 <Tooltip title="削除" placement="right">
-                  <IconButton size="small" disabled={loading} onClick={() => handleClickRemoveSource(source)} >
+                  <IconButton size="small" disabled={loading} onClick={() => handleClickRemoveSource(source)}>
                     <RemoveCircleOutlineIcon fontSize="inherit" />
                   </IconButton>
                 </Tooltip>
