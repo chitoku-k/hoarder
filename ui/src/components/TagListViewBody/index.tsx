@@ -1,8 +1,9 @@
 'use client'
 
 import type { FunctionComponent } from 'react'
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import clsx from 'clsx'
+import { skipToken } from '@apollo/client/react'
 import Grid from '@mui/material/Grid'
 
 import TagDeleteDialog from '@/components/TagDeleteDialog'
@@ -35,30 +36,34 @@ const TagListViewBody: FunctionComponent<TagListViewBodyProps> = ({
   onSelect,
   selectable,
 }) => {
-  const initialColumns: TagColumn[] = initial
-    ? [ ...ancestors(useTag({ id: initial.id })) ]
-      .map((tag, index, hierarchy) => ({
-        index,
-        creating: false,
-        editing: null,
-        selected: index === hierarchy.length - 1,
-        parent: tag.parent ?? null,
-        active: index === hierarchy.length - 1 ? null : tag,
-        hit: null,
-        hitInput: '',
-      }))
-    : [
-      {
-        index: 0,
-        creating: false,
-        editing: null,
-        selected: true,
-        parent: null,
-        active: null,
-        hit: null,
-        hitInput: '',
-      },
-    ]
+  const tag = useTag(initial ? { id: initial.id } : skipToken)
+  const initialColumns: TagColumn[] = useMemo(
+    () => tag
+      ? [ ...ancestors(tag) ]
+          .map((tag, index, hierarchy) => ({
+            index,
+            creating: false,
+            editing: null,
+            selected: index === hierarchy.length - 1,
+            parent: tag.parent ?? null,
+            active: index === hierarchy.length - 1 ? null : tag,
+            hit: null,
+            hitInput: '',
+          }))
+      : [
+          {
+            index: 0,
+            creating: false,
+            editing: null,
+            selected: true,
+            parent: null,
+            active: null,
+            hit: null,
+            hitInput: '',
+          },
+        ],
+    [ tag ],
+  )
 
   const [ columns, setColumns ] = useState(initialColumns)
   const [ creating, setCreating ] = useState(false)
@@ -116,7 +121,7 @@ const TagListViewBody: FunctionComponent<TagListViewBodyProps> = ({
       }
       return newColumns.map(c => ({
         ...c,
-        active: c.active ?? (navigating && columns[c.index]?.active || null),
+        active: c.active ?? (navigating ? columns[c.index]?.active ?? null : null),
         selected: c.index === column.index,
       }))
     })
@@ -273,7 +278,7 @@ const TagListViewBody: FunctionComponent<TagListViewBodyProps> = ({
     } else {
       setColumns(initialColumns)
     }
-  }, [ closeCreateTag, closeEditTag, setColumn, initialColumns ])
+  }, [ closeCreateTag, closeEditTag, setColumns, initialColumns ])
 
   const handleSelectTag = useCallback((tag: Tag | null) => {
     onSelect?.(tag)
@@ -328,7 +333,7 @@ const TagListViewBody: FunctionComponent<TagListViewBodyProps> = ({
 }
 
 export interface TagListViewBodyProps {
-  initial?: Tag,
+  initial?: Tag
   readonly?: boolean
   dense?: boolean
   disabled?: (tag: Tag) => boolean

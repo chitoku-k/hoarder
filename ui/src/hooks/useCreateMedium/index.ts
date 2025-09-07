@@ -24,8 +24,8 @@ export function useCreateMedium(): [
         query: MediumDocument,
         data: {
           media: [
-            data.createMedium
-          ]
+            data.createMedium,
+          ],
         },
         variables: {
           id: data.createMedium.id,
@@ -60,7 +60,7 @@ export function useCreateMedium(): [
         variables,
       })
       if (!data) {
-        throw error
+        throw new Error('invalid data', { cause: error })
       }
       return data.createMedium
     }, [ createMedium ]),

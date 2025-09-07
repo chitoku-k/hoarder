@@ -52,7 +52,7 @@ const MediumCreateView: FunctionComponent = () => {
   const router = useRouter()
 
   const [ medium, setMedium ] = useState<Medium | null>(null)
-  const [ resolveMedium, setResolveMedium ] = useState(() => () => Promise.reject<Medium>())
+  const [ resolveMedium, setResolveMedium ] = useState<(() => Promise<Medium>) | null>(null)
   const [ createMedium, { loading: createLoading } ] = useCreateMedium()
   const [ updateMedium, { loading: updateLoading } ] = useUpdateMedium()
 
@@ -148,7 +148,7 @@ const MediumCreateView: FunctionComponent = () => {
         newMedium => {
           setMedium(newMedium)
         },
-        e => {
+        (e: unknown) => {
           console.error('Error updating medium\n', e)
           setMedium(current)
           setError(e)
@@ -165,7 +165,7 @@ const MediumCreateView: FunctionComponent = () => {
         results => {
           return updateMedium({
             id: current.id,
-            replicaOrders: results.filter(r => r !== undefined).map(({ id }) => id),
+            replicaOrders: results.map(({ id }) => id),
             createdAt: current.createdAt,
           })
         },
@@ -173,7 +173,7 @@ const MediumCreateView: FunctionComponent = () => {
         () => {
           router.refresh()
         },
-        e => {
+        (e: unknown) => {
           console.error('Error updating medium\n', e)
           setMedium({
             ...current,
@@ -202,7 +202,7 @@ const MediumCreateView: FunctionComponent = () => {
         setUploading(true)
       } else {
         const newMedium = medium ?? await newResolveMedium()
-        handleComplete(newMedium, replicas)
+        await handleComplete(newMedium, replicas)
       }
     } catch (e) {
       console.error('Error creating medium\n', e)
@@ -288,7 +288,7 @@ const MediumCreateView: FunctionComponent = () => {
           )}
         </Stack>
       </Grid>
-      {uploading ? (
+      {resolveMedium && uploading ? (
         <MediumItemFileUploadDialog
           abortSignal={uploadAbortController.signal}
           resolveMedium={resolveMedium}

@@ -18,7 +18,7 @@ export function useDeleteReplica(): [
         variables,
       })
       if (!data) {
-        throw error
+        throw new Error('invalid data', { cause: error })
       }
       return data.deleteReplica
     }, [ deleteReplica ]),

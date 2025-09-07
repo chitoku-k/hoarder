@@ -4,6 +4,7 @@ import type { ComponentType, FunctionComponent, SyntheticEvent } from 'react'
 import { useCallback, useEffect, useMemo, useState, useTransition } from 'react'
 import { useCollator } from '@react-aria/i18n'
 import clsx from 'clsx'
+import { skipToken } from '@apollo/client/react'
 import type { AutocompleteInputChangeReason, AutocompleteProps } from '@mui/material/Autocomplete'
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -15,8 +16,8 @@ import ArrowOutwardIcon from '@mui/icons-material/ArrowOutward'
 import { debounce } from '@mui/material/utils'
 
 import TagSelectDialog from '@/components/TagSelectDialog'
-import { useMetadataLike, useMetadataLikeSkip, useAllTagTypes } from '@/hooks'
 import type { MetadataLike } from '@/hooks'
+import { useAllTagTypes, useMetadataLike } from '@/hooks'
 import type { Source, Tag, TagType } from '@/types'
 
 import styles from './styles.module.scss'
@@ -26,13 +27,13 @@ export const isMetadataTag = (option: Metadata): option is MetadataTag => 'tag' 
 export const isMetadataTagType = (option: Metadata): option is MetadataTagType => 'tagType' in option
 
 function* useMetadata(
-  sources: MetadataLike['sources'],
-  tags: MetadataLike['tags'],
-  tagTypes: TagType[],
+  sources: MetadataLike['sources'] | null | undefined,
+  tags: MetadataLike['tags'] | null | undefined,
+  tagTypes: TagType[] | null | undefined,
   options?: {
-    noSources?: boolean,
-    noTags?: boolean,
-    noTagTypes?: boolean,
+    noSources?: boolean
+    noTags?: boolean
+    noTagTypes?: boolean
   },
 ): Generator<Metadata> {
   const collator = useCollator()
@@ -148,7 +149,7 @@ const AutocompleteMetadataBody: FunctionComponent<AutocompleteMetadataBodyProps>
     return ''
   }, [])
 
-  const filterOptions = useCallback(createFilterOptions<Metadata>({
+  const filterOptions = useMemo(() => createFilterOptions<Metadata>({
     stringify: option => {
       if (isMetadataSource(option)) {
         return option.source.url ?? ''
@@ -224,9 +225,7 @@ const AutocompleteMetadataBody: FunctionComponent<AutocompleteMetadataBodyProps>
   }, [])
 
   const tagTypes = useAllTagTypes()
-  const { sources, tags } = value.length
-    ? useMetadataLike(value)
-    : useMetadataLikeSkip()
+  const { sources, tags } = useMetadataLike(value.length ? { like: value } : skipToken)
 
   const options = [ ...useMetadata(sources, tags, tagTypes, { noSources, noTags, noTagTypes }) ]
 
@@ -307,7 +306,7 @@ export interface AutocompleteMetadataBodyProps extends Omit<AutocompleteProps<Me
   label?: string
   placeholder?: string
   variant?: TextFieldVariants
-  icon?: ComponentType<SvgIconProps>,
+  icon?: ComponentType<SvgIconProps>
   onChange?: (metadata: Metadata[]) => void
   noSources?: boolean
   noTags?: boolean

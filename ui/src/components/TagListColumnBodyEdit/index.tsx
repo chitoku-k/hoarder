@@ -39,7 +39,7 @@ const TagListColumnBodyEdit: FunctionComponent<TagListColumnBodyEditProps> = ({
   const [ updateTag, { error, loading } ] = useUpdateTag()
   const collator = useCollator()
 
-  const ref = useCallback((input: HTMLElement) => {
+  const ref = useCallback((input: HTMLElement | null) => {
     input?.focus({
       preventScroll: true,
     })
@@ -65,6 +65,7 @@ const TagListColumnBodyEdit: FunctionComponent<TagListColumnBodyEditProps> = ({
   }, [])
 
   const handleChangeAliases = useCallback((_e: SyntheticEvent, value: string[]) => {
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     const aliases = value.toSorted(collator.compare)
     setTag(tag => ({
       ...tag,
@@ -98,7 +99,7 @@ const TagListColumnBodyEdit: FunctionComponent<TagListColumnBodyEditProps> = ({
       () => {
         close()
       },
-      e => {
+      (e: unknown) => {
         console.error('Error updating tag\n', e)
       },
     )

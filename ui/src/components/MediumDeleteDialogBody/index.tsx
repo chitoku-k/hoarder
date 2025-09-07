@@ -34,7 +34,7 @@ const MediumDeleteDialogBody: FunctionComponent<MediumDeleteDialogBodyProps> = (
         close()
         onDelete(medium)
       },
-      e => {
+      (e: unknown) => {
         console.error('Error deleting medium\n', e)
       },
     )

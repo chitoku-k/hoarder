@@ -155,13 +155,13 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
         },
       )
 
-      const { promise, resolve, reject } = Promise.withResolvers<void>()
+      const { promise, resolve, reject } = Promise.withResolvers<null>()
       const subscription = observable
         .pipe(filter(({ id }) => id === newReplica.id))
         .subscribe(replica => {
           switch (replica.status.phase) {
             case ReplicaPhase.Ready: {
-              return resolve()
+              return resolve(null)
             }
             case ReplicaPhase.Error: {
               return reject()
@@ -197,15 +197,15 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
         const uploading = replica
         const existing = extractEntry(objectAlreadyExists)
 
-        const { promise: confirm, resolve: onConfirm, reject: onCancel } = Promise.withResolvers<void>()
+        const { promise: confirm, resolve, reject } = Promise.withResolvers<null>()
 
         setOverwriting(overwriting => [
           ...overwriting,
           {
             uploading,
             existing,
-            onConfirm,
-            onCancel,
+            onConfirm: () => resolve(null),
+            onCancel: () => reject(),
           },
         ])
 
@@ -226,7 +226,7 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
       }
       throw new Error('error creating replica', { cause: e })
     }
-  }, [ container, abortSignal, createReplica, graphQLError, handleUploadProgress, onProgress ])
+  }, [ container, abortSignal, createReplica, graphQLError, handleUploadProgress ])
 
   const handleClickUpload = useCallback(async () => {
     setUploading(true)
@@ -247,7 +247,7 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
     await Promise.allSettled(
       replicas.map(replica => isReplica(replica)
         ? Promise.resolve(replica)
-        : processReplicaUpload(medium, replica, observable)
+        : processReplicaUpload(medium, replica, observable),
       ),
     ).then(results => {
       const newReplicas: (Replica | ReplicaCreate)[] = []
@@ -270,31 +270,42 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
 
       setUploading(false)
     }).finally(() => {
-      // This seems to be a redundant subscription, but it is here to ensure that it
-      // unsubscribes from the medium when no subscriptions were created.
-      const subscription = observable.subscribe(() => {})
+      const subscription = observable.subscribe(() => {
+        // This seems to be a redundant subscription, but it is here to ensure that it
+        // unsubscribes from the medium when no subscriptions were created.
+      })
       subscription.unsubscribe()
     })
-  }, [ resolveMedium, watchMedium, replicas, processReplicaUpload, onComplete ])
+  }, [ resolveMedium, watchMedium, replicas, processReplicaUpload, onComplete, onProgress ])
 
   const tableComputeItemKey = useCallback((_index: number, replica: ReplicaCreate) => replica.tempid, [])
 
   const tableComponents: TableComponents<ReplicaCreate> = useMemo(() => ({
-    Scroller: forwardRef(({ ...rest }: ComponentPropsWithoutRef<'div'>, ref) => (
-      <TableContainer ref={ref} component={Paper} {...rest} />
-    )),
-    Table: ({ ...rest }) => (
-      <Table className={styles.table} {...rest} />
-    ),
-    TableHead: forwardRef(({ ...rest }: ComponentPropsWithoutRef<'thead'>, ref) => (
-      <TableHead ref={ref} {...rest} />
-    )),
-    TableRow: ({ item, ...rest }) => (
-      <TableRow {...rest} />
-    ),
-    TableBody: forwardRef(({ ...rest }: ComponentPropsWithoutRef<'tbody'>, ref) => (
-      <TableBody ref={ref} {...rest} />
-    )),
+    Scroller: forwardRef(function VirtuosoScroller({ ...rest }: ComponentPropsWithoutRef<'div'>, ref) {
+      return (
+        <TableContainer ref={ref} component={Paper} {...rest} />
+      )
+    }),
+    Table: function VirtuosoTable({ ...rest }) {
+      return (
+        <Table className={styles.table} {...rest} />
+      )
+    },
+    TableHead: forwardRef(function VirtuosoTableHead({ ...rest }: ComponentPropsWithoutRef<'thead'>, ref) {
+      return (
+        <TableHead ref={ref} {...rest} />
+      )
+    }),
+    TableRow: function VirtuosoTableRow({ item, ...rest }) {
+      return (
+        <TableRow {...rest} />
+      )
+    },
+    TableBody: forwardRef(function VirtuosoTableBody({ ...rest }: ComponentPropsWithoutRef<'tbody'>, ref) {
+      return (
+        <TableBody ref={ref} {...rest} />
+      )
+    }),
   }), [])
 
   const tableFixedHeaderContent = useCallback(() => (
@@ -317,14 +328,14 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
         nameValidationError={!isValidName(replica.name)
           ? 'ファイル名が入力されていません'
           : !isUniqueName(replica.name, replicas)
-            ? '同じファイル名は使用できません'
-            : null}
+              ? '同じファイル名は使用できません'
+              : null}
         onChangeName={name => handleChangeName(replica, name)}
       />
     )
   }, [ uploads, replicas, handleChangeName ])
 
-  const currentReplicas = replicas.filter((replica) => 'tempid' in replica)
+  const currentReplicas = replicas.filter(replica => 'tempid' in replica)
   const currentOverwrite = overwriting[0]
   const hasValidationErrors = currentReplicas.some(replica => !isValidName(replica.name) || !isUniqueName(replica.name, replicas))
 

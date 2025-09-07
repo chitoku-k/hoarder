@@ -176,7 +176,7 @@ const MediumItemViewBody: FunctionComponent<MediumItemViewBodyProps> = ({
         id: current.id,
         replicaOrders: replicas.filter(isReplica).map(({ id }) => id),
         createdAt: current.createdAt,
-      }).catch(e => {
+      }).catch((e: unknown) => {
         console.error('Error updating medium\n', e)
         setError(e)
       })
@@ -198,12 +198,12 @@ const MediumItemViewBody: FunctionComponent<MediumItemViewBodyProps> = ({
       }
     }
 
-    const newReplicas: Promise<Replica | void>[] = []
+    const newReplicas: Promise<Replica | null>[] = []
     for (const replica of replicas) {
       if (removingReplicas.some(({ id }) => id === replica.id)) {
         newReplicas.push(deleteReplica({ id: replica.id, deleteObject }).then(
-          () => {},
-          e => {
+          () => null,
+          (e: unknown) => {
             throw new Error('error deleting replica', { cause: e })
           },
         ))
@@ -217,7 +217,7 @@ const MediumItemViewBody: FunctionComponent<MediumItemViewBodyProps> = ({
         results => {
           return updateMedium({
             id: current.id,
-            replicaOrders: results.filter(r => r !== undefined).map(({ id }) => id),
+            replicaOrders: results.filter(r => r !== null).map(({ id }) => id),
             createdAt: current.createdAt,
           })
         },
@@ -226,18 +226,18 @@ const MediumItemViewBody: FunctionComponent<MediumItemViewBodyProps> = ({
           closeEditSummary()
           setReplicas(newMedium.replicas)
         },
-        e => {
+        (e: unknown) => {
           console.error('Error updating medium\n', e)
           setError(e)
         },
       )
   }, [ updateMedium, deleteReplica, removingReplicas, closeEditSummary ])
 
-  const save = useCallback((current: Medium) => {
+  const save = useCallback(async (current: Medium) => {
     if (replicas.some(r => !isReplica(r))) {
       setUploading(true)
     } else {
-      handleComplete(current, replicas)
+      await handleComplete(current, replicas)
     }
   }, [ replicas, handleComplete ])
 

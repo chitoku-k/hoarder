@@ -23,7 +23,7 @@ const TagTypeListColumnBodyEdit: FunctionComponent<TagTypeListColumnBodyEditProp
   const [ updateTagType, { error, loading } ] = useUpdateTagType()
   const { graphQLError } = useError()
 
-  const ref = useCallback((input: HTMLElement) => {
+  const ref = useCallback((input: HTMLElement | null) => {
     input?.focus({
       preventScroll: true,
     })
@@ -70,7 +70,7 @@ const TagTypeListColumnBodyEdit: FunctionComponent<TagTypeListColumnBodyEditProp
         close()
         onEdit(newTagType)
       },
-      e => {
+      (e: unknown) => {
         console.error('Error updating tag type\n', e)
       },
     )

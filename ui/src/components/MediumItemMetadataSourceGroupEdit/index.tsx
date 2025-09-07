@@ -38,7 +38,7 @@ const MediumItemMetadataSourceGroupEdit: FunctionComponent<MediumItemMetadataSou
       return
     }
 
-    restoreExternalService(externalService)
+    restoreExternalService?.(externalService)
     addSource(externalService, source)
   }, [ restoreExternalService, externalService, addSource ])
 
@@ -55,10 +55,10 @@ const MediumItemMetadataSourceGroupEdit: FunctionComponent<MediumItemMetadataSou
   }, [ removeExternalService, externalService, removeSource, sources, addingSources ])
 
   const handleClickRestoreExternalService = useCallback(() => {
-    restoreExternalService(externalService)
+    restoreExternalService?.(externalService)
 
     for (const source of sources) {
-      restoreSource(externalService, source)
+      restoreSource?.(externalService, source)
     }
   }, [ restoreExternalService, restoreSource, externalService, sources ])
 
@@ -67,8 +67,8 @@ const MediumItemMetadataSourceGroupEdit: FunctionComponent<MediumItemMetadataSou
   }
 
   const handleClickRestoreSource = (tag: Source) => {
-    restoreExternalService(externalService)
-    restoreSource(externalService, tag)
+    restoreExternalService?.(externalService)
+    restoreSource?.(externalService, tag)
   }
 
   const renderSourceOption = useCallback(({ key, ...props }: ComponentPropsWithoutRef<'li'>, option: Source | SourceCreate) => (
@@ -130,7 +130,7 @@ const MediumItemMetadataSourceGroupEdit: FunctionComponent<MediumItemMetadataSou
               <>
                 <SourceURL source={source} noLink />
                 <Tooltip title="削除" placement="right">
-                  <IconButton size="small" disabled={loading} onClick={() => handleClickRemoveSource(source)} >
+                  <IconButton size="small" disabled={loading} onClick={() => handleClickRemoveSource(source)}>
                     <RemoveCircleOutlineIcon fontSize="inherit" />
                   </IconButton>
                 </Tooltip>
@@ -139,7 +139,7 @@ const MediumItemMetadataSourceGroupEdit: FunctionComponent<MediumItemMetadataSou
               <>
                 <SourceURL icon={AddLinkIcon} externalService={source.externalService} externalMetadata={source.externalMetadata} noLink />
                 <Tooltip title="削除" placement="right">
-                  <IconButton size="small" disabled={loading} onClick={() => handleClickRemoveSource(source)} >
+                  <IconButton size="small" disabled={loading} onClick={() => handleClickRemoveSource(source)}>
                     <RemoveCircleOutlineIcon fontSize="inherit" />
                   </IconButton>
                 </Tooltip>
@@ -189,12 +189,12 @@ export interface MediumItemMetadataSourceGroupEditProps {
   focus?: boolean
   removingExternalService: boolean
   removeExternalService: (externalService: ExternalService) => void
-  restoreExternalService: (externalService: ExternalService) => void
+  restoreExternalService?: (externalService: ExternalService) => void
   addingSources: (Source | SourceCreate)[]
   removingSources: Source[]
   addSource: (externalService: ExternalService, source: Source | SourceCreate) => void
   removeSource: (externalService: ExternalService, source: Source | SourceCreate) => void
-  restoreSource: (externalService: ExternalService, source: Source) => void
+  restoreSource?: (externalService: ExternalService, source: Source) => void
 }
 
 export default MediumItemMetadataSourceGroupEdit
