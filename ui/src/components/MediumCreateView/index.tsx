@@ -160,28 +160,23 @@ const MediumCreateView: FunctionComponent = () => {
     setUploading(false)
     setUploadAborting(false)
 
-    await Promise.all(replicas)
-      .then(
-        results => {
-          return updateMedium({
-            id: current.id,
-            replicaOrders: results.map(({ id }) => id),
-            createdAt: current.createdAt,
-          })
-        },
-      ).then(
-        () => {
-          router.refresh()
-        },
-        (e: unknown) => {
-          console.error('Error updating medium\n', e)
-          setMedium({
-            ...current,
-            replicas,
-          })
-          setError(e)
-        },
-      )
+    await updateMedium({
+      id: current.id,
+      replicaOrders: replicas.map(({ id }) => id),
+      createdAt: current.createdAt,
+    }).then(
+      () => {
+        router.refresh()
+      },
+      (e: unknown) => {
+        console.error('Error updating medium\n', e)
+        setMedium({
+          ...current,
+          replicas,
+        })
+        setError(e)
+      },
+    )
   }, [ updateMedium, router ])
 
   const save = useCallback(async (current: MediumCreate) => {
