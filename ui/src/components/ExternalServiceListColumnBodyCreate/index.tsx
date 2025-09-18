@@ -120,15 +120,13 @@ const ExternalServiceListColumnBodyCreate: FunctionComponent<ExternalServiceList
     close()
   }, [ close ])
 
-  const handleClickSubmit = useCallback(() => {
-    createExternalService(externalService).then(
-      () => {
-        close()
-      },
-      (e: unknown) => {
-        console.error('Error creating external service\n', e)
-      },
-    )
+  const handleClickSubmit = useCallback(async () => {
+    try {
+      await createExternalService(externalService)
+      close()
+    } catch (e) {
+      console.error('Error creating external service\n', e)
+    }
   }, [ externalService, createExternalService, close ])
 
   const externalServiceSlugDuplicate = graphQLError(error, EXTERNAL_SERVICE_SLUG_DUPLICATE)

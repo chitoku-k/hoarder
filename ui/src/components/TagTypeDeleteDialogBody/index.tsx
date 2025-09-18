@@ -18,16 +18,14 @@ const TagTypeDeleteDialogBody: FunctionComponent<TagTypeDeleteDialogBodyProps> =
 }) => {
   const [ deleteTagType, { error, loading } ] = useDeleteTagType()
 
-  const handleClickDelete = useCallback(() => {
-    deleteTagType({ id: tagType.id }).then(
-      () => {
-        close()
-        onDelete(tagType)
-      },
-      (e: unknown) => {
-        console.error('Error deleting tag type\n', e)
-      },
-    )
+  const handleClickDelete = useCallback(async () => {
+    try {
+      await deleteTagType({ id: tagType.id })
+      close()
+      onDelete(tagType)
+    } catch (e) {
+      console.error('Error deleting tag type\n', e)
+    }
   }, [ deleteTagType, tagType, close, onDelete ])
 
   return error ? (

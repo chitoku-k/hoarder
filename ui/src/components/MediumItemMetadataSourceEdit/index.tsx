@@ -192,7 +192,7 @@ const MediumItemMetadataSourceEdit: FunctionComponent<MediumItemMetadataSourceEd
     close?.()
   }, [ close ])
 
-  const handleClickSubmit = useCallback(() => {
+  const handleClickSubmit = useCallback(async () => {
     const addingSourceIDs: string[] = []
     const createSources: Promise<void>[] = []
     for (const sources of addingSources.values()) {
@@ -201,23 +201,21 @@ const MediumItemMetadataSourceEdit: FunctionComponent<MediumItemMetadataSourceEd
           addingSourceIDs.push(source.id)
           continue
         }
-        createSources.push(
-          createSource({
-            externalServiceID: source.externalService.id,
-            externalMetadata: source.externalMetadata as ExternalMetadataInput,
-          }).then(
-            newSource => {
-              addingSourceIDs.push(newSource.id)
-            },
-            (e: unknown) => {
-              const sourceMetadataDuplicate = graphQLError(e, SOURCE_METADATA_DUPLICATE)
-              if (!sourceMetadataDuplicate?.extensions.details.data.id) {
-                throw e
-              }
-              addingSourceIDs.push(sourceMetadataDuplicate.extensions.details.data.id)
-            },
-          ),
-        )
+        createSources.push((async () => {
+          try {
+            const newSource = await createSource({
+              externalServiceID: source.externalService.id,
+              externalMetadata: source.externalMetadata as ExternalMetadataInput,
+            })
+            addingSourceIDs.push(newSource.id)
+          } catch (e) {
+            const sourceMetadataDuplicate = graphQLError(e, SOURCE_METADATA_DUPLICATE)
+            if (!sourceMetadataDuplicate?.extensions.details.data.id) {
+              throw e
+            }
+            addingSourceIDs.push(sourceMetadataDuplicate.extensions.details.data.id)
+          }
+        })())
       }
     }
 
@@ -226,22 +224,13 @@ const MediumItemMetadataSourceEdit: FunctionComponent<MediumItemMetadataSourceEd
       removingSourceIDs.push(...sources.map(({ id }) => id))
     }
 
-    Promise.all(createSources)
-      .then(
-        () => {
-          return save(medium.id, addingSourceIDs, removingSourceIDs)
-        },
-        (e: unknown) => {
-          throw new Error('error creating sources', { cause: e })
-        },
-      ).then(
-        () => {
-          close?.()
-        },
-        (e: unknown) => {
-          console.error('Error updating medium\n', e)
-        },
-      )
+    try {
+      await Promise.all(createSources)
+      await save(medium.id, addingSourceIDs, removingSourceIDs)
+      close?.()
+    } catch (e) {
+      console.error('Error updating medium\n', e)
+    }
   }, [ createSource, graphQLError, save, medium, addingSources, removingSources, close ])
 
   const renderExternalServiceOption = useCallback(({ key, ...props }: ComponentPropsWithoutRef<'li'>, option: ExternalService) => (

@@ -28,16 +28,14 @@ const MediumDeleteDialogBody: FunctionComponent<MediumDeleteDialogBodyProps> = (
     setDeleteObjects(e.currentTarget.value === 'true')
   }, [])
 
-  const handleClickDelete = useCallback(() => {
-    deleteMedium({ id: medium.id, deleteObjects }).then(
-      () => {
-        close()
-        onDelete(medium)
-      },
-      (e: unknown) => {
-        console.error('Error deleting medium\n', e)
-      },
-    )
+  const handleClickDelete = useCallback(async () => {
+    try {
+      await deleteMedium({ id: medium.id, deleteObjects })
+      close()
+      onDelete(medium)
+    } catch (e) {
+      console.error('Error deleting medium\n', e)
+    }
   }, [ deleteMedium, medium, deleteObjects, close, onDelete ])
 
   const hasReplicas = Boolean(medium.replicas?.length)

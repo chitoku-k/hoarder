@@ -108,16 +108,14 @@ const ExternalServiceListColumnBodyEdit: FunctionComponent<ExternalServiceListCo
     close()
   }, [ close ])
 
-  const handleClickSubmit = useCallback(() => {
-    updateExternalService(externalService).then(
-      newExternalService => {
-        close()
-        onEdit(newExternalService)
-      },
-      (e: unknown) => {
-        console.error('Error updating external service\n', e)
-      },
-    )
+  const handleClickSubmit = useCallback(async () => {
+    try {
+      const newExternalService = await updateExternalService(externalService)
+      close()
+      onEdit(newExternalService)
+    } catch (e) {
+      console.error('Error updating external service\n', e)
+    }
   }, [ externalService, updateExternalService, onEdit, close ])
 
   const externalServiceUrlPatternInvalid = graphQLError(error, EXTERNAL_SERVICE_URL_PATTERN_INVALID)

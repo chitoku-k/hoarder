@@ -8,18 +8,22 @@ import MediumList from '@/components/MediumList'
 import SearchQueryList from '@/components/SearchQueryList'
 import type { Source, Tag, TagType } from '@/types'
 
-const searchParamsToArray = <T extends Record<string, string | string[]>>(
+const searchParamsToArray = async <T extends Record<string, string | string[]>>(
   searchParams: Promise<T>,
-): Promise<Record<string, string[]>> => searchParams.then(
-  params => Object.entries(params).reduce<Record<string, string[]>>(
-    (obj, [ k, v ]) => ({
-      ...obj,
-      [k]: Array.isArray(v) ? v : [ v ],
-    }),
-    {},
-  ),
-  () => ({}),
-)
+): Promise<Record<string, string[]>> => {
+  const params = await searchParams
+  try {
+    return Object.entries(params).reduce<Record<string, string[]>>(
+      (obj, [ k, v ]) => ({
+        ...obj,
+        [k]: Array.isArray(v) ? v : [ v ],
+      }),
+      {},
+    )
+  } catch {
+    return {}
+  }
+}
 
 const displayURL = (url: string): string => url.replace(/^https?:\/\/(?:www\.)?/, '')
 

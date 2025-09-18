@@ -82,22 +82,20 @@ const TagListColumnBodyCreate: FunctionComponent<TagListColumnBodyCreateProps> =
     close()
   }, [ close ])
 
-  const handleClickSubmit = useCallback(() => {
+  const handleClickSubmit = useCallback(async () => {
     onCreating?.()
-    createTag({
-      name: tag.name,
-      kana: tag.kana,
-      aliases: tag.aliases,
-      parentID: parent?.id ?? null,
-    }).then(
-      newTag => {
-        close()
-        onCreate?.(newTag)
-      },
-      (e: unknown) => {
-        console.error('Error creating tag\n', e)
-      },
-    )
+    try {
+      const newTag = await createTag({
+        name: tag.name,
+        kana: tag.kana,
+        aliases: tag.aliases,
+        parentID: parent?.id ?? null,
+      })
+      close()
+      onCreate?.(newTag)
+    } catch (e) {
+      console.error('Error creating tag\n', e)
+    }
   }, [ tag, parent, onCreating, onCreate, createTag, close ])
 
   const changed = hasChanges(tag)

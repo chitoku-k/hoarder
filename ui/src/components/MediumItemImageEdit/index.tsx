@@ -170,8 +170,9 @@ const MediumItemImageEdit: FunctionComponent<MediumItemImageEditProps> = ({
 
   const handleSelectFiles = useCallback((entries: Promise<File[]>) => {
     const id = uuid()
-    const newAppendFiles = entries.then(
-      files => {
+    const newAppendFiles = (async () => {
+      try {
+        const files = await entries
         if (files.length > FILE_APPEND_CONFIRM_DIALOG_THRESHOLD) {
           return files
         }
@@ -179,8 +180,7 @@ const MediumItemImageEdit: FunctionComponent<MediumItemImageEditProps> = ({
         void handleAppendFiles(files)
         handleCloseAppendFiles(id)
         return []
-      },
-      (e: unknown) => {
+      } catch (e) {
         console.error('Error appending selected files\n', e)
 
         if (!(e instanceof Error) || e.name !== 'AbortError') {
@@ -189,8 +189,8 @@ const MediumItemImageEdit: FunctionComponent<MediumItemImageEditProps> = ({
 
         handleCloseAppendFiles(id)
         return []
-      },
-    )
+      }
+    })()
 
     setAppendFiles(appendFiles => new Map([ ...appendFiles.set(id, newAppendFiles) ]))
   }, [ handleAppendFiles, handleCloseAppendFiles ])

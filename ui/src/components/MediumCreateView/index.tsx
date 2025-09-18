@@ -140,43 +140,39 @@ const MediumCreateView: FunctionComponent = () => {
     const processed = (replicas: (Replica | ReplicaCreate)[]) => replicas.every(isReplica)
     if (!processed(replicas)) {
       setReplicas(replicas)
-      updateMedium({
-        id: current.id,
-        replicaOrders: replicas.filter(isReplica).map(({ id }) => id),
-        createdAt: current.createdAt,
-      }).then(
-        newMedium => {
-          setMedium(newMedium)
-        },
-        (e: unknown) => {
-          console.error('Error updating medium\n', e)
-          setMedium(current)
-          setError(e)
-        },
-      )
+      try {
+        const newMedium = await updateMedium({
+          id: current.id,
+          replicaOrders: replicas.filter(isReplica).map(({ id }) => id),
+          createdAt: current.createdAt,
+        })
+        setMedium(newMedium)
+      } catch (e) {
+        console.error('Error updating medium\n', e)
+        setMedium(current)
+        setError(e)
+      }
       return
     }
 
     setUploading(false)
     setUploadAborting(false)
 
-    await updateMedium({
-      id: current.id,
-      replicaOrders: replicas.map(({ id }) => id),
-      createdAt: current.createdAt,
-    }).then(
-      () => {
-        router.refresh()
-      },
-      (e: unknown) => {
-        console.error('Error updating medium\n', e)
-        setMedium({
-          ...current,
-          replicas,
-        })
-        setError(e)
-      },
-    )
+    try {
+      await updateMedium({
+        id: current.id,
+        replicaOrders: replicas.map(({ id }) => id),
+        createdAt: current.createdAt,
+      })
+      router.refresh()
+    } catch (e) {
+      console.error('Error updating medium\n', e)
+      setMedium({
+        ...current,
+        replicas,
+      })
+      setError(e)
+    }
   }, [ updateMedium, router ])
 
   const save = useCallback(async (current: MediumCreate) => {

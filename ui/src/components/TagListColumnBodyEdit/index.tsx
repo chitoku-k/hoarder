@@ -85,24 +85,22 @@ const TagListColumnBodyEdit: FunctionComponent<TagListColumnBodyEditProps> = ({
     close()
   }, [ close ])
 
-  const handleClickSubmit = useCallback(() => {
+  const handleClickSubmit = useCallback(async () => {
     const addAliases = tag.aliases.filter(alias => !current.aliases.includes(alias))
     const removeAliases = current.aliases.filter(alias => !tag.aliases.includes(alias))
 
-    updateTag({
-      id: tag.id,
-      name: tag.name,
-      kana: tag.kana,
-      addAliases,
-      removeAliases,
-    }).then(
-      () => {
-        close()
-      },
-      (e: unknown) => {
-        console.error('Error updating tag\n', e)
-      },
-    )
+    try {
+      await updateTag({
+        id: tag.id,
+        name: tag.name,
+        kana: tag.kana,
+        addAliases,
+        removeAliases,
+      })
+      close()
+    } catch (e) {
+      console.error('Error updating tag\n', e)
+    }
   }, [ tag, current, updateTag, close ])
 
   const changed = hasChanges(tag, current)

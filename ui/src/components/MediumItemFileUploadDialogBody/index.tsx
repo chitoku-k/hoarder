@@ -244,12 +244,13 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
     const observable = watchMedium({ id: medium.id })
       .pipe(mergeMap(({ data }) => from(data?.medium.replicas ?? [])))
 
-    await Promise.allSettled(
-      replicas.map(replica => isReplica(replica)
-        ? Promise.resolve(replica)
-        : processReplicaUpload(medium, replica, observable),
-      ),
-    ).then(results => {
+    try {
+      const results = await Promise.allSettled(
+        replicas.map(replica => isReplica(replica)
+          ? Promise.resolve(replica)
+          : processReplicaUpload(medium, replica, observable),
+        ),
+      )
       const newReplicas: (Replica | ReplicaCreate)[] = []
       for (const [ idx, result ] of results.entries()) {
         const oldReplica = replicas[idx]
@@ -269,13 +270,13 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
       onComplete(medium, newReplicas)
 
       setUploading(false)
-    }).finally(() => {
+    } finally {
       const subscription = observable.subscribe(() => {
         // This seems to be a redundant subscription, but it is here to ensure that it
         // unsubscribes from the medium when no subscriptions were created.
       })
       subscription.unsubscribe()
-    })
+    }
   }, [ resolveMedium, watchMedium, replicas, processReplicaUpload, onComplete, onProgress ])
 
   const tableComputeItemKey = useCallback((_index: number, replica: ReplicaCreate) => replica.tempid, [])

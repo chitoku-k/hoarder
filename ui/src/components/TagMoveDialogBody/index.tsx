@@ -29,19 +29,16 @@ const TagMoveDialogBody: FunctionComponent<TagMoveDialogBodyProps> = ({
   const [ attachTag, { error: attachError, loading: attachLoading } ] = useAttachTag()
   const [ detachTag, { error: detachError, loading: detachLoading } ] = useDetachTag()
 
-  const handleClickMove = useCallback(() => {
-    (destination
-      ? attachTag({ id: tag.id, parentID: destination.id })
-      : detachTag({ id: tag.id })
-    ).then(
-      tag => {
-        close()
-        onMove(tag)
-      },
-      (e: unknown) => {
-        console.error('Error moving tag\n', e)
-      },
-    )
+  const handleClickMove = useCallback(async () => {
+    try {
+      const newTag = destination
+        ? await attachTag({ id: tag.id, parentID: destination.id })
+        : await detachTag({ id: tag.id })
+      close()
+      onMove(newTag)
+    } catch (e) {
+      console.error('Error moving tag\n', e)
+    }
   }, [ tag, destination, attachTag, detachTag, close, onMove ])
 
   const disabled = useCallback(({ id }: Tag) => id === tag.id, [ tag ])

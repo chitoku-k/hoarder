@@ -59,21 +59,19 @@ const TagTypeListColumnBodyEdit: FunctionComponent<TagTypeListColumnBodyEditProp
     close()
   }, [ close ])
 
-  const handleClickSubmit = useCallback(() => {
-    updateTagType({
-      id: tagType.id,
-      slug: tagType.slug,
-      name: tagType.name,
-      kana: tagType.kana,
-    }).then(
-      newTagType => {
-        close()
-        onEdit(newTagType)
-      },
-      (e: unknown) => {
-        console.error('Error updating tag type\n', e)
-      },
-    )
+  const handleClickSubmit = useCallback(async () => {
+    try {
+      const newTagType = await updateTagType({
+        id: tagType.id,
+        slug: tagType.slug,
+        name: tagType.name,
+        kana: tagType.kana,
+      })
+      close()
+      onEdit(newTagType)
+    } catch (e) {
+      console.error('Error updating tag type\n', e)
+    }
   }, [ tagType, updateTagType, onEdit, close ])
 
   const tagTypeSlugDuplicate = graphQLError(error, TAG_TYPE_SLUG_DUPLICATE)
