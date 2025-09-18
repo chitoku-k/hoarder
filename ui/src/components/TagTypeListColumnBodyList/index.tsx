@@ -200,24 +200,24 @@ const TagTypeListColumnBodyList: FunctionComponent<TagTypeListColumnBodyListProp
 }
 
 export interface TagTypeColumn {
-  creating: boolean
-  editing: TagType | null
-  active: TagType | null
-  hit: TagType | null
-  hitInput: string
+  readonly creating: boolean
+  readonly editing: TagType | null
+  readonly active: TagType | null
+  readonly hit: TagType | null
+  readonly hitInput: string
 }
 
 export interface TagTypeListColumnBodyListProps extends TagTypeColumn {
-  readonly: boolean
-  dense: boolean
-  disabled?: (tagType: TagType) => boolean
-  onHit?: (tagType: TagType | null) => void
-  onSelect?: (tagType: TagType) => void
-  create: () => void
-  show: (tagType: TagType) => void
-  edit: (tagType: TagType) => void
-  delete: (tagType: TagType) => void
-  setColumn: (column: TagTypeColumn) => void
+  readonly readonly: boolean
+  readonly dense: boolean
+  readonly disabled?: (tagType: TagType) => boolean
+  readonly onHit?: (tagType: TagType | null) => void
+  readonly onSelect?: (tagType: TagType) => void
+  readonly create: () => void
+  readonly show: (tagType: TagType) => void
+  readonly edit: (tagType: TagType) => void
+  readonly delete: (tagType: TagType) => void
+  readonly setColumn: (column: TagTypeColumn) => void
 }
 
 export default TagTypeListColumnBodyList

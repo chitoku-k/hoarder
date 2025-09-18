@@ -21,8 +21,8 @@ const DateTime: FunctionComponent<DateTimeProps> = ({
 )
 
 export interface DateTimeProps {
-  date?: Date
-  format: string
+  readonly date?: Date
+  readonly format: string
 }
 
 export default DateTime

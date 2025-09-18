@@ -20,7 +20,7 @@ const TagDeleteDialogError: FunctionComponent<TagDeleteDialogErrorProps> = ({
 )
 
 export interface TagDeleteDialogErrorProps {
-  close: () => void
+  readonly close: () => void
 }
 
 export default TagDeleteDialogError

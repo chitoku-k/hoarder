@@ -1,8 +1,8 @@
 export interface Tag {
-  id: string
-  name: string
-  kana: string
-  aliases: string[]
-  parent?: Tag | null
-  children?: Tag[]
+  readonly id: string
+  readonly name: string
+  readonly kana: string
+  readonly aliases: readonly string[]
+  readonly parent?: Tag | null
+  readonly children?: readonly Tag[]
 }

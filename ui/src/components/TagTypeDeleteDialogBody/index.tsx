@@ -55,9 +55,9 @@ const TagTypeDeleteDialogBody: FunctionComponent<TagTypeDeleteDialogBodyProps> =
 }
 
 export interface TagTypeDeleteDialogBodyProps {
-  tagType: TagType
-  close: () => void
-  onDelete: (tagType: TagType) => void
+  readonly tagType: TagType
+  readonly close: () => void
+  readonly onDelete: (tagType: TagType) => void
 }
 
 export default TagTypeDeleteDialogBody

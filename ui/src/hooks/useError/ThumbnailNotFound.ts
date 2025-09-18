@@ -3,11 +3,11 @@ import type { GraphQLError } from 'graphql'
 export const THUMBNAIL_NOT_FOUND = 'THUMBNAIL_NOT_FOUND'
 
 export interface ThumbnailNotFound extends GraphQLError {
-  extensions: {
-    details: {
-      code: typeof THUMBNAIL_NOT_FOUND
-      data: {
-        id: string
+  readonly extensions: {
+    readonly details: {
+      readonly code: typeof THUMBNAIL_NOT_FOUND
+      readonly data: {
+        readonly id: string
       }
     }
   }

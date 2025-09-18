@@ -70,9 +70,9 @@ const MediumItemImageList: FunctionComponent<MediumItemImageListProps> = ({
 }
 
 export interface MediumItemImageListProps {
-  className?: string
-  gap?: number
-  replicas: Replica[]
+  readonly className?: string
+  readonly gap?: number
+  readonly replicas: readonly Replica[]
 }
 
 export default MediumItemImageList

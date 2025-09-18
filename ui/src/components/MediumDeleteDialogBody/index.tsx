@@ -73,9 +73,9 @@ const MediumDeleteDialogBody: FunctionComponent<MediumDeleteDialogBodyProps> = (
 }
 
 export interface MediumDeleteDialogBodyProps {
-  medium: Medium
-  close: () => void
-  onDelete: (medium: Medium) => void
+  readonly medium: Medium
+  readonly close: () => void
+  readonly onDelete: (medium: Medium) => void
 }
 
 export default MediumDeleteDialogBody

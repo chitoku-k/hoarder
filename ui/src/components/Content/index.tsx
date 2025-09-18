@@ -18,7 +18,7 @@ const Content: FunctionComponent<ContentProps> = ({
 )
 
 export interface ContentProps extends GridProps {
-  children: ReactNode
+  readonly children: ReactNode
 }
 
 export default Content

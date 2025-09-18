@@ -21,7 +21,7 @@ const MediumItemMetadataSourceList: FunctionComponent<MediumItemMetadataSourceLi
   }, [ edit ])
 
   const sources = medium.sources ?? []
-  const groups = sources.reduce<SourceGroup[]>((groups, source) => {
+  const groups: readonly ReadonlySourceGroup[] = sources.reduce<SourceGroup[]>((groups, source) => {
     const group = groups.find(s => s.externalService.id === source.externalService.id)
     if (group) {
       group.sources.push(source)
@@ -65,8 +65,13 @@ const MediumItemMetadataSourceList: FunctionComponent<MediumItemMetadataSourceLi
 }
 
 export interface MediumItemMetadataSourceListProps {
-  medium: Medium
-  edit: () => void
+  readonly medium: Medium
+  readonly edit: () => void
+}
+
+interface ReadonlySourceGroup {
+  readonly externalService: ExternalService
+  readonly sources: readonly Source[]
 }
 
 interface SourceGroup {

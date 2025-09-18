@@ -102,13 +102,13 @@ const AutocompleteTagTypeBody: FunctionComponent<AutocompleteTagTypeBodyProps> =
 }
 
 export interface AutocompleteTagTypeBodyProps extends Omit<AutocompleteProps<TagType, false, boolean | undefined, false>, 'onChange' | 'options' | 'renderInput'> {
-  focus?: boolean
-  loadOnOpen?: boolean
-  label?: string
-  placeholder?: string
-  variant?: TextFieldVariants
-  icon?: ComponentType<SvgIconProps>
-  onChange?: (type: TagType | null) => void
+  readonly focus?: boolean
+  readonly loadOnOpen?: boolean
+  readonly label?: string
+  readonly placeholder?: string
+  readonly variant?: TextFieldVariants
+  readonly icon?: ComponentType<SvgIconProps>
+  readonly onChange?: (type: TagType | null) => void
 }
 
 export default AutocompleteTagTypeBody

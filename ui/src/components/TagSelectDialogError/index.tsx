@@ -20,7 +20,7 @@ const TagSelectDialogError: FunctionComponent<TagSelectDialogErrorProps> = ({
 )
 
 export interface TagSelectDialogErrorProps {
-  close: () => void
+  readonly close: () => void
 }
 
 export default TagSelectDialogError

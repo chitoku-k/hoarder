@@ -27,7 +27,7 @@ const ExternalServiceListColumnBodyCreate: FunctionComponent<ExternalServiceList
   }, [])
 
   const urlPatternRef = useRef<HTMLInputElement>(null)
-  const [ urlPatternSelection, setUrlPatternSelection ] = useState<[ number, number ] | [ null, null ]>([ null, null ])
+  const [ urlPatternSelection, setUrlPatternSelection ] = useState<readonly [ number, number ] | readonly [ null, null ]>([ null, null ])
 
   const [ externalService, setExternalService ] = useState<Omit<ExternalService, 'id'>>({
     name: '',
@@ -262,7 +262,7 @@ const ExternalServiceListColumnBodyCreate: FunctionComponent<ExternalServiceList
 }
 
 export interface ExternalServiceListColumnBodyCreateProps {
-  close: () => void
+  readonly close: () => void
 }
 
 export default ExternalServiceListColumnBodyCreate

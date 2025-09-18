@@ -166,18 +166,18 @@ const MediumItemMetadataTagGroupEdit: FunctionComponent<MediumItemMetadataTagGro
 }
 
 export interface MediumItemMetadataTagGroupEditProps {
-  loading: boolean
-  type: TagType
-  tags: Tag[]
-  focus?: boolean
-  removingTagType: boolean
-  removeTagType: (type: TagType) => void
-  restoreTagType?: (type: TagType) => void
-  addingTags: Tag[]
-  removingTags: Tag[]
-  addTag: (type: TagType, tag: Tag) => void
-  removeTag: (type: TagType, tag: Tag) => void
-  restoreTag?: (type: TagType, tag: Tag) => void
+  readonly loading: boolean
+  readonly type: TagType
+  readonly tags: readonly Tag[]
+  readonly focus?: boolean
+  readonly removingTagType: boolean
+  readonly removeTagType: (type: TagType) => void
+  readonly restoreTagType?: (type: TagType) => void
+  readonly addingTags: readonly Tag[]
+  readonly removingTags: readonly Tag[]
+  readonly addTag: (type: TagType, tag: Tag) => void
+  readonly removeTag: (type: TagType, tag: Tag) => void
+  readonly restoreTag?: (type: TagType, tag: Tag) => void
 }
 
 export default MediumItemMetadataTagGroupEdit

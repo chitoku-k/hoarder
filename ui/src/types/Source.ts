@@ -1,105 +1,105 @@
 import { ExternalService } from '@/types'
 
 export interface Source {
-  id: string
-  externalService: ExternalService
-  externalMetadata: unknown
-  url?: string | null
-  createdAt: string
-  updatedAt: string
+  readonly id: string
+  readonly externalService: ExternalService
+  readonly externalMetadata: unknown
+  readonly url?: string | null
+  readonly createdAt: string
+  readonly updatedAt: string
 }
 
 export interface ExternalMetadataBluesky {
-  bluesky: {
-    id: string
-    creatorId: string
+  readonly bluesky: {
+    readonly id: string
+    readonly creatorId: string
   }
 }
 
 export interface ExternalMetadataFantia {
-  fantia: {
-    id: string
+  readonly fantia: {
+    readonly id: string
   }
 }
 
 export interface ExternalMetadataMastodon {
-  mastodon: {
-    id: string
-    creatorId: string
+  readonly mastodon: {
+    readonly id: string
+    readonly creatorId: string
   }
 }
 
 export interface ExternalMetadataMisskey {
-  misskey: {
-    id: string
+  readonly misskey: {
+    readonly id: string
   }
 }
 
 export interface ExternalMetadataNijie {
-  nijie: {
-    id: string
+  readonly nijie: {
+    readonly id: string
   }
 }
 
 export interface ExternalMetadataPixiv {
-  pixiv: {
-    id: string
+  readonly pixiv: {
+    readonly id: string
   }
 }
 
 export interface ExternalMetadataPixivFanbox {
-  pixiv_fanbox: {
-    id: string
-    creatorId: string
+  readonly pixiv_fanbox: {
+    readonly id: string
+    readonly creatorId: string
   }
 }
 
 export interface ExternalMetadataPleroma {
-  pleroma: {
-    id: string
+  readonly pleroma: {
+    readonly id: string
   }
 }
 
 export interface ExternalMetadataSeiga {
-  seiga: {
-    id: string
+  readonly seiga: {
+    readonly id: string
   }
 }
 
 export interface ExternalMetadataSkeb {
-  skeb: {
-    id: string
-    creatorId: string
+  readonly skeb: {
+    readonly id: string
+    readonly creatorId: string
   }
 }
 
 export interface ExternalMetadataThreads {
-  threads: {
-    id: string
-    creatorId?: string | null
+  readonly threads: {
+    readonly id: string
+    readonly creatorId?: string | null
   }
 }
 
 export interface ExternalMetadataWebsite {
-  website: {
-    url: string
+  readonly website: {
+    readonly url: string
   }
 }
 
 export interface ExternalMetadataX {
-  x: {
-    id: string
-    creatorId?: string | null
+  readonly x: {
+    readonly id: string
+    readonly creatorId?: string | null
   }
 }
 
 export interface ExternalMetadataXfolio {
-  xfolio: {
-    id: string
-    creatorId: string
+  readonly xfolio: {
+    readonly id: string
+    readonly creatorId: string
   }
 }
 
 export interface ExternalMetadataCustom {
-  custom: unknown
+  readonly custom: unknown
 }

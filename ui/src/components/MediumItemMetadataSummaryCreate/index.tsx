@@ -78,8 +78,8 @@ const MediumItemMetadataSummaryCreate: FunctionComponent<MediumItemMetadataSumma
 }
 
 export interface MediumItemMetadataSummaryCreateProps {
-  loading: boolean
-  save: (medium: MediumCreate) => void
+  readonly loading: boolean
+  readonly save: (medium: MediumCreate) => void
 }
 
 export default MediumItemMetadataSummaryCreate

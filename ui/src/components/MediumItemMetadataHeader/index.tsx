@@ -19,8 +19,8 @@ const MediumItemMetadataHeader: FunctionComponent<MediumItemMetadataHeaderProps>
 )
 
 export interface MediumItemMetadataHeaderProps {
-  title: string
-  children?: ReactNode
+  readonly title: string
+  readonly children?: ReactNode
 }
 
 export default MediumItemMetadataHeader

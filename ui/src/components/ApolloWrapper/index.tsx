@@ -14,7 +14,7 @@ const ApolloWrapper: FunctionComponent<ApolloWrapperProps> = ({
 )
 
 export interface ApolloWrapperProps {
-  children: ReactNode
+  readonly children: ReactNode
 }
 
 export default ApolloWrapper

@@ -17,11 +17,11 @@ const MediumList: FunctionComponent<MediumListProps> = ({
 )
 
 export interface MediumListProps {
-  number: number
-  sources?: Source[]
-  tagTagTypes?: {
-    tag: Tag
-    type: TagType
+  readonly number: number
+  readonly sources?: readonly Source[]
+  readonly tagTagTypes?: readonly {
+    readonly tag: Tag
+    readonly type: TagType
   }[]
 }
 

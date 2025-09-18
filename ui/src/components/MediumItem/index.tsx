@@ -14,7 +14,7 @@ const MediumItem: FunctionComponent<MediumItemProps> = ({
 )
 
 export interface MediumItemProps {
-  id: string
+  readonly id: string
 }
 
 export default MediumItem

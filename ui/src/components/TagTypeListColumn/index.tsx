@@ -24,8 +24,8 @@ const TagTypeListColumn: FunctionComponent<TagTypeListColumnProps> = ({
 )
 
 export interface TagTypeListColumnProps extends GridProps {
-  className?: string
-  children?: ReactNode
+  readonly className?: string
+  readonly children?: ReactNode
 }
 
 export default TagTypeListColumn

@@ -34,6 +34,6 @@ export function useCreateReplica(): [
 }
 
 export interface CreateReplicaOptions {
-  signal?: AbortSignal
-  onUploadProgress?: (e: ProgressEvent) => void
+  readonly signal?: AbortSignal
+  readonly onUploadProgress?: (e: ProgressEvent) => void
 }

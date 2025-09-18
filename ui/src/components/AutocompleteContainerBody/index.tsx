@@ -104,7 +104,7 @@ const AutocompleteContainerBody: FunctionComponent<AutocompleteContainerBodyProp
     </li>
   ), [ Icon ])
 
-  const filterOptions = useCallback((options: string[]): string[] => {
+  const filterOptions = useCallback((options: string[]) => {
     const value = inputValue.substring(inputValue.lastIndexOf('/') + 1)
     if (!value.length) {
       return options
@@ -164,12 +164,12 @@ const AutocompleteContainerBody: FunctionComponent<AutocompleteContainerBodyProp
 }
 
 export interface AutocompleteContainerBodyProps extends Omit<AutocompleteProps<string, false, boolean | undefined, true>, 'onChange' | 'options' | 'renderInput'> {
-  focus?: boolean
-  label?: string
-  placeholder?: string
-  variant?: TextFieldVariants
-  icon?: ComponentType<SvgIconProps>
-  onChange?: (container: string | null) => void
+  readonly focus?: boolean
+  readonly label?: string
+  readonly placeholder?: string
+  readonly variant?: TextFieldVariants
+  readonly icon?: ComponentType<SvgIconProps>
+  readonly onChange?: (container: string | null) => void
 }
 
 export default AutocompleteContainerBody

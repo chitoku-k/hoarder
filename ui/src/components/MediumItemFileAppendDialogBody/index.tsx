@@ -39,9 +39,9 @@ const MediumItemFileAppendDialogBody: FunctionComponent<MediumItemFileAppendDial
 export type Folder = (File | Folder)[]
 
 export interface MediumItemFileAppendDialogBodyProps {
-  entries: Promise<File[]>
-  close: () => void
-  onAppend: (files: File[]) => void
+  readonly entries: Promise<readonly File[]>
+  readonly close: () => void
+  readonly onAppend: (files: readonly File[]) => void
 }
 
 export default MediumItemFileAppendDialogBody

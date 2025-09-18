@@ -199,24 +199,24 @@ const ExternalServiceListColumnBodyList: FunctionComponent<ExternalServiceListCo
 }
 
 export interface ExternalServiceColumn {
-  creating: boolean
-  editing: ExternalService | null
-  active: ExternalService | null
-  hit: ExternalService | null
-  hitInput: string
+  readonly creating: boolean
+  readonly editing: ExternalService | null
+  readonly active: ExternalService | null
+  readonly hit: ExternalService | null
+  readonly hitInput: string
 }
 
 export interface ExternalServiceListColumnBodyListProps extends ExternalServiceColumn {
-  readonly: boolean
-  dense: boolean
-  disabled?: (externalService: ExternalService) => boolean
-  onHit?: (externalService: ExternalService | null) => void
-  onSelect?: (externalService: ExternalService) => void
-  create: () => void
-  show: (externalService: ExternalService) => void
-  edit: (externalService: ExternalService) => void
-  delete: (externalService: ExternalService) => void
-  setColumn: (column: ExternalServiceColumn) => void
+  readonly readonly: boolean
+  readonly dense: boolean
+  readonly disabled?: (externalService: ExternalService) => boolean
+  readonly onHit?: (externalService: ExternalService | null) => void
+  readonly onSelect?: (externalService: ExternalService) => void
+  readonly create: () => void
+  readonly show: (externalService: ExternalService) => void
+  readonly edit: (externalService: ExternalService) => void
+  readonly delete: (externalService: ExternalService) => void
+  readonly setColumn: (column: ExternalServiceColumn) => void
 }
 
 export default ExternalServiceListColumnBodyList

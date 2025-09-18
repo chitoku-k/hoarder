@@ -21,7 +21,7 @@ const MediumItemMetadataTagList: FunctionComponent<MediumItemMetadataTagListProp
   }, [ edit ])
 
   const tags = medium.tags ?? []
-  const groups = tags.reduce<TagGroup[]>((groups, { tag, type }) => {
+  const groups: readonly ReadonlyTagGroup[] = tags.reduce<TagGroup[]>((groups, { tag, type }) => {
     const group = groups.find(t => t.type.id === type.id)
     if (group) {
       group.tags.push(tag)
@@ -65,8 +65,13 @@ const MediumItemMetadataTagList: FunctionComponent<MediumItemMetadataTagListProp
 }
 
 export interface MediumItemMetadataTagListProps {
-  medium: Medium
-  edit: () => void
+  readonly medium: Medium
+  readonly edit: () => void
+}
+
+interface ReadonlyTagGroup {
+  readonly type: TagType
+  readonly tags: readonly Tag[]
 }
 
 interface TagGroup {

@@ -41,7 +41,7 @@ const TagListColumnBodyCreate: FunctionComponent<TagListColumnBodyCreateProps> =
   })
 
   const [ kanaChanged, setKanaChanged ] = useState(false)
-  const [ nameHistory, setNameHistory ] = useState<string[]>([])
+  const [ nameHistory, setNameHistory ] = useState<readonly string[]>([])
 
   const handleChangeName = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     const name = e.currentTarget.value
@@ -69,7 +69,7 @@ const TagListColumnBodyCreate: FunctionComponent<TagListColumnBodyCreateProps> =
     }))
   }, [])
 
-  const handleChangeAliases = useCallback((_e: SyntheticEvent, value: string[]) => {
+  const handleChangeAliases = useCallback((_e: SyntheticEvent, value: readonly string[]) => {
     // eslint-disable-next-line @typescript-eslint/unbound-method
     const aliases = value.toSorted(collator.compare)
     setTag(tag => ({
@@ -122,7 +122,7 @@ const TagListColumnBodyCreate: FunctionComponent<TagListColumnBodyCreateProps> =
         <Autocomplete
           options={[]}
           disabled={loading}
-          value={tag.aliases}
+          value={tag.aliases as string[]}
           multiple
           freeSolo
           autoSelect
@@ -168,10 +168,10 @@ const TagListColumnBodyCreate: FunctionComponent<TagListColumnBodyCreateProps> =
 }
 
 export interface TagListColumnBodyCreateProps {
-  parent: Tag | null
-  close: () => void
-  onCreating?: () => void
-  onCreate?: (tag: Tag) => void
+  readonly parent: Tag | null
+  readonly close: () => void
+  readonly onCreating?: () => void
+  readonly onCreate?: (tag: Tag) => void
 }
 
 type TagCreate = Omit<Tag, 'id' | 'parent' | 'children'>

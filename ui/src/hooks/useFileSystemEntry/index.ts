@@ -6,7 +6,7 @@ const isDirectoryEntry = (entry: FileSystemEntry): entry is FileSystemDirectoryE
 
 const isFileEntry = (entry: FileSystemEntry): entry is FileSystemFileEntry => entry.isFile
 
-function* walk(entries: (File | Folder)[]): Generator<File> {
+function* walk(entries: readonly (File | Folder)[]): Generator<File> {
   for (const entry of entries) {
     if (Array.isArray(entry)) {
       yield* walk(entry)
@@ -24,7 +24,7 @@ export function useFileSystemEntry<Flatten extends boolean | undefined>(options?
     for (;;) {
       signal?.throwIfAborted()
 
-      const value = await new Promise<FileSystemEntry[]>((resolve, reject) => reader.readEntries(resolve, reject))
+      const value = await new Promise<readonly FileSystemEntry[]>((resolve, reject) => reader.readEntries(resolve, reject))
       if (!value.length) {
         break
       }
@@ -61,8 +61,8 @@ export function useFileSystemEntry<Flatten extends boolean | undefined>(options?
 }
 
 export interface UseFileSystemEntryOptions<Flatten extends boolean | undefined> {
-  signal?: AbortSignal
-  flatten?: Flatten
+  readonly signal?: AbortSignal
+  readonly flatten?: Flatten
 }
 
 export type UseFileSystemEntryReturnValue<Flatten> = Flatten extends true ? File[] : (File | Folder)[]

@@ -183,18 +183,18 @@ const MediumItemMetadataSourceGroupEdit: FunctionComponent<MediumItemMetadataSou
 }
 
 export interface MediumItemMetadataSourceGroupEditProps {
-  loading: boolean
-  externalService: ExternalService
-  sources: Source[]
-  focus?: boolean
-  removingExternalService: boolean
-  removeExternalService: (externalService: ExternalService) => void
-  restoreExternalService?: (externalService: ExternalService) => void
-  addingSources: (Source | SourceCreate)[]
-  removingSources: Source[]
-  addSource: (externalService: ExternalService, source: Source | SourceCreate) => void
-  removeSource: (externalService: ExternalService, source: Source | SourceCreate) => void
-  restoreSource?: (externalService: ExternalService, source: Source) => void
+  readonly loading: boolean
+  readonly externalService: ExternalService
+  readonly sources: readonly Source[]
+  readonly focus?: boolean
+  readonly removingExternalService: boolean
+  readonly removeExternalService: (externalService: ExternalService) => void
+  readonly restoreExternalService?: (externalService: ExternalService) => void
+  readonly addingSources: readonly (Source | SourceCreate)[]
+  readonly removingSources: readonly Source[]
+  readonly addSource: (externalService: ExternalService, source: Source | SourceCreate) => void
+  readonly removeSource: (externalService: ExternalService, source: Source | SourceCreate) => void
+  readonly restoreSource?: (externalService: ExternalService, source: Source) => void
 }
 
 export default MediumItemMetadataSourceGroupEdit

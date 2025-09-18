@@ -29,7 +29,7 @@ const ExternalServiceListColumnBodyEdit: FunctionComponent<ExternalServiceListCo
   }, [])
 
   const urlPatternRef = useRef<HTMLInputElement>(null)
-  const [ urlPatternSelection, setUrlPatternSelection ] = useState<[ number, number ] | [ null, null ]>([ null, null ])
+  const [ urlPatternSelection, setUrlPatternSelection ] = useState<readonly [ number, number ] | readonly [ null, null ]>([ null, null ])
 
   const [ externalService, setExternalService ] = useState(current)
 
@@ -241,9 +241,9 @@ const ExternalServiceListColumnBodyEdit: FunctionComponent<ExternalServiceListCo
 }
 
 export interface ExternalServiceListColumnBodyEditProps {
-  externalService: ExternalService
-  close: () => void
-  onEdit: (externalService: ExternalService) => void
+  readonly externalService: ExternalService
+  readonly close: () => void
+  readonly onEdit: (externalService: ExternalService) => void
 }
 
 export default ExternalServiceListColumnBodyEdit

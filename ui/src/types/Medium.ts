@@ -1,15 +1,15 @@
 import type { Replica, Source, Tag, TagType } from '@/types'
 
 export interface TagTagType {
-  tag: Tag
-  type: TagType
+  readonly tag: Tag
+  readonly type: TagType
 }
 
 export interface Medium {
-  id: string
-  replicas?: Replica[]
-  sources?: Source[]
-  tags?: TagTagType[]
-  createdAt: string
-  updatedAt: string
+  readonly id: string
+  readonly replicas?: readonly Replica[]
+  readonly sources?: readonly Source[]
+  readonly tags?: readonly TagTagType[]
+  readonly createdAt: string
+  readonly updatedAt: string
 }

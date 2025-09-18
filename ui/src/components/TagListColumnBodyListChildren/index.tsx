@@ -22,8 +22,8 @@ const TagListColumnBodyListChildren: FunctionComponent<TagListColumnBodyListChil
 }
 
 export interface TagListColumnBodyListChildrenProps {
-  id: string
-  component: (tags: Tag[]) => ReactNode
+  readonly id: string
+  readonly component: (tags: readonly Tag[]) => ReactNode
 }
 
 export default TagListColumnBodyListChildren

@@ -31,8 +31,8 @@ const MediumItemFileUploadAbortDialogBody: FunctionComponent<MediumItemFileUploa
 }
 
 export interface MediumItemFileUploadAbortDialogBodyProps {
-  abort: () => void
-  close: () => void
+  readonly abort: () => void
+  readonly close: () => void
 }
 
 export default MediumItemFileUploadAbortDialogBody

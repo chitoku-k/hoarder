@@ -97,13 +97,13 @@ const AutocompleteExternalServiceBody: FunctionComponent<AutocompleteExternalSer
 }
 
 export interface AutocompleteExternalServiceBodyProps extends Omit<AutocompleteProps<ExternalService, false, boolean | undefined, false>, 'onChange' | 'options' | 'renderInput'> {
-  focus?: boolean
-  loadOnOpen?: boolean
-  label?: string
-  placeholder?: string
-  variant?: TextFieldVariants
-  icon?: ComponentType<SvgIconProps>
-  onChange?: (type: ExternalService | null) => void
+  readonly focus?: boolean
+  readonly loadOnOpen?: boolean
+  readonly label?: string
+  readonly placeholder?: string
+  readonly variant?: TextFieldVariants
+  readonly icon?: ComponentType<SvgIconProps>
+  readonly onChange?: (type: ExternalService | null) => void
 }
 
 export default AutocompleteExternalServiceBody

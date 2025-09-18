@@ -14,7 +14,7 @@ import type { Tag, TagType } from '@/types'
 
 import styles from './styles.module.scss'
 
-const hasChanges = (addingTagTypes: TagType[], addingTags: Map<TagTypeID, Tag[]>) => {
+const hasChanges = (addingTagTypes: readonly TagType[], addingTags: ReadonlyMap<TagTypeID, readonly Tag[]>) => {
   if (addingTagTypes.length > 0) {
     return true
   }
@@ -35,8 +35,8 @@ const MediumItemMetadataTagCreate: FunctionComponent<MediumItemMetadataTagCreate
   const [ focusedTagType, setFocusedTagType ] = useState<TagType | null>(null)
   const [ newTagTypeInput, setNewTagTypeInput ] = useState('')
 
-  const [ addingTagTypes, setAddingTagTypes ] = useState<TagType[]>([])
-  const [ addingTags, setAddingTags ] = useState(new Map<TagTypeID, Tag[]>())
+  const [ addingTagTypes, setAddingTagTypes ] = useState<readonly TagType[]>([])
+  const [ addingTags, setAddingTags ] = useState<ReadonlyMap<TagTypeID, readonly Tag[]>>(new Map())
 
   const handleChangeNewTagType = useCallback((type: TagType | null) => {
     if (!type) {
@@ -96,7 +96,7 @@ const MediumItemMetadataTagCreate: FunctionComponent<MediumItemMetadataTagCreate
     setTagTagTypeIDs(() => resolveTagTagTypeIDs(newAddingTags))
   }, [ addingTags, setTagTagTypeIDs ])
 
-  const resolveTagTagTypeIDs = (addingTags: Map<TagTypeID, Tag[]>) => {
+  const resolveTagTagTypeIDs = (addingTags: ReadonlyMap<TagTypeID, readonly Tag[]>) => {
     const addTagTagTypeIDs: TagTagTypeInput[] = []
     for (const [ tagTypeId, tags ] of addingTags) {
       addTagTagTypeIDs.push(...tags.map(({ id: tagId }) => ({ tagTypeId, tagId })))
@@ -161,8 +161,8 @@ const MediumItemMetadataTagCreate: FunctionComponent<MediumItemMetadataTagCreate
 }
 
 export interface MediumItemMetadataTagCreateProps {
-  loading: boolean
-  setTagTagTypeIDs: (setTagTagTypeIDs: () => TagTagTypeInput[]) => void
+  readonly loading: boolean
+  readonly setTagTagTypeIDs: (setTagTagTypeIDs: () => readonly TagTagTypeInput[]) => void
 }
 
 type TagTypeID = string

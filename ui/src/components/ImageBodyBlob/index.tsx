@@ -34,7 +34,7 @@ const ImageBodyBlob: FunctionComponent<ImageBodyBlobProps> = ({
 }
 
 export interface ImageBodyBlobProps extends Omit<ComponentPropsWithoutRef<'img'>, 'src'> {
-  src: Blob
+  readonly src: Blob
 }
 
 export default ImageBodyBlob

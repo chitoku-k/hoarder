@@ -5,11 +5,11 @@ import type { MetadataLikeQuery, MetadataLikeQueryVariables } from '@/graphql/Me
 import { MetadataLikeDocument } from '@/graphql/MetadataLike'
 
 export interface MetadataLike {
-  sources: {
-    id: MetadataLikeQuery['allSourcesLikeId']
-    url: MetadataLikeQuery['allSourcesLikeUrl']
+  readonly sources: {
+    readonly id: MetadataLikeQuery['allSourcesLikeId']
+    readonly url: MetadataLikeQuery['allSourcesLikeUrl']
   }
-  tags: MetadataLikeQuery['allTagsLike']
+  readonly tags: MetadataLikeQuery['allTagsLike']
 }
 
 export function useMetadataLike(variables: MetadataLikeQueryVariables | SkipToken): Partial<MetadataLike> {

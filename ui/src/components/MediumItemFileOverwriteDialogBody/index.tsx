@@ -94,20 +94,20 @@ const MediumItemFileOverwriteDialogBody: FunctionComponent<MediumItemFileOverwri
 }
 
 export interface MediumItemFileOverwriteDialogBodyProps {
-  uploading: {
-    name: string
-    size: number
-    lastModified: Date
-    blob: Blob
+  readonly uploading: {
+    readonly name: string
+    readonly size: number
+    readonly lastModified: Date
+    readonly blob: Blob
   }
-  existing: {
-    name: string
-    size: number | null
-    lastModified: Date | null
-    url: string
+  readonly existing: {
+    readonly name: string
+    readonly size: number | null
+    readonly lastModified: Date | null
+    readonly url: string
   } | null
-  overwrite?: () => void
-  close: () => void
+  readonly overwrite?: () => void
+  readonly close: () => void
 }
 
 export default MediumItemFileOverwriteDialogBody

@@ -108,11 +108,11 @@ const MediumItemMetadataSummaryEdit: FunctionComponent<MediumItemMetadataSummary
 }
 
 export interface MediumItemMetadataSummaryEditProps {
-  loading: boolean
-  medium: Medium
-  save: (medium: Medium) => void
-  close?: () => void
-  onDelete: () => void
+  readonly loading: boolean
+  readonly medium: Medium
+  readonly save: (medium: Medium) => void
+  readonly close?: () => void
+  readonly onDelete: () => void
 }
 
 export default MediumItemMetadataSummaryEdit

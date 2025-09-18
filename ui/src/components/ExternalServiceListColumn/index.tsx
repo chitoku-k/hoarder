@@ -24,8 +24,8 @@ const ExternalServiceListColumn: FunctionComponent<ExternalServiceListColumnProp
 )
 
 export interface ExternalServiceListColumnProps extends GridProps {
-  className?: string
-  children?: ReactNode
+  readonly className?: string
+  readonly children?: ReactNode
 }
 
 export default ExternalServiceListColumn

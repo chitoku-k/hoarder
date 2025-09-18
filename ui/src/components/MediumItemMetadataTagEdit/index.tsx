@@ -15,7 +15,12 @@ import type { Medium, Tag, TagType } from '@/types'
 
 import styles from './styles.module.scss'
 
-const hasChanges = (addingTagTypes: TagType[], removingTagTypes: TagType[], addingTags: Map<TagTypeID, Tag[]>, removingTags: Map<TagTypeID, Tag[]>) => {
+const hasChanges = (
+  addingTagTypes: readonly TagType[],
+  removingTagTypes: readonly TagType[],
+  addingTags: ReadonlyMap<TagTypeID, readonly Tag[]>,
+  removingTags: ReadonlyMap<TagTypeID, readonly Tag[]>,
+) => {
   if (addingTagTypes.length > 0 || removingTagTypes.length > 0) {
     return true
   }
@@ -45,14 +50,14 @@ const MediumItemMetadataTagEdit: FunctionComponent<MediumItemMetadataTagEditProp
   const [ focusedTagType, setFocusedTagType ] = useState<TagType | null>(null)
   const [ newTagTypeInput, setNewTagTypeInput ] = useState('')
 
-  const [ addingTagTypes, setAddingTagTypes ] = useState<TagType[]>([])
-  const [ removingTagTypes, setRemovingTagTypes ] = useState<TagType[]>([])
+  const [ addingTagTypes, setAddingTagTypes ] = useState<readonly TagType[]>([])
+  const [ removingTagTypes, setRemovingTagTypes ] = useState<readonly TagType[]>([])
 
-  const [ addingTags, setAddingTags ] = useState(new Map<TagTypeID, Tag[]>())
-  const [ removingTags, setRemovingTags ] = useState(new Map<TagTypeID, Tag[]>())
+  const [ addingTags, setAddingTags ] = useState<ReadonlyMap<TagTypeID, readonly Tag[]>>(new Map())
+  const [ removingTags, setRemovingTags ] = useState<ReadonlyMap<TagTypeID, readonly Tag[]>>(new Map())
 
   const tags = medium.tags ?? []
-  const groups = tags.reduce<TagGroup[]>((groups, { tag, type }) => {
+  const groups: readonly ReadonlyTagGroup[] = tags.reduce<TagGroup[]>((groups, { tag, type }) => {
     const group = groups.find(t => t.type.id === type.id)
     if (group) {
       group.tags.push(tag)
@@ -284,11 +289,16 @@ const MediumItemMetadataTagEdit: FunctionComponent<MediumItemMetadataTagEditProp
 }
 
 export interface MediumItemMetadataTagEditProps {
-  loading: boolean
-  focus?: boolean
-  medium: Medium
-  save: (id: string, addTagTagTypeIDs: TagTagTypeInput[], removeTagTagTypeIDs: TagTagTypeInput[]) => Promise<Medium>
-  close?: () => void
+  readonly loading: boolean
+  readonly focus?: boolean
+  readonly medium: Medium
+  readonly save: (id: string, addTagTagTypeIDs: readonly TagTagTypeInput[], removeTagTagTypeIDs: readonly TagTagTypeInput[]) => Promise<Medium>
+  readonly close?: () => void
+}
+
+interface ReadonlyTagGroup {
+  readonly type: TagType
+  readonly tags: readonly Tag[]
 }
 
 interface TagGroup {

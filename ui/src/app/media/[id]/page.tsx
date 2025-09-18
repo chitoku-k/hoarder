@@ -20,11 +20,11 @@ const Page: FunctionComponent<PageProps> = async ({
 }
 
 export interface Params {
-  id: string
+  readonly id: string
 }
 
 export interface PageProps {
-  params: Promise<Params>
+  readonly params: Promise<Params>
 }
 
 export default Page

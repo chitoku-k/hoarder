@@ -20,7 +20,12 @@ import type { ExternalService, Medium, Source } from '@/types'
 
 import styles from './styles.module.scss'
 
-const hasChanges = (addingExternalServices: ExternalService[], removingExternalServices: ExternalService[], addingSources: Map<ExternalServiceID, (Source | SourceCreate)[]>, removingSources: Map<ExternalServiceID, Source[]>) => {
+const hasChanges = (
+  addingExternalServices: readonly ExternalService[],
+  removingExternalServices: readonly ExternalService[],
+  addingSources: ReadonlyMap<ExternalServiceID, readonly (Source | SourceCreate)[]>,
+  removingSources: ReadonlyMap<ExternalServiceID, readonly Source[]>,
+) => {
   if (addingExternalServices.length > 0 || removingExternalServices.length > 0) {
     return true
   }
@@ -53,14 +58,14 @@ const MediumItemMetadataSourceEdit: FunctionComponent<MediumItemMetadataSourceEd
   const [ focusedExternalService, setFocusedExternalService ] = useState<ExternalService | null>(null)
   const [ newExternalServiceInput, setNewExternalServiceInput ] = useState('')
 
-  const [ addingExternalServices, setAddingExternalServices ] = useState<ExternalService[]>([])
-  const [ removingExternalServices, setRemovingExternalServices ] = useState<ExternalService[]>([])
+  const [ addingExternalServices, setAddingExternalServices ] = useState<readonly ExternalService[]>([])
+  const [ removingExternalServices, setRemovingExternalServices ] = useState<readonly ExternalService[]>([])
 
-  const [ addingSources, setAddingSources ] = useState(new Map<ExternalServiceID, (Source | SourceCreate)[]>())
-  const [ removingSources, setRemovingSources ] = useState(new Map<ExternalServiceID, Source[]>())
+  const [ addingSources, setAddingSources ] = useState<ReadonlyMap<ExternalServiceID, readonly (Source | SourceCreate)[]>>(new Map())
+  const [ removingSources, setRemovingSources ] = useState<ReadonlyMap<ExternalServiceID, readonly Source[]>>(new Map())
 
   const sources = medium.sources ?? []
-  const groups = sources.reduce<SourceGroup[]>((groups, source) => {
+  const groups: readonly ReadonlySourceGroup[] = sources.reduce<SourceGroup[]>((groups, source) => {
     const group = groups.find(s => s.externalService.id === source.externalService.id)
     if (group) {
       group.sources.push(source)
@@ -328,11 +333,16 @@ const MediumItemMetadataSourceEdit: FunctionComponent<MediumItemMetadataSourceEd
 }
 
 export interface MediumItemMetadataSourceEditProps {
-  loading: boolean
-  focus?: boolean
-  medium: Medium
-  save: (id: string, addSourceIDs: string[], removeSourceIDs: string[]) => Promise<Medium>
-  close?: () => void
+  readonly loading: boolean
+  readonly focus?: boolean
+  readonly medium: Medium
+  readonly save: (id: string, addSourceIDs: readonly string[], removeSourceIDs: readonly string[]) => Promise<Medium>
+  readonly close?: () => void
+}
+
+interface ReadonlySourceGroup {
+  readonly externalService: ExternalService
+  readonly sources: readonly Source[]
 }
 
 interface SourceGroup {

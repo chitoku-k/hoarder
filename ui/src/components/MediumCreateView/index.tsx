@@ -30,7 +30,7 @@ import type { Medium, Replica } from '@/types'
 
 import styles from './styles.module.scss'
 
-const hasChanges = (medium: Medium | null, replicas: (Replica | ReplicaCreate)[]) => {
+const hasChanges = (medium: Medium | null, replicas: readonly (Replica | ReplicaCreate)[]) => {
   if ((medium?.replicas?.length ?? 0) !== replicas.length) {
     return true
   }
@@ -60,9 +60,9 @@ const MediumCreateView: FunctionComponent = () => {
   const [ editingSources, setEditingSources ] = useState(true)
   const [ editingTags, setEditingTags ] = useState(true)
 
-  const [ resolveSourceIDs, setResolveSourceIDs ] = useState(() => () => Promise.resolve<string[]>([]))
-  const [ tagTagTypeIDs, setTagTagTypeIDs ] = useState<TagTagTypeInput[]>([])
-  const [ replicas, setReplicas ] = useState<(Replica | ReplicaCreate)[]>([])
+  const [ resolveSourceIDs, setResolveSourceIDs ] = useState(() => () => Promise.resolve<readonly string[]>([]))
+  const [ tagTagTypeIDs, setTagTagTypeIDs ] = useState<readonly TagTagTypeInput[]>([])
+  const [ replicas, setReplicas ] = useState<readonly (Replica | ReplicaCreate)[]>([])
 
   const [ uploading, setUploading ] = useState(false)
   const [ uploadAborting, setUploadAborting ] = useState(false)
@@ -90,7 +90,7 @@ const MediumCreateView: FunctionComponent = () => {
     setEditingSummary(true)
   }, [])
 
-  const closeEditSummary = useCallback((newReplicas?: Replica[]) => {
+  const closeEditSummary = useCallback((newReplicas?: readonly Replica[]) => {
     setEditingSummary(false)
     setReplicas(() => newReplicas ?? medium?.replicas ?? [])
   }, [ medium ])
@@ -136,8 +136,8 @@ const MediumCreateView: FunctionComponent = () => {
     }
   }, [])
 
-  const handleComplete = useCallback(async (current: Medium, replicas: (Replica | ReplicaCreate)[]) => {
-    const processed = (replicas: (Replica | ReplicaCreate)[]) => replicas.every(isReplica)
+  const handleComplete = useCallback(async (current: Medium, replicas: readonly (Replica | ReplicaCreate)[]) => {
+    const processed = (replicas: readonly (Replica | ReplicaCreate)[]) => replicas.every(isReplica)
     if (!processed(replicas)) {
       setReplicas(replicas)
       try {
@@ -201,7 +201,7 @@ const MediumCreateView: FunctionComponent = () => {
     }
   }, [ medium, resolveSourceIDs, tagTagTypeIDs, replicas, createMedium, handleComplete ])
 
-  const saveTags = useCallback(async (id: string, addTagTagTypeIDs: TagTagTypeInput[], removeTagTagTypeIDs: TagTagTypeInput[]) => {
+  const saveTags = useCallback(async (id: string, addTagTagTypeIDs: readonly TagTagTypeInput[], removeTagTagTypeIDs: readonly TagTagTypeInput[]) => {
     const medium = await updateMedium({
       id,
       addTagTagTypeIDs,
@@ -211,7 +211,7 @@ const MediumCreateView: FunctionComponent = () => {
     return medium
   }, [ updateMedium ])
 
-  const saveSources = useCallback(async (id: string, addSourceIDs: string[], removeSourceIDs: string[]) => {
+  const saveSources = useCallback(async (id: string, addSourceIDs: readonly string[], removeSourceIDs: readonly string[]) => {
     const medium = await updateMedium({
       id,
       addSourceIDs,
@@ -310,7 +310,7 @@ const MediumCreateView: FunctionComponent = () => {
 }
 
 export interface MediumCreate {
-  createdAt: string | null
+  readonly createdAt: string | null
 }
 
 export default MediumCreateView

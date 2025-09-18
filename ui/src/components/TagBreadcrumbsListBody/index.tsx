@@ -82,18 +82,18 @@ const TagBreadcrumbsListBody: FunctionComponent<TagBreadcrumbsListBodyProps> = (
 }
 
 interface TagBreadcrumbsListBodyPropsBase {
-  className?: string
-  root?: boolean
-  parent?: boolean
-  noWrap?: boolean
+  readonly className?: string
+  readonly root?: boolean
+  readonly parent?: boolean
+  readonly noWrap?: boolean
 }
 
 interface TagBreadcrumbsListBodyPropsByTag extends TagBreadcrumbsListBodyPropsBase {
-  tag: Tag
+  readonly tag: Tag
 }
 
 interface TagBreadcrumbsListBodyPropsByTagID extends TagBreadcrumbsListBodyPropsBase {
-  id: string
+  readonly id: string
 }
 
 export type TagBreadcrumbsListBodyProps = TagBreadcrumbsListBodyPropsBase | TagBreadcrumbsListBodyPropsByTag | TagBreadcrumbsListBodyPropsByTagID

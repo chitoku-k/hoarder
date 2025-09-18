@@ -38,8 +38,8 @@ const MediumItemMetadataSummaryShow: FunctionComponent<MediumItemMetadataSummary
 }
 
 export interface MediumItemMetadataSummaryShowProps {
-  medium: Medium
-  edit: () => void
+  readonly medium: Medium
+  readonly edit: () => void
 }
 
 export default MediumItemMetadataSummaryShow

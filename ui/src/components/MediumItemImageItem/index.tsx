@@ -64,10 +64,10 @@ const MediumItemImageItem: FunctionComponent<MediumItemImageItemProps> = ({
 }
 
 export interface MediumItemImageItemProps {
-  className?: string
-  replica: Replica | ReplicaCreate
-  fixed?: boolean
-  children?: ReactNode
+  readonly className?: string
+  readonly replica: Replica | ReplicaCreate
+  readonly fixed?: boolean
+  readonly children?: ReactNode
 }
 
 export default memo(MediumItemImageItem)

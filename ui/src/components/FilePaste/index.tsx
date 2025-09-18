@@ -82,9 +82,9 @@ const FilePaste: FunctionComponent<FilePasteProps> = ({
 }
 
 export interface FilePasteProps {
-  className?: string
-  onSelect?: (files: Promise<File[]>) => void
-  children?: ReactNode
+  readonly className?: string
+  readonly onSelect?: (files: Promise<readonly File[]>) => void
+  readonly children?: ReactNode
 }
 
 export default FilePaste

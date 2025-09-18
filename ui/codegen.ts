@@ -26,6 +26,9 @@ const config = {
         'typescript-operations',
         'typed-document-node',
       ],
+      config: {
+        immutableTypes: true,
+      },
     },
     'src/graphql/types.generated.ts': {
       plugins: [

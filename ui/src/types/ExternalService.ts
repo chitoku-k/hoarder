@@ -1,8 +1,8 @@
 export interface ExternalService {
-  id: string
-  slug: string
-  kind: string
-  name: string
-  baseUrl?: string | null
-  urlPattern?: string | null
+  readonly id: string
+  readonly slug: string
+  readonly kind: string
+  readonly name: string
+  readonly baseUrl?: string | null
+  readonly urlPattern?: string | null
 }
