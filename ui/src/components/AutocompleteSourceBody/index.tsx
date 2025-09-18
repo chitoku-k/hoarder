@@ -20,14 +20,14 @@ import styles from './styles.module.scss'
 
 export const isSource = (source: Source | SourceCreate) => 'id' in source
 
-const builders: Builder[] = [
+const builders = [
   {
     kind: 'bluesky',
     patterns: [
       /^https?:\/\/bsky\.app\/profile\/(?<creatorId>[^/?#]+)\/post\/(?<id>[^/?#]+)(?:[?#].*)?$/,
     ],
     build: ({ id, creatorId }) => ({ id, creatorId }),
-  },
+  } satisfies Builder<'bluesky'>,
   {
     kind: 'fantia',
     patterns: [
@@ -35,14 +35,14 @@ const builders: Builder[] = [
       /^https?:\/\/fantia\.jp\/posts\/(?<id>\d+)(?:[?#].*)?$/,
     ],
     build: ({ id }) => ({ id }),
-  },
+  } satisfies Builder<'fantia'>,
   {
     kind: 'mastodon',
     patterns: [
       /^https?:\/\/(?:[^/]+)\/@(?<creatorId>[^/?#]+)\/(?<id>\d+)(?:[?#].*)?$/,
     ],
     build: ({ id, creatorId }) => ({ id, creatorId }),
-  },
+  } satisfies Builder<'mastodon'>,
   {
     kind: 'misskey',
     patterns: [
@@ -50,7 +50,7 @@ const builders: Builder[] = [
       /^https?:\/\/(?:[^/]+)\/notes\/(?<id>[^/?#]+)(?:[?#].*)?$/,
     ],
     build: ({ id }) => ({ id }),
-  },
+  } satisfies Builder<'misskey'>,
   {
     kind: 'nijie',
     patterns: [
@@ -58,7 +58,7 @@ const builders: Builder[] = [
       /^https?:\/\/nijie\.info\/view\.php\?id=(?<id>\d+)(?:[?#].*)?$/,
     ],
     build: ({ id }) => ({ id }),
-  },
+  } satisfies Builder<'nijie'>,
   {
     kind: 'pixiv',
     patterns: [
@@ -66,7 +66,7 @@ const builders: Builder[] = [
       /^https?:\/\/www\.pixiv\.net\/(?:artworks\/|member_illust\.php\?(?:|.+&)illust_id=)(?<id>\d+)(?:[?&#].*)?$/,
     ],
     build: ({ id }) => ({ id }),
-  },
+  } satisfies Builder<'pixiv'>,
   {
     kind: 'pixiv_fanbox',
     patterns: [
@@ -74,7 +74,7 @@ const builders: Builder[] = [
       /^https?:\/\/(?<creatorId>[^.]+)\.fanbox\.cc\/posts\/(?<id>\d+)(?:[?#].*)?$/,
     ],
     build: ({ id, creatorId }) => ({ id, creatorId }),
-  },
+  } satisfies Builder<'pixiv_fanbox'>,
   {
     kind: 'pleroma',
     patterns: [
@@ -82,7 +82,7 @@ const builders: Builder[] = [
       /^https?:\/\/(?:[^/]+)\/notice\/(?<id>[^/?#]+)(?:[?#].*)?$/,
     ],
     build: ({ id }) => ({ id }),
-  },
+  } satisfies Builder<'pleroma'>,
   {
     kind: 'seiga',
     patterns: [
@@ -90,14 +90,14 @@ const builders: Builder[] = [
       /^https?:\/\/seiga\.nicovideo\.jp\/seiga\/(?<id>\d+)(?:[?#].*)?$/,
     ],
     build: ({ id }) => ({ id }),
-  },
+  } satisfies Builder<'seiga'>,
   {
     kind: 'skeb',
     patterns: [
       /^https?:\/\/skeb\.jp\/@(?<creatorId>[^/]+)\/works\/(?<id>\d+)(?:[?#].*)?$/,
     ],
     build: ({ id, creatorId }) => ({ id, creatorId }),
-  },
+  } satisfies Builder<'skeb'>,
   {
     kind: 'threads',
     patterns: [
@@ -105,14 +105,14 @@ const builders: Builder[] = [
       /^https?:\/\/(?:www\.threads\.net)\/(?<creatorId>[^/]+)\/post\/(?<id>[^/$#]+)(?:[?#].*)?$/,
     ],
     build: ({ id, creatorId }) => ({ id, creatorId }),
-  },
+  } satisfies Builder<'threads'>,
   {
     kind: 'website',
     patterns: [
       /^(?<url>https?:\/\/.+)$/,
     ],
     build: ({ url }) => ({ url }),
-  },
+  } satisfies Builder<'website'>,
   {
     kind: 'x',
     patterns: [
@@ -120,17 +120,17 @@ const builders: Builder[] = [
       /^https?:\/\/(?:twitter\.com|x\.com)\/(?<creatorId>[^/]+)\/status\/(?<id>\d+)(?:[/?#].*)?$/,
     ],
     build: ({ id, creatorId }) => ({ id, creatorId: creatorId !== 'i' ? creatorId : null }),
-  },
+  } satisfies Builder<'x'>,
   {
     kind: 'xfolio',
     patterns: [
       /^https?:\/\/xfolio\.jp\/portfolio\/(?<creatorId>[^/]+)\/works\/(?<id>\d+)(?:[?#].*)?$/,
     ],
     build: ({ id, creatorId }) => ({ id, creatorId }),
-  },
+  } satisfies Builder<'xfolio'>,
 ]
 
-const buildExternalMetadata = (externalService: ExternalService, value: string): ExternalMetadataInput | null => {
+const buildExternalMetadata = (externalService: ExternalService, value: string): Partial<ExternalMetadataInput> | null => {
   if (!value) {
     return null
   }
@@ -144,8 +144,8 @@ const buildExternalMetadata = (externalService: ExternalService, value: string):
       let match: RegExpMatchArray | null
       if ((match = value.match(pattern)) && match.groups) {
         return {
-          [externalService.kind]: build(match.groups),
-        } as ExternalMetadataInput
+          [kind]: build(match.groups),
+        }
       }
     }
 
@@ -198,10 +198,10 @@ const AutocompleteSourceBody: FunctionComponent<AutocompleteSourceBodyProps> = (
   const externalMetadata = buildExternalMetadata(externalService, value)
   const source = useSource(externalMetadata ? { externalServiceID: externalService.id, externalMetadata } : skipToken)
 
-  const options: (Source | SourceCreate)[] = source
-    ? [ source ]
+  const options = source
+    ? [ source ] satisfies Source[]
     : externalMetadata
-      ? [ { externalService, externalMetadata } ]
+      ? [ { externalService, externalMetadata } ] satisfies SourceCreate[]
       : []
 
   return (
@@ -255,12 +255,10 @@ export interface AutocompleteSourceBodyProps extends Omit<AutocompleteProps<Sour
   onChange?: (source: Source | SourceCreate | null) => void
 }
 
-type BuilderKind<E> = E extends E ? keyof E : never
-
-interface Builder {
-  kind: BuilderKind<ExternalMetadataInput>
+interface Builder<Kind extends keyof ExternalMetadataInput> {
+  kind: Kind
   patterns: RegExp[]
-  build: (params: Record<string, string>) => ExternalMetadataInput[BuilderKind<ExternalMetadataInput>]
+  build: (params: Record<string, string>) => Partial<ExternalMetadataInput[Kind]>
 }
 
 export default AutocompleteSourceBody

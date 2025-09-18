@@ -4,9 +4,9 @@ import type { Metadata } from 'next'
 import Content from '@/components/Content'
 import MediumCreate from '@/components/MediumCreate'
 
-export const metadata: Metadata = {
+export const metadata = {
   title: 'メディアの追加',
-}
+} satisfies Metadata
 
 const Page: FunctionComponent = () => (
   <Content size={12}>

@@ -211,7 +211,7 @@ const MediumItemImageEdit: FunctionComponent<MediumItemImageEditProps> = ({
 
   const computeItemKey = useCallback((_index: number, { current }: ReplicaItem) => isReplica(current) ? current.id : current.tempid, [])
 
-  const components: Components<ReplicaItem> = useMemo(() => ({
+  const components = useMemo(() => ({
     List: ({ children, ref, ...rest }) => (
       <ImageList
         ref={ref as Ref<HTMLUListElement>}
@@ -234,7 +234,7 @@ const MediumItemImageEdit: FunctionComponent<MediumItemImageEditProps> = ({
         {...rest}
       />
     ),
-  }), [ className, gap ])
+  }), [ className, gap ]) satisfies Components<ReplicaItem>
 
   const itemContent = useCallback((index: number, item: ReplicaItem) => isReplica(item.current) ? (
     <MediumItemImageItem className={clsx(styles.imageItem, item.removing && styles.removingImageItem)} replica={item.current} fixed>

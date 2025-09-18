@@ -4,9 +4,9 @@ import type { Metadata } from 'next'
 import Content from '@/components/Content'
 import SourceList from '@/components/SourceList'
 
-export const metadata: Metadata = {
+export const metadata = {
   title: 'ソース',
-}
+} satisfies Metadata
 
 const Page: FunctionComponent = () => (
   <Content>

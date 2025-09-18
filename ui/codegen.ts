@@ -1,6 +1,6 @@
 import type { CodegenConfig } from '@graphql-codegen/cli'
 
-const config: CodegenConfig = {
+const config = {
   schema: '../schema/hoarder.gql',
   config: {
     scalars: {
@@ -36,6 +36,6 @@ const config: CodegenConfig = {
       },
     },
   },
-}
+} satisfies CodegenConfig
 
 export default config

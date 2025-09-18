@@ -12,12 +12,12 @@ import './global.scss'
 
 export const dynamic = 'force-dynamic'
 
-export const metadata: Metadata = {
+export const metadata = {
   title: {
     template: 'Hoarder: %s',
     default: 'Hoarder',
   },
-}
+} satisfies Metadata
 
 const RootLayout: FunctionComponent<RootLayoutProps> = ({
   children,

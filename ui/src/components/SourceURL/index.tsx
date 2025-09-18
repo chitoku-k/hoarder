@@ -40,7 +40,7 @@ const SourceURL: FunctionComponent<SourceURLProps> = ({
   }
 
   const Icon = icon ?? LinkIcon
-  const url = buildURL(externalService, externalMetadata)
+  const url = buildURL(externalService, externalMetadata as Record<string, Record<string, unknown>>)
 
   return (
     <Stack className={className} direction="row" alignItems="start">
