@@ -77,9 +77,9 @@ export const SearchProvider: FunctionComponent<SearchProviderProps> = ({
   const state = useMemo(() => ({ appendQuery, removeQuery, clearQuery }), [ appendQuery, removeQuery, clearQuery ])
 
   return (
-    <SearchContext.Provider value={state}>
+    <SearchContext value={state}>
       {children}
-    </SearchContext.Provider>
+    </SearchContext>
   )
 }
 
