@@ -147,8 +147,8 @@ const builders = [
 
 export const buildURL = (externalService: ExternalService, externalMetadata: Record<string, Record<string, unknown>>): string | null => {
   for (const { kind, build } of builders) {
-    if (externalService.kind === kind) {
-      return build(externalService, externalMetadata)
+    if (externalService.kind === kind && externalMetadata[kind]) {
+      return build(externalService, externalMetadata[kind])
     }
   }
 
