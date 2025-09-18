@@ -201,36 +201,32 @@ const MediumItemViewBody: FunctionComponent<MediumItemViewBodyProps> = ({
     const newReplicas: Promise<Replica | null>[] = []
     for (const replica of replicas) {
       if (removingReplicas.some(({ id }) => id === replica.id)) {
-        newReplicas.push(deleteReplica({ id: replica.id, deleteObject }).then(
-          () => null,
-          (e: unknown) => {
+        newReplicas.push((async () => {
+          try {
+            await deleteReplica({ id: replica.id, deleteObject })
+            return null
+          } catch (e) {
             throw new Error('error deleting replica', { cause: e })
-          },
-        ))
+          }
+        })())
       } else {
         newReplicas.push(Promise.resolve(replica))
       }
     }
 
-    await Promise.all(newReplicas)
-      .then(
-        results => {
-          return updateMedium({
-            id: current.id,
-            replicaOrders: results.filter(r => r !== null).map(({ id }) => id),
-            createdAt: current.createdAt,
-          })
-        },
-      ).then(
-        newMedium => {
-          closeEditSummary()
-          setReplicas(newMedium.replicas)
-        },
-        (e: unknown) => {
-          console.error('Error updating medium\n', e)
-          setError(e)
-        },
-      )
+    try {
+      const results = await Promise.all(newReplicas)
+      const newMedium = await updateMedium({
+        id: current.id,
+        replicaOrders: results.filter(r => r !== null).map(({ id }) => id),
+        createdAt: current.createdAt,
+      })
+      closeEditSummary()
+      setReplicas(newMedium.replicas)
+    } catch (e) {
+      console.error('Error updating medium\n', e)
+      setError(e)
+    }
   }, [ updateMedium, deleteReplica, removingReplicas, closeEditSummary ])
 
   const save = useCallback(async (current: Medium) => {

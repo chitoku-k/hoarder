@@ -22,16 +22,14 @@ const ExternalServiceDeleteDialogBody: FunctionComponent<ExternalServiceDeleteDi
     close()
   }, [ close ])
 
-  const handleClickDelete = useCallback(() => {
-    deleteExternalService({ id: externalService.id }).then(
-      () => {
-        close()
-        onDelete(externalService)
-      },
-      (e: unknown) => {
-        console.error('Error deleting external service\n', e)
-      },
-    )
+  const handleClickDelete = useCallback(async () => {
+    try {
+      await deleteExternalService({ id: externalService.id })
+      close()
+      onDelete(externalService)
+    } catch (e) {
+      console.error('Error deleting external service\n', e)
+    }
   }, [ deleteExternalService, externalService, close, onDelete ])
 
   return error ? (

@@ -180,7 +180,7 @@ const MediumItemMetadataTagEdit: FunctionComponent<MediumItemMetadataTagEditProp
     close?.()
   }, [ close ])
 
-  const handleClickSubmit = useCallback(() => {
+  const handleClickSubmit = useCallback(async () => {
     const addTagTagTypeIDs: TagTagTypeInput[] = []
     for (const [ tagTypeId, tags ] of addingTags) {
       addTagTagTypeIDs.push(...tags.map(({ id: tagId }) => ({ tagTypeId, tagId })))
@@ -191,14 +191,12 @@ const MediumItemMetadataTagEdit: FunctionComponent<MediumItemMetadataTagEditProp
       removeTagTagTypeIDs.push(...tags.map(({ id: tagId }) => ({ tagTypeId, tagId })))
     }
 
-    save(medium.id, addTagTagTypeIDs, removeTagTagTypeIDs).then(
-      () => {
-        close?.()
-      },
-      (e: unknown) => {
-        console.error('Error updating medium\n', e)
-      },
-    )
+    try {
+      await save(medium.id, addTagTagTypeIDs, removeTagTagTypeIDs)
+      close?.()
+    } catch (e) {
+      console.error('Error updating medium\n', e)
+    }
   }, [ save, medium, addingTags, removingTags, close ])
 
   const renderTagTypeOption = useCallback(({ key, ...props }: ComponentPropsWithoutRef<'li'>, option: TagType) => (

@@ -75,19 +75,17 @@ const TagTypeListColumnBodyCreate: FunctionComponent<TagTypeListColumnBodyCreate
     close()
   }, [ close ])
 
-  const handleClickSubmit = useCallback(() => {
-    createTagType({
-      slug: tagType.slug,
-      name: tagType.name,
-      kana: tagType.kana,
-    }).then(
-      () => {
-        close()
-      },
-      (e: unknown) => {
-        console.error('Error creating tag type\n', e)
-      },
-    )
+  const handleClickSubmit = useCallback(async () => {
+    try {
+      await createTagType({
+        slug: tagType.slug,
+        name: tagType.name,
+        kana: tagType.kana,
+      })
+      close()
+    } catch (e) {
+      console.error('Error creating tag type\n', e)
+    }
   }, [ tagType, createTagType, close ])
 
   const tagTypeSlugDuplicate = graphQLError(error, TAG_TYPE_SLUG_DUPLICATE)

@@ -84,23 +84,21 @@ const MediumItemMetadataSourceCreate: FunctionComponent<MediumItemMetadataSource
           addingSourceIDs.push(source.id)
           continue
         }
-        createSources.push(
-          createSource({
-            externalServiceID: source.externalService.id,
-            externalMetadata: source.externalMetadata as ExternalMetadataInput,
-          }).then(
-            newSource => {
-              addingSourceIDs.push(newSource.id)
-            },
-            (e: unknown) => {
-              const sourceMetadataDuplicate = graphQLError(e, SOURCE_METADATA_DUPLICATE)
-              if (!sourceMetadataDuplicate?.extensions.details.data.id) {
-                throw e
-              }
-              addingSourceIDs.push(sourceMetadataDuplicate.extensions.details.data.id)
-            },
-          ),
-        )
+        createSources.push((async () => {
+          try {
+            const newSource = await createSource({
+              externalServiceID: source.externalService.id,
+              externalMetadata: source.externalMetadata as ExternalMetadataInput,
+            })
+            addingSourceIDs.push(newSource.id)
+          } catch (e) {
+            const sourceMetadataDuplicate = graphQLError(e, SOURCE_METADATA_DUPLICATE)
+            if (!sourceMetadataDuplicate?.extensions.details.data.id) {
+              throw e
+            }
+            addingSourceIDs.push(sourceMetadataDuplicate.extensions.details.data.id)
+          }
+        })())
       }
     }
 

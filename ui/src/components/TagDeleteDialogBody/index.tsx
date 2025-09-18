@@ -47,19 +47,17 @@ const TagDeleteDialogBody: FunctionComponent<TagDeleteDialogBodyProps> = ({
     setRecursive(e.currentTarget.checked)
   }, [])
 
-  const handleClickDelete = useCallback(() => {
-    deleteTag({
-      id: tag.id,
-      recursive,
-    }).then(
-      () => {
-        close()
-        onDelete(tag)
-      },
-      (e: unknown) => {
-        console.error('Error deleting tag\n', e)
-      },
-    )
+  const handleClickDelete = useCallback(async () => {
+    try {
+      await deleteTag({
+        id: tag.id,
+        recursive,
+      })
+      close()
+      onDelete(tag)
+    } catch (e) {
+      console.error('Error deleting tag\n', e)
+    }
   }, [ deleteTag, tag, recursive, onDelete, close ])
 
   const tagChildrenExist = graphQLError(error, TAG_CHILDREN_EXIST)
