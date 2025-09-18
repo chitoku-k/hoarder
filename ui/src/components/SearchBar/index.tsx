@@ -61,14 +61,14 @@ const SearchBar: FunctionComponent<SearchBarProps> = ({
     </li>
   ), [])
 
-  const renderMetadataValue = useCallback((metadata: Metadata[], getTagProps: AutocompleteRenderValueGetItemProps<true>) => metadata.map((option, index) => {
+  const renderMetadataValue = useCallback((metadata: readonly Metadata[], getTagProps: AutocompleteRenderValueGetItemProps<true>) => metadata.map((option, index) => {
     const { key, ...props } = getTagProps({ index })
     return (
       <Chip key={key} label={<MetadataOption className={styles.chip} metadata={option} />} {...props} />
     )
   }), [])
 
-  const handleChange = useCallback((metadata: Metadata[]) => {
+  const handleChange = useCallback((metadata: readonly Metadata[]) => {
     setInputValue('')
 
     const option = metadata[metadata.length - 1]
@@ -154,12 +154,12 @@ const SearchBar: FunctionComponent<SearchBarProps> = ({
 }
 
 interface MetadataOptionProps {
-  className?: string
-  metadata: Metadata
+  readonly className?: string
+  readonly metadata: Metadata
 }
 
 export interface SearchBarProps {
-  className?: string
+  readonly className?: string
 }
 
 export default SearchBar

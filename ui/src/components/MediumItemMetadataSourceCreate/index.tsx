@@ -17,7 +17,7 @@ import type { ExternalService, Source } from '@/types'
 
 import styles from './styles.module.scss'
 
-const hasChanges = (addingExternalServices: ExternalService[], addingSources: Map<ExternalServiceID, (Source | SourceCreate)[]>) => {
+const hasChanges = (addingExternalServices: readonly ExternalService[], addingSources: ReadonlyMap<ExternalServiceID, readonly (Source | SourceCreate)[]>) => {
   if (addingExternalServices.length > 0) {
     return true
   }
@@ -41,8 +41,8 @@ const MediumItemMetadataSourceCreate: FunctionComponent<MediumItemMetadataSource
   const [ focusedExternalService, setFocusedExternalService ] = useState<ExternalService | null>(null)
   const [ newExternalServiceInput, setNewExternalServiceInput ] = useState('')
 
-  const [ addingExternalServices, setAddingExternalServices ] = useState<ExternalService[]>([])
-  const [ addingSources, setAddingSources ] = useState(new Map<ExternalServiceID, (Source | SourceCreate)[]>())
+  const [ addingExternalServices, setAddingExternalServices ] = useState<readonly ExternalService[]>([])
+  const [ addingSources, setAddingSources ] = useState<ReadonlyMap<ExternalServiceID, readonly (Source | SourceCreate)[]>>(new Map())
 
   const handleChangeNewExternalService = useCallback((type: ExternalService | null) => {
     if (!type) {
@@ -75,7 +75,7 @@ const MediumItemMetadataSourceCreate: FunctionComponent<MediumItemMetadataSource
     })
   }, [])
 
-  const resolveSourceIDs = useCallback((addingSources: Map<ExternalServiceID, (Source | SourceCreate)[]>) => async () => {
+  const resolveSourceIDs = useCallback((addingSources: ReadonlyMap<ExternalServiceID, readonly (Source | SourceCreate)[]>) => async () => {
     const addingSourceIDs: string[] = []
     const createSources: Promise<void>[] = []
     for (const sources of addingSources.values()) {
@@ -190,8 +190,8 @@ const MediumItemMetadataSourceCreate: FunctionComponent<MediumItemMetadataSource
 }
 
 export interface MediumItemMetadataSourceCreateProps {
-  loading: boolean
-  setResolveSourceIDs: (setResolveSourceIDs: () => () => Promise<string[]>) => void
+  readonly loading: boolean
+  readonly setResolveSourceIDs: (setResolveSourceIDs: () => () => Promise<readonly string[]>) => void
 }
 
 type ExternalServiceID = string

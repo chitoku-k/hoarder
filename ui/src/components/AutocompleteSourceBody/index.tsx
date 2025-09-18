@@ -246,19 +246,19 @@ const AutocompleteSourceBody: FunctionComponent<AutocompleteSourceBodyProps> = (
 export type SourceCreate = Pick<Source, 'externalService' | 'externalMetadata'>
 
 export interface AutocompleteSourceBodyProps extends Omit<AutocompleteProps<Source | SourceCreate, false, boolean | undefined, false>, 'onChange' | 'options' | 'renderInput'> {
-  externalService: ExternalService
-  focus?: boolean
-  label?: string
-  placeholder?: string
-  variant?: TextFieldVariants
-  icon?: ComponentType<SvgIconProps>
-  onChange?: (source: Source | SourceCreate | null) => void
+  readonly externalService: ExternalService
+  readonly focus?: boolean
+  readonly label?: string
+  readonly placeholder?: string
+  readonly variant?: TextFieldVariants
+  readonly icon?: ComponentType<SvgIconProps>
+  readonly onChange?: (source: Source | SourceCreate | null) => void
 }
 
 interface Builder<Kind extends keyof ExternalMetadataInput> {
-  kind: Kind
-  patterns: RegExp[]
-  build: (params: Record<string, string>) => Partial<ExternalMetadataInput[Kind]>
+  readonly kind: Kind
+  readonly patterns: readonly RegExp[]
+  readonly build: (params: Record<string, string>) => Partial<ExternalMetadataInput[Kind]>
 }
 
 export default AutocompleteSourceBody

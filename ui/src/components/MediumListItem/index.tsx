@@ -23,8 +23,8 @@ export const MediumListItem: FunctionComponent<MediumListItemProps> = ({
 )
 
 export interface MediumListItemProps {
-  medium: Medium
-  size: number
+  readonly medium: Medium
+  readonly size: number
 }
 
 export default MediumListItem

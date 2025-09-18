@@ -44,9 +44,9 @@ const MediumItemImageEdit: FunctionComponent<MediumItemImageEditProps> = ({
   const [ abortController, setAbortController ] = useState(new AbortController())
   const [ appending, setAppending ] = useState(0)
   const [ appended, setAppended ] = useState(0)
-  const [ appendFiles, setAppendFiles ] = useState(new Map<string, Promise<File[]>>())
+  const [ appendFiles, setAppendFiles ] = useState<ReadonlyMap<string, Promise<readonly File[]>>>(new Map())
   const [ error, setError ] = useState<unknown>(null)
-  const [ errorFiles, setErrorFiles ] = useState<File[]>([])
+  const [ errorFiles, setErrorFiles ] = useState<readonly File[]>([])
 
   const handleChangeName = useCallback((idx: number, name: string) => {
     setReplicas(replicas => {
@@ -88,7 +88,7 @@ const MediumItemImageEdit: FunctionComponent<MediumItemImageEditProps> = ({
     restoreReplica?.(replica)
   }, [ restoreReplica ])
 
-  const handleAppendFiles = useCallback(async (files: File[]) => {
+  const handleAppendFiles = useCallback(async (files: readonly File[]) => {
     const { signal } = abortController
     const rejectOnAbort = new Promise<never>((_resolve, reject) => {
       signal.addEventListener('abort', reject, { once: true })
@@ -168,7 +168,7 @@ const MediumItemImageEdit: FunctionComponent<MediumItemImageEditProps> = ({
     })
   }, [])
 
-  const handleSelectFiles = useCallback((entries: Promise<File[]>) => {
+  const handleSelectFiles = useCallback((entries: Promise<readonly File[]>) => {
     const id = uuid()
     const newAppendFiles = (async () => {
       try {
@@ -192,7 +192,7 @@ const MediumItemImageEdit: FunctionComponent<MediumItemImageEditProps> = ({
       }
     })()
 
-    setAppendFiles(appendFiles => new Map([ ...appendFiles.set(id, newAppendFiles) ]))
+    setAppendFiles(appendFiles => new Map(appendFiles).set(id, newAppendFiles))
   }, [ handleAppendFiles, handleCloseAppendFiles ])
 
   const handleCancelAppendFiles = useCallback(() => {
@@ -346,39 +346,39 @@ const MediumItemImageEdit: FunctionComponent<MediumItemImageEditProps> = ({
 }
 
 interface ReplicaItem {
-  total: number
-  current: Replica | ReplicaCreate
-  currentIndex: number
-  currentTotal: number
-  removing: boolean
+  readonly total: number
+  readonly current: Replica | ReplicaCreate
+  readonly currentIndex: number
+  readonly currentTotal: number
+  readonly removing: boolean
 }
 
 export interface ReplicaCreate {
-  tempid: string
-  name: string
-  size: number
-  width?: number
-  height?: number
-  lastModified: Date
-  blob: Blob
+  readonly tempid: string
+  readonly name: string
+  readonly size: number
+  readonly width?: number
+  readonly height?: number
+  readonly lastModified: Date
+  readonly blob: Blob
 }
 
 type ReplicaMetadataResult = {
-  status: 'succeeded'
-  value: ReplicaCreate
+  readonly status: 'succeeded'
+  readonly value: ReplicaCreate
 } | {
-  status: 'failed'
-  file: File
+  readonly status: 'failed'
+  readonly file: File
 }
 
 export interface MediumItemImageEditProps {
-  className?: string
-  gap?: number
-  replicas: (Replica | ReplicaCreate)[]
-  setReplicas: (setReplicas: (replicas: (Replica | ReplicaCreate)[]) => (Replica | ReplicaCreate)[]) => void
-  removingReplicas?: Replica[]
-  removeReplica: (replica: Replica | ReplicaCreate) => void
-  restoreReplica?: (replica: Replica) => void
+  readonly className?: string
+  readonly gap?: number
+  readonly replicas: readonly (Replica | ReplicaCreate)[]
+  readonly setReplicas: (setReplicas: (replicas: readonly (Replica | ReplicaCreate)[]) => readonly (Replica | ReplicaCreate)[]) => void
+  readonly removingReplicas?: readonly Replica[]
+  readonly removeReplica: (replica: Replica | ReplicaCreate) => void
+  readonly restoreReplica?: (replica: Replica) => void
 }
 
 export default MediumItemImageEdit

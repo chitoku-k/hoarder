@@ -20,7 +20,7 @@ const TagMoveDialogError: FunctionComponent<TagMoveDialogErrorProps> = ({
 )
 
 export interface TagMoveDialogErrorProps {
-  close: () => void
+  readonly close: () => void
 }
 
 export default TagMoveDialogError

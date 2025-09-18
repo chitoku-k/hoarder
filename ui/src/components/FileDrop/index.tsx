@@ -81,14 +81,14 @@ const FileDrop = function <Flatten extends boolean | undefined>({
 }
 
 export interface FileDropProps<Flatten extends boolean | undefined> {
-  className?: string
-  signal?: AbortSignal
-  flatten?: Flatten
-  onSelect?: FileDropOnSelect<Flatten>
-  children?: ReactNode
+  readonly className?: string
+  readonly signal?: AbortSignal
+  readonly flatten?: Flatten
+  readonly onSelect?: FileDropOnSelect<Flatten>
+  readonly children?: ReactNode
 }
 
-export type FileDropEntries<Flatten> = Flatten extends true ? File[] : (File | Folder)[]
+export type FileDropEntries<Flatten> = Flatten extends true ? readonly File[] : readonly (File | Folder)[]
 
 export type FileDropOnSelect<Flatten> = (entries: Promise<FileDropEntries<Flatten>>) => void
 

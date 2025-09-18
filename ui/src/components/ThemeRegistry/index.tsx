@@ -23,7 +23,7 @@ const ThemeRegistry: FunctionComponent<ThemeRegistryProps> = ({
 )
 
 export interface ThemeRegistryProps {
-  children: ReactNode
+  readonly children: ReactNode
 }
 
 export default ThemeRegistry

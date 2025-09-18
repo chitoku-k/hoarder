@@ -1,22 +1,22 @@
 export interface Replica {
-  id: string
-  displayOrder: number
-  thumbnail?: {
-    id: string
-    width: number
-    height: number
-    url: string
-    createdAt: string
-    updatedAt: string
+  readonly id: string
+  readonly displayOrder: number
+  readonly thumbnail?: {
+    readonly id: string
+    readonly width: number
+    readonly height: number
+    readonly url: string
+    readonly createdAt: string
+    readonly updatedAt: string
   } | null
-  originalUrl: string
-  url?: string | null
-  mimeType?: string | null
-  width?: number | null
-  height?: number | null
-  status: {
-    phase: string
+  readonly originalUrl: string
+  readonly url?: string | null
+  readonly mimeType?: string | null
+  readonly width?: number | null
+  readonly height?: number | null
+  readonly status: {
+    readonly phase: string
   }
-  createdAt: string
-  updatedAt: string
+  readonly createdAt: string
+  readonly updatedAt: string
 }

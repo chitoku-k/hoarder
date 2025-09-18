@@ -23,8 +23,8 @@ const TagListColumnBodyListRoot: FunctionComponent<TagListColumnBodyListRootProp
 }
 
 export interface TagListColumnBodyListRootProps {
-  number: number
-  component: (tags: Tag[], hasNextPage: boolean, fetchMore: () => Promise<void>) => ReactNode
+  readonly number: number
+  readonly component: (tags: readonly Tag[], hasNextPage: boolean, fetchMore: () => Promise<void>) => ReactNode
 }
 
 export default TagListColumnBodyListRoot

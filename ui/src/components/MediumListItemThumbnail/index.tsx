@@ -29,8 +29,8 @@ const MediumListItemThumbnail: FunctionComponent<MediumListItemThumbnailProps> =
 )
 
 export interface MediumListItemThumbnailProps {
-  replica?: Replica
-  size: number
+  readonly replica?: Replica
+  readonly size: number
 }
 
 export default MediumListItemThumbnail

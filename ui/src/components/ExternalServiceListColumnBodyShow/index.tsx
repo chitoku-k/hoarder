@@ -89,8 +89,8 @@ const ExternalServiceListColumnBodyShow: FunctionComponent<ExternalServiceListCo
 }
 
 export interface ExternalServiceListColumnBodyShowProps {
-  externalService: ExternalService
-  edit: (externalService: ExternalService) => void
+  readonly externalService: ExternalService
+  readonly edit: (externalService: ExternalService) => void
 }
 
 export default ExternalServiceListColumnBodyShow

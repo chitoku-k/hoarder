@@ -54,9 +54,9 @@ const TagListColumn: FunctionComponent<TagListColumnProps> = ({
 }
 
 export interface TagListColumnProps extends GridProps {
-  className?: string
-  focus?: boolean
-  children?: ReactNode
+  readonly className?: string
+  readonly focus?: boolean
+  readonly children?: ReactNode
 }
 
 export default TagListColumn

@@ -128,12 +128,12 @@ const MediumItemFileUploadDialogBodyItem: FunctionComponent<MediumItemFileUpload
 }
 
 export interface MediumItemFileUploadDialogBodyItemProps {
-  replica: ReplicaCreate
-  status: ReplicaUploadStatus
-  progress: ReplicaUploadProgress | null
-  error: unknown
-  nameValidationError?: string | null
-  onChangeName?: (name: string) => void
+  readonly replica: ReplicaCreate
+  readonly status: ReplicaUploadStatus
+  readonly progress: ReplicaUploadProgress | null
+  readonly error: unknown
+  readonly nameValidationError?: string | null
+  readonly onChangeName?: (name: string) => void
 }
 
 export default MediumItemFileUploadDialogBodyItem

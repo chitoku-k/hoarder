@@ -29,7 +29,7 @@ import type { Medium, Replica } from '@/types'
 
 import styles from './styles.module.scss'
 
-const hasChanges = (medium: Medium, replicas: (Replica | ReplicaCreate)[], removingReplicas: Replica[]) => {
+const hasChanges = (medium: Medium, replicas: readonly (Replica | ReplicaCreate)[], removingReplicas: readonly Replica[]) => {
   if (medium.replicas?.length !== replicas.length || removingReplicas.length > 0) {
     return true
   }
@@ -64,8 +64,8 @@ const MediumItemViewBody: FunctionComponent<MediumItemViewBodyProps> = ({
   const [ editingSources, setEditingSources ] = useState(false)
   const [ editingTags, setEditingTags ] = useState(false)
 
-  const [ replicas, setReplicas ] = useState<(Replica | ReplicaCreate)[]>(medium.replicas)
-  const [ removingReplicas, setRemovingReplicas ] = useState<Replica[]>([])
+  const [ replicas, setReplicas ] = useState<readonly (Replica | ReplicaCreate)[]>(medium.replicas)
+  const [ removingReplicas, setRemovingReplicas ] = useState<readonly Replica[]>([])
   const [ deletingObjects, setDeletingObjects ] = useState<MediumDeleteObjects | null>(null)
 
   const [ uploading, setUploading ] = useState(false)
@@ -168,8 +168,8 @@ const MediumItemViewBody: FunctionComponent<MediumItemViewBodyProps> = ({
     }
   }, [])
 
-  const handleComplete = useCallback(async (current: Medium, replicas: (Replica | ReplicaCreate)[]) => {
-    const processed = (replicas: (Replica | ReplicaCreate)[]) => replicas.every(isReplica)
+  const handleComplete = useCallback(async (current: Medium, replicas: readonly (Replica | ReplicaCreate)[]) => {
+    const processed = (replicas: readonly (Replica | ReplicaCreate)[]) => replicas.every(isReplica)
     if (!processed(replicas)) {
       setReplicas(replicas)
       updateMedium({
@@ -237,13 +237,13 @@ const MediumItemViewBody: FunctionComponent<MediumItemViewBodyProps> = ({
     }
   }, [ replicas, handleComplete ])
 
-  const saveTags = useCallback((id: string, addTagTagTypeIDs: TagTagTypeInput[], removeTagTagTypeIDs: TagTagTypeInput[]) => updateMedium({
+  const saveTags = useCallback((id: string, addTagTagTypeIDs: readonly TagTagTypeInput[], removeTagTagTypeIDs: readonly TagTagTypeInput[]) => updateMedium({
     id,
     addTagTagTypeIDs,
     removeTagTagTypeIDs,
   }), [ updateMedium ])
 
-  const saveSources = useCallback((id: string, addSourceIDs: string[], removeSourceIDs: string[]) => updateMedium({
+  const saveSources = useCallback((id: string, addSourceIDs: readonly string[], removeSourceIDs: readonly string[]) => updateMedium({
     id,
     addSourceIDs,
     removeSourceIDs,
@@ -345,12 +345,12 @@ const MediumItemViewBody: FunctionComponent<MediumItemViewBodyProps> = ({
 }
 
 export interface MediumItemViewBodyProps {
-  id: string
+  readonly id: string
 }
 
 interface MediumDeleteObjects {
-  onConfirm: (result: boolean) => void
-  onCancel: () => void
+  readonly onConfirm: (result: boolean) => void
+  readonly onCancel: () => void
 }
 
 export default MediumItemViewBody

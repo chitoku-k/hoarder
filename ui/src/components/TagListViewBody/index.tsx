@@ -65,7 +65,7 @@ const TagListViewBody: FunctionComponent<TagListViewBodyProps> = ({
     [ tag ],
   ) satisfies TagColumn[]
 
-  const [ columns, setColumns ] = useState<TagColumn[]>(initialColumns)
+  const [ columns, setColumns ] = useState<readonly TagColumn[]>(initialColumns)
   const [ creating, setCreating ] = useState(false)
 
   const [ selectedTag, setSelectedTag ] = useState<Tag | null>(null)
@@ -333,12 +333,12 @@ const TagListViewBody: FunctionComponent<TagListViewBodyProps> = ({
 }
 
 export interface TagListViewBodyProps {
-  initial?: Tag
-  readonly?: boolean
-  dense?: boolean
-  disabled?: (tag: Tag) => boolean
-  onSelect?: (tag: Tag | null) => void
-  selectable?: TagColumnSelectable
+  readonly initial?: Tag
+  readonly readonly?: boolean
+  readonly dense?: boolean
+  readonly disabled?: (tag: Tag) => boolean
+  readonly onSelect?: (tag: Tag | null) => void
+  readonly selectable?: TagColumnSelectable
 }
 
 export default TagListViewBody

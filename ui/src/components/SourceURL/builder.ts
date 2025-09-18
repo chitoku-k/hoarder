@@ -156,6 +156,6 @@ export const buildURL = (externalService: ExternalService, externalMetadata: Rec
 }
 
 interface Builder<Kind extends string, Metadata extends Record<Kind, unknown>> {
-  kind: Kind
-  build: (externalService: ExternalService, params: Partial<Metadata[Kind]>) => string | null
+  readonly kind: Kind
+  readonly build: (externalService: ExternalService, params: Partial<Metadata[Kind]>) => string | null
 }

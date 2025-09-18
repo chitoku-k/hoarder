@@ -73,19 +73,19 @@ const SourceURL: FunctionComponent<SourceURLProps> = ({
 }
 
 interface SourceURLPropsBase {
-  className?: string
-  icon?: ComponentType<SvgIconProps>
-  noLink?: boolean
-  noLaunch?: boolean
+  readonly className?: string
+  readonly icon?: ComponentType<SvgIconProps>
+  readonly noLink?: boolean
+  readonly noLaunch?: boolean
 }
 
 interface SourceURLPropsBySource extends SourceURLPropsBase {
-  source: Source
+  readonly source: Source
 }
 
 interface SourceURLPropsByExternalMetadata extends SourceURLPropsBase {
-  externalService: ExternalService
-  externalMetadata: unknown
+  readonly externalService: ExternalService
+  readonly externalMetadata: unknown
 }
 
 export type SourceURLProps = SourceURLPropsBySource | SourceURLPropsByExternalMetadata

@@ -29,11 +29,11 @@ const FileOpen: FunctionComponent<FileOpenProps> = ({
 }
 
 export interface FileOpenProps {
-  className?: string
-  accept?: string
-  multiple?: boolean
-  onSelect?: (files: Promise<File[]>) => void
-  children?: ReactNode
+  readonly className?: string
+  readonly accept?: string
+  readonly multiple?: boolean
+  readonly onSelect?: (files: Promise<readonly File[]>) => void
+  readonly children?: ReactNode
 }
 
 export default FileOpen

@@ -18,11 +18,11 @@ const ImageLoading: FunctionComponent<ImageLoadingProps> = ({
 )
 
 export interface ImageLoadingProps {
-  className?: string
-  style?: CSSProperties
-  width?: number
-  height?: number
-  children?: ReactNode
+  readonly className?: string
+  readonly style?: CSSProperties
+  readonly width?: number
+  readonly height?: number
+  readonly children?: ReactNode
 }
 
 export default ImageLoading

@@ -8,12 +8,12 @@ import MediumList from '@/components/MediumList'
 import SearchQueryList from '@/components/SearchQueryList'
 import type { Source, Tag, TagType } from '@/types'
 
-const searchParamsToArray = async <T extends Record<string, string | string[]>>(
+const searchParamsToArray = async <T extends Record<string, string | readonly string[]>>(
   searchParams: Promise<T>,
-): Promise<Record<string, string[]>> => {
+): Promise<Record<string, readonly string[]>> => {
   const params = await searchParams
   try {
-    return Object.entries(params).reduce<Record<string, string[]>>(
+    return Object.entries(params).reduce<Record<string, readonly string[]>>(
       (obj, [ k, v ]) => ({
         ...obj,
         [k]: Array.isArray(v) ? v : [ v ],
@@ -27,7 +27,13 @@ const searchParamsToArray = async <T extends Record<string, string | string[]>>(
 
 const displayURL = (url: string): string => url.replace(/^https?:\/\/(?:www\.)?/, '')
 
-const fetchSearchQuery = async (sourceIDs: string[], tagIDs: string[]): Promise<{ sources?: Source[], tagTagTypes?: { tag: Tag, type: TagType }[] }> => {
+const fetchSearchQuery = async (sourceIDs: readonly string[], tagIDs: readonly string[]): Promise<{
+  readonly sources?: readonly Source[]
+  readonly tagTagTypes?: readonly {
+    readonly tag: Tag
+    readonly type: TagType
+  }[]
+}> => {
   const tagTagTypeIDs = tagIDs
     .map(tag => tag.split(':'))
     .flatMap(([ tagTypeID, tagID ]) => tagTypeID && tagID
@@ -118,10 +124,10 @@ const Page: FunctionComponent<PageProps> = async ({
   }
 }
 
-export type SearchParams = Record<string, string | string[]>
+export type SearchParams = Record<string, string | readonly string[]>
 
 export interface PageProps {
-  searchParams: Promise<SearchParams>
+  readonly searchParams: Promise<SearchParams>
 }
 
 export default Page

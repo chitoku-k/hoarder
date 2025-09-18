@@ -187,12 +187,12 @@ const TagTypeListView: FunctionComponent<TagTypeListViewProps> = ({
 }
 
 export interface TagTypeListViewProps {
-  className?: string
-  initial?: TagType
-  readonly?: boolean
-  dense?: boolean
-  disabled?: (tagType: TagType) => boolean
-  onSelect?: (tagType: TagType) => void
+  readonly className?: string
+  readonly initial?: TagType
+  readonly readonly?: boolean
+  readonly dense?: boolean
+  readonly disabled?: (tagType: TagType) => boolean
+  readonly onSelect?: (tagType: TagType) => void
 }
 
 export default TagTypeListView

@@ -57,8 +57,8 @@ const TagTypeListColumnBodyShow: FunctionComponent<TagTypeListColumnBodyShowProp
 }
 
 export interface TagTypeListColumnBodyShowProps {
-  tagType: TagType
-  edit: (tagType: TagType) => void
+  readonly tagType: TagType
+  readonly edit: (tagType: TagType) => void
 }
 
 export default TagTypeListColumnBodyShow

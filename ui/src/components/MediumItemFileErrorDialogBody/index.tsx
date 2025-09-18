@@ -50,9 +50,9 @@ const MediumItemFileErrorDialogBody: FunctionComponent<MediumItemFileErrorDialog
 }
 
 export interface MediumItemFileErrorDialogBodyProps {
-  files?: File[]
-  error?: unknown
-  close: () => void
+  readonly files?: readonly File[]
+  readonly error?: unknown
+  readonly close: () => void
 }
 
 export default MediumItemFileErrorDialogBody

@@ -17,7 +17,7 @@ const LocalizationWrapper: FunctionComponent<LocalizationWrapperProps> = ({
 )
 
 export interface LocalizationWrapperProps {
-  children: ReactNode
+  readonly children: ReactNode
 }
 
 export default LocalizationWrapper

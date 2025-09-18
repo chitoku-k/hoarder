@@ -115,9 +115,9 @@ const TagMoveDialogBody: FunctionComponent<TagMoveDialogBodyProps> = ({
 }
 
 export interface TagMoveDialogBodyProps {
-  tag: Tag
-  close: () => void
-  onMove: (tag: Tag) => void
+  readonly tag: Tag
+  readonly close: () => void
+  readonly onMove: (tag: Tag) => void
 }
 
 export default TagMoveDialogBody

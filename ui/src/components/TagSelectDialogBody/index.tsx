@@ -74,8 +74,8 @@ const TagSelectDialogBody: FunctionComponent<TagSelectDialogBodyProps> = ({
 }
 
 export interface TagSelectDialogBodyProps {
-  close: () => void
-  onSelect: (tag: Tag) => void
+  readonly close: () => void
+  readonly onSelect: (tag: Tag) => void
 }
 
 export default TagSelectDialogBody

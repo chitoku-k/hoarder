@@ -29,11 +29,11 @@ export const isMetadataTagType = (option: Metadata): option is MetadataTagType =
 function* useMetadata(
   sources: MetadataLike['sources'] | null | undefined,
   tags: MetadataLike['tags'] | null | undefined,
-  tagTypes: TagType[] | null | undefined,
+  tagTypes: readonly TagType[] | null | undefined,
   options?: {
-    noSources?: boolean
-    noTags?: boolean
-    noTagTypes?: boolean
+    readonly noSources?: boolean
+    readonly noTags?: boolean
+    readonly noTagTypes?: boolean
   },
 ): Generator<Metadata> {
   const collator = useCollator()
@@ -203,7 +203,7 @@ const AutocompleteMetadataBody: FunctionComponent<AutocompleteMetadataBodyProps>
     }
   }, [ onInputChange, updateInputValue ])
 
-  const handleChange = useCallback((_e: SyntheticEvent, metadata: Metadata[]) => {
+  const handleChange = useCallback((_e: SyntheticEvent, metadata: readonly Metadata[]) => {
     onChangeMetadata?.(metadata)
   }, [ onChangeMetadata ])
 
@@ -288,29 +288,29 @@ const AutocompleteMetadataBody: FunctionComponent<AutocompleteMetadataBodyProps>
 }
 
 interface MetadataSource {
-  source: Source
+  readonly source: Source
 }
 
 interface MetadataTag {
-  tag: Tag
+  readonly tag: Tag
 }
 
 interface MetadataTagType {
-  tagType: TagType
+  readonly tagType: TagType
 }
 
 export type Metadata = MetadataSource | MetadataTag | MetadataTagType
 
 export interface AutocompleteMetadataBodyProps extends Omit<AutocompleteProps<Metadata, true, boolean | undefined, false>, 'onChange' | 'options' | 'renderInput'> {
-  focus?: boolean
-  label?: string
-  placeholder?: string
-  variant?: TextFieldVariants
-  icon?: ComponentType<SvgIconProps>
-  onChange?: (metadata: Metadata[]) => void
-  noSources?: boolean
-  noTags?: boolean
-  noTagTypes?: boolean
+  readonly focus?: boolean
+  readonly label?: string
+  readonly placeholder?: string
+  readonly variant?: TextFieldVariants
+  readonly icon?: ComponentType<SvgIconProps>
+  readonly onChange?: (metadata: readonly Metadata[]) => void
+  readonly noSources?: boolean
+  readonly noTags?: boolean
+  readonly noTagTypes?: boolean
 }
 
 export default AutocompleteMetadataBody

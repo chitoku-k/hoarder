@@ -23,7 +23,7 @@ const MediumItemFileAppendDialogLoading: FunctionComponent<MediumItemFileAppendD
 }
 
 export interface MediumItemFileAppendDialogLoadingProps {
-  cancel?: () => void
+  readonly cancel?: () => void
 }
 
 export default MediumItemFileAppendDialogLoading

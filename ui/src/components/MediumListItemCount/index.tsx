@@ -40,7 +40,7 @@ const MediumListItemCount: FunctionComponent<MediumListItemCountProps> = ({
 }
 
 export interface MediumListItemCountProps extends SvgIconProps {
-  count?: number | null
+  readonly count?: number | null
 }
 
 export default MediumListItemCount

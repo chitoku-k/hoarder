@@ -12,10 +12,10 @@ function postprocess(s: string): string {
   return s.replace(/[nｎ]$/, 'ん')
 }
 
-function extract(history: string[]): string {
+function extract(history: readonly string[]): string {
   return postprocess(historykana(history.map(preprocess), options))
 }
 
-export function useHistorykana(): (history: string[]) => string {
+export function useHistorykana(): (history: readonly string[]) => string {
   return extract
 }

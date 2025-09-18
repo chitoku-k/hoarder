@@ -1,6 +1,6 @@
 export interface TagType {
-  id: string
-  slug: string
-  name: string
-  kana: string
+  readonly id: string
+  readonly slug: string
+  readonly name: string
+  readonly kana: string
 }

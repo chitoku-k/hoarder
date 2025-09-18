@@ -50,14 +50,14 @@ const TagListColumnBodyListItem: FunctionComponent<TagListColumnBodyListItemProp
 )
 
 export interface TagListColumnBodyListItemProps {
-  className?: string
-  dense?: boolean
-  disabled?: boolean
-  selected?: boolean
-  primary?: ReactNode
-  secondary?: ReactNode
-  children?: ReactNode
-  onClick?: MouseEventHandler<HTMLElement>
+  readonly className?: string
+  readonly dense?: boolean
+  readonly disabled?: boolean
+  readonly selected?: boolean
+  readonly primary?: ReactNode
+  readonly secondary?: ReactNode
+  readonly children?: ReactNode
+  readonly onClick?: MouseEventHandler<HTMLElement>
 }
 
 export default TagListColumnBodyListItem

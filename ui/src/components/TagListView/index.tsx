@@ -28,7 +28,7 @@ const TagListView: FunctionComponent<TagListViewProps> = ({
 )
 
 export interface TagListViewProps extends TagListViewBodyProps {
-  className?: string
+  readonly className?: string
 }
 
 export default TagListView

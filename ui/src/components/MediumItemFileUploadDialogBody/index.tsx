@@ -39,7 +39,7 @@ import type { Medium, Replica } from '@/types'
 import styles from './styles.module.scss'
 
 const isValidName = (name: string) => name.length > 0
-const isUniqueName = (name: string, replicas: (Replica | ReplicaCreate)[]) => replicas.reduce((total, replica) => total + Number(!isReplica(replica) && replica.name === name), 0) === 1
+const isUniqueName = (name: string, replicas: readonly (Replica | ReplicaCreate)[]) => replicas.reduce((total, replica) => total + Number(!isReplica(replica) && replica.name === name), 0) === 1
 
 const extractEntry = (e: ReplicaOriginalUrlDuplicate | ObjectAlreadyExists): ReplicaUploadOverwritingFile | null => {
   const entry = e.extensions.details.data.entry
@@ -75,8 +75,8 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
   const { graphQLError } = useError()
 
   const [ uploading, setUploading ] = useState(false)
-  const [ uploads, setUploads ] = useState(new Map<ReplicaCreateID, ReplicaUpload>())
-  const [ overwriting, setOverwriting ] = useState<ReplicaUploadOverwrite[]>([])
+  const [ uploads, setUploads ] = useState<ReadonlyMap<ReplicaCreateID, ReplicaUpload>>(new Map())
+  const [ overwriting, setOverwriting ] = useState<readonly ReplicaUploadOverwrite[]>([])
   const [ error, setError ] = useState<unknown>(null)
 
   const defaultContainer = useMemo(() => {
@@ -406,40 +406,40 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
 }
 
 export interface MediumItemFileUploadDialogBodyProps {
-  abortSignal?: AbortSignal
-  resolveMedium: () => Promise<Medium>
-  replicas: (Replica | ReplicaCreate)[]
-  setReplicas: (setReplicas: (replicas: (Replica | ReplicaCreate)[]) => (Replica | ReplicaCreate)[]) => void
-  close: () => void
-  onProgress?: (status: UploadStatus) => void
-  onComplete: (medium: Medium, replicas: (Replica | ReplicaCreate)[]) => void
+  readonly abortSignal?: AbortSignal
+  readonly resolveMedium: () => Promise<Medium>
+  readonly replicas: readonly (Replica | ReplicaCreate)[]
+  readonly setReplicas: (setReplicas: (replicas: readonly (Replica | ReplicaCreate)[]) => readonly (Replica | ReplicaCreate)[]) => void
+  readonly close: () => void
+  readonly onProgress?: (status: UploadStatus) => void
+  readonly onComplete: (medium: Medium, replicas: readonly (Replica | ReplicaCreate)[]) => void
 }
 
 type ReplicaCreateID = string
 
 interface ReplicaUpload {
-  status: ReplicaUploadStatus
-  progress?: ReplicaUploadProgress
-  error?: unknown
+  readonly status: ReplicaUploadStatus
+  readonly progress?: ReplicaUploadProgress
+  readonly error?: unknown
 }
 
 interface ReplicaUploadOverwrite {
-  uploading: ReplicaCreate
-  existing: ReplicaUploadOverwritingFile | null
-  onConfirm?: () => void
-  onCancel?: () => void
+  readonly uploading: ReplicaCreate
+  readonly existing: ReplicaUploadOverwritingFile | null
+  readonly onConfirm?: () => void
+  readonly onCancel?: () => void
 }
 
 interface ReplicaUploadOverwritingFile {
-  name: string
-  size: number | null
-  lastModified: Date | null
-  url: string
+  readonly name: string
+  readonly size: number | null
+  readonly lastModified: Date | null
+  readonly url: string
 }
 
 export interface ReplicaUploadProgress {
-  loaded: number
-  total: number
+  readonly loaded: number
+  readonly total: number
 }
 
 export type UploadStatus = 'uploading' | 'done'

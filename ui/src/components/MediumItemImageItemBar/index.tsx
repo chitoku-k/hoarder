@@ -103,18 +103,18 @@ const MediumItemImageItemBar: FunctionComponent<MediumItemImageItemBarProps> = (
 }
 
 export interface MediumItemImageItemBarProps {
-  index: number
-  total: number
-  currentIndex: number
-  currentTotal: number
-  removing: boolean
-  replica: Replica | ReplicaCreate
-  name?: string
-  onChangeName?: (index: number, name: string) => void
-  onMoveUp: (index: number) => void
-  onMoveDown: (index: number) => void
-  onRemove: (replica: Replica | ReplicaCreate) => void
-  onRestore?: (replica: Replica) => void
+  readonly index: number
+  readonly total: number
+  readonly currentIndex: number
+  readonly currentTotal: number
+  readonly removing: boolean
+  readonly replica: Replica | ReplicaCreate
+  readonly name?: string
+  readonly onChangeName?: (index: number, name: string) => void
+  readonly onMoveUp: (index: number) => void
+  readonly onMoveDown: (index: number) => void
+  readonly onRemove: (replica: Replica | ReplicaCreate) => void
+  readonly onRestore?: (replica: Replica) => void
 }
 
 export default memo(MediumItemImageItemBar)

@@ -84,19 +84,19 @@ export const SearchProvider: FunctionComponent<SearchProviderProps> = ({
 }
 
 export interface SearchQuery {
-  sourceID?: string
-  tagTagTypeIDs?: {
-    tagID: string
-    typeID: string
+  readonly sourceID?: string
+  readonly tagTagTypeIDs?: readonly {
+    readonly tagID: string
+    readonly typeID: string
   }[]
 }
 
 export interface SearchState {
-  appendQuery: (query: SearchQuery) => void
-  removeQuery: (query: SearchQuery) => void
-  clearQuery: () => void
+  readonly appendQuery: (query: SearchQuery) => void
+  readonly removeQuery: (query: SearchQuery) => void
+  readonly clearQuery: () => void
 }
 
 export interface SearchProviderProps {
-  children: ReactNode
+  readonly children: ReactNode
 }

@@ -31,9 +31,9 @@ export function useMedia(number: number, options?: UseMediaOptions): [ Media, bo
 }
 
 export interface UseMediaOptions {
-  sourceIDs?: string[]
-  tagTagTypeIDs?: {
-    tagID: string
-    typeID: string
+  readonly sourceIDs?: readonly string[]
+  readonly tagTagTypeIDs?: readonly {
+    readonly tagID: string
+    readonly typeID: string
   }[]
 }

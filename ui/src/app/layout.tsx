@@ -45,7 +45,7 @@ const RootLayout: FunctionComponent<RootLayoutProps> = ({
 )
 
 export interface RootLayoutProps {
-  children: ReactNode
+  readonly children: ReactNode
 }
 
 export default RootLayout

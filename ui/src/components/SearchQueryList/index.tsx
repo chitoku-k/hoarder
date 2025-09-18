@@ -50,10 +50,10 @@ const SearchQueryList: FunctionComponent<SearchQueryListProps> = ({
 }
 
 export interface SearchQueryListProps {
-  sources?: Source[]
-  tagTagTypes?: {
-    tag: Tag
-    type: TagType
+  readonly sources?: readonly Source[]
+  readonly tagTagTypes?: readonly {
+    readonly tag: Tag
+    readonly type: TagType
   }[]
 }
 

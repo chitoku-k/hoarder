@@ -59,9 +59,9 @@ const ExternalServiceDeleteDialogBody: FunctionComponent<ExternalServiceDeleteDi
 }
 
 export interface ExternalServiceDeleteDialogBodyProps {
-  externalService: ExternalService
-  close: () => void
-  onDelete: (externalService: ExternalService) => void
+  readonly externalService: ExternalService
+  readonly close: () => void
+  readonly onDelete: (externalService: ExternalService) => void
 }
 
 export default ExternalServiceDeleteDialogBody

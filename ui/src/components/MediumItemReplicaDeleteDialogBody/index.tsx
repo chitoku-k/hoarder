@@ -54,8 +54,8 @@ const MediumItemReplicaDeleteDialogBody: FunctionComponent<MediumItemReplicaDele
 }
 
 export interface MediumItemReplicaDeleteDialogBodyProps {
-  save: (deleteObject: boolean) => void
-  close: () => void
+  readonly save: (deleteObject: boolean) => void
+  readonly close: () => void
 }
 
 export default MediumItemReplicaDeleteDialogBody

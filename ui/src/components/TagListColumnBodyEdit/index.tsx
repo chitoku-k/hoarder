@@ -64,7 +64,7 @@ const TagListColumnBodyEdit: FunctionComponent<TagListColumnBodyEditProps> = ({
     }))
   }, [])
 
-  const handleChangeAliases = useCallback((_e: SyntheticEvent, value: string[]) => {
+  const handleChangeAliases = useCallback((_e: SyntheticEvent, value: readonly string[]) => {
     // eslint-disable-next-line @typescript-eslint/unbound-method
     const aliases = value.toSorted(collator.compare)
     setTag(tag => ({
@@ -127,7 +127,7 @@ const TagListColumnBodyEdit: FunctionComponent<TagListColumnBodyEditProps> = ({
         <Autocomplete
           options={current.aliases.filter(alias => !tag.aliases.includes(alias))}
           disabled={loading}
-          value={tag.aliases}
+          value={tag.aliases as string[]}
           multiple
           freeSolo
           autoSelect
@@ -180,9 +180,9 @@ const TagListColumnBodyEdit: FunctionComponent<TagListColumnBodyEditProps> = ({
 }
 
 export interface TagListColumnBodyEditProps {
-  tag: Tag
-  close: () => void
-  onMove: (tag: Tag) => void
+  readonly tag: Tag
+  readonly close: () => void
+  readonly onMove: (tag: Tag) => void
 }
 
 export default TagListColumnBodyEdit

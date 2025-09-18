@@ -146,7 +146,7 @@ const TagListColumnBodyList: FunctionComponent<TagListColumnBodyListProps> = ({
     e.stopPropagation()
   }, [])
 
-  const tagSecondaryNode = useCallback((kana: string, aliases: string[]) => {
+  const tagSecondaryNode = useCallback((kana: string, aliases: readonly string[]) => {
     if (!kana && !aliases.length) {
       return null
     }
@@ -207,7 +207,7 @@ const TagListColumnBodyList: FunctionComponent<TagListColumnBodyListProps> = ({
     handleClickDeleteTag,
   ])
 
-  const renderTagItems = useCallback((tags: Tag[], hasNextPage?: boolean, fetchMore?: () => Promise<void>) => (
+  const renderTagItems = useCallback((tags: readonly Tag[], hasNextPage?: boolean, fetchMore?: () => Promise<void>) => (
     <List ref={ref} className={styles.tags} dense={dense}>
       {tags.map(tag => renderTagItem(tag))}
       {active && tags.every(({ id }) => id !== active.id) ? renderTagItem(active) : null}
@@ -299,30 +299,30 @@ const TagListColumnBodyList: FunctionComponent<TagListColumnBodyListProps> = ({
 }
 
 export interface TagColumn {
-  index: number
-  creating: boolean
-  editing: Tag | null
-  selected: boolean
-  parent: Tag | null
-  active: Tag | null
-  hit: Tag | null
-  hitInput: string
+  readonly index: number
+  readonly creating: boolean
+  readonly editing: Tag | null
+  readonly selected: boolean
+  readonly parent: Tag | null
+  readonly active: Tag | null
+  readonly hit: Tag | null
+  readonly hitInput: string
 }
 
 export type TagColumnSelectable = 'column' | 'tag'
 
 export interface TagListColumnBodyListProps extends TagColumn {
-  readonly: boolean
-  dense: boolean
-  selectable?: TagColumnSelectable
-  disabled?: (tag: Tag) => boolean
-  onHit?: (tag: Tag | null) => void
-  onSelect?: (tag: Tag | null) => void
-  create: (parent: Tag | null, columnIndex: number) => void
-  edit: (tag: Tag, columnIndex: number) => void
-  delete: (tag: Tag, columnIndex: number) => void
-  setColumn: (column: TagColumn) => void
-  appendColumn: (column: TagColumn) => void
+  readonly readonly: boolean
+  readonly dense: boolean
+  readonly selectable?: TagColumnSelectable
+  readonly disabled?: (tag: Tag) => boolean
+  readonly onHit?: (tag: Tag | null) => void
+  readonly onSelect?: (tag: Tag | null) => void
+  readonly create: (parent: Tag | null, columnIndex: number) => void
+  readonly edit: (tag: Tag, columnIndex: number) => void
+  readonly delete: (tag: Tag, columnIndex: number) => void
+  readonly setColumn: (column: TagColumn) => void
+  readonly appendColumn: (column: TagColumn) => void
 }
 
 export default TagListColumnBodyList

@@ -35,7 +35,7 @@ const TagTypeListColumnBodyCreate: FunctionComponent<TagTypeListColumnBodyCreate
   })
 
   const [ kanaChanged, setKanaChanged ] = useState(false)
-  const [ nameHistory, setNameHistory ] = useState<string[]>([])
+  const [ nameHistory, setNameHistory ] = useState<readonly string[]>([])
 
   const handleChangeName = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     const name = e.currentTarget.value
@@ -155,7 +155,7 @@ const TagTypeListColumnBodyCreate: FunctionComponent<TagTypeListColumnBodyCreate
 }
 
 export interface TagTypeListColumnBodyCreateProps {
-  close: () => void
+  readonly close: () => void
 }
 
 type TagTypeCreate = Omit<TagType, 'id'>

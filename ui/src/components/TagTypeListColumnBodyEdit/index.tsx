@@ -141,9 +141,9 @@ const TagTypeListColumnBodyEdit: FunctionComponent<TagTypeListColumnBodyEditProp
 }
 
 export interface TagTypeListColumnBodyEditProps {
-  tagType: TagType
-  close: () => void
-  onEdit: (tagType: TagType) => void
+  readonly tagType: TagType
+  readonly close: () => void
+  readonly onEdit: (tagType: TagType) => void
 }
 
 export default TagTypeListColumnBodyEdit
