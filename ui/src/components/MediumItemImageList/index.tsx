@@ -21,7 +21,7 @@ const MediumItemImageList: FunctionComponent<MediumItemImageListProps> = ({
 }) => {
   const computeItemKey = useCallback((_index: number, current: Replica) => current.id, [])
 
-  const components: Components<Replica> = useMemo(() => ({
+  const components = useMemo(() => ({
     List: ({ children, ref, ...rest }) => (
       <ImageList
         ref={ref as Ref<HTMLUListElement>}
@@ -44,7 +44,7 @@ const MediumItemImageList: FunctionComponent<MediumItemImageListProps> = ({
         {...rest}
       />
     ),
-  }), [ props, className ])
+  }), [ props, className ]) satisfies Components<Replica>
 
   const itemContent = useCallback((_index: number, item: Replica) => (
     <MediumItemImageItem className={styles.imageItem} replica={item} />

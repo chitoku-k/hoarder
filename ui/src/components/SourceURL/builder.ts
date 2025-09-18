@@ -16,117 +16,136 @@ import type {
   ExternalService,
 } from '@/types'
 
-const builders: Builder[] = [
+const builders = [
   {
     kind: 'bluesky',
-    build: (_externalService, params) => {
-      const { bluesky } = params as ExternalMetadataBluesky
-      return `https://bsky.app/profile/${bluesky.creatorId}/post/${bluesky.id}`
+    build: (_externalService, { id, creatorId }) => {
+      if (typeof id !== 'string' || typeof creatorId !== 'string') {
+        return null
+      }
+      return `https://bsky.app/profile/${creatorId}/post/${id}`
     },
-  },
+  } satisfies Builder<'bluesky', ExternalMetadataBluesky>,
   {
     kind: 'fantia',
-    build: (_externalService, params) => {
-      const { fantia } = params as ExternalMetadataFantia
-      return `https://fantia.jp/posts/${fantia.id}`
+    build: (_externalService, { id }) => {
+      if (typeof id !== 'string') {
+        return null
+      }
+      return `https://fantia.jp/posts/${id}`
     },
-  },
+  } satisfies Builder<'fantia', ExternalMetadataFantia>,
   {
     kind: 'mastodon',
-    build: (externalService, params) => {
-      if (!externalService.baseUrl) {
+    build: (externalService, { id, creatorId }) => {
+      if (!externalService.baseUrl || typeof id !== 'string' || typeof creatorId !== 'string') {
         return null
       }
-      const { mastodon } = params as ExternalMetadataMastodon
-      return `${externalService.baseUrl}/@${mastodon.creatorId}/${mastodon.id}`
+      return `${externalService.baseUrl}/@${creatorId}/${id}`
     },
-  },
+  } satisfies Builder<'mastodon', ExternalMetadataMastodon>,
   {
     kind: 'misskey',
-    build: (externalService, params) => {
-      if (!externalService.baseUrl) {
+    build: (externalService, { id }) => {
+      if (!externalService.baseUrl || typeof id !== 'string') {
         return null
       }
-      const { misskey } = params as ExternalMetadataMisskey
-      return `${externalService.baseUrl}/notes/${misskey.id}`
+      return `${externalService.baseUrl}/notes/${id}`
     },
-  },
+  } satisfies Builder<'misskey', ExternalMetadataMisskey>,
   {
     kind: 'nijie',
-    build: (_externalService, params) => {
-      const { nijie } = params as ExternalMetadataNijie
-      return `https://nijie.info/view.php?id=${nijie.id}`
-    },
-  },
-  {
-    kind: 'pixiv',
-    build: (_externalService, params) => {
-      const { pixiv } = params as ExternalMetadataPixiv
-      return `https://www.pixiv.net/artworks/${pixiv.id}`
-    },
-  },
-  {
-    kind: 'pixiv_fanbox',
-    build: (_externalService, params) => {
-      const { pixiv_fanbox } = params as ExternalMetadataPixivFanbox
-      return `https://${pixiv_fanbox.creatorId}.fanbox.cc/posts/${pixiv_fanbox.id}`
-    },
-  },
-  {
-    kind: 'pleroma',
-    build: (externalService, params) => {
-      if (!externalService.baseUrl) {
+    build: (_externalService, { id }) => {
+      if (typeof id !== 'string') {
         return null
       }
-      const { pleroma } = params as ExternalMetadataPleroma
-      return `${externalService.baseUrl}/notice/${pleroma.id}`
+      return `https://nijie.info/view.php?id=${id}`
     },
-  },
+  } satisfies Builder<'nijie', ExternalMetadataNijie>,
+  {
+    kind: 'pixiv',
+    build: (_externalService, { id }) => {
+      if (typeof id !== 'string') {
+        return null
+      }
+      return `https://www.pixiv.net/artworks/${id}`
+    },
+  } satisfies Builder<'pixiv', ExternalMetadataPixiv>,
+  {
+    kind: 'pixiv_fanbox',
+    build: (_externalService, { id, creatorId }) => {
+      if (typeof id !== 'string' || typeof creatorId !== 'string') {
+        return null
+      }
+      return `https://${creatorId}.fanbox.cc/posts/${id}`
+    },
+  } satisfies Builder<'pixiv_fanbox', ExternalMetadataPixivFanbox>,
+  {
+    kind: 'pleroma',
+    build: (externalService, { id }) => {
+      if (!externalService.baseUrl || typeof id !== 'string') {
+        return null
+      }
+      return `${externalService.baseUrl}/notice/${id}`
+    },
+  } satisfies Builder<'pleroma', ExternalMetadataPleroma>,
   {
     kind: 'seiga',
-    build: (_externalService, params) => {
-      const { seiga } = params as ExternalMetadataSeiga
-      return `https://seiga.nicovideo.jp/seiga/im${seiga.id}`
+    build: (_externalService, { id }) => {
+      if (typeof id !== 'string') {
+        return null
+      }
+      return `https://seiga.nicovideo.jp/seiga/im${id}`
     },
-  },
+  } satisfies Builder<'seiga', ExternalMetadataSeiga>,
   {
     kind: 'skeb',
-    build: (_externalService, params) => {
-      const { skeb } = params as ExternalMetadataSkeb
-      return `https://skeb.jp/@${skeb.creatorId}/works/${skeb.id}`
+    build: (_externalService, { id, creatorId }) => {
+      if (typeof id !== 'string' || typeof creatorId !== 'string') {
+        return null
+      }
+      return `https://skeb.jp/@${creatorId}/works/${id}`
     },
-  },
+  } satisfies Builder<'skeb', ExternalMetadataSkeb>,
   {
     kind: 'threads',
-    build: (_externalService, params) => {
-      const { threads } = params as ExternalMetadataThreads
-      return `https://www.threads.net/@${threads.creatorId ?? ''}/post/${threads.id}`
+    build: (_externalService, { id, creatorId }) => {
+      if (typeof id !== 'string') {
+        return null
+      }
+      return `https://www.threads.net/@${creatorId ?? ''}/post/${id}`
     },
-  },
+  } satisfies Builder<'threads', ExternalMetadataThreads>,
   {
     kind: 'website',
-    build: (_externalService, params) => {
-      const { website } = params as ExternalMetadataWebsite
-      return website.url
+    build: (_externalService, { url }) => {
+      if (typeof url !== 'string') {
+        return null
+      }
+      return url
     },
-  },
+  } satisfies Builder<'website', ExternalMetadataWebsite>,
   {
     kind: 'x',
-    build: (_externalService, params) => {
-      const { x } = params as ExternalMetadataX
-      return `https://x.com/${x.creatorId ?? 'i'}/status/${x.id}`
+    build: (_externalService, { id, creatorId }) => {
+      if (typeof id !== 'string') {
+        return null
+      }
+      return `https://x.com/${creatorId ?? 'i'}/status/${id}`
     },
-  },
+  } satisfies Builder<'x', ExternalMetadataX>,
   {
     kind: 'xfolio',
-    build: (_externalService, params) => {
-      const { xfolio } = params as ExternalMetadataXfolio
-      return `https://xfolio.jp/portfolio/@${xfolio.creatorId}/works/${xfolio.id}`
+    build: (_externalService, { id, creatorId }) => {
+      if (typeof id !== 'string' || typeof creatorId !== 'string') {
+        return null
+      }
+      return `https://xfolio.jp/portfolio/@${creatorId}/works/${id}`
     },
-  },
+  } satisfies Builder<'xfolio', ExternalMetadataXfolio>,
 ]
 
-export const buildURL = (externalService: ExternalService, externalMetadata: unknown): string | null => {
+export const buildURL = (externalService: ExternalService, externalMetadata: Record<string, Record<string, unknown>>): string | null => {
   for (const { kind, build } of builders) {
     if (externalService.kind === kind) {
       return build(externalService, externalMetadata)
@@ -136,7 +155,7 @@ export const buildURL = (externalService: ExternalService, externalMetadata: unk
   return null
 }
 
-interface Builder {
-  kind: string
-  build: (externalService: ExternalService, params: unknown) => string | null
+interface Builder<Kind extends string, Metadata extends Record<Kind, unknown>> {
+  kind: Kind
+  build: (externalService: ExternalService, params: Partial<Metadata[Kind]>) => string | null
 }

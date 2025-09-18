@@ -12,7 +12,7 @@ import Filter8Icon from '@mui/icons-material/Filter8'
 import Filter9Icon from '@mui/icons-material/Filter9'
 import Filter9PlusIcon from '@mui/icons-material/Filter9Plus'
 
-const icons: (ComponentType<SvgIconProps> | null)[] = [
+const icons = [
   null,
   Filter2Icon,
   Filter3Icon,
@@ -23,7 +23,7 @@ const icons: (ComponentType<SvgIconProps> | null)[] = [
   Filter8Icon,
   Filter9Icon,
   Filter9PlusIcon,
-]
+] satisfies (ComponentType<SvgIconProps> | null)[]
 
 const MediumListItemCount: FunctionComponent<MediumListItemCountProps> = ({
   count,

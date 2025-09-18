@@ -281,7 +281,7 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
 
   const tableComputeItemKey = useCallback((_index: number, replica: ReplicaCreate) => replica.tempid, [])
 
-  const tableComponents: TableComponents<ReplicaCreate> = useMemo(() => ({
+  const tableComponents = useMemo(() => ({
     Scroller: props => (
       <TableContainer component={Paper} {...props} />
     ),
@@ -297,7 +297,7 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
     TableBody: props => (
       <TableBody {...props} />
     ),
-  }), [])
+  }), []) satisfies TableComponents<ReplicaCreate>
 
   const tableFixedHeaderContent = useCallback(() => (
     <TableRow>

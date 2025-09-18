@@ -37,7 +37,7 @@ const TagListViewBody: FunctionComponent<TagListViewBodyProps> = ({
   selectable,
 }) => {
   const tag = useTag(initial ? { id: initial.id } : skipToken)
-  const initialColumns: TagColumn[] = useMemo(
+  const initialColumns = useMemo(
     () => tag
       ? [ ...ancestors(tag) ]
           .map((tag, index, hierarchy) => ({
@@ -63,9 +63,9 @@ const TagListViewBody: FunctionComponent<TagListViewBodyProps> = ({
           },
         ],
     [ tag ],
-  )
+  ) satisfies TagColumn[]
 
-  const [ columns, setColumns ] = useState(initialColumns)
+  const [ columns, setColumns ] = useState<TagColumn[]>(initialColumns)
   const [ creating, setCreating ] = useState(false)
 
   const [ selectedTag, setSelectedTag ] = useState<Tag | null>(null)

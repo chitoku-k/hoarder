@@ -4,9 +4,9 @@ import type { Metadata } from 'next'
 import Content from '@/components/Content'
 import MediumItem from '@/components/MediumItem'
 
-export const metadata: Metadata = {
+export const metadata = {
   title: 'メディア',
-}
+} satisfies Metadata
 
 const Page: FunctionComponent<PageProps> = async ({
   params,
