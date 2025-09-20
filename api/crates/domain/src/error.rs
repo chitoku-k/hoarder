@@ -65,7 +65,7 @@ impl From<ErrorKind> for Error {
 struct Chain<'a>(Option<&'a dyn std::error::Error>);
 
 impl<'a> Iterator for Chain<'a> {
-    type Item = &'a (dyn std::error::Error);
+    type Item = &'a dyn std::error::Error;
 
     fn next(&mut self) -> Option<Self::Item> {
         if let Some(error) = self.0 {
