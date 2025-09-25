@@ -30,7 +30,7 @@ function* useMetadata(
   sources: MetadataLike['sources'] | null | undefined,
   tags: MetadataLike['tags'] | null | undefined,
   tagTypes: readonly TagType[] | null | undefined,
-  options?: {
+  options: {
     readonly noSources?: boolean
     readonly noTags?: boolean
     readonly noTagTypes?: boolean
@@ -38,7 +38,7 @@ function* useMetadata(
 ): Generator<Metadata> {
   const collator = useCollator()
 
-  if (sources && !options?.noSources) {
+  if (sources && !options.noSources) {
     for (const source of sources.id) {
       yield { source }
     }
@@ -48,7 +48,7 @@ function* useMetadata(
     }
   }
 
-  if (tags && !options?.noTags) {
+  if (tags && !options.noTags) {
     const allTags = tags
       .toSorted((a, b) => collator.compare(a.kana, b.kana))
       .flatMap(tag => [ tag, ...tag.children.map(child => ({ ...child, parent: tag })) ])
@@ -62,7 +62,7 @@ function* useMetadata(
     }
   }
 
-  if (tagTypes && !options?.noTagTypes) {
+  if (tagTypes && !options.noTagTypes) {
     for (const tagType of tagTypes) {
       yield { tagType }
     }
