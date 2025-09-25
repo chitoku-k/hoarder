@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState, useTransition } from 'react'
 import { useCollator } from '@react-aria/i18n'
 import clsx from 'clsx'
 import { skipToken } from '@apollo/client/react'
+import type { FilterOptionsState } from '@mui/material'
 import type { AutocompleteInputChangeReason, AutocompleteProps } from '@mui/material/Autocomplete'
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -149,28 +150,21 @@ const AutocompleteMetadataBody: FunctionComponent<AutocompleteMetadataBodyProps>
     return ''
   }, [])
 
-  const filterOptions = useMemo(() => createFilterOptions<Metadata>({
-    stringify: option => {
-      if (isMetadataSource(option)) {
-        return option.source.url ?? ''
-      }
-
-      if (isMetadataTag(option)) {
-        let str = ''
-        for (let tag: Tag | null = option.tag; tag; tag = tag.parent ?? null) {
-          str += ` ${tag.name} ${tag.kana} ${tag.aliases.join(' ')}`
-        }
-
-        return str
-      }
-
-      if (isMetadataTagType(option)) {
-        return `${option.tagType.name} ${option.tagType.kana}`
-      }
-
-      return ''
-    },
+  const tagTypeFilterOptions = useMemo(() => createFilterOptions<MetadataTagType>({
+    stringify: option => `${option.tagType.name} ${option.tagType.kana}`,
   }), [])
+
+  const filterOptions = useCallback((options: readonly Metadata[], state: FilterOptionsState<Metadata>) => {
+    const result: Metadata[] = []
+    for (const option of options) {
+      if (isMetadataTagType(option)) {
+        result.push(...tagTypeFilterOptions([ option ], state))
+      } else {
+        result.push(option)
+      }
+    }
+    return result
+  }, [ tagTypeFilterOptions ])
 
   const updateInputValue = useMemo(
     () => debounce(
