@@ -69,6 +69,16 @@ const configs = defineConfig(
           },
         },
       ],
+      '@typescript-eslint/no-restricted-types': [
+        'error',
+        {
+          types: {
+            Readonly: {
+              message: 'Use `readonly`, `ReadonlyMap`, or `ReadonlySet`.',
+            },
+          },
+        },
+      ],
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
