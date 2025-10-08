@@ -236,36 +236,6 @@ where
     const TAG_ANCESTORS: &str = "tag_ancestors";
     const TAG_DESCENDANTS: &str = "tag_descendants";
 
-    let relatives = {
-        let conditions = Cond::any()
-            .add_option(depth.has_parent().then(|| {
-                Expr::col(PostgresTagPath::DescendantId).in_subquery(
-                    Query::select()
-                        .from(PostgresTagPath::Table)
-                        .column(PostgresTagPath::AncestorId)
-                        .and_where(Expr::col(PostgresTagPath::Distance).lte(depth.parent()))
-                        .and_where(Expr::col(PostgresTagPath::DescendantId).is_in(ids.iter().cloned().map(PostgresTagId::from)))
-                        .take()
-                    )
-            }))
-            .add_option(depth.has_children().then(|| {
-                Expr::col(PostgresTagPath::AncestorId).in_subquery(
-                    Query::select()
-                        .from(PostgresTagPath::Table)
-                        .column(PostgresTagPath::DescendantId)
-                        .and_where(Expr::col(PostgresTagPath::Distance).lte(depth.children()))
-                        .and_where(Expr::col(PostgresTagPath::AncestorId).is_in(ids.iter().cloned().map(PostgresTagId::from)))
-                        .take()
-                    )
-            }));
-
-        if conditions.is_empty() {
-            Cond::all()
-        } else {
-            conditions
-        }
-    };
-
     let (sql, values) = Query::select()
         .column(PostgresTagPath::Distance)
         .expr_as(Expr::col((TAG_ANCESTORS, PostgresTag::Id)), PostgresTagRelation::AncestorId)
@@ -295,11 +265,37 @@ where
             Expr::col((TAG_DESCENDANTS, PostgresTag::Id))
                 .equals((PostgresTagPath::Table, PostgresTagPath::DescendantId)),
         )
-        .and_where(Expr::col(PostgresTagPath::Distance).lte(1i32))
+        .cond_where(Cond::any()
+            .add(
+                Expr::col(PostgresTagPath::Distance).eq(0)
+                    .and(Expr::col(PostgresTagPath::AncestorId).is_in(ids.iter().cloned().map(PostgresTagId::from)))
+            )
+            .add_option(depth.has_parent().then(|| {
+                Expr::col(PostgresTagPath::Distance).lte(1)
+                    .and(Expr::col(PostgresTagPath::DescendantId).in_subquery(
+                        Query::select()
+                            .from(PostgresTagPath::Table)
+                            .column(PostgresTagPath::AncestorId)
+                            .and_where(Expr::col(PostgresTagPath::Distance).lte(depth.parent()))
+                            .and_where(Expr::col(PostgresTagPath::DescendantId).is_in(ids.iter().cloned().map(PostgresTagId::from)))
+                            .take()
+                    ))
+            }))
+            .add_option(depth.has_children().then(|| {
+                Expr::col(PostgresTagPath::Distance).lte(1)
+                    .and(Expr::col(PostgresTagPath::AncestorId).in_subquery(
+                        Query::select()
+                            .from(PostgresTagPath::Table)
+                            .column(PostgresTagPath::DescendantId)
+                            .and_where(Expr::col(PostgresTagPath::Distance).lte(depth.children()))
+                            .and_where(Expr::col(PostgresTagPath::AncestorId).is_in(ids.iter().cloned().map(PostgresTagId::from)))
+                            .take()
+                    ))
+            }))
+        )
         .order_by(PostgresTagPath::Distance, Order::Asc)
         .order_by((TAG_ANCESTORS, PostgresTag::Kana), Order::Asc)
         .order_by((TAG_DESCENDANTS, PostgresTag::Kana), Order::Asc)
-        .cond_where(relatives)
         .build_sqlx(PostgresQueryBuilder);
 
     let rows: Vec<_> = sqlx::query_as_with::<_, PostgresTagRelativeRow, _>(&sql, values)
@@ -319,8 +315,8 @@ where
             relations.remove(&TagId::root());
             relations
                 .values()
+                .filter(|relation| ids.contains(&relation.borrow().id))
                 .map(|relation| extract(relation.clone(), depth))
-                .filter(|tag| ids.contains(&tag.id))
                 .collect()
         };
 
