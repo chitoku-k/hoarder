@@ -1,8 +1,4 @@
-use std::{
-    cell::RefCell,
-    collections::HashSet,
-    rc::{Rc, Weak},
-};
+use std::{cell::RefCell, iter, rc::{Rc, Weak}};
 
 use chrono::{DateTime, Utc};
 use cow_utils::CowUtils;
@@ -49,6 +45,7 @@ struct PostgresTagDescendantRow {
 
 #[derive(Debug, FromRow)]
 struct PostgresTagRelativeRow {
+    order: Option<i32>,
     distance: i32,
 
     ancestor_id: PostgresTagId,
@@ -68,6 +65,7 @@ struct PostgresTagRelativeRow {
 
 #[derive(Clone, Debug, Default)]
 struct TagRelation {
+    order: Option<i32>,
     id: TagId,
     name: String,
     kana: String,
@@ -136,6 +134,7 @@ impl From<PostgresTagRelativeRow> for (i32, TagRelation, TagRelation) {
         (
             row.distance,
             TagRelation {
+                order: row.order,
                 id: row.ancestor_id.into(),
                 name: row.ancestor_name,
                 kana: row.ancestor_kana,
@@ -145,6 +144,7 @@ impl From<PostgresTagRelativeRow> for (i32, TagRelation, TagRelation) {
                 ..Default::default()
             },
             TagRelation {
+                order: None,
                 id: row.descendant_id.into(),
                 name: row.descendant_name,
                 kana: row.descendant_kana,
@@ -231,12 +231,15 @@ pub async fn fetch_tag_relatives<T>(conn: &mut PgConnection, ids: T, depth: TagD
 where
     T: IntoIterator<Item = TagId>,
 {
-    let ids: HashSet<_> = ids.into_iter().collect();
+    let ids: Vec<_> = ids.into_iter().collect();
 
+    const ORDER: &str = "order";
+    const TAG_ORDERS: &str = "tag_orders";
     const TAG_ANCESTORS: &str = "tag_ancestors";
     const TAG_DESCENDANTS: &str = "tag_descendants";
 
     let (sql, values) = Query::select()
+        .column((TAG_ORDERS, ORDER))
         .column(PostgresTagPath::Distance)
         .expr_as(Expr::col((TAG_ANCESTORS, PostgresTag::Id)), PostgresTagRelation::AncestorId)
         .expr_as(Expr::col((TAG_ANCESTORS, PostgresTag::Name)), PostgresTagRelation::AncestorName)
@@ -251,6 +254,23 @@ where
         .expr_as(Expr::col((TAG_DESCENDANTS, PostgresTag::CreatedAt)), PostgresTagRelation::DescendantCreatedAt)
         .expr_as(Expr::col((TAG_DESCENDANTS, PostgresTag::UpdatedAt)), PostgresTagRelation::DescendantUpdatedAt)
         .from(PostgresTagPath::Table)
+        .join_subquery(
+            JoinType::LeftJoin,
+            Query::select()
+                .expr_as(Expr::col("column1"), ORDER)
+                .expr_as(Expr::col("column2"), PostgresTag::Id)
+                .from_values(
+                    iter::once(TagId::root())
+                        .chain(ids.iter().cloned())
+                        .enumerate()
+                        .map(|(order, id)| (order as i32, PostgresTagId::from(id))),
+                    TAG_ORDERS,
+                )
+                .take(),
+            TAG_ORDERS,
+            Expr::col(PostgresTagPath::Distance).eq(0)
+                .and(Expr::col((TAG_ORDERS, PostgresTag::Id)).equals(PostgresTagPath::AncestorId))
+        )
         .join_as(
             JoinType::InnerJoin,
             PostgresTag::Table,
@@ -294,6 +314,7 @@ where
             }))
         )
         .order_by(PostgresTagPath::Distance, Order::Asc)
+        .order_by((TAG_ORDERS, ORDER), Order::Asc)
         .order_by((TAG_ANCESTORS, PostgresTag::Kana), Order::Asc)
         .order_by((TAG_DESCENDANTS, PostgresTag::Kana), Order::Asc)
         .build_sqlx(PostgresQueryBuilder);
@@ -315,7 +336,7 @@ where
             relations.remove(&TagId::root());
             relations
                 .values()
-                .filter(|relation| ids.contains(&relation.borrow().id))
+                .filter(|relation| relation.borrow().order.is_some())
                 .map(|relation| extract(relation.clone(), depth))
                 .collect()
         };
@@ -578,6 +599,7 @@ impl TagsRepository for PostgresTagsRepository {
                     .add(Expr::col(PostgresTag::Kana).ilike(LikeExpr::new(name_or_alias_like.clone())))
                     .add(Expr::col(ALIAS).ilike(LikeExpr::new(name_or_alias_like))),
             )
+            .order_by(PostgresTag::Kana, Order::Asc)
             .build_sqlx(PostgresQueryBuilder);
 
         let ids: Vec<_> = sqlx::query_as_with::<_, PostgresTagRow, _>(&sql, values)
