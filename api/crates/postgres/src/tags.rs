@@ -8,11 +8,12 @@ use domain::{
     error::{Error, ErrorKind, Result},
     repository::{self, tags::TagsRepository, DeleteResult},
 };
+use either::{Left, Right};
 use futures::TryStreamExt;
-use ordermap::{OrderMap, OrderSet};
+use ordermap::OrderMap;
 use sea_query::{extension::postgres::PgExpr, Asterisk, BinOper, Cond, Expr, Iden, JoinType, LikeExpr, LockType, Order, PostgresQueryBuilder, Query, SelectStatement};
 use sea_query_binder::SqlxBinder;
-use sqlx::{Acquire, FromRow, PgPool, Postgres, Transaction, PgConnection, Row};
+use sqlx::{Acquire, FromRow, PgConnection, PgPool, Postgres, Row, Transaction};
 
 use crate::{
     expr::array::ArrayExpr,
@@ -268,8 +269,11 @@ where
                 )
                 .take(),
             TAG_ORDERS,
-            Expr::col(PostgresTagPath::Distance).eq(0)
-                .and(Expr::col((TAG_ORDERS, PostgresTag::Id)).equals(PostgresTagPath::AncestorId))
+            Expr::col((TAG_ORDERS, PostgresTag::Id)).equals(PostgresTagPath::DescendantId)
+                .and(Expr::col(PostgresTagPath::AncestorId).is_in([
+                    Expr::col(PostgresTagPath::DescendantId),
+                    Expr::val(PostgresTagId::from(TagId::root())),
+                ]))
         )
         .join_as(
             JoinType::InnerJoin,
@@ -664,30 +668,24 @@ impl TagsRepository for PostgresTagsRepository {
         }
 
         let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
-        let ids: OrderSet<_> = sqlx::query_as_with::<_, PostgresTagRow, _>(&sql, values)
+        let ids: Vec<_> = sqlx::query_as_with::<_, PostgresTagRow, _>(&sql, values)
             .fetch(&self.pool)
             .map_ok(|r| TagId::from(r.id))
             .try_collect()
             .await
             .map_err(Error::other)?;
 
+        let ids = match rev {
+            true => Left(ids.into_iter().rev()),
+            false => Right(ids.into_iter()),
+        };
+
         let depth = match root {
             true => TagDepth::new(1, depth.children() + 1),
             false => depth,
         };
 
-        let mut tags = fetch_tag_relatives(&mut conn, ids.iter().cloned(), depth, root).await?;
-        tags.sort_unstable_by(|a, b| {
-            let ord = Option::zip(ids.get_index_of(&a.id), ids.get_index_of(&b.id))
-                .map(|(a, b)| Ord::cmp(&a, &b))
-                .unwrap_or_else(|| Ord::cmp(&a.id, &b.id));
-            if rev {
-                ord.reverse()
-            } else {
-                ord
-            }
-        });
-
+        let tags = fetch_tag_relatives(&mut conn, ids, depth, root).await?;
         Ok(tags)
     }
 
