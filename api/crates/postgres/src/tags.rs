@@ -9,7 +9,7 @@ use domain::{
     repository::{self, tags::TagsRepository, DeleteResult},
 };
 use either::{Left, Right};
-use futures::TryStreamExt;
+use futures::{TryFutureExt, TryStreamExt};
 use ordermap::OrderMap;
 use sea_query::{extension::postgres::PgExpr, Asterisk, BinOper, Cond, Expr, Iden, JoinType, LikeExpr, LockType, Order, PostgresQueryBuilder, Query, SelectStatement};
 use sea_query_binder::SqlxBinder;
@@ -36,6 +36,11 @@ struct PostgresTagRow {
     aliases: Vec<String>,
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
+}
+
+#[derive(Debug, FromRow)]
+struct PostgresTagIdRow {
+    id: PostgresTagId,
 }
 
 #[derive(Debug, FromRow)]
@@ -502,24 +507,14 @@ impl TagsRepository for PostgresTagsRepository {
                 aliases.collect::<Vec<_>>().into(),
             ])
             .map_err(Error::other)?
-            .returning(
-                Query::returning()
-                    .columns([
-                        PostgresTag::Id,
-                        PostgresTag::Name,
-                        PostgresTag::Kana,
-                        PostgresTag::Aliases,
-                        PostgresTag::CreatedAt,
-                        PostgresTag::UpdatedAt,
-                    ])
-            )
+            .returning(Query::returning().column(PostgresTag::Id))
             .build_sqlx(PostgresQueryBuilder);
 
-        let tag: Tag = sqlx::query_as_with::<_, PostgresTagRow, _>(&sql, values)
+        let tag_id = sqlx::query_as_with::<_, PostgresTagIdRow, _>(&sql, values)
             .fetch_one(&mut *tx)
+            .map_ok(|r| TagId::from(r.id))
             .await
-            .map_err(Error::other)?
-            .into();
+            .map_err(Error::other)?;
 
         let (sql, values) = Query::insert()
             .into_table(PostgresTagPath::Table)
@@ -529,8 +524,8 @@ impl TagsRepository for PostgresTagsRepository {
                 PostgresTagPath::Distance,
             ])
             .values([
-                PostgresTagId::from(tag.id).into(),
-                PostgresTagId::from(tag.id).into(),
+                PostgresTagId::from(tag_id).into(),
+                PostgresTagId::from(tag_id).into(),
                 0.into(),
             ])
             .map_err(Error::other)?
@@ -542,10 +537,10 @@ impl TagsRepository for PostgresTagsRepository {
             .map_err(Error::other)?;
 
         let parent_id = parent_id.unwrap_or_default();
-        attach_parent(&mut tx, tag.id, parent_id).await?;
+        attach_parent(&mut tx, tag_id, parent_id).await?;
 
-        let mut relatives = fetch_tag_relatives(&mut tx, [tag.id], depth, false).await?;
-        let tag = relatives.pop().ok_or(ErrorKind::TagNotFound { id: tag.id })?;
+        let mut relatives = fetch_tag_relatives(&mut tx, [tag_id], depth, false).await?;
+        let tag = relatives.pop().ok_or(ErrorKind::TagNotFound { id: tag_id })?;
 
         tx.commit().await.map_err(Error::other)?;
         Ok(tag)
@@ -578,14 +573,7 @@ impl TagsRepository for PostgresTagsRepository {
         );
 
         let (sql, values) = Query::select()
-            .columns([
-                (PostgresTag::Table, PostgresTag::Id),
-                (PostgresTag::Table, PostgresTag::Name),
-                (PostgresTag::Table, PostgresTag::Kana),
-                (PostgresTag::Table, PostgresTag::Aliases),
-                (PostgresTag::Table, PostgresTag::CreatedAt),
-                (PostgresTag::Table, PostgresTag::UpdatedAt),
-            ])
+            .column((PostgresTag::Table, PostgresTag::Id))
             .from(PostgresTag::Table)
             .join_subquery(
                 JoinType::LeftJoin,
@@ -606,7 +594,7 @@ impl TagsRepository for PostgresTagsRepository {
             .order_by(PostgresTag::Kana, Order::Asc)
             .build_sqlx(PostgresQueryBuilder);
 
-        let ids: Vec<_> = sqlx::query_as_with::<_, PostgresTagRow, _>(&sql, values)
+        let ids: Vec<_> = sqlx::query_as_with::<_, PostgresTagIdRow, _>(&sql, values)
             .fetch(&mut *conn)
             .map_ok(|r| TagId::from(r.id))
             .try_collect()
@@ -630,14 +618,7 @@ impl TagsRepository for PostgresTagsRepository {
 
         let mut query = Query::select();
         query
-            .columns([
-                (PostgresTag::Table, PostgresTag::Id),
-                (PostgresTag::Table, PostgresTag::Name),
-                (PostgresTag::Table, PostgresTag::Kana),
-                (PostgresTag::Table, PostgresTag::Aliases),
-                (PostgresTag::Table, PostgresTag::CreatedAt),
-                (PostgresTag::Table, PostgresTag::UpdatedAt),
-            ])
+            .column((PostgresTag::Table, PostgresTag::Id))
             .from(PostgresTag::Table)
             .and_where(Expr::col((PostgresTag::Table, PostgresTag::Id)).ne(PostgresTagId::from(TagId::root())))
             .and_where_option(
@@ -668,7 +649,7 @@ impl TagsRepository for PostgresTagsRepository {
         }
 
         let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
-        let ids: Vec<_> = sqlx::query_as_with::<_, PostgresTagRow, _>(&sql, values)
+        let ids: Vec<_> = sqlx::query_as_with::<_, PostgresTagIdRow, _>(&sql, values)
             .fetch(&self.pool)
             .map_ok(|r| TagId::from(r.id))
             .try_collect()
