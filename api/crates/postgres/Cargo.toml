@@ -78,12 +78,22 @@ features = ["futures-03"]
 [dependencies.uuid]
 version = "1.18.1"
 
+[dev-dependencies.guardian]
+version = "1.3.0"
+
 [dev-dependencies.include_dir]
 version = "0.7.4"
+
+[dev-dependencies.insta]
+version = "1.43.2"
+features = ["toml"]
 
 [dev-dependencies.pretty_assertions]
 version = "1.4.1"
 features = ["unstable"]
+
+[dev-dependencies.sqlformat]
+version = "0.5.0"
 
 [dev-dependencies.test-context]
 version = "0.4.1"
@@ -91,3 +101,6 @@ version = "0.4.1"
 [dev-dependencies.tokio]
 version = "1.47.1"
 features = ["macros", "rt-multi-thread"]
+
+[dev-dependencies.tracing-subscriber]
+version = "0.3.20"

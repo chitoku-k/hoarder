@@ -1,0 +1,95 @@
+---
+source: crates/postgres/tests/integration/tags/fetch_all_with_no_depth.rs
+expression: ctx.queries()
+---
+[[queries]]
+sql = '''
+SELECT
+  "tags"."id"
+FROM
+  "tags"
+INNER JOIN
+  "tag_paths" ON "tag_paths"."descendant_id" = "tags"."id"
+WHERE
+  "tags"."id" <> $1
+  AND ("tags"."kana", "tags"."id") > ($2, $3)
+  AND "tag_paths"."ancestor_id" = $4
+  AND "tag_paths"."distance" = $5
+ORDER BY
+  "tags"."kana" ASC,
+  "tags"."id" ASC
+LIMIT
+  $6'''
+rows_affected = 2
+rows_returned = 2
+
+[[queries]]
+sql = '''
+SELECT
+  "tag_orders"."order",
+  "distance",
+  "tag_ancestors"."id" AS "ancestor_id",
+  "tag_ancestors"."name" AS "ancestor_name",
+  "tag_ancestors"."kana" AS "ancestor_kana",
+  "tag_ancestors"."aliases" AS "ancestor_aliases",
+  "tag_ancestors"."created_at" AS "ancestor_created_at",
+  "tag_ancestors"."updated_at" AS "ancestor_updated_at",
+  "tag_descendants"."id" AS "descendant_id",
+  "tag_descendants"."name" AS "descendant_name",
+  "tag_descendants"."kana" AS "descendant_kana",
+  "tag_descendants"."aliases" AS "descendant_aliases",
+  "tag_descendants"."created_at" AS "descendant_created_at",
+  "tag_descendants"."updated_at" AS "descendant_updated_at"
+FROM
+  "tag_paths"
+LEFT JOIN
+  (
+    SELECT
+      "column1" AS "order",
+      "column2" AS "id"
+    FROM
+      (
+        VALUES
+          ($1, $2), ($3, $4), ($5, $6)) AS "tag_orders"
+  ) AS "tag_orders" ON "tag_orders"."id" = "descendant_id"
+  AND "ancestor_id" IN ("descendant_id", $7)
+INNER JOIN
+  "tags" AS "tag_ancestors" ON "tag_ancestors"."id" = "tag_paths"."ancestor_id"
+INNER JOIN
+  "tags" AS "tag_descendants" ON "tag_descendants"."id" = "tag_paths"."descendant_id"
+WHERE
+  (
+    "distance" = $8
+    AND "ancestor_id" IN ($9, $10)
+  )
+  OR (
+    "distance" <= $11
+    AND "descendant_id" IN (
+      SELECT
+        "ancestor_id"
+      FROM
+        "tag_paths"
+      WHERE
+        "distance" <= $12
+        AND "descendant_id" IN ($13, $14)
+    )
+  )
+  OR (
+    "distance" <= $15
+    AND "ancestor_id" IN (
+      SELECT
+        "descendant_id"
+      FROM
+        "tag_paths"
+      WHERE
+        "distance" <= $16
+        AND "ancestor_id" IN ($17, $18)
+    )
+  )
+ORDER BY
+  "distance" ASC,
+  "tag_orders"."order" ASC,
+  "tag_ancestors"."kana" ASC,
+  "tag_descendants"."kana" ASC'''
+rows_affected = 13
+rows_returned = 13

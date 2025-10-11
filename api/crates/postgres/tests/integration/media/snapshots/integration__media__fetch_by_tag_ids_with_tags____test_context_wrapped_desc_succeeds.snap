@@ -1,0 +1,153 @@
+---
+source: crates/postgres/tests/integration/media/fetch_by_tag_ids_with_tags.rs
+expression: ctx.queries()
+---
+[[queries]]
+sql = '''
+SELECT
+  "id",
+  "created_at",
+  "updated_at"
+FROM
+  "media"
+INNER JOIN
+  "media_tags" ON "media_tags"."medium_id" = "media"."id"
+INNER JOIN
+  "tag_paths" ON "tag_paths"."descendant_id" = "media_tags"."tag_id"
+WHERE
+  ("ancestor_id", "tag_type_id") IN (($1, $2))
+GROUP BY
+  "id"
+HAVING
+  COUNT(DISTINCT ("ancestor_id", "tag_type_id")) = $3
+ORDER BY
+  "media"."created_at" DESC,
+  "media"."id" DESC
+LIMIT
+  $4'''
+rows_affected = 3
+rows_returned = 3
+
+[[queries]]
+sql = '''
+SELECT
+  "media_tags"."medium_id",
+  "media_tags"."tag_id",
+  "tag_types"."id" AS "tag_type_id",
+  "tag_types"."slug" AS "tag_type_slug",
+  "tag_types"."name" AS "tag_type_name",
+  "tag_types"."kana" AS "tag_type_kana"
+FROM
+  "media_tags"
+INNER JOIN
+  "tag_types" ON "tag_types"."id" = "media_tags"."tag_type_id"
+INNER JOIN
+  (
+    SELECT
+      "tags"."id",
+      array_agg(
+        "ancestors"."kana"
+        ORDER BY
+          "tag_paths"."distance" DESC
+      ) AS "display_order"
+    FROM
+      "tags"
+    INNER JOIN
+      "tag_paths" ON "tag_paths"."descendant_id" = "tags"."id"
+    INNER JOIN
+      "tags" AS "ancestors" ON "tag_paths"."ancestor_id" = "ancestors"."id"
+    WHERE
+      "ancestor_id" <> $1
+    GROUP BY
+      "tags"."id"
+    ORDER BY
+      "display_order" ASC
+  ) AS "ancestors" ON "ancestors"."id" = "media_tags"."tag_id"
+WHERE
+  "media_tags"."medium_id" IN ($2, $3, $4)
+ORDER BY
+  "media_tags"."medium_id" ASC,
+  "tag_types"."kana" ASC,
+  "display_order" ASC'''
+rows_affected = 8
+rows_returned = 8
+
+[[queries]]
+sql = '''
+SELECT
+  "tag_orders"."order",
+  "distance",
+  "tag_ancestors"."id" AS "ancestor_id",
+  "tag_ancestors"."name" AS "ancestor_name",
+  "tag_ancestors"."kana" AS "ancestor_kana",
+  "tag_ancestors"."aliases" AS "ancestor_aliases",
+  "tag_ancestors"."created_at" AS "ancestor_created_at",
+  "tag_ancestors"."updated_at" AS "ancestor_updated_at",
+  "tag_descendants"."id" AS "descendant_id",
+  "tag_descendants"."name" AS "descendant_name",
+  "tag_descendants"."kana" AS "descendant_kana",
+  "tag_descendants"."aliases" AS "descendant_aliases",
+  "tag_descendants"."created_at" AS "descendant_created_at",
+  "tag_descendants"."updated_at" AS "descendant_updated_at"
+FROM
+  "tag_paths"
+LEFT JOIN
+  (
+    SELECT
+      "column1" AS "order",
+      "column2" AS "id"
+    FROM
+      (
+        VALUES
+          ($1, $2),
+          ($3, $4),
+          ($5, $6),
+          ($7, $8),
+          ($9, $10),
+          ($11, $12),
+          ($13, $14),
+          ($15, $16),
+          ($17, $18)
+      ) AS "tag_orders"
+  ) AS "tag_orders" ON "tag_orders"."id" = "descendant_id"
+  AND "ancestor_id" IN ("descendant_id", $19)
+INNER JOIN
+  "tags" AS "tag_ancestors" ON "tag_ancestors"."id" = "tag_paths"."ancestor_id"
+INNER JOIN
+  "tags" AS "tag_descendants" ON "tag_descendants"."id" = "tag_paths"."descendant_id"
+WHERE
+  (
+    "distance" = $20
+    AND "ancestor_id" IN ($21, $22, $23, $24, $25, $26, $27, $28)
+  )
+  OR (
+    "distance" <= $29
+    AND "descendant_id" IN (
+      SELECT
+        "ancestor_id"
+      FROM
+        "tag_paths"
+      WHERE
+        "distance" <= $30
+        AND "descendant_id" IN ($31, $32, $33, $34, $35, $36, $37, $38)
+    )
+  )
+  OR (
+    "distance" <= $39
+    AND "ancestor_id" IN (
+      SELECT
+        "descendant_id"
+      FROM
+        "tag_paths"
+      WHERE
+        "distance" <= $40
+        AND "ancestor_id" IN ($41, $42, $43, $44, $45, $46, $47, $48)
+    )
+  )
+ORDER BY
+  "distance" ASC,
+  "tag_orders"."order" ASC,
+  "tag_ancestors"."kana" ASC,
+  "tag_descendants"."kana" ASC'''
+rows_affected = 20
+rows_returned = 20

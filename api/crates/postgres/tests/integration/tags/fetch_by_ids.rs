@@ -5,9 +5,11 @@ use domain::{
     repository::tags::TagsRepository,
 };
 use chrono::{TimeZone, Utc};
+use insta::assert_toml_snapshot;
 use postgres::tags::PostgresTagsRepository;
 use pretty_assertions::assert_eq;
 use test_context::test_context;
+use tracing::Instrument;
 use uuid::uuid;
 
 use super::DatabaseContext;
@@ -23,7 +25,7 @@ async fn succeeds(ctx: &DatabaseContext) {
             TagId::from(uuid!("d1a302b5-7b49-44be-9019-ac337077786a")),
         ].into_iter(),
         TagDepth::new(2, 2),
-    ).await.unwrap();
+    ).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual, vec![
         Tag {
@@ -146,4 +148,6 @@ async fn succeeds(ctx: &DatabaseContext) {
             updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap(),
         },
     ]);
+
+    assert_toml_snapshot!(ctx.queries());
 }

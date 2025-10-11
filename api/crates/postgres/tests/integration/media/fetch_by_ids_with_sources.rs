@@ -7,10 +7,12 @@ use domain::{
     },
     repository::media::MediaRepository,
 };
+use insta::assert_toml_snapshot;
 use ordermap::OrderMap;
 use postgres::media::PostgresMediaRepository;
 use pretty_assertions::assert_eq;
 use test_context::test_context;
+use tracing::Instrument;
 use uuid::uuid;
 
 use super::DatabaseContext;
@@ -27,7 +29,7 @@ async fn succeeds(ctx: &DatabaseContext) {
         None,
         false,
         true,
-    ).await.unwrap();
+    ).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual, vec![
         Medium {
@@ -91,4 +93,6 @@ async fn succeeds(ctx: &DatabaseContext) {
             updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap(),
         },
     ]);
+
+    assert_toml_snapshot!(ctx.queries());
 }

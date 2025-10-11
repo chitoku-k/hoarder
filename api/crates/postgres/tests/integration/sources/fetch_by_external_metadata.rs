@@ -6,9 +6,11 @@ use domain::{
     },
     repository::sources::SourcesRepository,
 };
+use insta::assert_toml_snapshot;
 use postgres::sources::PostgresSourcesRepository;
 use pretty_assertions::assert_eq;
 use test_context::test_context;
+use tracing::Instrument;
 use uuid::uuid;
 
 use super::DatabaseContext;
@@ -20,7 +22,7 @@ async fn succeeds(ctx: &DatabaseContext) {
     let actual = repository.fetch_by_external_metadata(
         ExternalServiceId::from(uuid!("4e0c68c7-e5ec-4d60-b9eb-733f47290cd3")),
         ExternalMetadata::Pixiv { id: 8888888 },
-    ).await.unwrap();
+    ).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual, Some(Source {
         id: SourceId::from(uuid!("94055dd8-7a22-4137-b8eb-3a374df5e5d1")),
@@ -36,6 +38,8 @@ async fn succeeds(ctx: &DatabaseContext) {
         created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 8).unwrap(),
         updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 14).unwrap(),
     }));
+
+    assert_toml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -45,7 +49,7 @@ async fn succeeds_with_extra(ctx: &DatabaseContext) {
     let actual = repository.fetch_by_external_metadata(
         ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")),
         ExternalMetadata::X{ id: 222222222222, creator_id: Some("creator_01".to_string()) },
-    ).await.unwrap();
+    ).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual, Some(Source {
         id: SourceId::from(uuid!("76a94241-1736-4823-bb59-bef097c687e1")),
@@ -61,6 +65,8 @@ async fn succeeds_with_extra(ctx: &DatabaseContext) {
         created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 14).unwrap(),
         updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 15).unwrap(),
     }));
+
+    assert_toml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -70,7 +76,9 @@ async fn not_found(ctx: &DatabaseContext) {
     let actual = repository.fetch_by_external_metadata(
         ExternalServiceId::from(uuid!("4e0c68c7-e5ec-4d60-b9eb-733f47290cd3")),
         ExternalMetadata::Pixiv { id: 10000000 },
-    ).await.unwrap();
+    ).instrument(ctx.span.clone()).await.unwrap();
 
     assert!(actual.is_none());
+
+    assert_toml_snapshot!(ctx.queries());
 }

@@ -1,0 +1,19 @@
+---
+source: crates/postgres/tests/integration/tag_types/fetch_by_ids.rs
+expression: ctx.queries()
+---
+[[queries]]
+sql = '''
+SELECT
+  "id",
+  "slug",
+  "name",
+  "kana"
+FROM
+  "tag_types"
+WHERE
+  "id" IN ($1, $2)
+ORDER BY
+  "kana" ASC'''
+rows_affected = 2
+rows_returned = 2

@@ -5,11 +5,13 @@ use domain::{
     repository::replicas::ReplicasRepository,
 };
 use futures::{pin_mut, TryStreamExt};
+use insta::assert_toml_snapshot;
 use postgres::replicas::PostgresReplicasRepository;
 use pretty_assertions::{assert_eq, assert_matches};
 use serde_json::json;
 use sqlx::{postgres::PgListener, Row};
 use test_context::test_context;
+use tracing::Instrument;
 use uuid::{uuid, Uuid};
 
 use super::DatabaseContext;
@@ -30,7 +32,7 @@ async fn succeeds(ctx: &DatabaseContext) {
         Some("file:///replica_new.jpg"),
         Some(Some(OriginalImage::new("image/jpeg", Size::new(720, 720)))),
         None,
-    ).await.unwrap();
+    ).instrument(ctx.span.clone()).await.unwrap();
     let actual_thumbnail = actual_replica.thumbnail.unwrap();
 
     assert_eq!(actual_replica.id, ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be")));
@@ -72,6 +74,8 @@ async fn succeeds(ctx: &DatabaseContext) {
 
     assert_eq!(actual.get("id"), Some(&json!("1706c7bb-4152-44b2-9bbb-1179d09a19be")));
     assert_eq!(actual.get("medium_id"), Some(&json!("6356503d-6ab6-4e39-bb86-3311219c7fd1")));
+
+    assert_toml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -84,7 +88,9 @@ async fn fails(ctx: &DatabaseContext) {
         None,
         None,
         None,
-    ).await.unwrap_err();
+    ).instrument(ctx.span.clone()).await.unwrap_err();
 
     assert_matches!(actual.kind(), ErrorKind::ReplicaNotFound { id } if id == &ReplicaId::from(uuid!("11111111-1111-1111-1111-111111111111")));
+
+    assert_toml_snapshot!(ctx.queries());
 }

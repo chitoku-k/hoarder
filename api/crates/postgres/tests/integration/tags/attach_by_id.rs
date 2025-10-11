@@ -7,10 +7,12 @@ use domain::{
 };
 use chrono::{TimeZone, Utc};
 use futures::TryStreamExt;
+use insta::assert_toml_snapshot;
 use postgres::tags::PostgresTagsRepository;
 use pretty_assertions::{assert_eq, assert_matches};
 use sqlx::Row;
 use test_context::test_context;
+use tracing::Instrument;
 use uuid::{uuid, Uuid};
 
 use super::DatabaseContext;
@@ -23,7 +25,7 @@ async fn with_depth_succeeds(ctx: &DatabaseContext) {
         TagId::from(uuid!("e8d32062-0185-43e8-a27d-6ca707d7dd60")),
         TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
         TagDepth::new(2, 2),
-    ).await.unwrap();
+    ).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual.name, "七森中☆ごらく部".to_string());
     assert_eq!(actual.kana, "ななもりちゅうごらくぶ".to_string());
@@ -189,6 +191,8 @@ async fn with_depth_succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual[22].get::<Uuid, &str>("ancestor_id"), uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb"));
     assert_eq!(actual[22].get::<Uuid, &str>("descendant_id"), uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb"));
     assert_eq!(actual[22].get::<i32, &str>("distance"), 0);
+
+    assert_toml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -199,7 +203,7 @@ async fn without_depth_succeeds(ctx: &DatabaseContext) {
         TagId::from(uuid!("e8d32062-0185-43e8-a27d-6ca707d7dd60")),
         TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
         TagDepth::new(0, 0),
-    ).await.unwrap();
+    ).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual.name, "七森中☆ごらく部".to_string());
     assert_eq!(actual.kana, "ななもりちゅうごらくぶ".to_string());
@@ -315,6 +319,8 @@ async fn without_depth_succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual[22].get::<Uuid, &str>("ancestor_id"), uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb"));
     assert_eq!(actual[22].get::<Uuid, &str>("descendant_id"), uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb"));
     assert_eq!(actual[22].get::<i32, &str>("distance"), 0);
+
+    assert_toml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -325,9 +331,11 @@ async fn root_fails(ctx: &DatabaseContext) {
         TagId::from(uuid!("00000000-0000-0000-0000-000000000000")),
         TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
         TagDepth::new(0, 0),
-    ).await.unwrap_err();
+    ).instrument(ctx.span.clone()).await.unwrap_err();
 
     assert_matches!(actual.kind(), ErrorKind::TagAttachingRoot);
+
+    assert_toml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -338,9 +346,11 @@ async fn root_parent_fails(ctx: &DatabaseContext) {
         TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
         TagId::from(uuid!("00000000-0000-0000-0000-000000000000")),
         TagDepth::new(0, 0),
-    ).await.unwrap_err();
+    ).instrument(ctx.span.clone()).await.unwrap_err();
 
     assert_matches!(actual.kind(), ErrorKind::TagAttachingRoot);
+
+    assert_toml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -351,9 +361,11 @@ async fn self_fails(ctx: &DatabaseContext) {
         TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
         TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
         TagDepth::new(0, 0),
-    ).await.unwrap_err();
+    ).instrument(ctx.span.clone()).await.unwrap_err();
 
     assert_matches!(actual.kind(), ErrorKind::TagAttachingToItself { id } if id == &TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")));
+
+    assert_toml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -364,9 +376,11 @@ async fn descendant_fails(ctx: &DatabaseContext) {
         TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
         TagId::from(uuid!("7648d9b5-e0f0-48c2-870c-1fcd60a099de")),
         TagDepth::new(0, 0),
-    ).await.unwrap_err();
+    ).instrument(ctx.span.clone()).await.unwrap_err();
 
     assert_matches!(actual.kind(), ErrorKind::TagAttachingToDescendant { id } if id == &TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")));
+
+    assert_toml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -377,7 +391,9 @@ async fn non_existing_fails(ctx: &DatabaseContext) {
         TagId::from(uuid!("11111111-1111-1111-1111-111111111111")),
         TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
         TagDepth::new(0, 0),
-    ).await.unwrap_err();
+    ).instrument(ctx.span.clone()).await.unwrap_err();
 
     assert_matches!(actual.kind(), ErrorKind::TagNotFound { id } if id == &TagId::from(uuid!("11111111-1111-1111-1111-111111111111")));
+
+    assert_toml_snapshot!(ctx.queries());
 }

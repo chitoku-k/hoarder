@@ -2,11 +2,13 @@ use domain::{
     entity::external_services::{ExternalMetadata, ExternalService, ExternalServiceId, ExternalServiceKind},
     repository::sources::SourcesRepository,
 };
+use insta::assert_toml_snapshot;
 use postgres::sources::PostgresSourcesRepository;
 use pretty_assertions::assert_eq;
 use serde_json::json;
 use sqlx::Row;
 use test_context::test_context;
+use tracing::Instrument;
 use uuid::{uuid, Uuid};
 
 use super::DatabaseContext;
@@ -18,7 +20,7 @@ async fn succeeds_with_default(ctx: &DatabaseContext) {
     let actual = repository.create(
         ExternalServiceId::from(uuid!("4e0c68c7-e5ec-4d60-b9eb-733f47290cd3")),
         ExternalMetadata::Pixiv { id: 123456789 },
-    ).await.unwrap();
+    ).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(
         actual.external_service,
@@ -53,6 +55,8 @@ async fn succeeds_with_default(ctx: &DatabaseContext) {
             "type": "pixiv",
         }),
     );
+
+    assert_toml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -62,7 +66,7 @@ async fn succeeds_with_extra(ctx: &DatabaseContext) {
     let actual = repository.create(
         ExternalServiceId::from(uuid!("99a9f0e8-1097-4b7f-94f2-2a7d2cc786ab")),
         ExternalMetadata::X{ id: 123456789, creator_id: Some("creator_01".to_string()) },
-    ).await.unwrap();
+    ).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(
         actual.external_service,
@@ -98,6 +102,8 @@ async fn succeeds_with_extra(ctx: &DatabaseContext) {
             "creatorId": "creator_01",
         }),
     );
+
+    assert_toml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -107,7 +113,7 @@ async fn succeeds_with_custom_object(ctx: &DatabaseContext) {
     let actual = repository.create(
         ExternalServiceId::from(uuid!("6c07eb4d-93a1-4efd-afce-e13f8f2c0e14")),
         ExternalMetadata::Custom(r#"{"id":123456789}"#.to_string()),
-    ).await.unwrap();
+    ).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(
         actual.external_service,
@@ -139,6 +145,8 @@ async fn succeeds_with_custom_object(ctx: &DatabaseContext) {
         actual.get::<serde_json::Value, &str>("external_metadata_extra"),
         json!({}),
     );
+
+    assert_toml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -148,7 +156,7 @@ async fn succeeds_with_custom_string(ctx: &DatabaseContext) {
     let actual = repository.create(
         ExternalServiceId::from(uuid!("6c07eb4d-93a1-4efd-afce-e13f8f2c0e14")),
         ExternalMetadata::Custom(r#""123456789abcdefg""#.to_string()),
-    ).await.unwrap();
+    ).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(
         actual.external_service,
@@ -178,6 +186,8 @@ async fn succeeds_with_custom_string(ctx: &DatabaseContext) {
         actual.get::<serde_json::Value, &str>("external_metadata_extra"),
         json!({}),
     );
+
+    assert_toml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -187,7 +197,7 @@ async fn succeeds_with_custom_number(ctx: &DatabaseContext) {
     let actual = repository.create(
         ExternalServiceId::from(uuid!("6c07eb4d-93a1-4efd-afce-e13f8f2c0e14")),
         ExternalMetadata::Custom("123456789".to_string()),
-    ).await.unwrap();
+    ).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(
         actual.external_service,
@@ -217,4 +227,6 @@ async fn succeeds_with_custom_number(ctx: &DatabaseContext) {
         actual.get::<serde_json::Value, &str>("external_metadata_extra"),
         json!({}),
     );
+
+    assert_toml_snapshot!(ctx.queries());
 }

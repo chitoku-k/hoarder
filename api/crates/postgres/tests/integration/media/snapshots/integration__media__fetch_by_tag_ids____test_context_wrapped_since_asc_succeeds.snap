@@ -1,0 +1,30 @@
+---
+source: crates/postgres/tests/integration/media/fetch_by_tag_ids.rs
+expression: ctx.queries()
+---
+[[queries]]
+sql = '''
+SELECT
+  "id",
+  "created_at",
+  "updated_at"
+FROM
+  "media"
+INNER JOIN
+  "media_tags" ON "media_tags"."medium_id" = "media"."id"
+INNER JOIN
+  "tag_paths" ON "tag_paths"."descendant_id" = "media_tags"."tag_id"
+WHERE
+  ("created_at", "id") > ($1, $2)
+  AND ("ancestor_id", "tag_type_id") IN (($3, $4))
+GROUP BY
+  "id"
+HAVING
+  COUNT(DISTINCT ("ancestor_id", "tag_type_id")) = $5
+ORDER BY
+  "media"."created_at" ASC,
+  "media"."id" ASC
+LIMIT
+  $6'''
+rows_affected = 3
+rows_returned = 3

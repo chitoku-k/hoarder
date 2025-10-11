@@ -7,10 +7,12 @@ use domain::{
     },
     repository::{media::MediaRepository, Direction, Order},
 };
+use insta::assert_toml_snapshot;
 use ordermap::OrderMap;
 use postgres::media::PostgresMediaRepository;
 use pretty_assertions::assert_eq;
 use test_context::test_context;
+use tracing::Instrument;
 use uuid::uuid;
 
 use super::DatabaseContext;
@@ -33,7 +35,7 @@ async fn asc_succeeds(ctx: &DatabaseContext) {
         Order::Ascending,
         Direction::Forward,
         3,
-    ).await.unwrap();
+    ).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual, vec![
         Medium {
@@ -61,6 +63,8 @@ async fn asc_succeeds(ctx: &DatabaseContext) {
             updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
         },
     ]);
+
+    assert_toml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -81,7 +85,7 @@ async fn desc_succeeds(ctx: &DatabaseContext) {
         Order::Descending,
         Direction::Forward,
         3,
-    ).await.unwrap();
+    ).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual, vec![
         Medium {
@@ -109,6 +113,8 @@ async fn desc_succeeds(ctx: &DatabaseContext) {
             updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 6).unwrap(),
         },
     ]);
+
+    assert_toml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -129,7 +135,7 @@ async fn since_asc_succeeds(ctx: &DatabaseContext) {
         Order::Ascending,
         Direction::Forward,
         3,
-    ).await.unwrap();
+    ).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual, vec![
         Medium {
@@ -157,6 +163,8 @@ async fn since_asc_succeeds(ctx: &DatabaseContext) {
             updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
         },
     ]);
+
+    assert_toml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -177,7 +185,7 @@ async fn since_desc_succeeds(ctx: &DatabaseContext) {
         Order::Descending,
         Direction::Forward,
         3,
-    ).await.unwrap();
+    ).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual, vec![
         Medium {
@@ -189,6 +197,8 @@ async fn since_desc_succeeds(ctx: &DatabaseContext) {
             updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
         },
     ]);
+
+    assert_toml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -209,7 +219,7 @@ async fn until_asc_succeeds(ctx: &DatabaseContext) {
         Order::Ascending,
         Direction::Backward,
         3,
-    ).await.unwrap();
+    ).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual, vec![
         Medium {
@@ -229,6 +239,8 @@ async fn until_asc_succeeds(ctx: &DatabaseContext) {
             updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 6).unwrap(),
         },
     ]);
+
+    assert_toml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -249,7 +261,7 @@ async fn until_desc_succeeds(ctx: &DatabaseContext) {
         Order::Descending,
         Direction::Backward,
         3,
-    ).await.unwrap();
+    ).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual, vec![
         Medium {
@@ -261,4 +273,6 @@ async fn until_desc_succeeds(ctx: &DatabaseContext) {
             updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
         },
     ]);
+
+    assert_toml_snapshot!(ctx.queries());
 }

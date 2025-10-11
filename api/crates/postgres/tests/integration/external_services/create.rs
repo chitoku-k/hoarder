@@ -3,10 +3,12 @@ use domain::{
     error::ErrorKind,
     repository::external_services::ExternalServicesRepository,
 };
+use insta::assert_toml_snapshot;
 use postgres::external_services::PostgresExternalServicesRepository;
 use pretty_assertions::{assert_eq, assert_matches};
 use sqlx::Row;
 use test_context::test_context;
+use tracing::Instrument;
 
 use super::DatabaseContext;
 
@@ -20,7 +22,7 @@ async fn succeeds(ctx: &DatabaseContext) {
         "FooBar",
         Some("https://foobar.example.com"),
         Some(r"^https?://foobar\.example\.com/(?<id>\d+)(?:[/?#].*)?$"),
-    ).await.unwrap();
+    ).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual.slug, "foobar".to_string());
     assert_eq!(actual.kind, ExternalServiceKind::Custom("foobar".to_string()));
@@ -39,6 +41,8 @@ async fn succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual.get::<&str, &str>("name"), "FooBar");
     assert_eq!(actual.get::<Option<&str>, &str>("base_url"), Some("https://foobar.example.com"));
     assert_eq!(actual.get::<Option<&str>, &str>("url_pattern"), Some(r"^https?://foobar\.example\.com/(?<id>\d+)(?:[/?#].*)?$"));
+
+    assert_toml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -51,7 +55,9 @@ async fn fails(ctx: &DatabaseContext) {
         "X",
         Some("https://x.com"),
         Some(r"^https?://foobar\.example\.com/(?<id>\d+)(?:[/?#].*)?$"),
-    ).await.unwrap_err();
+    ).instrument(ctx.span.clone()).await.unwrap_err();
 
     assert_matches!(actual.kind(), ErrorKind::ExternalServiceSlugDuplicate { slug } if slug == "x");
+
+    assert_toml_snapshot!(ctx.queries());
 }

@@ -1,0 +1,26 @@
+---
+source: crates/postgres/tests/integration/media/fetch_by_source_ids.rs
+expression: ctx.queries()
+---
+[[queries]]
+sql = '''
+SELECT
+  "id",
+  "created_at",
+  "updated_at"
+FROM
+  "media"
+INNER JOIN
+  "media_sources" ON "media_sources"."medium_id" = "media"."id"
+WHERE
+  ("created_at", "id") < ($1, $2)
+  AND "source_id" IN ($3, $4, $5)
+GROUP BY
+  "id"
+ORDER BY
+  "media"."created_at" DESC,
+  "media"."id" DESC
+LIMIT
+  $6'''
+rows_affected = 1
+rows_returned = 1

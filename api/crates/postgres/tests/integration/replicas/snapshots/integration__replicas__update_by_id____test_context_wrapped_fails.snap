@@ -1,0 +1,24 @@
+---
+source: crates/postgres/tests/integration/replicas/update_by_id.rs
+expression: ctx.queries()
+---
+[[queries]]
+sql = '''
+SELECT
+  "id",
+  "medium_id",
+  "display_order",
+  "original_url",
+  "mime_type",
+  "width",
+  "height",
+  "phase",
+  "created_at",
+  "updated_at"
+FROM
+  "replicas"
+WHERE
+  "id" = $1
+FOR UPDATE'''
+rows_affected = 0
+rows_returned = 0

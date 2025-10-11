@@ -1,0 +1,20 @@
+---
+source: crates/postgres/tests/integration/tags/update_by_id.rs
+expression: ctx.queries()
+---
+[[queries]]
+sql = '''
+SELECT
+  "id",
+  "name",
+  "kana",
+  "aliases",
+  "created_at",
+  "updated_at"
+FROM
+  "tags"
+WHERE
+  "id" = $1
+FOR UPDATE'''
+rows_affected = 0
+rows_returned = 0

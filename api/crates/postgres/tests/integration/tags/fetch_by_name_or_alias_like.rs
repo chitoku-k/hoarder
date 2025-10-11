@@ -5,9 +5,11 @@ use domain::{
     repository::tags::TagsRepository,
 };
 use chrono::{TimeZone, Utc};
+use insta::assert_toml_snapshot;
 use postgres::tags::PostgresTagsRepository;
 use pretty_assertions::assert_eq;
 use test_context::test_context;
+use tracing::Instrument;
 use uuid::uuid;
 
 use super::DatabaseContext;
@@ -16,7 +18,7 @@ use super::DatabaseContext;
 #[tokio::test]
 async fn with_name_succeeds(ctx: &DatabaseContext) {
     let repository = PostgresTagsRepository::new(ctx.pool.clone());
-    let actual = repository.fetch_by_name_or_alias_like("り", TagDepth::new(2, 2)).await.unwrap();
+    let actual = repository.fetch_by_name_or_alias_like("り", TagDepth::new(2, 2)).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual, vec![
         Tag {
@@ -180,13 +182,15 @@ async fn with_name_succeeds(ctx: &DatabaseContext) {
             updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
         },
     ]);
+
+    assert_toml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
 #[tokio::test]
 async fn with_name_case_insensitive_succeeds(ctx: &DatabaseContext) {
     let repository = PostgresTagsRepository::new(ctx.pool.clone());
-    let actual = repository.fetch_by_name_or_alias_like("project", TagDepth::new(2, 2)).await.unwrap();
+    let actual = repository.fetch_by_name_or_alias_like("project", TagDepth::new(2, 2)).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual, vec![
         Tag {
@@ -241,13 +245,15 @@ async fn with_name_case_insensitive_succeeds(ctx: &DatabaseContext) {
             updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap(),
         },
     ]);
+
+    assert_toml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
 #[tokio::test]
 async fn with_alias_succeeds(ctx: &DatabaseContext) {
     let repository = PostgresTagsRepository::new(ctx.pool.clone());
-    let actual = repository.fetch_by_name_or_alias_like("げ", TagDepth::new(2, 2)).await.unwrap();
+    let actual = repository.fetch_by_name_or_alias_like("げ", TagDepth::new(2, 2)).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual, vec![
         Tag {
@@ -280,13 +286,15 @@ async fn with_alias_succeeds(ctx: &DatabaseContext) {
             updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
         },
     ]);
+
+    assert_toml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
 #[tokio::test]
 async fn with_name_and_alias_succeeds(ctx: &DatabaseContext) {
     let repository = PostgresTagsRepository::new(ctx.pool.clone());
-    let actual = repository.fetch_by_name_or_alias_like("ん", TagDepth::new(2, 2)).await.unwrap();
+    let actual = repository.fetch_by_name_or_alias_like("ん", TagDepth::new(2, 2)).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual, vec![
         Tag {
@@ -338,4 +346,6 @@ async fn with_name_and_alias_succeeds(ctx: &DatabaseContext) {
             updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 8).unwrap(),
         },
     ]);
+
+    assert_toml_snapshot!(ctx.queries());
 }

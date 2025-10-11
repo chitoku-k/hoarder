@@ -1,0 +1,17 @@
+---
+source: crates/postgres/tests/integration/tag_types/create.rs
+expression: ctx.queries()
+---
+[[queries]]
+sql = '''
+INSERT INTO
+  "tag_types" ("slug", "name", "kana")
+VALUES
+  ($1, $2, $3)
+RETURNING
+  "id",
+  "slug",
+  "name",
+  "kana"'''
+rows_affected = 0
+rows_returned = 0

@@ -1,0 +1,19 @@
+---
+source: crates/postgres/tests/integration/tags/delete_by_id.rs
+expression: ctx.queries()
+---
+[[queries]]
+sql = '''
+SELECT
+  "descendant_id",
+  "distance"
+FROM
+  "tag_paths"
+WHERE
+  "ancestor_id" = $1
+ORDER BY
+  "ancestor_id" ASC,
+  "descendant_id" ASC
+FOR UPDATE'''
+rows_affected = 7
+rows_returned = 7

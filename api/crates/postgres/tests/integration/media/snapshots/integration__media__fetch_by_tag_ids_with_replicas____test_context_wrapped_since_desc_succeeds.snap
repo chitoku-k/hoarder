@@ -1,0 +1,60 @@
+---
+source: crates/postgres/tests/integration/media/fetch_by_tag_ids_with_replicas.rs
+expression: ctx.queries()
+---
+[[queries]]
+sql = '''
+SELECT
+  "id",
+  "created_at",
+  "updated_at"
+FROM
+  "media"
+INNER JOIN
+  "media_tags" ON "media_tags"."medium_id" = "media"."id"
+INNER JOIN
+  "tag_paths" ON "tag_paths"."descendant_id" = "media_tags"."tag_id"
+WHERE
+  ("created_at", "id") < ($1, $2)
+  AND ("ancestor_id", "tag_type_id") IN (($3, $4))
+GROUP BY
+  "id"
+HAVING
+  COUNT(DISTINCT ("ancestor_id", "tag_type_id")) = $5
+ORDER BY
+  "media"."created_at" DESC,
+  "media"."id" DESC
+LIMIT
+  $6'''
+rows_affected = 1
+rows_returned = 1
+
+[[queries]]
+sql = '''
+SELECT
+  "replicas"."id" AS "replica_id",
+  "replicas"."medium_id" AS "replica_medium_id",
+  "replicas"."display_order" AS "replica_display_order",
+  "replicas"."original_url" AS "replica_original_url",
+  "replicas"."mime_type" AS "replica_mime_type",
+  "replicas"."width" AS "replica_width",
+  "replicas"."height" AS "replica_height",
+  "replicas"."phase" AS "replica_phase",
+  "replicas"."created_at" AS "replica_created_at",
+  "replicas"."updated_at" AS "replica_updated_at",
+  "thumbnails"."id" AS "thumbnail_id",
+  "thumbnails"."width" AS "thumbnail_width",
+  "thumbnails"."height" AS "thumbnail_height",
+  "thumbnails"."created_at" AS "thumbnail_created_at",
+  "thumbnails"."updated_at" AS "thumbnail_updated_at"
+FROM
+  "replicas"
+LEFT JOIN
+  "thumbnails" ON "replicas"."id" = "thumbnails"."replica_id"
+WHERE
+  "medium_id" IN ($1)
+ORDER BY
+  "medium_id" ASC,
+  "display_order" ASC'''
+rows_affected = 0
+rows_returned = 0

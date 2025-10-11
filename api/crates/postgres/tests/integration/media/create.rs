@@ -11,11 +11,13 @@ use domain::{
     repository::media::MediaRepository,
 };
 use futures::TryStreamExt;
+use insta::assert_toml_snapshot;
 use ordermap::OrderMap;
 use postgres::media::PostgresMediaRepository;
 use pretty_assertions::assert_eq;
 use sqlx::Row;
 use test_context::test_context;
+use tracing::Instrument;
 use uuid::{uuid, Uuid};
 
 use super::DatabaseContext;
@@ -30,7 +32,7 @@ async fn succeeds(ctx: &DatabaseContext) {
         [].into_iter(),
         None,
         false,
-    ).await.unwrap();
+    ).instrument(ctx.span.clone()).await.unwrap();
 
     let actual_id = *actual.id;
     assert_eq!(actual.sources, Vec::new());
@@ -44,6 +46,8 @@ async fn succeeds(ctx: &DatabaseContext) {
         .unwrap();
 
     assert_eq!(actual.get::<Uuid, &str>("id"), actual_id);
+
+    assert_toml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -56,7 +60,7 @@ async fn with_created_at_succeeds(ctx: &DatabaseContext) {
         [].into_iter(),
         None,
         false,
-    ).await.unwrap();
+    ).instrument(ctx.span.clone()).await.unwrap();
 
     let actual_id = *actual.id;
     assert_eq!(actual.sources, Vec::new());
@@ -71,6 +75,8 @@ async fn with_created_at_succeeds(ctx: &DatabaseContext) {
 
     assert_eq!(actual.get::<Uuid, &str>("id"), actual_id);
     assert_eq!(actual.get::<DateTime<Utc>, &str>("created_at"), Utc.with_ymd_and_hms(2022, 1, 1, 5, 6, 7).unwrap());
+
+    assert_toml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -86,7 +92,7 @@ async fn with_sources_succeeds(ctx: &DatabaseContext) {
         [].into_iter(),
         None,
         true,
-    ).await.unwrap();
+    ).instrument(ctx.span.clone()).await.unwrap();
 
     let actual_id = *actual.id;
     assert_eq!(actual.sources, vec![
@@ -141,6 +147,8 @@ async fn with_sources_succeeds(ctx: &DatabaseContext) {
 
     assert_eq!(actual[0].get::<Uuid, &str>("source_id"), uuid!("082bdad0-46a9-4637-af44-3c91a605a5f1"));
     assert_eq!(actual[1].get::<Uuid, &str>("source_id"), uuid!("3e1150b0-144a-4fcf-a202-b93a5f3274db"));
+
+    assert_toml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -166,7 +174,7 @@ async fn with_tags_succeeds(ctx: &DatabaseContext) {
         ].into_iter(),
         Some(TagDepth::new(2, 2)),
         true,
-    ).await.unwrap();
+    ).instrument(ctx.span.clone()).await.unwrap();
 
     let actual_id = *actual.id;
     assert_eq!(actual.sources, Vec::new());
@@ -349,6 +357,8 @@ async fn with_tags_succeeds(ctx: &DatabaseContext) {
 
     assert_eq!(actual[2].get::<Uuid, &str>("tag_id"), uuid!("a2a6c29d-18d0-47b1-a324-88e93c267707"));
     assert_eq!(actual[2].get::<Uuid, &str>("tag_type_id"), uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38"));
+
+    assert_toml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -377,7 +387,7 @@ async fn with_sources_tags_succeeds(ctx: &DatabaseContext) {
         ].into_iter(),
         Some(TagDepth::new(2, 2)),
         true,
-    ).await.unwrap();
+    ).instrument(ctx.span.clone()).await.unwrap();
 
     let actual_id = *actual.id;
     assert_eq!(actual.sources, vec![
@@ -601,4 +611,6 @@ async fn with_sources_tags_succeeds(ctx: &DatabaseContext) {
 
     assert_eq!(actual[2].get::<Uuid, &str>("tag_id"), uuid!("a2a6c29d-18d0-47b1-a324-88e93c267707"));
     assert_eq!(actual[2].get::<Uuid, &str>("tag_type_id"), uuid!("67738231-9b3a-4f45-94dc-1ba302e50e38"));
+
+    assert_toml_snapshot!(ctx.queries());
 }

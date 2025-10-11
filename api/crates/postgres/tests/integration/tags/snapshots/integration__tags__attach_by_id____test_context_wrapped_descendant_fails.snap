@@ -1,0 +1,15 @@
+---
+source: crates/postgres/tests/integration/tags/attach_by_id.rs
+expression: ctx.queries()
+---
+[[queries]]
+sql = '''
+SELECT
+  COUNT(*)
+FROM
+  "tag_paths"
+WHERE
+  "ancestor_id" = $1
+  AND "descendant_id" = $2'''
+rows_affected = 1
+rows_returned = 1

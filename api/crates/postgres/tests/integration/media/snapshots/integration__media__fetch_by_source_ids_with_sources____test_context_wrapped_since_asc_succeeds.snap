@@ -1,0 +1,56 @@
+---
+source: crates/postgres/tests/integration/media/fetch_by_source_ids_with_sources.rs
+expression: ctx.queries()
+---
+[[queries]]
+sql = '''
+SELECT
+  "id",
+  "created_at",
+  "updated_at"
+FROM
+  "media"
+INNER JOIN
+  "media_sources" ON "media_sources"."medium_id" = "media"."id"
+WHERE
+  ("created_at", "id") > ($1, $2)
+  AND "source_id" IN ($3, $4, $5)
+GROUP BY
+  "id"
+ORDER BY
+  "media"."created_at" ASC,
+  "media"."id" ASC
+LIMIT
+  $6'''
+rows_affected = 2
+rows_returned = 2
+
+[[queries]]
+sql = '''
+SELECT
+  "medium_id",
+  "source_id",
+  "sources"."external_metadata" AS "source_external_metadata",
+  "sources"."external_metadata_extra" AS "source_external_metadata_extra",
+  "sources"."created_at" AS "source_created_at",
+  "sources"."updated_at" AS "source_updated_at",
+  "external_services"."id" AS "external_service_id",
+  "external_services"."slug" AS "external_service_slug",
+  "external_services"."kind" AS "external_service_kind",
+  "external_services"."name" AS "external_service_name",
+  "external_services"."base_url" AS "external_service_base_url",
+  "external_services"."url_pattern" AS "external_service_url_pattern"
+FROM
+  "media_sources"
+INNER JOIN
+  "sources" ON "sources"."id" = "media_sources"."source_id"
+INNER JOIN
+  "external_services" ON "external_services"."id" = "sources"."external_service_id"
+WHERE
+  "media_sources"."medium_id" IN ($1, $2)
+ORDER BY
+  "media_sources"."medium_id" ASC,
+  "external_services"."slug" ASC,
+  "sources"."external_metadata" ASC'''
+rows_affected = 3
+rows_returned = 3

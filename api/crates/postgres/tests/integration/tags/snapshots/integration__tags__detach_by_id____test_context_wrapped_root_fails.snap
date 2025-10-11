@@ -1,0 +1,5 @@
+---
+source: crates/postgres/tests/integration/tags/detach_by_id.rs
+expression: ctx.queries()
+---
+queries = []

@@ -2,9 +2,11 @@ use domain::{
     entity::tag_types::{TagType, TagTypeId},
     repository::tag_types::TagTypesRepository,
 };
+use insta::assert_toml_snapshot;
 use postgres::tag_types::PostgresTagTypesRepository;
 use pretty_assertions::assert_eq;
 use test_context::test_context;
+use tracing::Instrument;
 use uuid::uuid;
 
 use super::DatabaseContext;
@@ -13,7 +15,7 @@ use super::DatabaseContext;
 #[tokio::test]
 async fn succeeds(ctx: &DatabaseContext) {
     let repository = PostgresTagTypesRepository::new(ctx.pool.clone());
-    let actual = repository.fetch_all().await.unwrap();
+    let actual = repository.fetch_all().instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual, vec![
         TagType {
@@ -35,4 +37,6 @@ async fn succeeds(ctx: &DatabaseContext) {
             kana: "さくひん".to_string(),
         },
     ]);
+
+    assert_toml_snapshot!(ctx.queries());
 }

@@ -1,0 +1,17 @@
+---
+source: crates/postgres/tests/integration/tag_types/fetch_all.rs
+expression: ctx.queries()
+---
+[[queries]]
+sql = '''
+SELECT
+  "id",
+  "slug",
+  "name",
+  "kana"
+FROM
+  "tag_types"
+ORDER BY
+  "kana" ASC'''
+rows_affected = 3
+rows_returned = 3

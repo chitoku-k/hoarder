@@ -2,8 +2,10 @@ use domain::{
     entity::tags::{TagDepth, TagId},
     repository::{tags::TagsRepository, Direction, Order},
 };
+use insta::assert_toml_snapshot;
 use postgres::tags::PostgresTagsRepository;
 use test_context::test_context;
+use tracing::Instrument;
 use uuid::uuid;
 
 use super::DatabaseContext;
@@ -19,7 +21,9 @@ async fn with_out_of_bounds_succeeds(ctx: &DatabaseContext) {
         Order::Descending,
         Direction::Forward,
         3,
-    ).await.unwrap();
+    ).instrument(ctx.span.clone()).await.unwrap();
 
     assert!(actual.is_empty());
+
+    assert_toml_snapshot!(ctx.queries());
 }
