@@ -6,9 +6,11 @@ use domain::{
     },
     repository::sources::SourcesRepository,
 };
+use insta::assert_toml_snapshot;
 use postgres::sources::PostgresSourcesRepository;
 use pretty_assertions::assert_eq;
 use test_context::test_context;
+use tracing::Instrument;
 use uuid::uuid;
 
 use super::DatabaseContext;
@@ -20,7 +22,7 @@ async fn succeeds(ctx: &DatabaseContext) {
     let actual = repository.fetch_by_ids([
         SourceId::from(uuid!("76a94241-1736-4823-bb59-bef097c687e1")),
         SourceId::from(uuid!("94055dd8-7a22-4137-b8eb-3a374df5e5d1")),
-    ].into_iter()).await.unwrap();
+    ].into_iter()).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual, vec![
         Source {
@@ -52,4 +54,6 @@ async fn succeeds(ctx: &DatabaseContext) {
             updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 15).unwrap(),
         },
     ]);
+
+    assert_toml_snapshot!(ctx.queries());
 }

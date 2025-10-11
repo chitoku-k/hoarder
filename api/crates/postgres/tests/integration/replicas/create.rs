@@ -3,11 +3,13 @@ use domain::{
     repository::replicas::ReplicasRepository,
 };
 use futures::{pin_mut, TryStreamExt};
+use insta::assert_toml_snapshot;
 use postgres::replicas::PostgresReplicasRepository;
 use pretty_assertions::assert_eq;
 use serde_json::json;
 use sqlx::{postgres::PgListener, Row};
 use test_context::test_context;
+use tracing::Instrument;
 use uuid::{uuid, Uuid};
 
 use super::DatabaseContext;
@@ -28,7 +30,7 @@ async fn first_replica_with_thumbnail_succeeds(ctx: &DatabaseContext) {
         "file:///replica01.png",
         Some(OriginalImage::new("image/png", Size::new(720, 720))),
         ReplicaStatus::Ready,
-    ).await.unwrap();
+    ).instrument(ctx.span.clone()).await.unwrap();
     let actual_thumbnail = actual_replica.thumbnail.unwrap();
 
     assert_eq!(actual_replica.display_order, 1);
@@ -65,6 +67,8 @@ async fn first_replica_with_thumbnail_succeeds(ctx: &DatabaseContext) {
 
     assert!(actual.get("id").is_some());
     assert_eq!(actual.get("medium_id"), Some(&json!("ccc5717b-cf11-403d-b466-f37cf1c2e6f6")));
+
+    assert_toml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -83,7 +87,7 @@ async fn first_replica_without_thumbnail_succeeds(ctx: &DatabaseContext) {
         "file:///replica01.png",
         Some(OriginalImage::new("image/png", Size::new(720, 720))),
         ReplicaStatus::Ready,
-    ).await.unwrap();
+    ).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual_replica.display_order, 1);
     assert_eq!(actual_replica.thumbnail, None);
@@ -109,6 +113,8 @@ async fn first_replica_without_thumbnail_succeeds(ctx: &DatabaseContext) {
 
     assert!(actual.get("id").is_some());
     assert_eq!(actual.get("medium_id"), Some(&json!("ccc5717b-cf11-403d-b466-f37cf1c2e6f6")));
+
+    assert_toml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -127,7 +133,7 @@ async fn non_first_replica_with_thumbnail_succeeds(ctx: &DatabaseContext) {
         "file:///replica02.png",
         Some(OriginalImage::new("image/png", Size::new(720, 720))),
         ReplicaStatus::Ready,
-    ).await.unwrap();
+    ).instrument(ctx.span.clone()).await.unwrap();
     let actual_thumbnail = actual_replica.thumbnail.unwrap();
 
     assert_eq!(actual_replica.display_order, 3);
@@ -163,6 +169,8 @@ async fn non_first_replica_with_thumbnail_succeeds(ctx: &DatabaseContext) {
 
     assert!(actual.get("id").is_some());
     assert_eq!(actual.get("medium_id"), Some(&json!("2872ed9d-4db9-4b25-b86f-791ad009cc0a")));
+
+    assert_toml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -181,7 +189,7 @@ async fn non_first_replica_without_thumbnail_succeeds(ctx: &DatabaseContext) {
         "file:///replica02.png",
         Some(OriginalImage::new("image/png", Size::new(720, 720))),
         ReplicaStatus::Ready,
-    ).await.unwrap();
+    ).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual.display_order, 3);
     assert_eq!(actual.thumbnail, None);
@@ -207,4 +215,6 @@ async fn non_first_replica_without_thumbnail_succeeds(ctx: &DatabaseContext) {
 
     assert!(actual.get("id").is_some());
     assert_eq!(actual.get("medium_id"), Some(&json!("2872ed9d-4db9-4b25-b86f-791ad009cc0a")));
+
+    assert_toml_snapshot!(ctx.queries());
 }

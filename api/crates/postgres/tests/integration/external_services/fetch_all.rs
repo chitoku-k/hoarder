@@ -2,9 +2,11 @@ use domain::{
     entity::external_services::{ExternalService, ExternalServiceId, ExternalServiceKind},
     repository::external_services::ExternalServicesRepository,
 };
+use insta::assert_toml_snapshot;
 use postgres::external_services::PostgresExternalServicesRepository;
 use pretty_assertions::assert_eq;
 use test_context::test_context;
+use tracing::Instrument;
 use uuid::uuid;
 
 use super::DatabaseContext;
@@ -13,7 +15,7 @@ use super::DatabaseContext;
 #[tokio::test]
 async fn succeeds(ctx: &DatabaseContext) {
     let repository = PostgresExternalServicesRepository::new(ctx.pool.clone());
-    let actual = repository.fetch_all().await.unwrap();
+    let actual = repository.fetch_all().instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual, vec![
         ExternalService {
@@ -49,4 +51,6 @@ async fn succeeds(ctx: &DatabaseContext) {
             url_pattern: Some(r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$".to_string()),
         },
     ]);
+
+    assert_toml_snapshot!(ctx.queries());
 }

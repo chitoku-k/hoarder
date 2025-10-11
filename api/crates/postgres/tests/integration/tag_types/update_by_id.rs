@@ -3,10 +3,12 @@ use domain::{
     error::ErrorKind,
     repository::tag_types::TagTypesRepository,
 };
+use insta::assert_toml_snapshot;
 use postgres::tag_types::PostgresTagTypesRepository;
 use pretty_assertions::{assert_eq, assert_matches};
 use sqlx::Row;
 use test_context::test_context;
+use tracing::Instrument;
 use uuid::uuid;
 
 use super::DatabaseContext;
@@ -20,7 +22,7 @@ async fn succeeds(ctx: &DatabaseContext) {
         None,
         None,
         None,
-    ).await.unwrap();
+    ).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual.slug, "work".to_string());
     assert_eq!(actual.name, "作品".to_string());
@@ -35,6 +37,8 @@ async fn succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual.get::<&str, &str>("slug"), "work");
     assert_eq!(actual.get::<&str, &str>("name"), "作品");
     assert_eq!(actual.get::<&str, &str>("kana"), "さくひん");
+
+    assert_toml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -46,7 +50,7 @@ async fn with_slug_name_kana_succeeds(ctx: &DatabaseContext) {
         Some("works"),
         Some("版権"),
         Some("はんけん"),
-    ).await.unwrap();
+    ).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual.slug, "works".to_string());
     assert_eq!(actual.name, "版権".to_string());
@@ -61,6 +65,8 @@ async fn with_slug_name_kana_succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual.get::<&str, &str>("slug"), "works");
     assert_eq!(actual.get::<&str, &str>("name"), "版権");
     assert_eq!(actual.get::<&str, &str>("kana"), "はんけん");
+
+    assert_toml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -72,7 +78,9 @@ async fn fails(ctx: &DatabaseContext) {
         Some("illustrators"),
         Some("絵師"),
         Some("えし"),
-    ).await.unwrap_err();
+    ).instrument(ctx.span.clone()).await.unwrap_err();
 
     assert_matches!(actual.kind(), ErrorKind::TagTypeNotFound { id } if id == &TagTypeId::from(uuid!("11111111-1111-1111-1111-111111111111")));
+
+    assert_toml_snapshot!(ctx.queries());
 }

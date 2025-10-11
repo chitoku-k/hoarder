@@ -7,10 +7,12 @@ use domain::{
     repository::media::MediaRepository,
 };
 use futures::{pin_mut, TryStreamExt};
+use insta::assert_toml_snapshot;
 use ordermap::OrderMap;
 use postgres::media::PostgresMediaRepository;
 use pretty_assertions::assert_eq;
 use test_context::test_context;
+use tracing::Instrument;
 use uuid::uuid;
 
 use super::DatabaseContext;
@@ -24,7 +26,7 @@ async fn succeeds(ctx: &DatabaseContext) {
         None,
         true,
         false,
-    ).await.unwrap();
+    ).instrument(ctx.span.clone()).await.unwrap();
     pin_mut!(stream);
 
     let actual = stream.try_next().await.unwrap();
@@ -162,4 +164,6 @@ async fn succeeds(ctx: &DatabaseContext) {
         created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 6).unwrap(),
         updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
     }));
+
+    assert_toml_snapshot!(ctx.queries());
 }

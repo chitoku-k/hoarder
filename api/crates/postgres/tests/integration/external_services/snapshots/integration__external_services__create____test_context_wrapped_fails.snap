@@ -1,0 +1,25 @@
+---
+source: crates/postgres/tests/integration/external_services/create.rs
+expression: ctx.queries()
+---
+[[queries]]
+sql = '''
+INSERT INTO
+  "external_services" (
+    "slug",
+    "kind",
+    "name",
+    "base_url",
+    "url_pattern"
+  )
+VALUES
+  ($1, $2, $3, $4, $5)
+RETURNING
+  "id",
+  "slug",
+  "kind",
+  "name",
+  "base_url",
+  "url_pattern"'''
+rows_affected = 0
+rows_returned = 0

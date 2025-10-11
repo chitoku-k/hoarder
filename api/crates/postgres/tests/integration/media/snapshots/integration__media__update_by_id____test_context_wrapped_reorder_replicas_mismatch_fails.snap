@@ -1,0 +1,23 @@
+---
+source: crates/postgres/tests/integration/media/update_by_id.rs
+expression: ctx.queries()
+---
+[[queries]]
+sql = '''
+SELECT
+  "media"."id",
+  "media"."created_at",
+  "media"."updated_at",
+  "replicas"."id" AS "replica_id"
+FROM
+  "media"
+INNER JOIN
+  "replicas" ON "replicas"."medium_id" = "media"."id"
+WHERE
+  "media"."id" = $1
+ORDER BY
+  "media"."id" ASC,
+  "replicas"."display_order" ASC
+FOR UPDATE'''
+rows_affected = 3
+rows_returned = 3

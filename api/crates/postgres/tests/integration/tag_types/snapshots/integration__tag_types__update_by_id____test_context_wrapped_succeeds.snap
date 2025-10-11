@@ -1,0 +1,41 @@
+---
+source: crates/postgres/tests/integration/tag_types/update_by_id.rs
+expression: ctx.queries()
+---
+[[queries]]
+sql = '''
+SELECT
+  "id",
+  "slug",
+  "name",
+  "kana"
+FROM
+  "tag_types"
+WHERE
+  "id" = $1
+FOR UPDATE'''
+rows_affected = 1
+rows_returned = 1
+
+[[queries]]
+sql = '''
+UPDATE
+  "tag_types"
+SET
+  "slug" = $1,
+  "name" = $2,
+  "kana" = $3
+WHERE
+  "id" = $4
+RETURNING
+  "id",
+  "slug",
+  "name",
+  "kana"'''
+rows_affected = 1
+rows_returned = 1
+
+[[queries]]
+sql = 'COMMIT'
+rows_affected = 0
+rows_returned = 0

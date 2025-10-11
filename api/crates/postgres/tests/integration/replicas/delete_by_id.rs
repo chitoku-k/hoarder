@@ -4,10 +4,12 @@ use domain::{
     repository::{replicas::ReplicasRepository, DeleteResult},
 };
 use futures::TryStreamExt;
+use insta::assert_toml_snapshot;
 use postgres::replicas::PostgresReplicasRepository;
 use pretty_assertions::assert_eq;
 use sqlx::Row;
 use test_context::test_context;
+use tracing::Instrument;
 use uuid::{uuid, Uuid};
 
 use super::DatabaseContext;
@@ -25,7 +27,7 @@ async fn with_only_replica_succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual, 1);
 
     let repository = PostgresReplicasRepository::new(ctx.pool.clone());
-    let actual = repository.delete_by_id(ReplicaId::from(uuid!("9b73469d-55fe-4017-aee8-dd8f8d7d067a"))).await.unwrap();
+    let actual = repository.delete_by_id(ReplicaId::from(uuid!("9b73469d-55fe-4017-aee8-dd8f8d7d067a"))).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual, DeleteResult::Deleted(1));
 
@@ -38,9 +40,11 @@ async fn with_only_replica_succeeds(ctx: &DatabaseContext) {
 
     assert_eq!(actual, 0);
 
-    let actual = repository.delete_by_id(ReplicaId::from(uuid!("9b73469d-55fe-4017-aee8-dd8f8d7d067a"))).await.unwrap();
+    let actual = repository.delete_by_id(ReplicaId::from(uuid!("9b73469d-55fe-4017-aee8-dd8f8d7d067a"))).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual, DeleteResult::NotFound);
+
+    assert_toml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -56,7 +60,7 @@ async fn with_first_replica_succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual, 1);
 
     let repository = PostgresReplicasRepository::new(ctx.pool.clone());
-    let actual = repository.delete_by_id(ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be"))).await.unwrap();
+    let actual = repository.delete_by_id(ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be"))).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual, DeleteResult::Deleted(1));
 
@@ -88,9 +92,11 @@ async fn with_first_replica_succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual[1].get::<DateTime<Utc>, &str>("created_at"), Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 11).unwrap());
     assert_ne!(actual[1].get::<DateTime<Utc>, &str>("updated_at"), Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap());
 
-    let actual = repository.delete_by_id(ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be"))).await.unwrap();
+    let actual = repository.delete_by_id(ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be"))).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual, DeleteResult::NotFound);
+
+    assert_toml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -106,7 +112,7 @@ async fn with_middle_replica_succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual, 1);
 
     let repository = PostgresReplicasRepository::new(ctx.pool.clone());
-    let actual = repository.delete_by_id(ReplicaId::from(uuid!("6fae1497-e987-492e-987a-f9870b7d3c5b"))).await.unwrap();
+    let actual = repository.delete_by_id(ReplicaId::from(uuid!("6fae1497-e987-492e-987a-f9870b7d3c5b"))).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual, DeleteResult::Deleted(1));
 
@@ -138,9 +144,11 @@ async fn with_middle_replica_succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual[1].get::<DateTime<Utc>, &str>("created_at"), Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 11).unwrap());
     assert_ne!(actual[1].get::<DateTime<Utc>, &str>("updated_at"), Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap());
 
-    let actual = repository.delete_by_id(ReplicaId::from(uuid!("6fae1497-e987-492e-987a-f9870b7d3c5b"))).await.unwrap();
+    let actual = repository.delete_by_id(ReplicaId::from(uuid!("6fae1497-e987-492e-987a-f9870b7d3c5b"))).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual, DeleteResult::NotFound);
+
+    assert_toml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -156,7 +164,7 @@ async fn with_last_replica_succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual, 1);
 
     let repository = PostgresReplicasRepository::new(ctx.pool.clone());
-    let actual = repository.delete_by_id(ReplicaId::from(uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5"))).await.unwrap();
+    let actual = repository.delete_by_id(ReplicaId::from(uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5"))).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual, DeleteResult::Deleted(1));
 
@@ -188,7 +196,9 @@ async fn with_last_replica_succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual[1].get::<DateTime<Utc>, &str>("created_at"), Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 11).unwrap());
     assert_ne!(actual[1].get::<DateTime<Utc>, &str>("updated_at"), Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap());
 
-    let actual = repository.delete_by_id(ReplicaId::from(uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5"))).await.unwrap();
+    let actual = repository.delete_by_id(ReplicaId::from(uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5"))).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual, DeleteResult::NotFound);
+
+    assert_toml_snapshot!(ctx.queries());
 }

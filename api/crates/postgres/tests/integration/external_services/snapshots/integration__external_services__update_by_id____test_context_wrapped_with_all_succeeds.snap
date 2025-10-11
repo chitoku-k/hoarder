@@ -1,0 +1,46 @@
+---
+source: crates/postgres/tests/integration/external_services/update_by_id.rs
+expression: ctx.queries()
+---
+[[queries]]
+sql = '''
+SELECT
+  "id",
+  "slug",
+  "kind",
+  "name",
+  "base_url",
+  "url_pattern"
+FROM
+  "external_services"
+WHERE
+  "id" = $1
+FOR UPDATE'''
+rows_affected = 1
+rows_returned = 1
+
+[[queries]]
+sql = '''
+UPDATE
+  "external_services"
+SET
+  "slug" = $1,
+  "name" = $2,
+  "base_url" = $3,
+  "url_pattern" = $4
+WHERE
+  "id" = $5
+RETURNING
+  "id",
+  "slug",
+  "kind",
+  "name",
+  "base_url",
+  "url_pattern"'''
+rows_affected = 1
+rows_returned = 1
+
+[[queries]]
+sql = 'COMMIT'
+rows_affected = 0
+rows_returned = 0

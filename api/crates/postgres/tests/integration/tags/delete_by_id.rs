@@ -3,10 +3,12 @@ use domain::{
     error::ErrorKind,
     repository::{tags::TagsRepository, DeleteResult},
 };
+use insta::assert_toml_snapshot;
 use postgres::tags::PostgresTagsRepository;
 use pretty_assertions::{assert_eq, assert_matches};
 use sqlx::Row;
 use test_context::test_context;
+use tracing::Instrument;
 use uuid::uuid;
 
 use super::DatabaseContext;
@@ -26,6 +28,7 @@ async fn root_with_recursive_fails(ctx: &DatabaseContext) {
     let repository = PostgresTagsRepository::new(ctx.pool.clone());
     let actual = repository
         .delete_by_id(TagId::from(uuid!("00000000-0000-0000-0000-000000000000")), true)
+        .instrument(ctx.span.clone())
         .await
         .unwrap_err();
 
@@ -39,6 +42,8 @@ async fn root_with_recursive_fails(ctx: &DatabaseContext) {
         .get(0);
 
     assert_eq!(actual, 1);
+
+    assert_toml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -56,6 +61,7 @@ async fn root_without_recursive_fails(ctx: &DatabaseContext) {
     let repository = PostgresTagsRepository::new(ctx.pool.clone());
     let actual = repository
         .delete_by_id(TagId::from(uuid!("00000000-0000-0000-0000-000000000000")), false)
+        .instrument(ctx.span.clone())
         .await
         .unwrap_err();
 
@@ -69,6 +75,8 @@ async fn root_without_recursive_fails(ctx: &DatabaseContext) {
         .get(0);
 
     assert_eq!(actual, 1);
+
+    assert_toml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -90,7 +98,7 @@ async fn node_with_recursive_succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual, 7);
 
     let repository = PostgresTagsRepository::new(ctx.pool.clone());
-    let actual = repository.delete_by_id(TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")), true).await.unwrap();
+    let actual = repository.delete_by_id(TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")), true).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual, DeleteResult::Deleted(7));
 
@@ -109,9 +117,11 @@ async fn node_with_recursive_succeeds(ctx: &DatabaseContext) {
 
     assert_eq!(actual, 0);
 
-    let actual = repository.delete_by_id(TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")), true).await.unwrap();
+    let actual = repository.delete_by_id(TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")), true).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual, DeleteResult::NotFound);
+
+    assert_toml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -135,6 +145,7 @@ async fn node_without_recursive_fails(ctx: &DatabaseContext) {
     let repository = PostgresTagsRepository::new(ctx.pool.clone());
     let actual = repository
         .delete_by_id(TagId::from(uuid!("744b7274-371b-4790-8f5a-df4d76e983ba")), false)
+        .instrument(ctx.span.clone())
         .await
         .unwrap_err();
 
@@ -160,6 +171,8 @@ async fn node_without_recursive_fails(ctx: &DatabaseContext) {
         .get(0);
 
     assert_eq!(actual, 7);
+
+    assert_toml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -175,7 +188,7 @@ async fn leaf_with_recursive_succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual, 1);
 
     let repository = PostgresTagsRepository::new(ctx.pool.clone());
-    let actual = repository.delete_by_id(TagId::from(uuid!("12c4101e-722f-4172-9fe2-7862ebbc8fc5")), true).await.unwrap();
+    let actual = repository.delete_by_id(TagId::from(uuid!("12c4101e-722f-4172-9fe2-7862ebbc8fc5")), true).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual, DeleteResult::Deleted(1));
 
@@ -188,9 +201,11 @@ async fn leaf_with_recursive_succeeds(ctx: &DatabaseContext) {
 
     assert_eq!(actual, 0);
 
-    let actual = repository.delete_by_id(TagId::from(uuid!("12c4101e-722f-4172-9fe2-7862ebbc8fc5")), true).await.unwrap();
+    let actual = repository.delete_by_id(TagId::from(uuid!("12c4101e-722f-4172-9fe2-7862ebbc8fc5")), true).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual, DeleteResult::NotFound);
+
+    assert_toml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -206,7 +221,7 @@ async fn leaf_without_recursive_succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual, 1);
 
     let repository = PostgresTagsRepository::new(ctx.pool.clone());
-    let actual = repository.delete_by_id(TagId::from(uuid!("12c4101e-722f-4172-9fe2-7862ebbc8fc5")), false).await.unwrap();
+    let actual = repository.delete_by_id(TagId::from(uuid!("12c4101e-722f-4172-9fe2-7862ebbc8fc5")), false).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual, DeleteResult::Deleted(1));
 
@@ -219,7 +234,9 @@ async fn leaf_without_recursive_succeeds(ctx: &DatabaseContext) {
 
     assert_eq!(actual, 0);
 
-    let actual = repository.delete_by_id(TagId::from(uuid!("12c4101e-722f-4172-9fe2-7862ebbc8fc5")), false).await.unwrap();
+    let actual = repository.delete_by_id(TagId::from(uuid!("12c4101e-722f-4172-9fe2-7862ebbc8fc5")), false).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual, DeleteResult::NotFound);
+
+    assert_toml_snapshot!(ctx.queries());
 }

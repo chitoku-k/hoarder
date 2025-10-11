@@ -1,0 +1,20 @@
+---
+source: crates/postgres/tests/integration/sources/update_by_id.rs
+expression: ctx.queries()
+---
+[[queries]]
+sql = '''
+SELECT
+  "id",
+  "external_service_id",
+  "external_metadata",
+  "external_metadata_extra",
+  "created_at",
+  "updated_at"
+FROM
+  "sources"
+WHERE
+  "id" = $1
+FOR UPDATE'''
+rows_affected = 0
+rows_returned = 0

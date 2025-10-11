@@ -1,0 +1,113 @@
+---
+source: crates/postgres/tests/integration/replicas/delete_by_id.rs
+expression: ctx.queries()
+---
+[[queries]]
+sql = '''
+SELECT
+  "siblings"."id",
+  "siblings"."medium_id",
+  "siblings"."display_order",
+  "siblings"."original_url",
+  "siblings"."mime_type",
+  "siblings"."width",
+  "siblings"."height",
+  "siblings"."phase",
+  "siblings"."created_at",
+  "siblings"."updated_at"
+FROM
+  "replicas"
+INNER JOIN
+  "replicas" AS "siblings" ON "siblings"."medium_id" = "replicas"."medium_id"
+WHERE
+  "replicas"."id" = $1
+ORDER BY
+  "siblings"."display_order" ASC
+FOR UPDATE
+  OF "siblings"'''
+rows_affected = 3
+rows_returned = 3
+
+[[queries]]
+sql = '''
+DELETE FROM
+  "replicas"
+WHERE
+  "id" = $1'''
+rows_affected = 1
+rows_returned = 0
+
+[[queries]]
+sql = '''
+UPDATE
+  "replicas"
+SET
+  "display_order" = NULL
+WHERE
+  "id" IN ($1, $2)'''
+rows_affected = 2
+rows_returned = 0
+
+[[queries]]
+sql = '''
+UPDATE
+  "replicas"
+SET
+  "display_order" = $1,
+  "updated_at" = CURRENT_TIMESTAMP
+WHERE
+  "id" = $2'''
+rows_affected = 1
+rows_returned = 0
+
+[[queries]]
+sql = '''
+UPDATE
+  "replicas"
+SET
+  "display_order" = $1,
+  "updated_at" = CURRENT_TIMESTAMP
+WHERE
+  "id" = $2'''
+rows_affected = 1
+rows_returned = 0
+
+[[queries]]
+sql = 'COMMIT'
+rows_affected = 0
+rows_returned = 0
+
+[[queries]]
+sql = '''
+SELECT
+  "siblings"."id",
+  "siblings"."medium_id",
+  "siblings"."display_order",
+  "siblings"."original_url",
+  "siblings"."mime_type",
+  "siblings"."width",
+  "siblings"."height",
+  "siblings"."phase",
+  "siblings"."created_at",
+  "siblings"."updated_at"
+FROM
+  "replicas"
+INNER JOIN
+  "replicas" AS "siblings" ON "siblings"."medium_id" = "replicas"."medium_id"
+WHERE
+  "replicas"."id" = $1
+ORDER BY
+  "siblings"."display_order" ASC
+FOR UPDATE
+  OF "siblings"'''
+rows_affected = 0
+rows_returned = 0
+
+[[queries]]
+sql = '''
+DELETE FROM
+  "replicas"
+WHERE
+  "id" = $1'''
+rows_affected = 0
+rows_returned = 0

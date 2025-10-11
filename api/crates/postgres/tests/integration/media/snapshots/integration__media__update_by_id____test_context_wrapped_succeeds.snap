@@ -1,0 +1,86 @@
+---
+source: crates/postgres/tests/integration/media/update_by_id.rs
+expression: ctx.queries()
+---
+[[queries]]
+sql = '''
+SELECT
+  "media"."id",
+  "media"."created_at",
+  "media"."updated_at",
+  "replicas"."id" AS "replica_id"
+FROM
+  "media"
+INNER JOIN
+  "replicas" ON "replicas"."medium_id" = "media"."id"
+WHERE
+  "media"."id" = $1
+ORDER BY
+  "media"."id" ASC,
+  "replicas"."display_order" ASC
+FOR UPDATE'''
+rows_affected = 3
+rows_returned = 3
+
+[[queries]]
+sql = '''
+INSERT INTO
+  "media_sources" ("medium_id", "source_id")
+VALUES
+  ($1, $2),
+  ($3, $4)
+ON CONFLICT
+DO NOTHING'''
+rows_affected = 1
+rows_returned = 0
+
+[[queries]]
+sql = '''
+DELETE FROM
+  "media_sources"
+WHERE
+  "source_id" IN ($1)'''
+rows_affected = 1
+rows_returned = 0
+
+[[queries]]
+sql = '''
+INSERT INTO
+  "media_tags" ("medium_id", "tag_id", "tag_type_id")
+VALUES
+  ($1, $2, $3),
+  ($4, $5, $6)
+ON CONFLICT
+DO NOTHING'''
+rows_affected = 1
+rows_returned = 0
+
+[[queries]]
+sql = '''
+DELETE FROM
+  "media_tags"
+WHERE
+  "medium_id" = $1
+  AND ("tag_id", "tag_type_id") IN (($2, $3))'''
+rows_affected = 1
+rows_returned = 0
+
+[[queries]]
+sql = '''
+UPDATE
+  "media"
+SET
+  "updated_at" = CURRENT_TIMESTAMP
+WHERE
+  "id" = $1
+RETURNING
+  "id",
+  "created_at",
+  "updated_at"'''
+rows_affected = 1
+rows_returned = 1
+
+[[queries]]
+sql = 'COMMIT'
+rows_affected = 0
+rows_returned = 0

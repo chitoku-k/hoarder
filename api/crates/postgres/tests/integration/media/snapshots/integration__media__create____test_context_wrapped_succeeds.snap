@@ -1,0 +1,21 @@
+---
+source: crates/postgres/tests/integration/media/create.rs
+expression: ctx.queries()
+---
+[[queries]]
+sql = '''
+INSERT INTO
+  "media"
+VALUES
+  (DEFAULT)
+RETURNING
+  "id",
+  "created_at",
+  "updated_at"'''
+rows_affected = 1
+rows_returned = 1
+
+[[queries]]
+sql = 'COMMIT'
+rows_affected = 0
+rows_returned = 0

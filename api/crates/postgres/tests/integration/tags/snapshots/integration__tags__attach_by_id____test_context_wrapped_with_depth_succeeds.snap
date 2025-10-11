@@ -1,0 +1,176 @@
+---
+source: crates/postgres/tests/integration/tags/attach_by_id.rs
+expression: ctx.queries()
+---
+[[queries]]
+sql = '''
+SELECT
+  COUNT(*)
+FROM
+  "tag_paths"
+WHERE
+  "ancestor_id" = $1
+  AND "descendant_id" = $2'''
+rows_affected = 1
+rows_returned = 1
+
+[[queries]]
+sql = '''
+DELETE FROM
+  "tag_paths"
+WHERE
+  ("ancestor_id", "descendant_id", "distance") IN (
+    SELECT
+      "tag_path_ancestors"."ancestor_id",
+      "tag_path_descendants"."descendant_id",
+      "tag_path_ancestors"."distance" + "tag_path_descendants"."distance"
+    FROM
+      "tag_paths" AS "tag_path_ancestors"
+    INNER JOIN
+      "tag_paths" AS "tag_path_descendants" ON "tag_path_ancestors"."descendant_id" = "tag_path_descendants"."ancestor_id"
+    WHERE
+      "tag_path_ancestors"."descendant_id" = $1
+      AND "tag_path_descendants"."ancestor_id" = $2
+      AND "tag_path_ancestors"."ancestor_id" <> $3
+      AND "tag_path_descendants"."descendant_id" <> $4
+  )'''
+rows_affected = 8
+rows_returned = 0
+
+[[queries]]
+sql = '''
+DELETE FROM
+  "tag_paths"
+WHERE
+  ("ancestor_id", "descendant_id", "distance") IN (
+    SELECT
+      "ancestor_id",
+      "descendant_id",
+      "distance"
+    WHERE
+      "descendant_id" = $1
+      AND "ancestor_id" <> "descendant_id"
+  )'''
+rows_affected = 2
+rows_returned = 0
+
+[[queries]]
+sql = 'RELEASE SAVEPOINT _sqlx_savepoint_1'
+rows_affected = 0
+rows_returned = 0
+
+[[queries]]
+sql = '''
+INSERT INTO
+  "tag_paths" ("ancestor_id", "descendant_id", "distance")
+SELECT
+  "ancestor_id",
+  $1,
+  "distance" + $2
+FROM
+  "tag_paths"
+WHERE
+  "descendant_id" = $3'''
+rows_affected = 2
+rows_returned = 0
+
+[[queries]]
+sql = '''
+INSERT INTO
+  "tag_paths" ("ancestor_id", "descendant_id", "distance")
+SELECT
+  "tag_path_ancestors"."ancestor_id",
+  "tag_path_descendants"."descendant_id",
+  "tag_path_ancestors"."distance" + "tag_path_descendants"."distance"
+FROM
+  "tag_paths" AS "tag_path_ancestors"
+INNER JOIN
+  "tag_paths" AS "tag_path_descendants" ON "tag_path_ancestors"."descendant_id" = "tag_path_descendants"."ancestor_id"
+WHERE
+  "tag_path_ancestors"."descendant_id" = $1
+  AND "tag_path_descendants"."ancestor_id" = $2
+  AND "tag_path_ancestors"."ancestor_id" <> $3
+  AND "tag_path_descendants"."descendant_id" <> $4'''
+rows_affected = 8
+rows_returned = 0
+
+[[queries]]
+sql = 'RELEASE SAVEPOINT _sqlx_savepoint_1'
+rows_affected = 0
+rows_returned = 0
+
+[[queries]]
+sql = '''
+SELECT
+  "tag_orders"."order",
+  "distance",
+  "tag_ancestors"."id" AS "ancestor_id",
+  "tag_ancestors"."name" AS "ancestor_name",
+  "tag_ancestors"."kana" AS "ancestor_kana",
+  "tag_ancestors"."aliases" AS "ancestor_aliases",
+  "tag_ancestors"."created_at" AS "ancestor_created_at",
+  "tag_ancestors"."updated_at" AS "ancestor_updated_at",
+  "tag_descendants"."id" AS "descendant_id",
+  "tag_descendants"."name" AS "descendant_name",
+  "tag_descendants"."kana" AS "descendant_kana",
+  "tag_descendants"."aliases" AS "descendant_aliases",
+  "tag_descendants"."created_at" AS "descendant_created_at",
+  "tag_descendants"."updated_at" AS "descendant_updated_at"
+FROM
+  "tag_paths"
+LEFT JOIN
+  (
+    SELECT
+      "column1" AS "order",
+      "column2" AS "id"
+    FROM
+      (
+        VALUES
+          ($1, $2), ($3, $4)) AS "tag_orders"
+  ) AS "tag_orders" ON "tag_orders"."id" = "descendant_id"
+  AND "ancestor_id" IN ("descendant_id", $5)
+INNER JOIN
+  "tags" AS "tag_ancestors" ON "tag_ancestors"."id" = "tag_paths"."ancestor_id"
+INNER JOIN
+  "tags" AS "tag_descendants" ON "tag_descendants"."id" = "tag_paths"."descendant_id"
+WHERE
+  (
+    "distance" = $6
+    AND "ancestor_id" IN ($7)
+  )
+  OR (
+    "distance" <= $8
+    AND "descendant_id" IN (
+      SELECT
+        "ancestor_id"
+      FROM
+        "tag_paths"
+      WHERE
+        "distance" <= $9
+        AND "descendant_id" IN ($10)
+    )
+  )
+  OR (
+    "distance" <= $11
+    AND "ancestor_id" IN (
+      SELECT
+        "descendant_id"
+      FROM
+        "tag_paths"
+      WHERE
+        "distance" <= $12
+        AND "ancestor_id" IN ($13)
+    )
+  )
+ORDER BY
+  "distance" ASC,
+  "tag_orders"."order" ASC,
+  "tag_ancestors"."kana" ASC,
+  "tag_descendants"."kana" ASC'''
+rows_affected = 13
+rows_returned = 13
+
+[[queries]]
+sql = 'COMMIT'
+rows_affected = 0
+rows_returned = 0

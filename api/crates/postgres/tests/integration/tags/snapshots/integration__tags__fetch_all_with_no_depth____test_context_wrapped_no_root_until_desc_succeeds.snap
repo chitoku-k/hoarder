@@ -1,0 +1,65 @@
+---
+source: crates/postgres/tests/integration/tags/fetch_all_with_no_depth.rs
+expression: ctx.queries()
+---
+[[queries]]
+sql = '''
+SELECT
+  "tags"."id"
+FROM
+  "tags"
+WHERE
+  "tags"."id" <> $1
+  AND ("tags"."kana", "tags"."id") > ($2, $3)
+ORDER BY
+  "tags"."kana" ASC,
+  "tags"."id" ASC
+LIMIT
+  $4'''
+rows_affected = 3
+rows_returned = 3
+
+[[queries]]
+sql = '''
+SELECT
+  "tag_orders"."order",
+  "distance",
+  "tag_ancestors"."id" AS "ancestor_id",
+  "tag_ancestors"."name" AS "ancestor_name",
+  "tag_ancestors"."kana" AS "ancestor_kana",
+  "tag_ancestors"."aliases" AS "ancestor_aliases",
+  "tag_ancestors"."created_at" AS "ancestor_created_at",
+  "tag_ancestors"."updated_at" AS "ancestor_updated_at",
+  "tag_descendants"."id" AS "descendant_id",
+  "tag_descendants"."name" AS "descendant_name",
+  "tag_descendants"."kana" AS "descendant_kana",
+  "tag_descendants"."aliases" AS "descendant_aliases",
+  "tag_descendants"."created_at" AS "descendant_created_at",
+  "tag_descendants"."updated_at" AS "descendant_updated_at"
+FROM
+  "tag_paths"
+LEFT JOIN
+  (
+    SELECT
+      "column1" AS "order",
+      "column2" AS "id"
+    FROM
+      (
+        VALUES
+          ($1, $2), ($3, $4), ($5, $6), ($7, $8)) AS "tag_orders"
+  ) AS "tag_orders" ON "tag_orders"."id" = "descendant_id"
+  AND "ancestor_id" IN ("descendant_id", $9)
+INNER JOIN
+  "tags" AS "tag_ancestors" ON "tag_ancestors"."id" = "tag_paths"."ancestor_id"
+INNER JOIN
+  "tags" AS "tag_descendants" ON "tag_descendants"."id" = "tag_paths"."descendant_id"
+WHERE
+  "distance" = $10
+  AND "ancestor_id" IN ($11, $12, $13)
+ORDER BY
+  "distance" ASC,
+  "tag_orders"."order" ASC,
+  "tag_ancestors"."kana" ASC,
+  "tag_descendants"."kana" ASC'''
+rows_affected = 3
+rows_returned = 3

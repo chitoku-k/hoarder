@@ -3,9 +3,11 @@ use domain::{
     entity::replicas::{Replica, ReplicaId, ReplicaStatus, Size, Thumbnail, ThumbnailId},
     repository::replicas::ReplicasRepository,
 };
+use insta::assert_toml_snapshot;
 use postgres::replicas::PostgresReplicasRepository;
 use pretty_assertions::assert_eq;
 use test_context::test_context;
+use tracing::Instrument;
 use uuid::uuid;
 
 use super::DatabaseContext;
@@ -18,7 +20,7 @@ async fn succeeds(ctx: &DatabaseContext) {
         ReplicaId::from(uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5")),
         ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be")),
         ReplicaId::from(uuid!("6fae1497-e987-492e-987a-f9870b7d3c5b")),
-    ].into_iter()).await.unwrap();
+    ].into_iter()).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual, vec![
         Replica {
@@ -65,4 +67,6 @@ async fn succeeds(ctx: &DatabaseContext) {
             updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap(),
         },
     ]);
+
+    assert_toml_snapshot!(ctx.queries());
 }

@@ -2,10 +2,12 @@ use domain::{
     entity::sources::SourceId,
     repository::{sources::SourcesRepository, DeleteResult},
 };
+use insta::assert_toml_snapshot;
 use postgres::sources::PostgresSourcesRepository;
 use pretty_assertions::assert_eq;
 use sqlx::Row;
 use test_context::test_context;
+use tracing::Instrument;
 use uuid::uuid;
 
 use super::DatabaseContext;
@@ -23,7 +25,7 @@ async fn succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual, 1);
 
     let repository = PostgresSourcesRepository::new(ctx.pool.clone());
-    let actual = repository.delete_by_id(SourceId::from(uuid!("94055dd8-7a22-4137-b8eb-3a374df5e5d1"))).await.unwrap();
+    let actual = repository.delete_by_id(SourceId::from(uuid!("94055dd8-7a22-4137-b8eb-3a374df5e5d1"))).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual, DeleteResult::Deleted(1));
 
@@ -36,7 +38,9 @@ async fn succeeds(ctx: &DatabaseContext) {
 
     assert_eq!(actual, 0);
 
-    let actual = repository.delete_by_id(SourceId::from(uuid!("94055dd8-7a22-4137-b8eb-3a374df5e5d1"))).await.unwrap();
+    let actual = repository.delete_by_id(SourceId::from(uuid!("94055dd8-7a22-4137-b8eb-3a374df5e5d1"))).instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual, DeleteResult::NotFound);
+
+    assert_toml_snapshot!(ctx.queries());
 }

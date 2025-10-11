@@ -1,0 +1,18 @@
+---
+source: crates/postgres/tests/integration/media/fetch_by_ids.rs
+expression: ctx.queries()
+---
+[[queries]]
+sql = '''
+SELECT
+  "id",
+  "created_at",
+  "updated_at"
+FROM
+  "media"
+WHERE
+  "id" IN ($1, $2)
+ORDER BY
+  "created_at" ASC'''
+rows_affected = 2
+rows_returned = 2

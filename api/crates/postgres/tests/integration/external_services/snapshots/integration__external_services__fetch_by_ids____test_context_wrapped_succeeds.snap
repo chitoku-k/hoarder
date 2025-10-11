@@ -1,0 +1,21 @@
+---
+source: crates/postgres/tests/integration/external_services/fetch_by_ids.rs
+expression: ctx.queries()
+---
+[[queries]]
+sql = '''
+SELECT
+  "id",
+  "slug",
+  "kind",
+  "name",
+  "base_url",
+  "url_pattern"
+FROM
+  "external_services"
+WHERE
+  "id" IN ($1, $2)
+ORDER BY
+  "slug" ASC'''
+rows_affected = 2
+rows_returned = 2

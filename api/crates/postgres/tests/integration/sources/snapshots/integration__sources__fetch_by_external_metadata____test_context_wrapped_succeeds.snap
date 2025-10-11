@@ -1,0 +1,27 @@
+---
+source: crates/postgres/tests/integration/sources/fetch_by_external_metadata.rs
+expression: ctx.queries()
+---
+[[queries]]
+sql = '''
+SELECT
+  "sources"."id" AS "source_id",
+  "sources"."external_metadata" AS "source_external_metadata",
+  "sources"."external_metadata_extra" AS "source_external_metadata_extra",
+  "sources"."created_at" AS "source_created_at",
+  "sources"."updated_at" AS "source_updated_at",
+  "external_services"."id" AS "external_service_id",
+  "external_services"."slug" AS "external_service_slug",
+  "external_services"."kind" AS "external_service_kind",
+  "external_services"."name" AS "external_service_name",
+  "external_services"."base_url" AS "external_service_base_url",
+  "external_services"."url_pattern" AS "external_service_url_pattern"
+FROM
+  "sources"
+INNER JOIN
+  "external_services" ON "external_services"."id" = "sources"."external_service_id"
+WHERE
+  "external_service_id" = $1
+  AND "external_metadata" @> $2'''
+rows_affected = 1
+rows_returned = 1

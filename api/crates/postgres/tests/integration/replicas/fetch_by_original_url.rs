@@ -4,9 +4,11 @@ use domain::{
     error::ErrorKind,
     repository::replicas::ReplicasRepository,
 };
+use insta::assert_toml_snapshot;
 use postgres::replicas::PostgresReplicasRepository;
 use pretty_assertions::{assert_eq, assert_matches};
 use test_context::test_context;
+use tracing::Instrument;
 use uuid::uuid;
 
 use super::DatabaseContext;
@@ -15,7 +17,7 @@ use super::DatabaseContext;
 #[tokio::test]
 async fn succeeds(ctx: &DatabaseContext) {
     let repository = PostgresReplicasRepository::new(ctx.pool.clone());
-    let actual = repository.fetch_by_original_url("file:///1706c7bb-4152-44b2-9bbb-1179d09a19be.png").await.unwrap();
+    let actual = repository.fetch_by_original_url("file:///1706c7bb-4152-44b2-9bbb-1179d09a19be.png").instrument(ctx.span.clone()).await.unwrap();
 
     assert_eq!(actual, Replica {
         id: ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be")),
@@ -33,13 +35,17 @@ async fn succeeds(ctx: &DatabaseContext) {
         created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 10).unwrap(),
         updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap(),
     });
+
+    assert_toml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
 #[tokio::test]
 async fn fails(ctx: &DatabaseContext) {
     let repository = PostgresReplicasRepository::new(ctx.pool.clone());
-    let actual = repository.fetch_by_original_url("file:///not-found.png").await.unwrap_err();
+    let actual = repository.fetch_by_original_url("file:///not-found.png").instrument(ctx.span.clone()).await.unwrap_err();
 
     assert_matches!(actual.kind(), ErrorKind::ReplicaNotFoundByUrl { original_url } if original_url == "file:///not-found.png");
+
+    assert_toml_snapshot!(ctx.queries());
 }
