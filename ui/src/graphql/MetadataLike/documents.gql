@@ -56,8 +56,5 @@ query MetadataLike($like: String!) {
         }
       }
     }
-    children {
-      ...tagNode
-    }
   }
 }
