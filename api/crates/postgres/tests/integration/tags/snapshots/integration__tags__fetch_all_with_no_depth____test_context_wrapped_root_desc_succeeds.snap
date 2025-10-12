@@ -10,10 +10,10 @@ FROM
   "tags"
 INNER JOIN
   "tag_paths" ON "tag_paths"."descendant_id" = "tags"."id"
+  AND "tag_paths"."ancestor_id" = $1
+  AND "tag_paths"."distance" = $2
 WHERE
-  "tags"."id" <> $1
-  AND "tag_paths"."ancestor_id" = $2
-  AND "tag_paths"."distance" = $3
+  "tags"."id" <> $3
 ORDER BY
   "tags"."kana" DESC,
   "tags"."id" DESC

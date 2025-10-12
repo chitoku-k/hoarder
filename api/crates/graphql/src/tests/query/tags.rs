@@ -17,6 +17,7 @@ use super::mocks::{
         tags::MockTagsServiceInterface,
     },
     normalizer::MockNormalizerInterface,
+    query::MockQueryParserInterface,
 };
 
 #[tokio::test]
@@ -89,7 +90,7 @@ async fn succeeds() {
             ]))
         });
 
-    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface, MockNormalizerInterface>::new();
+    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface, MockNormalizerInterface, MockQueryParserInterface>::new();
     let schema = Schema::build(query, EmptyMutation, EmptySubscription)
         .data(external_services_service)
         .data(media_service)

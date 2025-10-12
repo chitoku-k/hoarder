@@ -17,7 +17,9 @@ pub trait TagsRepository: Send + Sync + 'static {
         T: CloneableIterator<Item = TagId> + Send;
 
     /// Fetches tags by their names like the given parameter.
-    fn fetch_by_name_or_alias_like(&self, name_or_alias_like: &str, depth: TagDepth) -> impl Future<Output = Result<Vec<Tag>>> + Send;
+    fn fetch_by_name_or_alias_like<T>(&self, query: T, depth: TagDepth) -> impl Future<Output = Result<Vec<Tag>>> + Send
+    where
+        T: CloneableIterator<Item = String> + Send;
 
     /// Fetches all tags.
     fn fetch_all(&self, depth: TagDepth, root: bool, cursor: Option<(String, TagId)>, order: Order, direction: Direction, limit: u64) -> impl Future<Output = Result<Vec<Tag>>> + Send;

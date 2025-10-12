@@ -27,6 +27,7 @@ use postgres::{
     tags::PostgresTagsRepository,
     ConnectOptions, Migrator, PgConnectOptions, PgPool, PgPoolOptions,
 };
+use query::QueryParser;
 use storage::filesystem::FilesystemObjectsRepository;
 use thumbnails::{
     processor::{FilterType, ImageFormat, InMemoryImageProcessor},
@@ -45,12 +46,13 @@ type TagsRepositoryImpl = PostgresTagsRepository;
 type TagTypesRepositoryImpl = PostgresTagTypesRepository;
 type ObjectsRepositoryImpl = FilesystemObjectsRepository;
 type NormalizerImpl = Normalizer;
+type QueryParserImpl = QueryParser;
 type ExternalServicesServiceImpl = ExternalServicesService<ExternalServicesRepositoryImpl>;
 type MediaServiceImpl = MediaService<MediaRepositoryImpl, ObjectsRepositoryImpl, ReplicasRepositoryImpl, SourcesRepositoryImpl, MediumImageProcessorImpl>;
 type TagsServiceImpl = TagsService<TagsRepositoryImpl, TagTypesRepositoryImpl>;
 type ObjectsServiceImpl = ObjectsService<MediaServiceImpl>;
 type ThumbnailsServiceImpl = ThumbnailsService<MediaServiceImpl>;
-type QueryImpl = Query<ExternalServicesServiceImpl, MediaServiceImpl, TagsServiceImpl, NormalizerImpl>;
+type QueryImpl = Query<ExternalServicesServiceImpl, MediaServiceImpl, TagsServiceImpl, NormalizerImpl, QueryParserImpl>;
 type MutationImpl = Mutation<ExternalServicesServiceImpl, MediaServiceImpl, TagsServiceImpl, NormalizerImpl>;
 type SubscriptionImpl = Subscription<MediaServiceImpl>;
 type SchemaImpl = Schema<QueryImpl, MutationImpl, SubscriptionImpl>;
@@ -107,6 +109,10 @@ fn objects_repository(collator: CollatorBorrowed<'static>, root_dir: String) -> 
 
 fn normalizer() -> NormalizerImpl {
     Normalizer::new()
+}
+
+fn query_parser() -> QueryParserImpl {
+    QueryParser::new()
 }
 
 fn external_services_service(external_services_repository: ExternalServicesRepositoryImpl) -> ExternalServicesServiceImpl {
@@ -211,6 +217,7 @@ impl Application {
                     .data(media_service)
                     .data(tags_service)
                     .data(normalizer)
+                    .data(query_parser)
                     .data(media_url_factory)
                     .data(thumbnail_url_factory)
                     .data(task_tracker.clone())

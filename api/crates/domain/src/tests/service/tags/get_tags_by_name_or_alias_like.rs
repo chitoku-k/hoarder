@@ -18,7 +18,7 @@ async fn succeeds() {
     mock_tags_repository
         .expect_fetch_by_name_or_alias_like()
         .times(1)
-        .withf(|name_or_alias_like, depth| (name_or_alias_like, depth) == ("り", &TagDepth::new(0, 1)))
+        .withf(|query, depth| query.clone_box().eq(["り".to_string()]) && depth == &TagDepth::new(0, 1))
         .returning(|_, _| {
             Box::pin(ok(vec![
                 Tag {
@@ -68,7 +68,7 @@ async fn succeeds() {
     let mock_tag_types_repository = MockTagTypesRepository::new();
 
     let service = TagsService::new(mock_tags_repository, mock_tag_types_repository);
-    let actual = service.get_tags_by_name_or_alias_like("り", TagDepth::new(0, 1)).await.unwrap();
+    let actual = service.get_tags_by_name_or_alias_like(["り".to_string()].into_iter(), TagDepth::new(0, 1)).await.unwrap();
 
     assert_eq!(actual, vec![
         Tag {
@@ -121,13 +121,13 @@ async fn fails() {
     mock_tags_repository
         .expect_fetch_by_name_or_alias_like()
         .times(1)
-        .withf(|name_or_alias_like, depth| (name_or_alias_like, depth) == ("り", &TagDepth::new(0, 1)))
+        .withf(|query, depth| query.clone_box().eq(["り".to_string()]) && depth == &TagDepth::new(0, 1))
         .returning(|_, _| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
 
     let mock_tag_types_repository = MockTagTypesRepository::new();
 
     let service = TagsService::new(mock_tags_repository, mock_tag_types_repository);
-    let actual = service.get_tags_by_name_or_alias_like("り", TagDepth::new(0, 1)).await.unwrap_err();
+    let actual = service.get_tags_by_name_or_alias_like(["り".to_string()].into_iter(), TagDepth::new(0, 1)).await.unwrap_err();
 
     assert_matches!(actual.kind(), ErrorKind::Other);
 }

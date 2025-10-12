@@ -8,6 +8,11 @@ SELECT
   "tags"."id"
 FROM
   "tags"
+INNER JOIN
+  "tag_paths" ON "tag_paths"."descendant_id" = "tags"."id"
+  AND "tag_paths"."ancestor_id" <> $1
+INNER JOIN
+  "tags" AS "tag_ancestors" ON "tag_ancestors"."id" = "tag_paths"."ancestor_id"
 LEFT JOIN
   (
     SELECT
@@ -16,12 +21,90 @@ LEFT JOIN
     FROM
       "tags"
   ) AS "tags_aliases" ON "tags_aliases"."id" = "tags"."id"
-WHERE
-  ("name" ILIKE $1)
-  OR ("kana" ILIKE $2)
-  OR ("alias" ILIKE $3)
+LEFT JOIN
+  (
+    SELECT
+      "id",
+      unnest("aliases") AS "alias"
+    FROM
+      "tags"
+  ) AS "tag_ancestors_aliases" ON "tag_ancestors_aliases"."id" = "tag_ancestors"."id"
+GROUP BY
+  "tags"."id"
+HAVING
+  bool_or(
+    ("tag_ancestors"."name" ILIKE $2)
+    OR ("tag_ancestors"."kana" ILIKE $3)
+    OR ("tag_ancestors_aliases"."alias" ILIKE $4)
+  )
 ORDER BY
-  "kana" ASC'''
+  bool_or("tags"."name" = $5) DESC,
+  bool_or("tags"."kana" = $6) DESC,
+  bool_or(COALESCE("tags_aliases"."alias" = $7, $8)) DESC,
+  MAX(
+    (
+      array_length(
+        string_to_array(UPPER("tags"."name"), UPPER($9)),
+        $10
+      )
+    ) - $11
+  ) DESC,
+  SUM(
+    (
+      array_length(
+        string_to_array(UPPER("tags"."name"), UPPER($12)),
+        $13
+      )
+    ) - $14
+  ) DESC,
+  (
+    MIN(
+      NULLIF(strpos(UPPER("tags"."name"), UPPER($15)), $16)
+    )
+  ) ASC,
+  (
+    MIN(
+      NULLIF(strpos(UPPER("tags"."kana"), UPPER($17)), $18)
+    )
+  ) ASC,
+  bool_or("tag_ancestors"."name" = $19) DESC,
+  bool_or("tag_ancestors"."kana" = $20) DESC,
+  bool_or(
+    COALESCE("tag_ancestors_aliases"."alias" = $21, $22)
+  ) DESC,
+  MAX(
+    (
+      array_length(
+        string_to_array(UPPER("tag_ancestors"."name"), UPPER($23)),
+        $24
+      )
+    ) - $25
+  ) DESC,
+  SUM(
+    (
+      array_length(
+        string_to_array(UPPER("tag_ancestors"."name"), UPPER($26)),
+        $27
+      )
+    ) - $28
+  ) DESC,
+  (
+    MIN(
+      NULLIF(
+        strpos(UPPER("tag_ancestors"."name"), UPPER($29)),
+        $30
+      )
+    )
+  ) ASC,
+  (
+    MIN(
+      NULLIF(
+        strpos(UPPER("tag_ancestors"."kana"), UPPER($31)),
+        $32
+      )
+    )
+  ) ASC,
+  "tags"."kana" ASC'''
 rows_affected = 2
 rows_returned = 2
 

@@ -15,6 +15,7 @@ use domain::{
 };
 use futures::future::try_join_all;
 use normalizer::NormalizerInterface;
+use query::QueryParserInterface;
 use uuid::Uuid;
 
 use crate::{
@@ -29,31 +30,34 @@ use crate::{
 };
 
 #[derive(Default)]
-pub struct Query<ExternalServicesService, MediaService, TagsService, Normalizer> {
+pub struct Query<ExternalServicesService, MediaService, TagsService, Normalizer, QueryParser> {
     external_services_service: PhantomData<fn() -> ExternalServicesService>,
     media_service: PhantomData<fn() -> MediaService>,
     tags_service: PhantomData<fn() -> TagsService>,
     normalizer: PhantomData<fn() -> Normalizer>,
+    query_parser: PhantomData<fn() -> QueryParser>,
 }
 
-impl<ExternalServicesService, MediaService, TagsService, Normalizer> Query<ExternalServicesService, MediaService, TagsService, Normalizer> {
+impl<ExternalServicesService, MediaService, TagsService, Normalizer, QueryParser> Query<ExternalServicesService, MediaService, TagsService, Normalizer, QueryParser> {
     pub fn new() -> Self {
         Self {
             external_services_service: PhantomData,
             media_service: PhantomData,
             tags_service: PhantomData,
             normalizer: PhantomData,
+            query_parser: PhantomData,
         }
     }
 }
 
 #[Object]
-impl<ExternalServicesService, MediaService, TagsService, Normalizer> Query<ExternalServicesService, MediaService, TagsService, Normalizer>
+impl<ExternalServicesService, MediaService, TagsService, Normalizer, QueryParser> Query<ExternalServicesService, MediaService, TagsService, Normalizer, QueryParser>
 where
     ExternalServicesService: ExternalServicesServiceInterface,
     MediaService: MediaServiceInterface,
     TagsService: TagsServiceInterface,
     Normalizer: NormalizerInterface,
+    QueryParser: QueryParserInterface,
 {
     /// Fetches all external services.
     #[tracing::instrument(skip_all)]
@@ -372,21 +376,25 @@ where
         ).await.map_err(|e| Error::new(ErrorKind::GraphQLError(e)))
     }
 
-    /// Looks up tags that contains the given name or alias.
+    /// Looks up tags whose name, kana, or alias of itself or any of its ancestors matches the query.
+    /// When the query contains multiple keywords, only tags that contain all of them are returned.
+    /// A keyword can consist of multiple words by enclosing them in double quotes.
     #[tracing::instrument(skip_all)]
     async fn all_tags_like(
         &self,
         ctx: &Context<'_>,
-        #[graphql(validator(chars_min_length = 1), desc = "The characters like the name or alias.")]
+        #[graphql(validator(chars_min_length = 1), desc = "The query for the name, kana, or alias.")]
         name_or_alias_like: String,
     ) -> Result<Vec<Tag>> {
         let tags_service = ctx.data_unchecked::<TagsService>();
         let normalizer = ctx.data_unchecked::<Arc<Normalizer>>();
+        let query_parser = ctx.data_unchecked::<QueryParser>();
 
-        let name_or_alias_like = normalizer.normalize(name_or_alias_like);
+        let query = normalizer.normalize(name_or_alias_like);
+        let query = query_parser.parse(&query);
         let depth = get_tag_depth(&ctx.look_ahead());
 
-        let tags = tags_service.get_tags_by_name_or_alias_like(&name_or_alias_like, depth).await?;
+        let tags = tags_service.get_tags_by_name_or_alias_like(query.into_iter().map(ToString::to_string), depth).await?;
         Ok(tags.into_iter().map(Into::into).collect())
     }
 

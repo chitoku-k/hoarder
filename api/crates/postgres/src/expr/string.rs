@@ -19,4 +19,12 @@ impl StringExpr {
     {
         Expr::cust_with_exprs("rtrim($1, $2)", [arg1.into(), arg2.into()])
     }
+
+    pub fn strpos<T1, T2>(arg1: T1, arg2: T2) -> SimpleExpr
+    where
+        T1: Into<SimpleExpr>,
+        T2: Into<SimpleExpr>,
+    {
+        Expr::cust_with_exprs("strpos($1, $2)", [arg1.into(), arg2.into()])
+    }
 }

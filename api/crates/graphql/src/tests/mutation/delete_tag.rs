@@ -16,6 +16,7 @@ use super::mocks::{
         tags::MockTagsServiceInterface,
     },
     normalizer::MockNormalizerInterface,
+    query::MockQueryParserInterface,
 };
 
 #[tokio::test]
@@ -31,7 +32,7 @@ async fn succeeds() {
         .withf(|id, recursive| id == &TagId::from(uuid!("33333333-3333-3333-3333-333333333333")) && *recursive)
         .returning(|_, _| Box::pin(ok(DeleteResult::Deleted(1))));
 
-    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface, MockNormalizerInterface>::new();
+    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface, MockNormalizerInterface, MockQueryParserInterface>::new();
     let mutation = Mutation::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface, MockNormalizerInterface>::new();
     let schema = Schema::build(query, mutation, EmptySubscription)
         .data(external_services_service)

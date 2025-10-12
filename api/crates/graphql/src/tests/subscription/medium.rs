@@ -20,6 +20,7 @@ use super::mocks::{
         tags::MockTagsServiceInterface,
     },
     normalizer::MockNormalizerInterface,
+    query::MockQueryParserInterface,
 };
 
 #[tokio::test]
@@ -77,7 +78,7 @@ async fn succeeds() {
         .withf(|original_url| original_url == "file:///77777777-7777-7777-7777-777777777777.png")
         .returning(|_| Some("https://original.example.com/77777777-7777-7777-7777-777777777777.png".to_string()));
 
-    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface, MockNormalizerInterface>::new();
+    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface, MockNormalizerInterface, MockQueryParserInterface>::new();
     let subscription = Subscription::<MockMediaServiceInterface>::new();
     let schema = Schema::build(query, EmptyMutation, subscription)
         .data(external_services_service)
