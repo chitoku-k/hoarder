@@ -1,0 +1,18 @@
+[package]
+name = "query"
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lib]
+doctest = false
+
+[dependencies.derive_more]
+version = "2.0.1"
+features = ["constructor"]
+
+[dependencies.lazy-regex]
+version = "3.4.1"
+
+[dev-dependencies.pretty_assertions]
+version = "1.4.1"

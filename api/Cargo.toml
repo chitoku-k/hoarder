@@ -18,6 +18,7 @@ members = [
     "crates/normalizer",
     "crates/objects",
     "crates/postgres",
+    "crates/query",
     "crates/storage",
     "crates/thumbnails",
 ]
@@ -47,6 +48,9 @@ path = "crates/objects"
 
 [workspace.dependencies.postgres]
 path = "crates/postgres"
+
+[workspace.dependencies.query]
+path = "crates/query"
 
 [workspace.dependencies.storage]
 path = "crates/storage"
@@ -86,6 +90,9 @@ workspace = true
 workspace = true
 
 [dependencies.postgres]
+workspace = true
+
+[dependencies.query]
 workspace = true
 
 [dependencies.storage]

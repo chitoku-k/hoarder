@@ -1,0 +1,5 @@
+---
+source: crates/postgres/tests/integration/tags/fetch_by_name_or_alias_like.rs
+expression: ctx.queries()
+---
+queries = []

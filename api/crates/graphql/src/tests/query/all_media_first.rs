@@ -19,6 +19,7 @@ use super::mocks::{
         tags::MockTagsServiceInterface,
     },
     normalizer::MockNormalizerInterface,
+    query::MockQueryParserInterface,
 };
 
 #[tokio::test]
@@ -79,7 +80,7 @@ async fn asc_succeeds() {
 
     let tags_service = MockTagsServiceInterface::new();
 
-    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface, MockNormalizerInterface>::new();
+    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface, MockNormalizerInterface, MockQueryParserInterface>::new();
     let schema = Schema::build(query, EmptyMutation, EmptySubscription)
         .data(external_services_service)
         .data(media_service)
@@ -196,7 +197,7 @@ async fn desc_succeeds() {
 
     let tags_service = MockTagsServiceInterface::new();
 
-    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface, MockNormalizerInterface>::new();
+    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface, MockNormalizerInterface, MockQueryParserInterface>::new();
     let schema = Schema::build(query, EmptyMutation, EmptySubscription)
         .data(external_services_service)
         .data(media_service)
@@ -297,7 +298,7 @@ async fn after_asc_succeeds() {
 
     let tags_service = MockTagsServiceInterface::new();
 
-    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface, MockNormalizerInterface>::new();
+    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface, MockNormalizerInterface, MockQueryParserInterface>::new();
     let schema = Schema::build(query, EmptyMutation, EmptySubscription)
         .data(external_services_service)
         .data(media_service)
@@ -391,7 +392,7 @@ async fn after_desc_succeeds() {
 
     let tags_service = MockTagsServiceInterface::new();
 
-    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface, MockNormalizerInterface>::new();
+    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface, MockNormalizerInterface, MockQueryParserInterface>::new();
     let schema = Schema::build(query, EmptyMutation, EmptySubscription)
         .data(external_services_service)
         .data(media_service)
@@ -485,7 +486,7 @@ async fn before_asc_succeeds() {
 
     let tags_service = MockTagsServiceInterface::new();
 
-    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface, MockNormalizerInterface>::new();
+    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface, MockNormalizerInterface, MockQueryParserInterface>::new();
     let schema = Schema::build(query, EmptyMutation, EmptySubscription)
         .data(external_services_service)
         .data(media_service)
@@ -579,7 +580,7 @@ async fn before_desc_succeeds() {
 
     let tags_service = MockTagsServiceInterface::new();
 
-    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface, MockNormalizerInterface>::new();
+    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface, MockNormalizerInterface, MockQueryParserInterface>::new();
     let schema = Schema::build(query, EmptyMutation, EmptySubscription)
         .data(external_services_service)
         .data(media_service)

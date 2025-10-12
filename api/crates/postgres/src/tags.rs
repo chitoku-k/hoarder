@@ -11,12 +11,12 @@ use domain::{
 use either::{Left, Right};
 use futures::{TryFutureExt, TryStreamExt};
 use ordermap::OrderMap;
-use sea_query::{extension::postgres::PgExpr, Asterisk, BinOper, Cond, Expr, Iden, JoinType, LikeExpr, LockType, Order, PostgresQueryBuilder, Query, SelectStatement};
+use sea_query::{extension::postgres::PgExpr, Alias, Asterisk, BinOper, Cond, Expr, Func, Iden, IntoIden, JoinType, LikeExpr, LockType, Order, PostgresQueryBuilder, Query, SelectStatement};
 use sea_query_binder::SqlxBinder;
 use sqlx::{Acquire, FromRow, PgConnection, PgPool, Postgres, Row, Transaction};
 
 use crate::{
-    expr::array::ArrayExpr,
+    expr::{aggregate::AggregateExpr, array::ArrayExpr, conditional::ConditionalExpr, string::StringExpr},
     sea_query_uuid_value,
 };
 
@@ -558,23 +558,37 @@ impl TagsRepository for PostgresTagsRepository {
     }
 
     #[tracing::instrument(skip_all)]
-    async fn fetch_by_name_or_alias_like(&self, name_or_alias_like: &str, depth: TagDepth) -> Result<Vec<Tag>> {
+    async fn fetch_by_name_or_alias_like<T>(&self, query: T, depth: TagDepth) -> Result<Vec<Tag>>
+    where
+        T: Iterator<Item = String> + Send,
+    {
         let mut conn = self.pool.acquire().await.map_err(Error::other)?;
 
+        let query: Vec<_> = query.into_iter().collect();
+        if query.is_empty() {
+            return Ok(Vec::new());
+        }
+
+        const TAG_ANCESTORS: &str = "tag_ancestors";
+        const TAG_ANCESTORS_ALIASES: &str = "tag_ancestors_aliases";
         const TAGS_ALIASES: &str = "tags_aliases";
         const ALIAS: &str = "alias";
 
-        let name_or_alias_like = format!(
-            "%{}%",
-            name_or_alias_like
-                .cow_replace('\\', "\\\\")
-                .cow_replace('%', "\\%")
-                .cow_replace('_', "\\_"),
-        );
-
-        let (sql, values) = Query::select()
+        let mut sql = Query::select()
             .column((PostgresTag::Table, PostgresTag::Id))
             .from(PostgresTag::Table)
+            .join(
+                JoinType::InnerJoin,
+                PostgresTagPath::Table,
+                Expr::col((PostgresTagPath::Table, PostgresTagPath::DescendantId)).equals((PostgresTag::Table, PostgresTag::Id))
+                    .and(Expr::col((PostgresTagPath::Table, PostgresTagPath::AncestorId)).ne(PostgresTagId::from(TagId::root()))),
+            )
+            .join_as(
+                JoinType::InnerJoin,
+                PostgresTag::Table,
+                TAG_ANCESTORS,
+                Expr::col((TAG_ANCESTORS, PostgresTag::Id)).equals((PostgresTagPath::Table, PostgresTagPath::AncestorId)),
+            )
             .join_subquery(
                 JoinType::LeftJoin,
                 Query::select()
@@ -585,15 +599,106 @@ impl TagsRepository for PostgresTagsRepository {
                 TAGS_ALIASES,
                 Expr::col((TAGS_ALIASES, PostgresTag::Id)).equals((PostgresTag::Table, PostgresTag::Id)),
             )
-            .cond_where(
-                Cond::any()
-                    .add(Expr::col(PostgresTag::Name).ilike(LikeExpr::new(name_or_alias_like.clone())))
-                    .add(Expr::col(PostgresTag::Kana).ilike(LikeExpr::new(name_or_alias_like.clone())))
-                    .add(Expr::col(ALIAS).ilike(LikeExpr::new(name_or_alias_like))),
+            .join_subquery(
+                JoinType::LeftJoin,
+                Query::select()
+                    .column(PostgresTag::Id)
+                    .expr_as(ArrayExpr::unnest(Expr::col(PostgresTag::Aliases)), ALIAS)
+                    .from(PostgresTag::Table)
+                    .take(),
+                TAG_ANCESTORS_ALIASES,
+                Expr::col((TAG_ANCESTORS_ALIASES, PostgresTag::Id)).equals((TAG_ANCESTORS, PostgresTag::Id)),
             )
-            .order_by(PostgresTag::Kana, Order::Asc)
-            .build_sqlx(PostgresQueryBuilder);
+            .group_by_col((PostgresTag::Table, PostgresTag::Id))
+            .cond_having(query
+                .iter()
+                .map(|query| {
+                    let query = format!(
+                        "%{}%",
+                        query
+                            .cow_replace('\\', "\\\\")
+                            .cow_replace('%', "\\%")
+                            .cow_replace('_', "\\_"),
+                    );
+                    AggregateExpr::bool_or(Cond::any()
+                        .add(Expr::col((TAG_ANCESTORS, PostgresTag::Name)).ilike(LikeExpr::new(query.clone())))
+                        .add(Expr::col((TAG_ANCESTORS, PostgresTag::Kana)).ilike(LikeExpr::new(query.clone())))
+                        .add(Expr::col((TAG_ANCESTORS_ALIASES, ALIAS)).ilike(LikeExpr::new(query)))
+                    )
+                })
+                .fold(Cond::all(), |conditions, expr| conditions.add(expr))
+            )
+            .take();
 
+        for table in [PostgresTag::Table.into_iden(), TAG_ANCESTORS.into_iden()] {
+            for (column, coalesce) in [
+                (Expr::col((table.clone(), PostgresTag::Name)), false),
+                (Expr::col((table.clone(), PostgresTag::Kana)), false),
+                (Expr::col((Alias::new(format!("{}_aliases", table.to_string())), ALIAS)), true),
+            ] {
+                sql.order_by_expr(
+                    AggregateExpr::bool_or(query
+                        .iter()
+                        .map(|query| {
+                            let expr = column.clone().eq(query);
+                            match coalesce {
+                                true => Expr::value(Func::coalesce([expr, false.into()])),
+                                false => expr,
+                            }
+                        })
+                        .fold(Cond::any(), |conditions, expr| conditions.add(expr))
+                    ),
+                    Order::Desc,
+                );
+            }
+
+            for func in [Func::max, Func::sum] {
+                sql.order_by_expr(
+                    func(query
+                        .iter()
+                        .map(|query| {
+                            ArrayExpr::length(
+                                ArrayExpr::string_to_array(
+                                    Func::upper(Expr::col((table.clone(), PostgresTag::Name))),
+                                    Func::upper(query),
+                                ),
+                                1,
+                            ).sub(1)
+                        })
+                        .reduce(|acc, e| acc.add(e))
+                        .unwrap_or_else(|| 0.into()),
+                    ).into(),
+                    Order::Desc,
+                );
+            }
+
+            for column in [
+                Expr::col((table.clone(), PostgresTag::Name)),
+                Expr::col((table.clone(), PostgresTag::Kana)),
+            ] {
+                sql.order_by_expr(
+                    Expr::tuple(query
+                        .iter()
+                        .map(|query| {
+                            Expr::value(Func::min(
+                                ConditionalExpr::null_if(
+                                    StringExpr::strpos(
+                                        Func::upper(column.clone()),
+                                        Func::upper(query),
+                                    ),
+                                    0,
+                                ),
+                            ))
+                        }),
+                    ).into(),
+                    Order::Asc,
+                );
+            }
+        }
+
+        sql.order_by((PostgresTag::Table, PostgresTag::Kana), Order::Asc);
+
+        let (sql, values) = sql.build_sqlx(PostgresQueryBuilder);
         let ids: Vec<_> = sqlx::query_as_with::<_, PostgresTagIdRow, _>(&sql, values)
             .fetch(&mut *conn)
             .map_ok(|r| TagId::from(r.id))
@@ -637,15 +742,13 @@ impl TagsRepository for PostgresTagsRepository {
             .limit(limit);
 
         if root {
-            query
-                .join(
-                    JoinType::InnerJoin,
-                    PostgresTagPath::Table,
-                    Expr::col((PostgresTagPath::Table, PostgresTagPath::DescendantId))
-                        .equals((PostgresTag::Table, PostgresTag::Id)),
-                )
-                .and_where(Expr::col((PostgresTagPath::Table, PostgresTagPath::AncestorId)).eq(PostgresTagId::from(TagId::root())))
-                .and_where(Expr::col((PostgresTagPath::Table, PostgresTagPath::Distance)).eq(1));
+            query.join(
+                JoinType::InnerJoin,
+                PostgresTagPath::Table,
+                Expr::col((PostgresTagPath::Table, PostgresTagPath::DescendantId)).equals((PostgresTag::Table, PostgresTag::Id))
+                    .and(Expr::col((PostgresTagPath::Table, PostgresTagPath::AncestorId)).eq(PostgresTagId::from(TagId::root())))
+                    .and(Expr::col((PostgresTagPath::Table, PostgresTagPath::Distance)).eq(1)),
+            );
         }
 
         let (sql, values) = query.build_sqlx(PostgresQueryBuilder);

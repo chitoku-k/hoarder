@@ -17,6 +17,7 @@ use super::mocks::{
         tags::MockTagsServiceInterface,
     },
     normalizer::MockNormalizerInterface,
+    query::MockQueryParserInterface,
 };
 
 #[tokio::test]
@@ -28,30 +29,9 @@ async fn succeeds() {
     tags_service
         .expect_get_tags_by_name_or_alias_like()
         .times(1)
-        .withf(|name_or_alias_like, depth| {
-            (name_or_alias_like, depth) == ("り", &TagDepth::new(2, 2))
-        })
+        .withf(|query, depth| query.clone_box().eq(["ゆ".to_string(), "り".to_string()].into_iter()) && depth == &TagDepth::new(2, 2))
         .returning(|_, _| {
             Box::pin(ok(vec![
-                Tag {
-                    id: TagId::from(uuid!("33333333-3333-3333-3333-333333333333")),
-                    name: "赤座あかり".to_string(),
-                    kana: "あかざあかり".to_string(),
-                    aliases: AliasSet::new(BTreeSet::from(["アッカリーン".to_string()])),
-                    parent: Some(Box::new(Tag {
-                        id: TagId::from(uuid!("22222222-2222-2222-2222-222222222222")),
-                        name: "ゆるゆり".to_string(),
-                        kana: "ゆるゆり".to_string(),
-                        aliases: Default::default(),
-                        parent: None,
-                        children: Vec::new(),
-                        created_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(),
-                        updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 1, 0).unwrap(),
-                    })),
-                    children: Vec::new(),
-                    created_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(),
-                    updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 1, 0).unwrap(),
-                },
                 Tag {
                     id: TagId::from(uuid!("22222222-2222-2222-2222-222222222222")),
                     name: "ゆるゆり".to_string(),
@@ -83,6 +63,25 @@ async fn succeeds() {
                     created_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(),
                     updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 1, 0).unwrap(),
                 },
+                Tag {
+                    id: TagId::from(uuid!("33333333-3333-3333-3333-333333333333")),
+                    name: "赤座あかり".to_string(),
+                    kana: "あかざあかり".to_string(),
+                    aliases: AliasSet::new(BTreeSet::from(["アッカリーン".to_string()])),
+                    parent: Some(Box::new(Tag {
+                        id: TagId::from(uuid!("22222222-2222-2222-2222-222222222222")),
+                        name: "ゆるゆり".to_string(),
+                        kana: "ゆるゆり".to_string(),
+                        aliases: Default::default(),
+                        parent: None,
+                        children: Vec::new(),
+                        created_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(),
+                        updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 1, 0).unwrap(),
+                    })),
+                    children: Vec::new(),
+                    created_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 0, 0).unwrap(),
+                    updated_at: Utc.with_ymd_and_hms(2022, 6, 1, 0, 1, 0).unwrap(),
+                },
             ]))
         });
 
@@ -90,20 +89,28 @@ async fn succeeds() {
     normalizer
         .expect_normalize_str()
         .times(1)
-        .withf(|text| text == "り")
-        .returning(|_| Cow::from("り"));
+        .withf(|text| text == "ゆ り")
+        .returning(|_| Cow::from("ゆ り"));
 
-    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface, MockNormalizerInterface>::new();
+    let mut query_parser = MockQueryParserInterface::new();
+    query_parser
+        .expect_parse()
+        .times(1)
+        .withf(|query| query == "ゆ り")
+        .returning(|_| vec!["ゆ", "り"]);
+
+    let query = Query::<MockExternalServicesServiceInterface, MockMediaServiceInterface, MockTagsServiceInterface, MockNormalizerInterface, MockQueryParserInterface>::new();
     let schema = Schema::build(query, EmptyMutation, EmptySubscription)
         .data(external_services_service)
         .data(media_service)
         .data(tags_service)
         .data(Arc::new(normalizer))
+        .data(query_parser)
         .finish();
 
     let req = indoc! {r#"
         query {
-            allTagsLike(nameOrAliasLike: "り") {
+            allTagsLike(nameOrAliasLike: "ゆ り") {
                 id
                 name
                 kana
@@ -150,24 +157,6 @@ async fn succeeds() {
     assert_eq!(actual.data, value!({
         "allTagsLike": [
             {
-                "id": "33333333-3333-3333-3333-333333333333",
-                "name": "赤座あかり",
-                "kana": "あかざあかり",
-                "aliases": ["アッカリーン"],
-                "parent": {
-                    "id": "22222222-2222-2222-2222-222222222222",
-                    "name": "ゆるゆり",
-                    "kana": "ゆるゆり",
-                    "aliases": [],
-                    "parent": null,
-                    "createdAt": "2022-06-01T00:00:00+00:00",
-                    "updatedAt": "2022-06-01T00:01:00+00:00",
-                },
-                "children": [],
-                "createdAt": "2022-06-01T00:00:00+00:00",
-                "updatedAt": "2022-06-01T00:01:00+00:00",
-            },
-            {
                 "id": "22222222-2222-2222-2222-222222222222",
                 "name": "ゆるゆり",
                 "kana": "ゆるゆり",
@@ -193,6 +182,24 @@ async fn succeeds() {
                         "updatedAt": "2022-06-01T00:03:00+00:00",
                     },
                 ],
+                "createdAt": "2022-06-01T00:00:00+00:00",
+                "updatedAt": "2022-06-01T00:01:00+00:00",
+            },
+            {
+                "id": "33333333-3333-3333-3333-333333333333",
+                "name": "赤座あかり",
+                "kana": "あかざあかり",
+                "aliases": ["アッカリーン"],
+                "parent": {
+                    "id": "22222222-2222-2222-2222-222222222222",
+                    "name": "ゆるゆり",
+                    "kana": "ゆるゆり",
+                    "aliases": [],
+                    "parent": null,
+                    "createdAt": "2022-06-01T00:00:00+00:00",
+                    "updatedAt": "2022-06-01T00:01:00+00:00",
+                },
+                "children": [],
                 "createdAt": "2022-06-01T00:00:00+00:00",
                 "updatedAt": "2022-06-01T00:01:00+00:00",
             },

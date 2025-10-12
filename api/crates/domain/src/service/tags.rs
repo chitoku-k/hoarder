@@ -36,7 +36,9 @@ pub trait TagsServiceInterface: Send + Sync + 'static {
         T: CloneableIterator<Item = TagId> + Send;
 
     /// Gets the tags by their name or alias.
-    fn get_tags_by_name_or_alias_like(&self, name_or_alias_like: &str, depth: TagDepth) -> impl Future<Output = Result<Vec<Tag>>> + Send;
+    fn get_tags_by_name_or_alias_like<T>(&self, query: T, depth: TagDepth) -> impl Future<Output = Result<Vec<Tag>>> + Send
+    where
+        T: CloneableIterator<Item = String> + Send;
 
     /// Gets tag types.
     fn get_tag_types(&self) -> impl Future<Output = Result<Vec<TagType>>> + Send;
@@ -138,8 +140,11 @@ where
     }
 
     #[tracing::instrument(skip_all)]
-    async fn get_tags_by_name_or_alias_like(&self, name_or_alias_like: &str, depth: TagDepth) -> Result<Vec<Tag>> {
-        match self.tags_repository.fetch_by_name_or_alias_like(name_or_alias_like, depth).await {
+    async fn get_tags_by_name_or_alias_like<T>(&self, query: T, depth: TagDepth) -> Result<Vec<Tag>>
+    where
+        T: CloneableIterator<Item = String> + Send,
+    {
+        match self.tags_repository.fetch_by_name_or_alias_like(query, depth).await {
             Ok(tags) => Ok(tags),
             Err(e) => {
                 tracing::error!("failed to get the tags\nError: {e:?}");
