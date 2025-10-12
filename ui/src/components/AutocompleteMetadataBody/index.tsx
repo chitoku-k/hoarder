@@ -2,7 +2,6 @@
 
 import type { ComponentType, FunctionComponent, SyntheticEvent } from 'react'
 import { useCallback, useEffect, useMemo, useState, useTransition } from 'react'
-import { useCollator } from '@react-aria/i18n'
 import clsx from 'clsx'
 import { skipToken } from '@apollo/client/react'
 import type { FilterOptionsState } from '@mui/material'
@@ -37,8 +36,6 @@ function* useMetadata(
     readonly noTagTypes?: boolean
   },
 ): Generator<Metadata> {
-  const collator = useCollator()
-
   if (sources && !options.noSources) {
     for (const source of sources.id) {
       yield { source }
@@ -50,16 +47,8 @@ function* useMetadata(
   }
 
   if (tags && !options.noTags) {
-    const allTags = tags
-      .toSorted((a, b) => collator.compare(a.kana, b.kana))
-      .flatMap(tag => [ tag, ...tag.children.map(child => ({ ...child, parent: tag })) ])
-
-    const ids = new Set<string>()
-    for (const tag of allTags) {
-      if (!ids.has(tag.id)) {
-        ids.add(tag.id)
-        yield { tag }
-      }
+    for (const tag of tags) {
+      yield { tag }
     }
   }
 

@@ -37,9 +37,6 @@ query AllTagsLike($nameOrAliasLike: String!) {
         }
       }
     }
-    children {
-      ...tagNode
-    }
   }
 }
 

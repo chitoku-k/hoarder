@@ -2,7 +2,6 @@
 
 import type { ComponentType, FunctionComponent, SyntheticEvent } from 'react'
 import { useCallback, useEffect, useMemo, useState, useTransition } from 'react'
-import { useCollator } from '@react-aria/i18n'
 import clsx from 'clsx'
 import { skipToken } from '@apollo/client/react'
 import type { AutocompleteInputChangeReason, AutocompleteProps } from '@mui/material/Autocomplete'
@@ -40,7 +39,6 @@ const AutocompleteTagBody: FunctionComponent<AutocompleteTagBodyProps> = ({
   const [ selecting, setSelecting ] = useState(false)
 
   const [ loading, startTransition ] = useTransition()
-  const collator = useCollator()
 
   const ref = useCallback((input: HTMLInputElement | null) => {
     if (!focus) {
@@ -94,19 +92,6 @@ const AutocompleteTagBody: FunctionComponent<AutocompleteTagBodyProps> = ({
   }, [])
 
   const tagsLike = useTagsLike(value.length ? { nameOrAliasLike: value } : skipToken) ?? []
-  const allTags = tagsLike
-    .toSorted((a, b) => collator.compare(a.kana, b.kana))
-    .flatMap(tag => [ tag, ...tag.children.map(child => ({ ...child, parent: tag })) ])
-
-  const tags: Tag[] = []
-  const ids = new Set<string>()
-  for (const tag of allTags) {
-    if (!ids.has(tag.id)) {
-      ids.add(tag.id)
-      tags.push(tag)
-    }
-  }
-
   return (
     <>
       <Autocomplete
@@ -117,7 +102,7 @@ const AutocompleteTagBody: FunctionComponent<AutocompleteTagBodyProps> = ({
         getOptionKey={option => option.id}
         filterOptions={x => x}
         filterSelectedOptions
-        options={tags}
+        options={tagsLike}
         inputValue={inputValue}
         disabled={disabled}
         loading={loading}
