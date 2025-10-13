@@ -45,7 +45,7 @@ INNER JOIN
   (
     SELECT
       "tags"."id",
-      array_agg(
+      ARRAY_AGG(
         "ancestors"."kana"
         ORDER BY
           "tag_paths"."distance" DESC

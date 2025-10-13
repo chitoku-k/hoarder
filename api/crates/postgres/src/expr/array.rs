@@ -11,13 +11,6 @@ impl ArrayExpr {
         Expr::cust_with_exprs("array_length($1, $2)", [arg1.into(), arg2.into()])
     }
 
-    pub fn agg<T>(arg: T) -> SimpleExpr
-    where
-        T: Into<SimpleExpr>,
-    {
-        Expr::cust_with_expr("array_agg($1)", arg)
-    }
-
     pub fn string_to_array<T1, T2>(arg1: T1, arg2: T2) -> SimpleExpr
     where
         T1: Into<SimpleExpr>,
