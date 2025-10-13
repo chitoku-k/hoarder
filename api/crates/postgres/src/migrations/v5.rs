@@ -118,8 +118,7 @@ impl Operation<Postgres> for SourceExternalMetadataExtraOperation {
             .table(PostgresSource::Table)
             .value(
                 PostgresSource::ExternalMetadata,
-                Expr::col(PostgresSource::ExternalMetadata)
-                    .binary(BinOper::Custom("||"), Expr::col(PostgresSource::ExternalMetadataExtra)),
+                Expr::col(PostgresSource::ExternalMetadata).concatenate(Expr::col(PostgresSource::ExternalMetadataExtra)),
             )
             .to_string(PostgresQueryBuilder);
 
