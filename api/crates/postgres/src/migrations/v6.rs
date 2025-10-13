@@ -51,7 +51,7 @@ impl Operation<Postgres> for ExternalServiceTwitterToX {
             .value(
                 PostgresExternalService::Slug,
                 Expr::cust_with_exprs("replace($1, $2, $3)", [
-                    Expr::col(PostgresExternalService::Slug).into(),
+                    Expr::column(PostgresExternalService::Slug),
                     OLD_SLUG.into(),
                     NEW_SLUG.into(),
                 ]),
@@ -60,7 +60,7 @@ impl Operation<Postgres> for ExternalServiceTwitterToX {
             .value(
                 PostgresExternalService::Name,
                 Expr::cust_with_exprs("replace($1, $2, $3)", [
-                    Expr::col(PostgresExternalService::Name).into(),
+                    Expr::column(PostgresExternalService::Name),
                     OLD_NAME.into(),
                     NEW_NAME.into(),
                 ]),
@@ -68,7 +68,7 @@ impl Operation<Postgres> for ExternalServiceTwitterToX {
             .value(
                 PostgresExternalService::BaseUrl,
                 Expr::cust_with_exprs("replace($1, $2, $3)", [
-                    Expr::col(PostgresExternalService::BaseUrl).into(),
+                    Expr::column(PostgresExternalService::BaseUrl),
                     OLD_BASE_URL.into(),
                     NEW_BASE_URL.into(),
                 ]),
@@ -100,7 +100,7 @@ impl Operation<Postgres> for ExternalServiceTwitterToX {
             .value(
                 PostgresExternalService::Slug,
                 Expr::cust_with_exprs("replace($1, $2, $3)", [
-                    Expr::col(PostgresExternalService::Slug).into(),
+                    Expr::column(PostgresExternalService::Slug),
                     OLD_SLUG.into(),
                     NEW_SLUG.into(),
                 ]),
@@ -109,7 +109,7 @@ impl Operation<Postgres> for ExternalServiceTwitterToX {
             .value(
                 PostgresExternalService::Name,
                 Expr::cust_with_exprs("replace($1, $2, $3)", [
-                    Expr::col(PostgresExternalService::Name).into(),
+                    Expr::column(PostgresExternalService::Name),
                     OLD_NAME.into(),
                     NEW_NAME.into(),
                 ]),
@@ -117,7 +117,7 @@ impl Operation<Postgres> for ExternalServiceTwitterToX {
             .value(
                 PostgresExternalService::BaseUrl,
                 Expr::cust_with_exprs("replace($1, $2, $3)", [
-                    Expr::col(PostgresExternalService::BaseUrl).into(),
+                    Expr::column(PostgresExternalService::BaseUrl),
                     OLD_BASE_URL.into(),
                     NEW_BASE_URL.into(),
                 ]),
@@ -144,7 +144,7 @@ impl Operation<Postgres> for SourceTwitterToX {
             .value(
                 PostgresSource::ExternalMetadata,
                 Expr::cust_with_exprs("jsonb_set($1, $2, $3)", [
-                    Expr::col(PostgresSource::ExternalMetadata).into(),
+                    Expr::column(PostgresSource::ExternalMetadata),
                     "{type}".into(),
                     Expr::cust_with_expr("to_jsonb($1::text)", NEW_TYPE),
                 ]),
@@ -152,7 +152,7 @@ impl Operation<Postgres> for SourceTwitterToX {
             .value(
                 PostgresSource::ExternalMetadataExtra,
                 Expr::cust_with_exprs("jsonb_set($1, $2, $3)", [
-                    Expr::col(PostgresSource::ExternalMetadataExtra).into(),
+                    Expr::column(PostgresSource::ExternalMetadataExtra),
                     "{type}".into(),
                     Expr::cust_with_expr("to_jsonb($1::text)", NEW_TYPE),
                 ]),
@@ -174,7 +174,7 @@ impl Operation<Postgres> for SourceTwitterToX {
             .value(
                 PostgresSource::ExternalMetadata,
                 Expr::cust_with_exprs("jsonb_set($1, $2, $3)", [
-                    Expr::col(PostgresSource::ExternalMetadata).into(),
+                    Expr::column(PostgresSource::ExternalMetadata),
                     "{type}".into(),
                     Expr::cust_with_expr("to_jsonb($1::text)", NEW_TYPE),
                 ]),
@@ -182,7 +182,7 @@ impl Operation<Postgres> for SourceTwitterToX {
             .value(
                 PostgresSource::ExternalMetadataExtra,
                 Expr::cust_with_exprs("jsonb_set($1, $2, $3)", [
-                    Expr::col(PostgresSource::ExternalMetadataExtra).into(),
+                    Expr::column(PostgresSource::ExternalMetadataExtra),
                     "{type}".into(),
                     Expr::cust_with_expr("to_jsonb($1::text)", NEW_TYPE),
                 ]),

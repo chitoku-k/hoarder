@@ -408,9 +408,9 @@ async fn attach_parent(tx: &mut Transaction<'_, Postgres>, id: TagId, parent_id:
         .select_from(
             Query::select()
                 .exprs([
-                    Expr::col(PostgresTagPath::AncestorId).into(),
+                    Expr::column(PostgresTagPath::AncestorId),
                     Expr::val(PostgresTagId::from(id)).into(),
-                    Expr::col(PostgresTagPath::Distance).add(1i32),
+                    Expr::column(PostgresTagPath::Distance).add(1i32),
                 ])
                 .from(PostgresTagPath::Table)
                 .and_where(Expr::col(PostgresTagPath::DescendantId).eq(PostgresTagId::from(parent_id)))
@@ -452,9 +452,9 @@ async fn detach_parent(tx: &mut Transaction<'_, Postgres>, id: TagId) -> Result<
         .from_table(PostgresTagPath::Table)
         .and_where(
             Expr::tuple([
-                Expr::col(PostgresTagPath::AncestorId).into(),
-                Expr::col(PostgresTagPath::DescendantId).into(),
-                Expr::col(PostgresTagPath::Distance).into(),
+                Expr::column(PostgresTagPath::AncestorId),
+                Expr::column(PostgresTagPath::DescendantId),
+                Expr::column(PostgresTagPath::Distance),
             ])
             .in_subquery(descendant_relations(id))
         )
@@ -469,9 +469,9 @@ async fn detach_parent(tx: &mut Transaction<'_, Postgres>, id: TagId) -> Result<
         .from_table(PostgresTagPath::Table)
         .and_where(
             Expr::tuple([
-                Expr::col(PostgresTagPath::AncestorId).into(),
-                Expr::col(PostgresTagPath::DescendantId).into(),
-                Expr::col(PostgresTagPath::Distance).into(),
+                Expr::column(PostgresTagPath::AncestorId),
+                Expr::column(PostgresTagPath::DescendantId),
+                Expr::column(PostgresTagPath::Distance),
             ])
             .in_subquery(ancestor_relations(id))
         )
@@ -729,8 +729,8 @@ impl TagsRepository for PostgresTagsRepository {
             .and_where_option(
                 cursor.map(|(kana, tag_id)| {
                     Expr::tuple([
-                        Expr::col((PostgresTag::Table, PostgresTag::Kana)).into(),
-                        Expr::col((PostgresTag::Table, PostgresTag::Id)).into(),
+                        Expr::column((PostgresTag::Table, PostgresTag::Kana)),
+                        Expr::column((PostgresTag::Table, PostgresTag::Id)),
                     ]).binary(comparison, Expr::tuple([
                         Expr::value(kana),
                         Expr::value(PostgresTagId::from(tag_id)),
