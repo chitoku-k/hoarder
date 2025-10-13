@@ -91,7 +91,7 @@ async fn succeeds_with_original_url() {
         .data(external_services_service)
         .data(media_service)
         .data(tags_service)
-        .data(Arc::new(normalizer))
+        .data(normalizer)
         .data::<Arc<dyn MediaURLFactoryInterface>>(Arc::new(media_url_factory))
         .data(task_tracker)
         .finish();
@@ -215,7 +215,7 @@ async fn succeeds_with_upload() {
         .data(external_services_service)
         .data(media_service)
         .data(tags_service)
-        .data(Arc::new(normalizer))
+        .data(normalizer)
         .data::<Arc<dyn MediaURLFactoryInterface>>(Arc::new(media_url_factory))
         .data(task_tracker)
         .finish();

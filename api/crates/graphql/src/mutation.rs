@@ -1,4 +1,4 @@
-use std::{io::{Read, Seek}, marker::PhantomData, sync::Arc};
+use std::{io::{Read, Seek}, marker::PhantomData};
 
 use async_graphql::{Context, Object, SimpleObject};
 use chrono::{DateTime, FixedOffset};
@@ -99,7 +99,7 @@ where
         url_pattern: Option<String>,
     ) -> Result<ExternalService> {
         let external_services_service = ctx.data_unchecked::<ExternalServicesService>();
-        let normalizer = ctx.data_unchecked::<Arc<Normalizer>>();
+        let normalizer = ctx.data_unchecked::<Normalizer>();
 
         let slug = normalizer.normalize(slug);
         let kind = normalizer.normalize(kind);
@@ -129,7 +129,7 @@ where
         url_pattern: Option<String>,
     ) -> Result<ExternalService> {
         let external_services_service = ctx.data_unchecked::<ExternalServicesService>();
-        let normalizer = ctx.data_unchecked::<Arc<Normalizer>>();
+        let normalizer = ctx.data_unchecked::<Normalizer>();
 
         let slug = slug.map(|slug| normalizer.normalize(slug));
         let name = name.map(|name| normalizer.normalize(name));
@@ -454,14 +454,11 @@ where
         parent_id: Option<Uuid>,
     ) -> Result<Tag> {
         let tags_service = ctx.data_unchecked::<TagsService>();
-        let normalizer = ctx.data_unchecked::<Arc<Normalizer>>();
+        let normalizer = ctx.data_unchecked::<Normalizer>();
 
         let name = normalizer.normalize(name);
         let kana = normalizer.normalize(kana);
-        let aliases = aliases.unwrap_or_default().into_iter().map({
-            let normalizer = normalizer.clone();
-            move |alias| normalizer.normalize(alias)
-        });
+        let aliases = aliases.unwrap_or_default().into_iter().map(|alias| normalizer.normalize(alias));
         let depth = get_tag_depth(&ctx.look_ahead());
 
         let tag = tags_service.create_tag(&name, &kana, aliases, parent_id.map(Into::into), depth).await?;
@@ -483,7 +480,7 @@ where
         kana: String,
     ) -> Result<TagType> {
         let tags_service = ctx.data_unchecked::<TagsService>();
-        let normalizer = ctx.data_unchecked::<Arc<Normalizer>>();
+        let normalizer = ctx.data_unchecked::<Normalizer>();
 
         let slug = normalizer.normalize(slug);
         let name = normalizer.normalize(name);
@@ -510,18 +507,12 @@ where
         remove_aliases: Option<Vec<String>>,
     ) -> Result<Tag> {
         let tags_service = ctx.data_unchecked::<TagsService>();
-        let normalizer = ctx.data_unchecked::<Arc<Normalizer>>();
+        let normalizer = ctx.data_unchecked::<Normalizer>();
 
         let name = name.map(|name| normalizer.normalize(name));
         let kana = kana.map(|kana| normalizer.normalize(kana));
-        let add_aliases = add_aliases.unwrap_or_default().into_iter().map({
-            let normalizer = normalizer.clone();
-            move |alias| normalizer.normalize(alias)
-        });
-        let remove_aliases = remove_aliases.unwrap_or_default().into_iter().map({
-            let normalizer = normalizer.clone();
-            move |alias| normalizer.normalize(alias)
-        });
+        let add_aliases = add_aliases.unwrap_or_default().into_iter().map(|alias| normalizer.normalize(alias));
+        let remove_aliases = remove_aliases.unwrap_or_default().into_iter().map(|alias| normalizer.normalize(alias));
 
         let depth = get_tag_depth(&ctx.look_ahead());
 
@@ -546,7 +537,7 @@ where
         kana: Option<String>,
     ) -> Result<TagType> {
         let tags_service = ctx.data_unchecked::<TagsService>();
-        let normalizer = ctx.data_unchecked::<Arc<Normalizer>>();
+        let normalizer = ctx.data_unchecked::<Normalizer>();
 
         let slug = slug.map(|slug| normalizer.normalize(slug));
         let name = name.map(|name| normalizer.normalize(name));

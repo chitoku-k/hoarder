@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use async_graphql::{Schema, EmptySubscription, value};
 use domain::{entity::sources::SourceId, repository::DeleteResult};
 use futures::future::ok;
@@ -38,7 +36,7 @@ async fn succeeds() {
         .data(external_services_service)
         .data(media_service)
         .data(tags_service)
-        .data(Arc::new(normalizer))
+        .data(normalizer)
         .finish();
 
     let req = indoc! {r#"
