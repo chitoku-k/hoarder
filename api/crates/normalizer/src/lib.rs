@@ -20,7 +20,7 @@ pub trait NormalizerInterface: Send + Sync + 'static {
     fn normalize_str<'a>(&self, text: &'a str) -> Cow<'a, str>;
 }
 
-#[derive(Constructor)]
+#[derive(Clone, Constructor)]
 pub struct Normalizer;
 
 impl NormalizerInterface for Normalizer {

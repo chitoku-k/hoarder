@@ -198,7 +198,7 @@ impl Application {
                 let media_service = media_service(media_repository, objects_repository, replicas_repository, sources_repository, medium_image_processor);
                 let tags_service = tags_service(tags_repository, tag_types_repository);
 
-                let normalizer = Arc::new(normalizer());
+                let normalizer = normalizer();
                 let query_parser = query_parser();
                 let media_url_factory: Arc<dyn MediaURLFactoryInterface> = match serve.media_root_url {
                     Some(media_root_url) => Arc::new(file_media_url_factory(media_root_url)),

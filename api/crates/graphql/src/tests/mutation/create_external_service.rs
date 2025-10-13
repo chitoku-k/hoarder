@@ -1,4 +1,4 @@
-use std::{borrow::Cow, sync::Arc};
+use std::borrow::Cow;
 
 use async_graphql::{Schema, EmptySubscription, value};
 use domain::entity::external_services::{ExternalService, ExternalServiceId, ExternalServiceKind};
@@ -65,7 +65,7 @@ async fn succeeds() {
         .data(external_services_service)
         .data(media_service)
         .data(tags_service)
-        .data(Arc::new(normalizer))
+        .data(normalizer)
         .finish();
 
     let req = indoc! {r#"

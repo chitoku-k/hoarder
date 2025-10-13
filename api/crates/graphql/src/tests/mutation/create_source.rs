@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use async_graphql::{value, EmptySubscription, Schema};
 use chrono::{TimeZone, Utc};
 use domain::entity::{external_services::{ExternalMetadata, ExternalService, ExternalServiceId, ExternalServiceKind}, sources::{Source, SourceId}};
@@ -57,7 +55,7 @@ async fn succeeds() {
         .data(external_services_service)
         .data(media_service)
         .data(tags_service)
-        .data(Arc::new(normalizer))
+        .data(normalizer)
         .finish();
 
     let req = indoc! {r#"

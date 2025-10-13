@@ -1,4 +1,4 @@
-use std::{borrow::Cow, collections::BTreeSet, sync::Arc};
+use std::{borrow::Cow, collections::BTreeSet};
 
 use async_graphql::{Schema, EmptyMutation, EmptySubscription, value};
 use chrono::{TimeZone, Utc};
@@ -104,7 +104,7 @@ async fn succeeds() {
         .data(external_services_service)
         .data(media_service)
         .data(tags_service)
-        .data(Arc::new(normalizer))
+        .data(normalizer)
         .data(query_parser)
         .finish();
 

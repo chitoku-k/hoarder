@@ -1,4 +1,4 @@
-use std::{marker::PhantomData, sync::Arc};
+use std::marker::PhantomData;
 
 use async_graphql::{
     connection::{query, Connection},
@@ -393,7 +393,7 @@ where
         name_or_alias_like: String,
     ) -> Result<Vec<Tag>> {
         let tags_service = ctx.data_unchecked::<TagsService>();
-        let normalizer = ctx.data_unchecked::<Arc<Normalizer>>();
+        let normalizer = ctx.data_unchecked::<Normalizer>();
         let query_parser = ctx.data_unchecked::<QueryParser>();
 
         let query = normalizer.normalize(name_or_alias_like);
