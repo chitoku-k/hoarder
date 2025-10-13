@@ -897,11 +897,13 @@ type Query {
         last: Int
     ): TagConnection!
     """
-    Looks up tags that contains the given name or alias.
+    Looks up tags whose name, kana, or alias of itself or any of its ancestors matches the query.
+    When the query contains multiple keywords, only tags that contain all of them are returned.
+    A keyword can consist of multiple words by enclosing them in double quotes.
     """
     allTagsLike(
         """
-        The characters like the name or alias.
+        The query for the name, kana, or alias.
         """
         nameOrAliasLike: String!
     ): [Tag!]!
