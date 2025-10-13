@@ -69,7 +69,7 @@ impl Operation<Postgres> for SourceExternalMetadataExtraOperation {
                 Expr::case(
                     Expr::col(PostgresSource::ExternalMetadata).binary(BinOper::Custom("?"), "type"),
                     Expr::cust_with_exprs("jsonb_build_object($1, $2)", [
-                        "type".into(),
+                        Expr::value("type"),
                         Expr::col(PostgresSource::ExternalMetadata).cast_json_field("type"),
                     ]),
                 ).finally("{}"),

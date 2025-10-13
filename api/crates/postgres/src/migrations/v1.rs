@@ -440,12 +440,12 @@ impl Operation<Postgres> for InsertRootTagsOperation {
                 PostgresTag::UpdatedAt,
             ])
             .values_panic([
-                PostgresTagId::from(TagId::root()).into(),
-                "root".into(),
-                "root".into(),
-                Vec::<String>::new().into(),
-                DateTime::<Utc>::default().into(),
-                DateTime::<Utc>::default().into(),
+                Expr::value(PostgresTagId::from(TagId::root())),
+                Expr::value("root"),
+                Expr::value("root"),
+                Expr::value(Vec::<String>::new()),
+                Expr::value(DateTime::<Utc>::default()),
+                Expr::value(DateTime::<Utc>::default()),
             ])
             .on_conflict(OnConflict::new().do_nothing().to_owned())
             .build_sqlx(PostgresQueryBuilder);
@@ -460,9 +460,9 @@ impl Operation<Postgres> for InsertRootTagsOperation {
                 PostgresTagPath::Distance,
             ])
             .values_panic([
-                PostgresTagId::from(TagId::root()).into(),
-                PostgresTagId::from(TagId::root()).into(),
-                0.into(),
+                Expr::value(PostgresTagId::from(TagId::root())),
+                Expr::value(PostgresTagId::from(TagId::root())),
+                Expr::value(0),
             ])
             .on_conflict(OnConflict::new().do_nothing().to_owned())
             .build_sqlx(PostgresQueryBuilder);

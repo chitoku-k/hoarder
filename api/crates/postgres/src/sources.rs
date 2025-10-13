@@ -276,9 +276,9 @@ impl SourcesRepository for PostgresSourcesRepository {
                 PostgresSource::ExternalMetadataExtra,
             ])
             .values([
-                PostgresExternalServiceId::from(external_service_id).into(),
-                external_metadata_value.into(),
-                external_metadata_extra_value.into(),
+                Expr::value(PostgresExternalServiceId::from(external_service_id)),
+                Expr::value(external_metadata_value),
+                Expr::value(external_metadata_extra_value),
             ])
             .map_err(Error::other)?
             .returning(

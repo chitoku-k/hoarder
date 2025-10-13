@@ -69,11 +69,11 @@ impl ExternalServicesRepository for PostgresExternalServicesRepository {
                 PostgresExternalService::UrlPattern,
             ])
             .values([
-                slug.into(),
-                kind.to_string().into(),
-                name.into(),
-                base_url.into(),
-                url_pattern.into(),
+                Expr::value(slug),
+                Expr::value(kind.to_string()),
+                Expr::value(name),
+                Expr::value(base_url),
+                Expr::value(url_pattern),
             ])
             .map_err(Error::other)?
             .returning(
