@@ -220,8 +220,8 @@ where
                 .expr(Expr::col((PostgresTag::Table, PostgresTag::Id)))
                 .expr_as(
                     PgFunc::array_agg(Expr::cust_with_exprs("$1 ORDER BY $2 DESC", [
-                        Expr::col((ANCESTORS, PostgresTag::Kana)).into(),
-                        Expr::col((PostgresTagPath::Table, PostgresTagPath::Distance)).into(),
+                        Expr::column((ANCESTORS, PostgresTag::Kana)),
+                        Expr::column((PostgresTagPath::Table, PostgresTagPath::Distance)),
                     ])),
                     DISPLAY_ORDER,
                 )
@@ -601,8 +601,8 @@ impl MediaRepository for PostgresMediaRepository {
             .and_where_option(
                 cursor.map(|(created_at, medium_id)| {
                     Expr::tuple([
-                        Expr::col(PostgresMedium::CreatedAt).into(),
-                        Expr::col(PostgresMedium::Id).into(),
+                        Expr::column(PostgresMedium::CreatedAt),
+                        Expr::column(PostgresMedium::Id),
                     ]).binary(comparison, Expr::tuple([
                         Expr::value(created_at),
                         Expr::value(PostgresMediumId::from(medium_id)),
@@ -683,8 +683,8 @@ impl MediaRepository for PostgresMediaRepository {
             .and_where_option(
                 cursor.map(|(created_at, medium_id)| {
                     Expr::tuple([
-                        Expr::col(PostgresMedium::CreatedAt).into(),
-                        Expr::col(PostgresMedium::Id).into(),
+                        Expr::column(PostgresMedium::CreatedAt),
+                        Expr::column(PostgresMedium::Id),
                     ]).binary(comparison, Expr::tuple([
                         Expr::value(created_at),
                         Expr::value(PostgresMediumId::from(medium_id)),
@@ -693,15 +693,15 @@ impl MediaRepository for PostgresMediaRepository {
             )
             .and_where(
                 Expr::tuple([
-                    Expr::col(PostgresTagPath::AncestorId).into(),
-                    Expr::col(PostgresMediumTag::TagTypeId).into(),
+                    Expr::column(PostgresTagPath::AncestorId),
+                    Expr::column(PostgresMediumTag::TagTypeId),
                 ]).in_tuples(tag_tag_type_ids)
             )
             .group_by_col(PostgresMedium::Id)
             .and_having(
                 Expr::tuple([
-                    Expr::col(PostgresTagPath::AncestorId).into(),
-                    Expr::col(PostgresMediumTag::TagTypeId).into(),
+                    Expr::column(PostgresTagPath::AncestorId),
+                    Expr::column(PostgresMediumTag::TagTypeId),
                 ]).count_distinct().eq(Expr::val(tag_tag_type_ids_len))
             )
             .order_by((PostgresMedium::Table, PostgresMedium::CreatedAt), order.clone())
@@ -754,8 +754,8 @@ impl MediaRepository for PostgresMediaRepository {
             .and_where_option(
                 cursor.map(|(created_at, medium_id)| {
                     Expr::tuple([
-                        Expr::col(PostgresMedium::CreatedAt).into(),
-                        Expr::col(PostgresMedium::Id).into(),
+                        Expr::column(PostgresMedium::CreatedAt),
+                        Expr::column(PostgresMedium::Id),
                     ]).binary(comparison, Expr::tuple([
                         Expr::value(created_at),
                         Expr::value(PostgresMediumId::from(medium_id)),
@@ -1021,8 +1021,8 @@ impl MediaRepository for PostgresMediaRepository {
                     .and_where(Expr::col(PostgresMediumTag::MediumId).eq(PostgresMediumId::from(id)))
                     .and_where(
                         Expr::tuple([
-                            Expr::col(PostgresMediumTag::TagId).into(),
-                            Expr::col(PostgresMediumTag::TagTypeId).into(),
+                            Expr::column(PostgresMediumTag::TagId),
+                            Expr::column(PostgresMediumTag::TagTypeId),
                         ]).in_tuples(remove_tag_tag_type_ids),
                     );
 
