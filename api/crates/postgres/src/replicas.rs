@@ -314,13 +314,13 @@ impl ReplicasRepository for PostgresReplicasRepository {
                 PostgresReplica::Phase,
             ])
             .values([
-                PostgresMediumId::from(medium_id).into(),
-                order.into(),
-                original_url.into(),
-                original_image.as_ref().map(|original_image| original_image.mime_type).into(),
-                original_image.as_ref().map(|original_image| original_image.size.width).into(),
-                original_image.as_ref().map(|original_image| original_image.size.height).into(),
-                PostgresReplicaPhase::from(status).into(),
+                Expr::value(PostgresMediumId::from(medium_id)),
+                Expr::value(order),
+                Expr::value(original_url),
+                Expr::value(original_image.as_ref().map(|original_image| original_image.mime_type)),
+                Expr::value(original_image.as_ref().map(|original_image| original_image.size.width)),
+                Expr::value(original_image.as_ref().map(|original_image| original_image.size.height)),
+                Expr::value(PostgresReplicaPhase::from(status)),
             ])
             .map_err(Error::other)?
             .returning(
@@ -357,10 +357,10 @@ impl ReplicasRepository for PostgresReplicasRepository {
                     PostgresThumbnail::Height,
                 ])
                 .values([
-                    PostgresReplicaId::from(replica.id).into(),
-                    thumbnail_image.body.into(),
-                    thumbnail_image.size.width.into(),
-                    thumbnail_image.size.height.into(),
+                    Expr::value(PostgresReplicaId::from(replica.id)),
+                    Expr::value(thumbnail_image.body),
+                    Expr::value(thumbnail_image.size.width),
+                    Expr::value(thumbnail_image.size.height),
                 ])
                 .map_err(Error::other)?
                 .returning(
@@ -585,10 +585,10 @@ impl ReplicasRepository for PostgresReplicasRepository {
                     PostgresThumbnail::Height,
                 ])
                 .values([
-                    PostgresReplicaId::from(replica.id).into(),
-                    body.into(),
-                    width.into(),
-                    height.into(),
+                    Expr::value(PostgresReplicaId::from(replica.id)),
+                    Expr::value(body),
+                    Expr::value(width),
+                    Expr::value(height),
                 ])
                 .map_err(Error::other)?
                 .on_conflict(

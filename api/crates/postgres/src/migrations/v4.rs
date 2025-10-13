@@ -41,7 +41,7 @@ impl Operation<Postgres> for SourceExternalMetadataOperation {
                 PostgresSource::ExternalMetadata,
                 Expr::cust_with_exprs("jsonb_set($1, $2, $3)", [
                     Expr::col(PostgresSource::ExternalMetadata).binary(BinOper::Custom("#-"), OLD_PATH),
-                    NEW_PATH.into(),
+                    Expr::value(NEW_PATH),
                     Expr::col(PostgresSource::ExternalMetadata).binary(BinOper::Custom("#>"), OLD_PATH),
                 ]),
             )
@@ -65,7 +65,7 @@ impl Operation<Postgres> for SourceExternalMetadataOperation {
                 PostgresSource::ExternalMetadata,
                 Expr::cust_with_exprs("jsonb_set($1, $2, $3)", [
                     Expr::col(PostgresSource::ExternalMetadata).binary(BinOper::Custom("#-"), OLD_PATH),
-                    NEW_PATH.into(),
+                    Expr::value(NEW_PATH),
                     Expr::col(PostgresSource::ExternalMetadata).binary(BinOper::Custom("#>"), OLD_PATH),
                 ]),
             )

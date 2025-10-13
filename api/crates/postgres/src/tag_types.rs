@@ -64,7 +64,7 @@ impl TagTypesRepository for PostgresTagTypesRepository {
         let (sql, values) = Query::insert()
             .into_table(PostgresTagType::Table)
             .columns([PostgresTagType::Slug, PostgresTagType::Name, PostgresTagType::Kana])
-            .values([Expr::val(slug).into(), Expr::val(name).into(), Expr::val(kana).into()])
+            .values([Expr::value(slug), Expr::value(name), Expr::value(kana)])
             .map_err(Error::other)?
             .returning(
                 Query::returning()

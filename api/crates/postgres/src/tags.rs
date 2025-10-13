@@ -409,7 +409,7 @@ async fn attach_parent(tx: &mut Transaction<'_, Postgres>, id: TagId, parent_id:
             Query::select()
                 .exprs([
                     Expr::column(PostgresTagPath::AncestorId),
-                    Expr::val(PostgresTagId::from(id)).into(),
+                    Expr::value(PostgresTagId::from(id)),
                     Expr::column(PostgresTagPath::Distance).add(1i32),
                 ])
                 .from(PostgresTagPath::Table)
@@ -502,9 +502,9 @@ impl TagsRepository for PostgresTagsRepository {
                 PostgresTag::Aliases,
             ])
             .values([
-                Expr::val(name).into(),
-                Expr::val(kana).into(),
-                aliases.collect::<Vec<_>>().into(),
+                Expr::value(name),
+                Expr::value(kana),
+                Expr::value(aliases.collect::<Vec<_>>()),
             ])
             .map_err(Error::other)?
             .returning(Query::returning().column(PostgresTag::Id))
@@ -524,9 +524,9 @@ impl TagsRepository for PostgresTagsRepository {
                 PostgresTagPath::Distance,
             ])
             .values([
-                PostgresTagId::from(tag_id).into(),
-                PostgresTagId::from(tag_id).into(),
-                0.into(),
+                Expr::value(PostgresTagId::from(tag_id)),
+                Expr::value(PostgresTagId::from(tag_id)),
+                Expr::value(0),
             ])
             .map_err(Error::other)?
             .build_sqlx(PostgresQueryBuilder);
@@ -642,7 +642,7 @@ impl TagsRepository for PostgresTagsRepository {
                         .map(|query| {
                             let expr = column.clone().eq(query);
                             match coalesce {
-                                true => Expr::value(Func::coalesce([expr, false.into()])),
+                                true => Expr::value(Func::coalesce([expr, Expr::value(false)])),
                                 false => expr,
                             }
                         })
@@ -654,7 +654,7 @@ impl TagsRepository for PostgresTagsRepository {
 
             for func in [Func::max, Func::sum] {
                 sql.order_by_expr(
-                    func(query
+                    Expr::value(func(query
                         .iter()
                         .map(|query| {
                             ArrayExpr::length(
@@ -666,8 +666,8 @@ impl TagsRepository for PostgresTagsRepository {
                             ).sub(1)
                         })
                         .reduce(|acc, e| acc.add(e))
-                        .unwrap_or_else(|| 0.into()),
-                    ).into(),
+                        .unwrap_or_else(|| Expr::value(0)),
+                    )),
                     Order::Desc,
                 );
             }
@@ -677,7 +677,7 @@ impl TagsRepository for PostgresTagsRepository {
                 Expr::col((table.clone(), PostgresTag::Kana)),
             ] {
                 sql.order_by_expr(
-                    Expr::tuple(query
+                    Expr::value(Expr::tuple(query
                         .iter()
                         .map(|query| {
                             Expr::value(Func::min(
@@ -690,7 +690,7 @@ impl TagsRepository for PostgresTagsRepository {
                                 ),
                             ))
                         }),
-                    ).into(),
+                    )),
                     Order::Asc,
                 );
             }

@@ -430,7 +430,7 @@ impl MediaRepository for PostgresMediaRepository {
         let mut query = Query::insert();
         if let Some(created_at) = created_at {
             query.columns([PostgresMedium::CreatedAt])
-                .values([created_at.into()])
+                .values([Expr::value(created_at)])
                 .map_err(Error::other)?;
         }
 
@@ -467,8 +467,8 @@ impl MediaRepository for PostgresMediaRepository {
                 for source_id in source_ids {
                     query
                         .values([
-                            PostgresMediumId::from(medium.id).into(),
-                            PostgresSourceId::from(source_id).into(),
+                            Expr::value(PostgresMediumId::from(medium.id)),
+                            Expr::value(PostgresSourceId::from(source_id)),
                         ])
                         .map_err(Error::other)?;
                 }
@@ -502,9 +502,9 @@ impl MediaRepository for PostgresMediaRepository {
                 for (tag_id, tag_type_id) in tag_tag_type_ids {
                     query
                         .values([
-                            PostgresMediumId::from(medium.id).into(),
-                            PostgresTagId::from(tag_id).into(),
-                            PostgresTagTypeId::from(tag_type_id).into(),
+                            Expr::value(PostgresMediumId::from(medium.id)),
+                            Expr::value(PostgresTagId::from(tag_id)),
+                            Expr::value(PostgresTagTypeId::from(tag_type_id)),
                         ])
                         .map_err(Error::other)?;
                 }
@@ -930,8 +930,8 @@ impl MediaRepository for PostgresMediaRepository {
                 for source_id in add_source_ids {
                     query
                         .values([
-                            PostgresMediumId::from(id).into(),
-                            PostgresSourceId::from(source_id).into(),
+                            Expr::value(PostgresMediumId::from(id)),
+                            Expr::value(PostgresSourceId::from(source_id)),
                         ])
                         .map_err(Error::other)?;
                 }
@@ -987,9 +987,9 @@ impl MediaRepository for PostgresMediaRepository {
                 for (tag_id, tag_type_id) in add_tag_tag_type_ids {
                     query
                         .values([
-                            PostgresMediumId::from(id).into(),
-                            PostgresTagId::from(tag_id).into(),
-                            PostgresTagTypeId::from(tag_type_id).into(),
+                            Expr::value(PostgresMediumId::from(id)),
+                            Expr::value(PostgresTagId::from(tag_id)),
+                            Expr::value(PostgresTagTypeId::from(tag_type_id)),
                         ])
                         .map_err(Error::other)?;
                 }
