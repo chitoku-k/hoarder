@@ -16,13 +16,12 @@ use domain::{
 };
 use futures::{future::ready, stream, Stream, StreamExt, TryStreamExt};
 use ordermap::{OrderMap, OrderSet};
-use sea_query::{BinOper, Expr, Iden, JoinType, Keyword, LockType, OnConflict, Order, PostgresQueryBuilder, Query};
+use sea_query::{BinOper, Expr, Iden, JoinType, Keyword, LockType, OnConflict, Order, PgFunc, PostgresQueryBuilder, Query};
 use sea_query_binder::SqlxBinder;
 use sqlx::{postgres::PgListener, types::Json, FromRow, PgConnection, PgPool};
 use tracing_futures::Instrument;
 
 use crate::{
-    expr::array::ArrayExpr,
     external_services::{PostgresExternalService, PostgresExternalServiceId},
     replicas::{PostgresMediumReplica, PostgresReplica, PostgresReplicaId, PostgresReplicaNotification, PostgresReplicaThumbnail, PostgresReplicaThumbnailRow, PostgresThumbnail},
     sea_query_uuid_value,
@@ -220,7 +219,7 @@ where
             Query::select()
                 .expr(Expr::col((PostgresTag::Table, PostgresTag::Id)))
                 .expr_as(
-                    ArrayExpr::agg(Expr::cust_with_exprs("$1 ORDER BY $2 DESC", [
+                    PgFunc::array_agg(Expr::cust_with_exprs("$1 ORDER BY $2 DESC", [
                         Expr::col((ANCESTORS, PostgresTag::Kana)).into(),
                         Expr::col((PostgresTagPath::Table, PostgresTagPath::Distance)).into(),
                     ])),
