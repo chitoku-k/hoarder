@@ -13,6 +13,7 @@ use domain::{
         tags::TagsServiceInterface,
     },
 };
+use either::Either::{Left, Right};
 use futures::future::try_join_all;
 use normalizer::NormalizerInterface;
 use query::QueryParserInterface;
@@ -159,14 +160,16 @@ where
 
                 let has_previous = last.is_some() && media.len() > limit;
                 let has_next = last.is_none() && media.len() > limit;
-                let media = media.into_iter().take(limit);
+                let media = {
+                    let media = media.into_iter().take(limit);
+                    match rev {
+                        true => Left(media.rev()),
+                        false => Right(media),
+                    }
+                };
 
                 let mut connection = Connection::new(has_previous, has_next);
-                let result: Result<_> = match rev {
-                    true => media.rev().map(|m| Medium::try_from(m).map(Into::into)).collect(),
-                    false => media.map(|m| Medium::try_from(m).map(Into::into)).collect(),
-                };
-                connection.edges = result?;
+                connection.edges = media.map(|m| Medium::try_from(m).map(Into::into)).collect::<Result<_>>()?;
 
                 Ok(connection)
             },
@@ -363,13 +366,16 @@ where
 
                 let has_previous = last.is_some() && tags.len() > limit;
                 let has_next = last.is_none() && tags.len() > limit;
-                let tags = tags.into_iter().take(limit);
+                let tags = {
+                    let tags = tags.into_iter().take(limit);
+                    match rev {
+                        true => Left(tags.rev()),
+                        false => Right(tags),
+                    }
+                };
 
                 let mut connection = Connection::new(has_previous, has_next);
-                connection.edges = match rev {
-                    true => tags.rev().map(Tag::from).map(Into::into).collect(),
-                    false => tags.map(Tag::from).map(Into::into).collect(),
-                };
+                connection.edges = tags.map(Tag::from).map(Into::into).collect();
 
                 Ok(connection)
             },
