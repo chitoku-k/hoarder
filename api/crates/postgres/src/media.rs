@@ -16,13 +16,13 @@ use domain::{
 };
 use futures::{future::ready, stream, Stream, StreamExt, TryStreamExt};
 use ordermap::{OrderMap, OrderSet};
-use sea_query::{BinOper, Expr, Iden, JoinType, Keyword, LockType, OnConflict, Order, PgFunc, PostgresQueryBuilder, Query};
-use sea_query_binder::SqlxBinder;
+use sea_query::{BinOper, Expr, ExprTrait, Iden, JoinType, Keyword, LockType, OnConflict, Order, PgFunc, PostgresQueryBuilder, Query};
+use sea_query_sqlx::SqlxBinder;
 use sqlx::{postgres::PgListener, types::Json, FromRow, PgConnection, PgPool};
 use tracing_futures::Instrument;
 
 use crate::{
-    expr::SimpleExprTrait,
+    expr::ExprTrait as _,
     external_services::{PostgresExternalService, PostgresExternalServiceId},
     replicas::{PostgresMediumReplica, PostgresReplica, PostgresReplicaId, PostgresReplicaNotification, PostgresReplicaThumbnail, PostgresReplicaThumbnailRow, PostgresThumbnail},
     sea_query_uuid_value,

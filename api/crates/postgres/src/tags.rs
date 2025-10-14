@@ -11,12 +11,12 @@ use domain::{
 use either::{Left, Right};
 use futures::{TryFutureExt, TryStreamExt};
 use ordermap::OrderMap;
-use sea_query::{extension::postgres::PgExpr, Alias, Asterisk, BinOper, Cond, Expr, Func, Iden, IntoIden, JoinType, LikeExpr, LockType, Order, PostgresQueryBuilder, Query, SelectStatement};
-use sea_query_binder::SqlxBinder;
+use sea_query::{extension::postgres::PgExpr, Asterisk, BinOper, Cond, Expr, ExprTrait, Func, Iden, IntoIden, JoinType, LikeExpr, LockType, Order, PostgresQueryBuilder, Query, SelectStatement};
+use sea_query_sqlx::SqlxBinder;
 use sqlx::{Acquire, FromRow, PgConnection, PgPool, Postgres, Row, Transaction};
 
 use crate::{
-    expr::{aggregate::AggregateExpr, array::ArrayExpr, conditional::ConditionalExpr, string::StringExpr, SimpleExprTrait},
+    expr::{aggregate::AggregateExpr, array::ArrayExpr, conditional::ConditionalExpr, string::StringExpr, ExprTrait as _},
     sea_query_uuid_value,
 };
 
@@ -634,7 +634,7 @@ impl TagsRepository for PostgresTagsRepository {
             for (column, coalesce) in [
                 (Expr::col((table.clone(), PostgresTag::Name)), false),
                 (Expr::col((table.clone(), PostgresTag::Kana)), false),
-                (Expr::col((Alias::new(format!("{}_aliases", table.to_string())), ALIAS)), true),
+                (Expr::col((format!("{}_aliases", table), ALIAS)), true),
             ] {
                 sql.order_by_expr(
                     AggregateExpr::bool_or(query

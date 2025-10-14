@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use sea_query::{ColumnDef, Expr, Iden, PostgresQueryBuilder, Query, Table};
+use sea_query::{ColumnDef, Expr, ExprTrait, Iden, PostgresQueryBuilder, Query, Table};
 use sqlx::{PgConnection, Postgres};
 use sqlx_migrator::{error::Error, migration::Migration, operation::Operation, vec_box};
 

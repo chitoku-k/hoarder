@@ -1,4 +1,4 @@
-use sea_query::{SimpleExpr, Value};
+use sea_query::{Expr, Value};
 
 pub(crate) mod aggregate;
 pub(crate) mod array;
@@ -6,15 +6,15 @@ pub(crate) mod conditional;
 pub(crate) mod notify;
 pub(crate) mod string;
 
-pub(crate) trait SimpleExprTrait {
-    fn to_constant(self) -> SimpleExpr;
+pub(crate) trait ExprTrait {
+    fn to_constant(self) -> Expr;
 }
 
-impl<T> SimpleExprTrait for T
+impl<T> ExprTrait for T
 where
     T: Into<Value>,
 {
-    fn to_constant(self) -> SimpleExpr {
-        SimpleExpr::Constant(self.into())
+    fn to_constant(self) -> Expr {
+        Expr::Constant(self.into())
     }
 }

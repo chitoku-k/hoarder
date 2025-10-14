@@ -11,9 +11,9 @@ use domain::{
 use futures::{future::ready, TryStreamExt};
 use sea_query::{
     extension::postgres::PgExpr,
-    Expr, Iden, JoinType, LockType, Order, PostgresQueryBuilder, Query
+    Expr, ExprTrait, Iden, JoinType, LockType, Order, PostgresQueryBuilder, Query,
 };
-use sea_query_binder::SqlxBinder;
+use sea_query_sqlx::SqlxBinder;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use sqlx::{types::Json, FromRow, PgPool};

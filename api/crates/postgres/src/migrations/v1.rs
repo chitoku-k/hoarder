@@ -1,8 +1,8 @@
 use async_trait::async_trait;
 use chrono::{DateTime, Utc};
 use domain::entity::tags::TagId;
-use sea_query::{ColumnDef, ColumnType, Expr, ForeignKey, ForeignKeyAction, Index, OnConflict, PgFunc, PostgresQueryBuilder, Query, Table};
-use sea_query_binder::SqlxBinder;
+use sea_query::{ColumnDef, ColumnType, Expr, ExprTrait, ForeignKey, ForeignKeyAction, Index, OnConflict, PgFunc, PostgresQueryBuilder, Query, Table};
+use sea_query_sqlx::SqlxBinder;
 use sqlx::{Connection, PgConnection, Postgres};
 use sqlx_migrator::{error::Error, migration::Migration, operation::Operation, vec_box};
 use uuid::Uuid;
