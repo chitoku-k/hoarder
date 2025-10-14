@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use sea_query::{extension::postgres::PgExpr, BinOper, ColumnDef, Expr, Iden, PostgresQueryBuilder, Query, Table};
+use sea_query::{extension::postgres::PgExpr, BinOper, ColumnDef, Expr, ExprTrait, Iden, PostgresQueryBuilder, Query, Table};
 use sqlx::{PgConnection, Postgres};
 use sqlx_migrator::{error::Error, migration::Migration, operation::Operation, vec_box};
 
@@ -90,10 +90,7 @@ impl Operation<Postgres> for SourceExternalMetadataExtraOperation {
                 PostgresSource::ExternalMetadata,
                 Expr::col(PostgresSource::ExternalMetadata).binary(BinOper::Custom("#-"), "{creatorId}"),
             )
-            .and_where(
-                Expr::expr(Expr::col(PostgresSource::ExternalMetadata).cast_json_field("type"))
-                    .is_in(EXTERNAL_SERVICE_EXTRA_FIELD_KINDS),
-            )
+            .and_where(Expr::col(PostgresSource::ExternalMetadata).cast_json_field("type").is_in(EXTERNAL_SERVICE_EXTRA_FIELD_KINDS))
             .to_string(PostgresQueryBuilder);
 
         sqlx::query(&sql).execute(&mut *connection).await?;
