@@ -1,27 +1,27 @@
-use sea_query::{Expr, SimpleExpr};
+use sea_query::Expr;
 
 pub(crate) struct ArrayExpr;
 
 impl ArrayExpr {
-    pub fn length<T1, T2>(arg1: T1, arg2: T2) -> SimpleExpr
+    pub fn length<T1, T2>(arg1: T1, arg2: T2) -> Expr
     where
-        T1: Into<SimpleExpr>,
-        T2: Into<SimpleExpr>,
+        T1: Into<Expr>,
+        T2: Into<Expr>,
     {
         Expr::cust_with_exprs("array_length($1, $2)", [arg1.into(), arg2.into()])
     }
 
-    pub fn string_to_array<T1, T2>(arg1: T1, arg2: T2) -> SimpleExpr
+    pub fn string_to_array<T1, T2>(arg1: T1, arg2: T2) -> Expr
     where
-        T1: Into<SimpleExpr>,
-        T2: Into<SimpleExpr>,
+        T1: Into<Expr>,
+        T2: Into<Expr>,
     {
         Expr::cust_with_exprs("string_to_array($1, $2)", [arg1.into(), arg2.into()])
     }
 
-    pub fn unnest<T>(arg: T) -> SimpleExpr
+    pub fn unnest<T>(arg: T) -> Expr
     where
-        T: Into<SimpleExpr>,
+        T: Into<Expr>,
     {
         Expr::cust_with_expr("unnest($1)", arg)
     }

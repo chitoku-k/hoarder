@@ -1,11 +1,11 @@
-use sea_query::{Expr, SimpleExpr};
+use sea_query::Expr;
 
 pub(crate) struct AggregateExpr;
 
 impl AggregateExpr {
-    pub fn bool_or<T>(arg: T) -> SimpleExpr
+    pub fn bool_or<T>(arg: T) -> Expr
     where
-        T: Into<SimpleExpr>,
+        T: Into<Expr>,
     {
         Expr::cust_with_expr("bool_or($1)", arg)
     }

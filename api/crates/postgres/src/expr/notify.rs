@@ -1,9 +1,9 @@
-use sea_query::{Expr, SimpleExpr};
+use sea_query::Expr;
 
 pub(crate) struct NotifyExpr;
 
 impl NotifyExpr {
-    pub fn notify<T1, T2>(arg1: T1, arg2: T2) -> SimpleExpr
+    pub fn notify<T1, T2>(arg1: T1, arg2: T2) -> Expr
     where
         T1: ToString,
         T2: ToString,

@@ -5,8 +5,8 @@ use domain::{
     repository::{external_services::ExternalServicesRepository, DeleteResult},
 };
 use futures::TryStreamExt;
-use sea_query::{Expr, Iden, LockType, Order, PostgresQueryBuilder, Query};
-use sea_query_binder::SqlxBinder;
+use sea_query::{Expr, ExprTrait, Iden, LockType, Order, PostgresQueryBuilder, Query};
+use sea_query_sqlx::SqlxBinder;
 use sqlx::{FromRow, PgPool};
 
 use crate::sea_query_uuid_value;

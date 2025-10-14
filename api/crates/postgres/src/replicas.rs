@@ -11,14 +11,14 @@ use domain::{
     error::{Error, ErrorKind, Result},
     repository::{replicas::ReplicasRepository, DeleteResult},
 };
-use sea_query::{Asterisk, Expr, Iden, JoinType, Keyword, LockType, OnConflict, Order, PostgresQueryBuilder, Query, Value};
-use sea_query_binder::SqlxBinder;
+use sea_query::{Asterisk, Expr, ExprTrait, Iden, JoinType, Keyword, LockType, OnConflict, Order, PostgresQueryBuilder, Query, Value};
+use sea_query_sqlx::SqlxBinder;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use sqlx::{FromRow, PgPool, Row, Type};
 
 use crate::{
-    expr::{notify::NotifyExpr, SimpleExprTrait},
+    expr::{notify::NotifyExpr, ExprTrait as _},
     media::{PostgresMedium, PostgresMediumId},
     sea_query_uuid_value,
 };
@@ -156,7 +156,7 @@ impl From<PostgresReplicaPhase> for Value {
         let mut phase = value.to_string();
         phase.make_ascii_lowercase();
 
-        Self::String(Some(Box::new(phase)))
+        Self::String(Some(phase))
     }
 }
 
