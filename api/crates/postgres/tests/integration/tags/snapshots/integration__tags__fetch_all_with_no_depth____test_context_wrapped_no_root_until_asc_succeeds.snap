@@ -9,13 +9,13 @@ SELECT
 FROM
   "tags"
 WHERE
-  "tags"."id" <> $1
-  AND ("tags"."kana", "tags"."id") < ($2, $3)
+  "tags"."id" <> '00000000-0000-0000-0000-000000000000'
+  AND ("tags"."kana", "tags"."id") < ($1, $2)
 ORDER BY
   "tags"."kana" DESC,
   "tags"."id" DESC
 LIMIT
-  $4'''
+  $3'''
 rows_affected = 3
 rows_returned = 3
 
@@ -48,14 +48,17 @@ LEFT JOIN
         VALUES
           ($1, $2), ($3, $4), ($5, $6), ($7, $8)) AS "tag_orders"
   ) AS "tag_orders" ON "tag_orders"."id" = "descendant_id"
-  AND "ancestor_id" IN ("descendant_id", $9)
+  AND "ancestor_id" IN (
+    "descendant_id",
+    '00000000-0000-0000-0000-000000000000'
+  )
 INNER JOIN
   "tags" AS "tag_ancestors" ON "tag_ancestors"."id" = "tag_paths"."ancestor_id"
 INNER JOIN
   "tags" AS "tag_descendants" ON "tag_descendants"."id" = "tag_paths"."descendant_id"
 WHERE
-  "distance" = $10
-  AND "ancestor_id" IN ($11, $12, $13)
+  "distance" = 0
+  AND "ancestor_id" IN ($9, $10, $11)
 ORDER BY
   "distance" ASC,
   "tag_orders"."order" ASC,

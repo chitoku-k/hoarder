@@ -22,6 +22,7 @@ use sqlx::{postgres::PgListener, types::Json, FromRow, PgConnection, PgPool};
 use tracing_futures::Instrument;
 
 use crate::{
+    expr::SimpleExprTrait,
     external_services::{PostgresExternalService, PostgresExternalServiceId},
     replicas::{PostgresMediumReplica, PostgresReplica, PostgresReplicaId, PostgresReplicaNotification, PostgresReplicaThumbnail, PostgresReplicaThumbnailRow, PostgresThumbnail},
     sea_query_uuid_value,
@@ -239,7 +240,7 @@ where
                     Expr::col((PostgresTagPath::Table, PostgresTagPath::AncestorId))
                         .equals((ANCESTORS, PostgresTag::Id)),
                 )
-                .and_where(Expr::col(PostgresTagPath::AncestorId).ne(PostgresTagId::from(TagId::root())))
+                .and_where(Expr::col(PostgresTagPath::AncestorId).ne(PostgresTagId::from(TagId::root()).to_constant()))
                 .group_by_col((PostgresTag::Table, PostgresTag::Id))
                 .order_by(DISPLAY_ORDER, Order::Asc)
                 .take(),

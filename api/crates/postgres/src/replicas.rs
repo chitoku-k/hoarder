@@ -18,7 +18,7 @@ use serde_json::json;
 use sqlx::{FromRow, PgPool, Row, Type};
 
 use crate::{
-    expr::notify::NotifyExpr,
+    expr::{notify::NotifyExpr, SimpleExprTrait},
     media::{PostgresMedium, PostgresMediumId},
     sea_query_uuid_value,
 };
@@ -290,7 +290,7 @@ impl ReplicasRepository for PostgresReplicasRepository {
             .expr(
                 Expr::col(Asterisk)
                     .count()
-                    .add(Expr::val(1i32)),
+                    .add(1.to_constant()),
             )
             .from(PostgresReplica::Table)
             .and_where(Expr::col(PostgresReplica::MediumId).eq(PostgresMediumId::from(medium_id)))

@@ -54,10 +54,10 @@ INSERT INTO
 SELECT
   "ancestor_id",
   $1,
-  "distance" + $2
+  "distance" + 1
 FROM
   "tag_paths"
 WHERE
-  "descendant_id" = $3'''
+  "descendant_id" = $2'''
 rows_affected = 0
 rows_returned = 0

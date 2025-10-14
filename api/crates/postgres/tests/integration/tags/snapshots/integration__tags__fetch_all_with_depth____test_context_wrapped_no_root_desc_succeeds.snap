@@ -9,12 +9,12 @@ SELECT
 FROM
   "tags"
 WHERE
-  "tags"."id" <> $1
+  "tags"."id" <> '00000000-0000-0000-0000-000000000000'
 ORDER BY
   "tags"."kana" DESC,
   "tags"."id" DESC
 LIMIT
-  $2'''
+  $1'''
 rows_affected = 3
 rows_returned = 3
 
@@ -47,38 +47,41 @@ LEFT JOIN
         VALUES
           ($1, $2), ($3, $4), ($5, $6), ($7, $8)) AS "tag_orders"
   ) AS "tag_orders" ON "tag_orders"."id" = "descendant_id"
-  AND "ancestor_id" IN ("descendant_id", $9)
+  AND "ancestor_id" IN (
+    "descendant_id",
+    '00000000-0000-0000-0000-000000000000'
+  )
 INNER JOIN
   "tags" AS "tag_ancestors" ON "tag_ancestors"."id" = "tag_paths"."ancestor_id"
 INNER JOIN
   "tags" AS "tag_descendants" ON "tag_descendants"."id" = "tag_paths"."descendant_id"
 WHERE
   (
-    "distance" = $10
-    AND "ancestor_id" IN ($11, $12, $13)
+    "distance" = 0
+    AND "ancestor_id" IN ($9, $10, $11)
   )
   OR (
-    "distance" <= $14
+    "distance" <= 1
     AND "descendant_id" IN (
       SELECT
         "ancestor_id"
       FROM
         "tag_paths"
       WHERE
-        "distance" <= $15
-        AND "descendant_id" IN ($16, $17, $18)
+        "distance" <= $12
+        AND "descendant_id" IN ($13, $14, $15)
     )
   )
   OR (
-    "distance" <= $19
+    "distance" <= 1
     AND "ancestor_id" IN (
       SELECT
         "descendant_id"
       FROM
         "tag_paths"
       WHERE
-        "distance" <= $20
-        AND "ancestor_id" IN ($21, $22, $23)
+        "distance" <= $16
+        AND "ancestor_id" IN ($17, $18, $19)
     )
   )
 ORDER BY

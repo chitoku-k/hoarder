@@ -49,14 +49,14 @@ INNER JOIN
     INNER JOIN
       "tags" AS "ancestors" ON "tag_paths"."ancestor_id" = "ancestors"."id"
     WHERE
-      "ancestor_id" <> $1
+      "ancestor_id" <> '00000000-0000-0000-0000-000000000000'
     GROUP BY
       "tags"."id"
     ORDER BY
       "display_order" ASC
   ) AS "ancestors" ON "ancestors"."id" = "media_tags"."tag_id"
 WHERE
-  "media_tags"."medium_id" IN ($2, $3)
+  "media_tags"."medium_id" IN ($1, $2)
 ORDER BY
   "media_tags"."medium_id" ASC,
   "tag_types"."kana" ASC,
@@ -99,38 +99,41 @@ LEFT JOIN
           ($11, $12)
       ) AS "tag_orders"
   ) AS "tag_orders" ON "tag_orders"."id" = "descendant_id"
-  AND "ancestor_id" IN ("descendant_id", $13)
+  AND "ancestor_id" IN (
+    "descendant_id",
+    '00000000-0000-0000-0000-000000000000'
+  )
 INNER JOIN
   "tags" AS "tag_ancestors" ON "tag_ancestors"."id" = "tag_paths"."ancestor_id"
 INNER JOIN
   "tags" AS "tag_descendants" ON "tag_descendants"."id" = "tag_paths"."descendant_id"
 WHERE
   (
-    "distance" = $14
-    AND "ancestor_id" IN ($15, $16, $17, $18, $19)
+    "distance" = 0
+    AND "ancestor_id" IN ($13, $14, $15, $16, $17)
   )
   OR (
-    "distance" <= $20
+    "distance" <= 1
     AND "descendant_id" IN (
       SELECT
         "ancestor_id"
       FROM
         "tag_paths"
       WHERE
-        "distance" <= $21
-        AND "descendant_id" IN ($22, $23, $24, $25, $26)
+        "distance" <= $18
+        AND "descendant_id" IN ($19, $20, $21, $22, $23)
     )
   )
   OR (
-    "distance" <= $27
+    "distance" <= 1
     AND "ancestor_id" IN (
       SELECT
         "descendant_id"
       FROM
         "tag_paths"
       WHERE
-        "distance" <= $28
-        AND "ancestor_id" IN ($29, $30, $31, $32, $33)
+        "distance" <= $24
+        AND "ancestor_id" IN ($25, $26, $27, $28, $29)
     )
   )
 ORDER BY

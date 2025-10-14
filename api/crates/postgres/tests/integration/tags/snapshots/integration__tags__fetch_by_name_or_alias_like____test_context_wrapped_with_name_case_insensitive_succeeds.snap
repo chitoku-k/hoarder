@@ -10,7 +10,7 @@ FROM
   "tags"
 INNER JOIN
   "tag_paths" ON "tag_paths"."descendant_id" = "tags"."id"
-  AND "tag_paths"."ancestor_id" <> $1
+  AND "tag_paths"."ancestor_id" <> '00000000-0000-0000-0000-000000000000'
 INNER JOIN
   "tags" AS "tag_ancestors" ON "tag_ancestors"."id" = "tag_paths"."ancestor_id"
 LEFT JOIN
@@ -33,74 +33,74 @@ GROUP BY
   "tags"."id"
 HAVING
   bool_or(
-    ("tag_ancestors"."name" ILIKE $2)
-    OR ("tag_ancestors"."kana" ILIKE $3)
-    OR ("tag_ancestors_aliases"."alias" ILIKE $4)
+    ("tag_ancestors"."name" ILIKE $1)
+    OR ("tag_ancestors"."kana" ILIKE $2)
+    OR ("tag_ancestors_aliases"."alias" ILIKE $3)
   )
 ORDER BY
-  bool_or("tags"."name" = $5) DESC,
-  bool_or("tags"."kana" = $6) DESC,
-  bool_or(COALESCE("tags_aliases"."alias" = $7, $8)) DESC,
+  bool_or("tags"."name" = $4) DESC,
+  bool_or("tags"."kana" = $5) DESC,
+  bool_or(COALESCE("tags_aliases"."alias" = $6, FALSE)) DESC,
   MAX(
     (
       array_length(
-        string_to_array(UPPER("tags"."name"), UPPER($9)),
-        $10
+        string_to_array(UPPER("tags"."name"), UPPER($7)),
+        1
       )
-    ) - $11
+    ) - 1
   ) DESC,
   SUM(
     (
       array_length(
-        string_to_array(UPPER("tags"."name"), UPPER($12)),
-        $13
+        string_to_array(UPPER("tags"."name"), UPPER($8)),
+        1
       )
-    ) - $14
+    ) - 1
   ) DESC,
   (
     MIN(
-      NULLIF(strpos(UPPER("tags"."name"), UPPER($15)), $16)
+      NULLIF(strpos(UPPER("tags"."name"), UPPER($9)), 0)
     )
   ) ASC,
   (
     MIN(
-      NULLIF(strpos(UPPER("tags"."kana"), UPPER($17)), $18)
+      NULLIF(strpos(UPPER("tags"."kana"), UPPER($10)), 0)
     )
   ) ASC,
-  bool_or("tag_ancestors"."name" = $19) DESC,
-  bool_or("tag_ancestors"."kana" = $20) DESC,
+  bool_or("tag_ancestors"."name" = $11) DESC,
+  bool_or("tag_ancestors"."kana" = $12) DESC,
   bool_or(
-    COALESCE("tag_ancestors_aliases"."alias" = $21, $22)
+    COALESCE("tag_ancestors_aliases"."alias" = $13, FALSE)
   ) DESC,
   MAX(
     (
       array_length(
-        string_to_array(UPPER("tag_ancestors"."name"), UPPER($23)),
-        $24
+        string_to_array(UPPER("tag_ancestors"."name"), UPPER($14)),
+        1
       )
-    ) - $25
+    ) - 1
   ) DESC,
   SUM(
     (
       array_length(
-        string_to_array(UPPER("tag_ancestors"."name"), UPPER($26)),
-        $27
+        string_to_array(UPPER("tag_ancestors"."name"), UPPER($15)),
+        1
       )
-    ) - $28
+    ) - 1
   ) DESC,
   (
     MIN(
       NULLIF(
-        strpos(UPPER("tag_ancestors"."name"), UPPER($29)),
-        $30
+        strpos(UPPER("tag_ancestors"."name"), UPPER($16)),
+        0
       )
     )
   ) ASC,
   (
     MIN(
       NULLIF(
-        strpos(UPPER("tag_ancestors"."kana"), UPPER($31)),
-        $32
+        strpos(UPPER("tag_ancestors"."kana"), UPPER($17)),
+        0
       )
     )
   ) ASC,
@@ -143,38 +143,41 @@ LEFT JOIN
           ($11, $12)
       ) AS "tag_orders"
   ) AS "tag_orders" ON "tag_orders"."id" = "descendant_id"
-  AND "ancestor_id" IN ("descendant_id", $13)
+  AND "ancestor_id" IN (
+    "descendant_id",
+    '00000000-0000-0000-0000-000000000000'
+  )
 INNER JOIN
   "tags" AS "tag_ancestors" ON "tag_ancestors"."id" = "tag_paths"."ancestor_id"
 INNER JOIN
   "tags" AS "tag_descendants" ON "tag_descendants"."id" = "tag_paths"."descendant_id"
 WHERE
   (
-    "distance" = $14
-    AND "ancestor_id" IN ($15, $16, $17, $18, $19)
+    "distance" = 0
+    AND "ancestor_id" IN ($13, $14, $15, $16, $17)
   )
   OR (
-    "distance" <= $20
+    "distance" <= 1
     AND "descendant_id" IN (
       SELECT
         "ancestor_id"
       FROM
         "tag_paths"
       WHERE
-        "distance" <= $21
-        AND "descendant_id" IN ($22, $23, $24, $25, $26)
+        "distance" <= $18
+        AND "descendant_id" IN ($19, $20, $21, $22, $23)
     )
   )
   OR (
-    "distance" <= $27
+    "distance" <= 1
     AND "ancestor_id" IN (
       SELECT
         "descendant_id"
       FROM
         "tag_paths"
       WHERE
-        "distance" <= $28
-        AND "ancestor_id" IN ($29, $30, $31, $32, $33)
+        "distance" <= $24
+        AND "ancestor_id" IN ($25, $26, $27, $28, $29)
     )
   )
 ORDER BY
