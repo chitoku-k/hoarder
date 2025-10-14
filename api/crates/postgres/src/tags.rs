@@ -16,7 +16,7 @@ use sea_query_binder::SqlxBinder;
 use sqlx::{Acquire, FromRow, PgConnection, PgPool, Postgres, Row, Transaction};
 
 use crate::{
-    expr::{aggregate::AggregateExpr, array::ArrayExpr, conditional::ConditionalExpr, string::StringExpr},
+    expr::{aggregate::AggregateExpr, array::ArrayExpr, conditional::ConditionalExpr, string::StringExpr, SimpleExprTrait},
     sea_query_uuid_value,
 };
 
@@ -276,8 +276,8 @@ where
             TAG_ORDERS,
             Expr::col((TAG_ORDERS, PostgresTag::Id)).equals(PostgresTagPath::DescendantId)
                 .and(Expr::col(PostgresTagPath::AncestorId).is_in([
-                    Expr::col(PostgresTagPath::DescendantId),
-                    Expr::val(PostgresTagId::from(TagId::root())),
+                    Expr::column(PostgresTagPath::DescendantId),
+                    PostgresTagId::from(TagId::root()).to_constant(),
                 ]))
         )
         .join_as(
@@ -296,11 +296,11 @@ where
         )
         .cond_where(Cond::any()
             .add(
-                Expr::col(PostgresTagPath::Distance).eq(0)
+                Expr::col(PostgresTagPath::Distance).eq(0.to_constant())
                     .and(Expr::col(PostgresTagPath::AncestorId).is_in(ids.iter().cloned().map(PostgresTagId::from)))
             )
             .add_option(depth.has_parent().then(|| {
-                Expr::col(PostgresTagPath::Distance).lte(1)
+                Expr::col(PostgresTagPath::Distance).lte(1.to_constant())
                     .and(Expr::col(PostgresTagPath::DescendantId).in_subquery(
                         Query::select()
                             .from(PostgresTagPath::Table)
@@ -311,7 +311,7 @@ where
                     ))
             }))
             .add_option(depth.has_children().then(|| {
-                Expr::col(PostgresTagPath::Distance).lte(1)
+                Expr::col(PostgresTagPath::Distance).lte(1.to_constant())
                     .and(Expr::col(PostgresTagPath::AncestorId).in_subquery(
                         Query::select()
                             .from(PostgresTagPath::Table)
@@ -410,7 +410,7 @@ async fn attach_parent(tx: &mut Transaction<'_, Postgres>, id: TagId, parent_id:
                 .exprs([
                     Expr::column(PostgresTagPath::AncestorId),
                     Expr::value(PostgresTagId::from(id)),
-                    Expr::column(PostgresTagPath::Distance).add(1i32),
+                    Expr::column(PostgresTagPath::Distance).add(1.to_constant()),
                 ])
                 .from(PostgresTagPath::Table)
                 .and_where(Expr::col(PostgresTagPath::DescendantId).eq(PostgresTagId::from(parent_id)))
@@ -526,7 +526,7 @@ impl TagsRepository for PostgresTagsRepository {
             .values([
                 Expr::value(PostgresTagId::from(tag_id)),
                 Expr::value(PostgresTagId::from(tag_id)),
-                Expr::value(0),
+                0.to_constant(),
             ])
             .map_err(Error::other)?
             .build_sqlx(PostgresQueryBuilder);
@@ -581,7 +581,7 @@ impl TagsRepository for PostgresTagsRepository {
                 JoinType::InnerJoin,
                 PostgresTagPath::Table,
                 Expr::col((PostgresTagPath::Table, PostgresTagPath::DescendantId)).equals((PostgresTag::Table, PostgresTag::Id))
-                    .and(Expr::col((PostgresTagPath::Table, PostgresTagPath::AncestorId)).ne(PostgresTagId::from(TagId::root()))),
+                    .and(Expr::col((PostgresTagPath::Table, PostgresTagPath::AncestorId)).ne(PostgresTagId::from(TagId::root()).to_constant())),
             )
             .join_as(
                 JoinType::InnerJoin,
@@ -642,7 +642,7 @@ impl TagsRepository for PostgresTagsRepository {
                         .map(|query| {
                             let expr = column.clone().eq(query);
                             match coalesce {
-                                true => Expr::value(Func::coalesce([expr, Expr::value(false)])),
+                                true => Expr::value(Func::coalesce([expr, false.to_constant()])),
                                 false => expr,
                             }
                         })
@@ -662,11 +662,11 @@ impl TagsRepository for PostgresTagsRepository {
                                     Func::upper(Expr::col((table.clone(), PostgresTag::Name))),
                                     Func::upper(query),
                                 ),
-                                1,
-                            ).sub(1)
+                                1.to_constant(),
+                            ).sub(1.to_constant())
                         })
                         .reduce(|acc, e| acc.add(e))
-                        .unwrap_or_else(|| Expr::value(0)),
+                        .unwrap_or_else(|| 0.to_constant()),
                     )),
                     Order::Desc,
                 );
@@ -686,7 +686,7 @@ impl TagsRepository for PostgresTagsRepository {
                                         Func::upper(column.clone()),
                                         Func::upper(query),
                                     ),
-                                    0,
+                                    0.to_constant(),
                                 ),
                             ))
                         }),
@@ -725,7 +725,7 @@ impl TagsRepository for PostgresTagsRepository {
         query
             .column((PostgresTag::Table, PostgresTag::Id))
             .from(PostgresTag::Table)
-            .and_where(Expr::col((PostgresTag::Table, PostgresTag::Id)).ne(PostgresTagId::from(TagId::root())))
+            .and_where(Expr::col((PostgresTag::Table, PostgresTag::Id)).ne(PostgresTagId::from(TagId::root()).to_constant()))
             .and_where_option(
                 cursor.map(|(kana, tag_id)| {
                     Expr::tuple([
@@ -746,8 +746,8 @@ impl TagsRepository for PostgresTagsRepository {
                 JoinType::InnerJoin,
                 PostgresTagPath::Table,
                 Expr::col((PostgresTagPath::Table, PostgresTagPath::DescendantId)).equals((PostgresTag::Table, PostgresTag::Id))
-                    .and(Expr::col((PostgresTagPath::Table, PostgresTagPath::AncestorId)).eq(PostgresTagId::from(TagId::root())))
-                    .and(Expr::col((PostgresTagPath::Table, PostgresTagPath::Distance)).eq(1)),
+                    .and(Expr::col((PostgresTagPath::Table, PostgresTagPath::AncestorId)).eq(PostgresTagId::from(TagId::root()).to_constant()))
+                    .and(Expr::col((PostgresTagPath::Table, PostgresTagPath::Distance)).eq(1.to_constant())),
             );
         }
 

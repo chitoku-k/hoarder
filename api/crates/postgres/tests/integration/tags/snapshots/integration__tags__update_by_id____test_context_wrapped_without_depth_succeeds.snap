@@ -62,14 +62,17 @@ LEFT JOIN
         VALUES
           ($1, $2), ($3, $4)) AS "tag_orders"
   ) AS "tag_orders" ON "tag_orders"."id" = "descendant_id"
-  AND "ancestor_id" IN ("descendant_id", $5)
+  AND "ancestor_id" IN (
+    "descendant_id",
+    '00000000-0000-0000-0000-000000000000'
+  )
 INNER JOIN
   "tags" AS "tag_ancestors" ON "tag_ancestors"."id" = "tag_paths"."ancestor_id"
 INNER JOIN
   "tags" AS "tag_descendants" ON "tag_descendants"."id" = "tag_paths"."descendant_id"
 WHERE
-  "distance" = $6
-  AND "ancestor_id" IN ($7)
+  "distance" = 0
+  AND "ancestor_id" IN ($5)
 ORDER BY
   "distance" ASC,
   "tag_orders"."order" ASC,

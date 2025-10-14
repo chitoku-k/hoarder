@@ -19,11 +19,11 @@ rows_returned = 1
 [[queries]]
 sql = '''
 SELECT
-  COUNT(*) + $1
+  COUNT(*) + 1
 FROM
   "replicas"
 WHERE
-  "medium_id" = $2'''
+  "medium_id" = $1'''
 rows_affected = 1
 rows_returned = 1
 

@@ -18,7 +18,7 @@ sql = '''
 INSERT INTO
   "tag_paths" ("ancestor_id", "descendant_id", "distance")
 VALUES
-  ($1, $2, $3)'''
+  ($1, $2, 0)'''
 rows_affected = 1
 rows_returned = 0
 
@@ -29,11 +29,11 @@ INSERT INTO
 SELECT
   "ancestor_id",
   $1,
-  "distance" + $2
+  "distance" + 1
 FROM
   "tag_paths"
 WHERE
-  "descendant_id" = $3'''
+  "descendant_id" = $2'''
 rows_affected = 2
 rows_returned = 0
 
@@ -91,38 +91,41 @@ LEFT JOIN
         VALUES
           ($1, $2), ($3, $4)) AS "tag_orders"
   ) AS "tag_orders" ON "tag_orders"."id" = "descendant_id"
-  AND "ancestor_id" IN ("descendant_id", $5)
+  AND "ancestor_id" IN (
+    "descendant_id",
+    '00000000-0000-0000-0000-000000000000'
+  )
 INNER JOIN
   "tags" AS "tag_ancestors" ON "tag_ancestors"."id" = "tag_paths"."ancestor_id"
 INNER JOIN
   "tags" AS "tag_descendants" ON "tag_descendants"."id" = "tag_paths"."descendant_id"
 WHERE
   (
-    "distance" = $6
-    AND "ancestor_id" IN ($7)
+    "distance" = 0
+    AND "ancestor_id" IN ($5)
   )
   OR (
-    "distance" <= $8
+    "distance" <= 1
     AND "descendant_id" IN (
       SELECT
         "ancestor_id"
       FROM
         "tag_paths"
       WHERE
-        "distance" <= $9
-        AND "descendant_id" IN ($10)
+        "distance" <= $6
+        AND "descendant_id" IN ($7)
     )
   )
   OR (
-    "distance" <= $11
+    "distance" <= 1
     AND "ancestor_id" IN (
       SELECT
         "descendant_id"
       FROM
         "tag_paths"
       WHERE
-        "distance" <= $12
-        AND "ancestor_id" IN ($13)
+        "distance" <= $8
+        AND "ancestor_id" IN ($9)
     )
   )
 ORDER BY
