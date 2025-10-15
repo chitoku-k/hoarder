@@ -38,9 +38,11 @@ HAVING
     OR ("tag_ancestors_aliases"."alias" ILIKE $3)
   )
 ORDER BY
-  bool_or("tags"."name" = $4) DESC,
-  bool_or("tags"."kana" = $5) DESC,
-  bool_or(COALESCE("tags_aliases"."alias" = $6, FALSE)) DESC,
+  bool_or(UPPER("tags"."name") = UPPER($4)) DESC,
+  bool_or(UPPER("tags"."kana") = UPPER($5)) DESC,
+  bool_or(
+    COALESCE(UPPER("tags_aliases"."alias") = UPPER($6), FALSE)
+  ) DESC,
   MAX(
     (
       array_length(
@@ -67,10 +69,13 @@ ORDER BY
       NULLIF(strpos(UPPER("tags"."kana"), UPPER($10)), 0)
     )
   ) ASC,
-  bool_or("tag_ancestors"."name" = $11) DESC,
-  bool_or("tag_ancestors"."kana" = $12) DESC,
+  bool_or(UPPER("tag_ancestors"."name") = UPPER($11)) DESC,
+  bool_or(UPPER("tag_ancestors"."kana") = UPPER($12)) DESC,
   bool_or(
-    COALESCE("tag_ancestors_aliases"."alias" = $13, FALSE)
+    COALESCE(
+      UPPER("tag_ancestors_aliases"."alias") = UPPER($13),
+      FALSE
+    )
   ) DESC,
   MAX(
     (
