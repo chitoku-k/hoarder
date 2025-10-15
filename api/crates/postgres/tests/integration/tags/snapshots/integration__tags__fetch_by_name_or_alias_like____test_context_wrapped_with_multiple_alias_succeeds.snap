@@ -48,16 +48,22 @@ HAVING
   )
 ORDER BY
   bool_or(
-    "tags"."name" = $7
-    OR "tags"."name" = $8
+    UPPER("tags"."name") = UPPER($7)
+    OR UPPER("tags"."name") = UPPER($8)
   ) DESC,
   bool_or(
-    "tags"."kana" = $9
-    OR "tags"."kana" = $10
+    UPPER("tags"."kana") = UPPER($9)
+    OR UPPER("tags"."kana") = UPPER($10)
   ) DESC,
   bool_or(
-    COALESCE("tags_aliases"."alias" = $11, FALSE)
-    OR COALESCE("tags_aliases"."alias" = $12, FALSE)
+    COALESCE(
+      UPPER("tags_aliases"."alias") = UPPER($11),
+      FALSE
+    )
+    OR COALESCE(
+      UPPER("tags_aliases"."alias") = UPPER($12),
+      FALSE
+    )
   ) DESC,
   MAX(
     (
@@ -110,16 +116,22 @@ ORDER BY
     )
   ) ASC,
   bool_or(
-    "tag_ancestors"."name" = $21
-    OR "tag_ancestors"."name" = $22
+    UPPER("tag_ancestors"."name") = UPPER($21)
+    OR UPPER("tag_ancestors"."name") = UPPER($22)
   ) DESC,
   bool_or(
-    "tag_ancestors"."kana" = $23
-    OR "tag_ancestors"."kana" = $24
+    UPPER("tag_ancestors"."kana") = UPPER($23)
+    OR UPPER("tag_ancestors"."kana") = UPPER($24)
   ) DESC,
   bool_or(
-    COALESCE("tag_ancestors_aliases"."alias" = $25, FALSE)
-    OR COALESCE("tag_ancestors_aliases"."alias" = $26, FALSE)
+    COALESCE(
+      UPPER("tag_ancestors_aliases"."alias") = UPPER($25),
+      FALSE
+    )
+    OR COALESCE(
+      UPPER("tag_ancestors_aliases"."alias") = UPPER($26),
+      FALSE
+    )
   ) DESC,
   MAX(
     (

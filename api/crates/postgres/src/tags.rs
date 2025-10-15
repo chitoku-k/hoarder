@@ -640,7 +640,7 @@ impl TagsRepository for PostgresTagsRepository {
                     AggregateExpr::bool_or(query
                         .iter()
                         .map(|query| {
-                            let expr = column.clone().eq(query);
+                            let expr = Func::upper(column.clone()).eq(Func::upper(query));
                             match coalesce {
                                 true => Expr::value(Func::coalesce([expr, false.to_constant()])),
                                 false => expr,
