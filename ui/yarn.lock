@@ -29,23 +29,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/client-integration-nextjs@npm:^0.13.2":
-  version: 0.13.2
-  resolution: "@apollo/client-integration-nextjs@npm:0.13.2"
+"@apollo/client-integration-nextjs@npm:^0.14.0":
+  version: 0.14.0
+  resolution: "@apollo/client-integration-nextjs@npm:0.14.0"
   dependencies:
-    "@apollo/client-react-streaming": "npm:0.13.2"
+    "@apollo/client-react-streaming": "npm:0.14.0"
   peerDependencies:
     "@apollo/client": ^4.0.0
     next: ^15.2.3
     react: ^19
     rxjs: ^7.3.0
-  checksum: 10/f44b30d1caf3f91a78e1cdcf20f340a9a97b5e2fe86b0a067e3a3bc830a78feabe5376f9bae9579ddaf4918c63292a1db16c778d91103bc90163040ef77501ad
+  checksum: 10/f53f9edfeb1ad6dd70f22e078cce1d45518d3b1a104f4f8390d836cb5b08ea86afe356a3dc18b956fe44133f45e141afb653d7c33fca2346e2fc009a9c15ba3b
   languageName: node
   linkType: hard
 
-"@apollo/client-react-streaming@npm:0.13.2":
-  version: 0.13.2
-  resolution: "@apollo/client-react-streaming@npm:0.13.2"
+"@apollo/client-react-streaming@npm:0.14.0":
+  version: 0.14.0
+  resolution: "@apollo/client-react-streaming@npm:0.14.0"
   dependencies:
     "@types/react-dom": "npm:^19.0.0"
     "@wry/equality": "npm:^0.5.6"
@@ -55,7 +55,7 @@ __metadata:
     react: ^19
     react-dom: ^19
     rxjs: ^7.3.0
-  checksum: 10/91e49f7d426accb9e88d996c0effc259be45302a22cb666803facc60620bc04c81bbd84a171ac9aac40c6f4feec41906195258c3282dc85db465056352860c92
+  checksum: 10/0a06d06789de414804f02e9c44d86ef8afe2c97b2afe65315ed6252a8ca82d6c54c65ac1fddbce96528ab25db8c3b43ba63f8064207b65de50b280a075527961
   languageName: node
   linkType: hard
 
@@ -6278,7 +6278,7 @@ __metadata:
   resolution: "hoarder-ui@workspace:."
   dependencies:
     "@apollo/client": "npm:^4.0.7"
-    "@apollo/client-integration-nextjs": "npm:^0.13.2"
+    "@apollo/client-integration-nextjs": "npm:^0.14.0"
     "@date-fns/tz": "npm:^1.4.1"
     "@emotion/cache": "npm:^11.14.0"
     "@emotion/react": "npm:^11.14.0"
