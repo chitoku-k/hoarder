@@ -96,5 +96,5 @@ version = "1.4.1"
 version = "3.23.0"
 
 [dev-dependencies.tokio]
-version = "1.47.1"
+version = "1.48.0"
 features = ["macros", "rt-multi-thread"]
