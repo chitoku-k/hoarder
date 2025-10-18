@@ -233,6 +233,16 @@ fn extract(rc: Rc<RefCell<TagRelation>>, depth: TagDepth) -> Tag {
     }
 }
 
+fn like(keyword: &str) -> String {
+    format!(
+        "%{}%",
+        keyword
+            .cow_replace('\\', "\\\\")
+            .cow_replace('%', "\\%")
+            .cow_replace('_', "\\_"),
+    )
+}
+
 pub async fn fetch_tag_relatives<T>(conn: &mut PgConnection, ids: T, depth: TagDepth, root: bool) -> Result<Vec<Tag>>
 where
     T: IntoIterator<Item = TagId>,
@@ -572,6 +582,7 @@ impl TagsRepository for PostgresTagsRepository {
         const TAG_ANCESTORS: &str = "tag_ancestors";
         const TAG_ANCESTORS_ALIASES: &str = "tag_ancestors_aliases";
         const TAGS_ALIASES: &str = "tags_aliases";
+        const COUNT: &str = "count";
         const ALIAS: &str = "alias";
 
         let mut sql = Query::select()
@@ -593,83 +604,111 @@ impl TagsRepository for PostgresTagsRepository {
                 JoinType::LeftJoin,
                 Query::select()
                     .column(PostgresTag::Id)
-                    .expr_as(ArrayExpr::unnest(Expr::col(PostgresTag::Aliases)), ALIAS)
-                    .from(PostgresTag::Table)
+                    .expr_as(Expr::col(PostgresTag::Id).count(), COUNT)
+                    .from_subquery(
+                        Query::select()
+                            .column(PostgresTag::Id)
+                            .expr_as(ArrayExpr::unnest(Expr::col(PostgresTag::Aliases)), ALIAS)
+                            .from(PostgresTag::Table)
+                            .take(),
+                        TAGS_ALIASES,
+                    )
+                    .cond_where(query
+                        .iter()
+                        .map(|query| Expr::col(ALIAS).ilike(like(query)))
+                        .fold(Cond::all(), |conditions, expr| conditions.add(expr))
+                    )
+                    .group_by_col(PostgresTag::Id)
                     .take(),
                 TAGS_ALIASES,
-                Expr::col((TAGS_ALIASES, PostgresTag::Id)).equals((PostgresTag::Table, PostgresTag::Id)),
+                Expr::col((TAGS_ALIASES, PostgresTag::Id)).equals((PostgresTag::Table, PostgresTag::Id))
+                    .and(Expr::col((PostgresTagPath::Table, PostgresTagPath::AncestorId)).equals((PostgresTagPath::Table, PostgresTagPath::DescendantId))),
             )
             .join_subquery(
                 JoinType::LeftJoin,
                 Query::select()
                     .column(PostgresTag::Id)
-                    .expr_as(ArrayExpr::unnest(Expr::col(PostgresTag::Aliases)), ALIAS)
-                    .from(PostgresTag::Table)
+                    .expr_as(Expr::col(PostgresTag::Id).count(), COUNT)
+                    .from_subquery(
+                        Query::select()
+                            .column(PostgresTag::Id)
+                            .expr_as(ArrayExpr::unnest(Expr::col(PostgresTag::Aliases)), ALIAS)
+                            .from(PostgresTag::Table)
+                            .take(),
+                        TAG_ANCESTORS_ALIASES,
+                    )
+                    .cond_where(query
+                        .iter()
+                        .map(|query| Expr::col(ALIAS).ilike(like(query)))
+                        .fold(Cond::all(), |conditions, expr| conditions.add(expr))
+                    )
+                    .group_by_col(PostgresTag::Id)
                     .take(),
                 TAG_ANCESTORS_ALIASES,
-                Expr::col((TAG_ANCESTORS_ALIASES, PostgresTag::Id)).equals((TAG_ANCESTORS, PostgresTag::Id)),
+                Expr::col((TAG_ANCESTORS_ALIASES, PostgresTag::Id)).equals((PostgresTag::Table, PostgresTag::Id))
+                    .and(Expr::col((PostgresTagPath::Table, PostgresTagPath::AncestorId)).not_equals((PostgresTagPath::Table, PostgresTagPath::DescendantId))),
             )
             .group_by_col((PostgresTag::Table, PostgresTag::Id))
             .cond_having(query
                 .iter()
                 .map(|query| {
-                    let query = format!(
-                        "%{}%",
-                        query
-                            .cow_replace('\\', "\\\\")
-                            .cow_replace('%', "\\%")
-                            .cow_replace('_', "\\_"),
-                    );
+                    let query = like(query);
                     AggregateExpr::bool_or(Cond::any()
                         .add(Expr::col((TAG_ANCESTORS, PostgresTag::Name)).ilike(LikeExpr::new(query.clone())))
                         .add(Expr::col((TAG_ANCESTORS, PostgresTag::Kana)).ilike(LikeExpr::new(query.clone())))
-                        .add(Expr::col((TAG_ANCESTORS_ALIASES, ALIAS)).ilike(LikeExpr::new(query)))
+                        .add(Expr::col((TAG_ANCESTORS_ALIASES, COUNT)).gt(0.to_constant()))
+                        .add(Expr::col((TAGS_ALIASES, COUNT)).gt(0.to_constant()))
                     )
                 })
                 .fold(Cond::all(), |conditions, expr| conditions.add(expr))
             )
             .take();
 
-        for table in [PostgresTag::Table.into_iden(), TAG_ANCESTORS.into_iden()] {
-            for (column, coalesce) in [
-                (Expr::col((table.clone(), PostgresTag::Name)), false),
-                (Expr::col((table.clone(), PostgresTag::Kana)), false),
-                (Expr::col((format!("{}_aliases", table), ALIAS)), true),
+        for (table, table_alias, agg) in [
+            (PostgresTag::Table.into_iden(), TAGS_ALIASES, false),
+            (TAG_ANCESTORS.into_iden(), TAG_ANCESTORS_ALIASES, true),
+        ] {
+            for column in [
+                Expr::col((table.clone(), PostgresTag::Name)),
+                Expr::col((table.clone(), PostgresTag::Kana)),
             ] {
+                let expr = query
+                    .iter()
+                    .map(|query| Func::upper(column.clone()).eq(Func::upper(query)))
+                    .fold(Cond::any(), |conditions, expr| conditions.add(expr));
+
                 sql.order_by_expr(
-                    AggregateExpr::bool_or(query
-                        .iter()
-                        .map(|query| {
-                            let expr = Func::upper(column.clone()).eq(Func::upper(query));
-                            match coalesce {
-                                true => Expr::value(Func::coalesce([expr, false.to_constant()])),
-                                false => expr,
-                            }
-                        })
-                        .fold(Cond::any(), |conditions, expr| conditions.add(expr))
-                    ),
+                    match agg {
+                        true => AggregateExpr::bool_or(expr),
+                        false => Expr::value(expr),
+                    },
                     Order::Desc,
                 );
             }
 
-            for func in [Func::max, Func::sum] {
-                sql.order_by_expr(
-                    Expr::value(func(query
-                        .iter()
-                        .map(|query| {
-                            ArrayExpr::length(
-                                ArrayExpr::string_to_array(
-                                    Func::upper(Expr::col((table.clone(), PostgresTag::Name))),
-                                    Func::upper(query),
-                                ),
-                                1.to_constant(),
-                            ).sub(1.to_constant())
-                        })
-                        .reduce(|acc, e| acc.add(e))
-                        .unwrap_or_else(|| 0.to_constant()),
-                    )),
-                    Order::Desc,
-                );
+            let expr = query
+                .iter()
+                .map(|query| {
+                    ArrayExpr::length(
+                        ArrayExpr::string_to_array(
+                            Func::upper(Expr::col((table.clone(), PostgresTag::Name))),
+                            Func::upper(query),
+                        ),
+                        1.to_constant(),
+                    ).sub(1.to_constant())
+                })
+                .reduce(|acc, e| acc.add(e))
+                .unwrap_or_else(|| 0.to_constant());
+
+            match agg {
+                true => {
+                    for func in [Func::max, Func::sum] {
+                        sql.order_by_expr(Expr::value(func(expr.clone())), Order::Desc);
+                    }
+                },
+                false => {
+                    sql.order_by_expr(expr, Order::Desc);
+                },
             }
 
             for column in [
@@ -680,20 +719,30 @@ impl TagsRepository for PostgresTagsRepository {
                     Expr::value(Expr::tuple(query
                         .iter()
                         .map(|query| {
-                            Expr::value(Func::min(
-                                ConditionalExpr::null_if(
-                                    StringExpr::strpos(
-                                        Func::upper(column.clone()),
-                                        Func::upper(query),
-                                    ),
-                                    0.to_constant(),
+                            let expr = ConditionalExpr::null_if(
+                                StringExpr::strpos(
+                                    Func::upper(column.clone()),
+                                    Func::upper(query),
                                 ),
-                            ))
+                                0.to_constant(),
+                            );
+                            match agg {
+                                true => Expr::value(Func::min(expr)),
+                                false => expr,
+                            }
                         }),
                     )),
                     Order::Asc,
                 );
             }
+
+            sql.order_by_expr(
+                Expr::value(Func::sum(Func::coalesce([
+                    Expr::col((table_alias, COUNT)),
+                    0.to_constant(),
+                ]))),
+                Order::Desc,
+            );
         }
 
         sql.order_by((PostgresTag::Table, PostgresTag::Kana), Order::Asc);
