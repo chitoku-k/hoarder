@@ -6,6 +6,7 @@ COPY package.json yarn.lock .yarnrc.yml /usr/src/
 FROM base AS debug
 RUN --mount=type=tmpfs,target=/tmp \
     --mount=type=cache,id=ui:/usr/local/share/.cache/yarn,target=/usr/local/share/.cache/yarn \
+    npm install -g -f corepack && \
     corepack enable && \
     yarn --immutable
 
@@ -13,6 +14,7 @@ FROM base AS release
 ENV NODE_ENV=production
 RUN --mount=type=tmpfs,target=/tmp \
     --mount=type=cache,id=ui:/usr/local/share/.cache/yarn,target=/usr/local/share/.cache/yarn \
+    npm install -g -f corepack && \
     corepack enable && \
     yarn --immutable
 COPY . ./
