@@ -160,7 +160,7 @@ dependencies = [
  "futures-util",
  "handlebars",
  "http",
- "indexmap 2.11.4",
+ "indexmap 2.12.0",
  "mime",
  "multer",
  "num-traits",
@@ -230,7 +230,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "34ecdaff7c9cffa3614a9f9999bf9ee4c3078fe3ce4d6a6e161736b56febf2de"
 dependencies = [
  "bytes",
- "indexmap 2.11.4",
+ "indexmap 2.12.0",
  "serde",
  "serde_json",
 ]
@@ -1209,7 +1209,7 @@ dependencies = [
  "futures-sink",
  "futures-util",
  "http",
- "indexmap 2.11.4",
+ "indexmap 2.12.0",
  "slab",
  "tokio",
  "tokio-util",
@@ -1246,6 +1246,12 @@ dependencies = [
  "equivalent",
  "foldhash",
 ]
+
+[[package]]
+name = "hashbrown"
+version = "0.16.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5419bdc4f6a9207fbeba6d11b604d481addf78ecd10c11ad51e76c2f6482748d"
 
 [[package]]
 name = "hashlink"
@@ -1659,12 +1665,12 @@ dependencies = [
 
 [[package]]
 name = "indexmap"
-version = "2.11.4"
+version = "2.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4b0f83760fb341a774ed326568e19f5a863af4a952def8c39f9ab92fd95b88e5"
+checksum = "6717a8d2a5a929a1a2eb43a12812498ed141a0bcfb7e8f7844fbdbe4303bba9f"
 dependencies = [
  "equivalent",
- "hashbrown 0.15.0",
+ "hashbrown 0.16.0",
  "serde",
  "serde_core",
 ]
@@ -2161,11 +2167,11 @@ dependencies = [
 
 [[package]]
 name = "ordermap"
-version = "0.5.12"
+version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b100f7dd605611822d30e182214d3c02fdefce2d801d23993f6b6ba6ca1392af"
+checksum = "ed637741ced8fb240855d22a2b4f208dab7a06bcce73380162e5253000c16758"
 dependencies = [
- "indexmap 2.11.4",
+ "indexmap 2.12.0",
  "serde",
  "serde_core",
 ]
@@ -2894,7 +2900,7 @@ dependencies = [
  "chrono",
  "hex",
  "indexmap 1.9.3",
- "indexmap 2.11.4",
+ "indexmap 2.12.0",
  "schemars 0.9.0",
  "schemars 1.0.3",
  "serde_core",
@@ -3116,7 +3122,7 @@ dependencies = [
  "futures-util",
  "hashbrown 0.15.0",
  "hashlink",
- "indexmap 2.11.4",
+ "indexmap 2.12.0",
  "log",
  "memchr",
  "native-tls",
@@ -3693,7 +3699,7 @@ version = "0.21.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6a8534fd7f78b5405e860340ad6575217ce99f38d4d5c8f2442cb5ecb50090e1"
 dependencies = [
- "indexmap 2.11.4",
+ "indexmap 2.12.0",
  "toml_datetime",
  "winnow 0.5.0",
 ]
