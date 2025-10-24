@@ -29,17 +29,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/client-integration-nextjs@npm:^0.14.0":
-  version: 0.14.0
-  resolution: "@apollo/client-integration-nextjs@npm:0.14.0"
+"@apollo/client-integration-nextjs@npm:^0.14.1":
+  version: 0.14.1
+  resolution: "@apollo/client-integration-nextjs@npm:0.14.1"
   dependencies:
     "@apollo/client-react-streaming": "npm:0.14.0"
   peerDependencies:
     "@apollo/client": ^4.0.0
-    next: ^15.2.3
+    next: ^15.2.3 || ^16.0.0
     react: ^19
     rxjs: ^7.3.0
-  checksum: 10/f53f9edfeb1ad6dd70f22e078cce1d45518d3b1a104f4f8390d836cb5b08ea86afe356a3dc18b956fe44133f45e141afb653d7c33fca2346e2fc009a9c15ba3b
+  checksum: 10/7ce4e956d44f00a6d8f93a425e990378c360810b20a374eebe88fa67821569d3f93de142289a1955237b21705d7e5591334c673165142463272a915f6670d620
   languageName: node
   linkType: hard
 
@@ -6278,7 +6278,7 @@ __metadata:
   resolution: "hoarder-ui@workspace:."
   dependencies:
     "@apollo/client": "npm:^4.0.7"
-    "@apollo/client-integration-nextjs": "npm:^0.14.0"
+    "@apollo/client-integration-nextjs": "npm:^0.14.1"
     "@date-fns/tz": "npm:^1.4.1"
     "@emotion/cache": "npm:^11.14.0"
     "@emotion/react": "npm:^11.14.0"
