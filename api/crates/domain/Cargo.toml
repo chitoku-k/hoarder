@@ -59,7 +59,7 @@ features = ["serde", "v4"]
 version = "1.0.100"
 
 [dev-dependencies.indoc]
-version = "2.0.6"
+version = "2.0.7"
 
 [dev-dependencies.mockall]
 version = "0.13.1"
