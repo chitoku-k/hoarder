@@ -69,6 +69,14 @@ const MediumItemMetadataTagCreate: FunctionComponent<MediumItemMetadataTagCreate
     })
   }, [])
 
+  const resolveTagTagTypeIDs = (addingTags: ReadonlyMap<TagTypeID, readonly Tag[]>) => {
+    const addTagTagTypeIDs: TagTagTypeInput[] = []
+    for (const [ tagTypeId, tags ] of addingTags) {
+      addTagTagTypeIDs.push(...tags.map(({ id: tagId }) => ({ tagTypeId, tagId })))
+    }
+    return addTagTagTypeIDs
+  }
+
   const addTag = useCallback((type: TagType, tag: Tag) => {
     setFocusedTagType(type)
 
@@ -95,14 +103,6 @@ const MediumItemMetadataTagCreate: FunctionComponent<MediumItemMetadataTagCreate
     setAddingTags(newAddingTags)
     setTagTagTypeIDs(() => resolveTagTagTypeIDs(newAddingTags))
   }, [ addingTags, setTagTagTypeIDs ])
-
-  const resolveTagTagTypeIDs = (addingTags: ReadonlyMap<TagTypeID, readonly Tag[]>) => {
-    const addTagTagTypeIDs: TagTagTypeInput[] = []
-    for (const [ tagTypeId, tags ] of addingTags) {
-      addTagTagTypeIDs.push(...tags.map(({ id: tagId }) => ({ tagTypeId, tagId })))
-    }
-    return addTagTagTypeIDs
-  }
 
   const renderTagTypeOption = useCallback(({ key, ...props }: ComponentPropsWithoutRef<'li'>, option: TagType) => (
     <li key={key} {...props}>
