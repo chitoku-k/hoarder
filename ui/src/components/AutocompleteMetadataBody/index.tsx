@@ -1,7 +1,7 @@
 'use client'
 
 import type { ComponentType, FunctionComponent, SyntheticEvent } from 'react'
-import { useCallback, useEffect, useMemo, useState, useTransition } from 'react'
+import { useCallback, useMemo, useState, useTransition } from 'react'
 import clsx from 'clsx'
 import { skipToken } from '@apollo/client/react'
 import type { FilterOptionsState } from '@mui/material'
@@ -167,16 +167,13 @@ const AutocompleteMetadataBody: FunctionComponent<AutocompleteMetadataBodyProps>
     [],
   )
 
-  useEffect(() => {
-    if (typeof inputValue !== 'string') {
-      return
-    }
-    if (!inputValue) {
+  if (typeof inputValue === 'string' && value !== inputValue) {
+    if (inputValue === '') {
       setValue(inputValue)
-      return
+    } else {
+      updateInputValue(inputValue)
     }
-    updateInputValue(inputValue)
-  }, [ updateInputValue, inputValue ])
+  }
 
   const handleInputChange = useCallback((e: SyntheticEvent, value: string, reason: AutocompleteInputChangeReason) => {
     if (onInputChange) {

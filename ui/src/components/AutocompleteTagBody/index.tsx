@@ -1,7 +1,7 @@
 'use client'
 
 import type { ComponentType, FunctionComponent, SyntheticEvent } from 'react'
-import { useCallback, useEffect, useMemo, useState, useTransition } from 'react'
+import { useCallback, useMemo, useState, useTransition } from 'react'
 import clsx from 'clsx'
 import { skipToken } from '@apollo/client/react'
 import type { AutocompleteInputChangeReason, AutocompleteProps } from '@mui/material/Autocomplete'
@@ -59,16 +59,13 @@ const AutocompleteTagBody: FunctionComponent<AutocompleteTagBodyProps> = ({
     [],
   )
 
-  useEffect(() => {
-    if (typeof inputValue !== 'string') {
-      return
-    }
-    if (!inputValue) {
+  if (typeof inputValue === 'string' && value !== inputValue) {
+    if (inputValue === '') {
       setValue(inputValue)
-      return
+    } else {
+      updateInputValue(inputValue)
     }
-    updateInputValue(inputValue)
-  }, [ updateInputValue, inputValue ])
+  }
 
   const handleInputChange = useCallback((e: SyntheticEvent, value: string, reason: AutocompleteInputChangeReason) => {
     onInputChange?.(e, value, reason)
