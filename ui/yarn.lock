@@ -6716,7 +6716,6 @@ __metadata:
     "@emotion/cache": "npm:^11.14.0"
     "@emotion/react": "npm:^11.14.0"
     "@emotion/styled": "npm:^11.14.1"
-    "@eslint/eslintrc": "npm:^3.3.1"
     "@fontsource/roboto": "npm:^5.2.8"
     "@graphql-codegen/cli": "npm:^6.0.1"
     "@graphql-codegen/near-operation-file-preset": "npm:^3.1.0"
