@@ -107,21 +107,19 @@ const Page: FunctionComponent<PageProps> = async ({
   searchParams,
 }) => {
   const { source, tag } = await searchParamsToArray(searchParams)
-  try {
-    const { sources, tagTagTypes } = await fetchSearchQuery(source ?? [], tag ?? [])
-    return (
-      <Content>
-        <SearchQueryList sources={sources} tagTagTypes={tagTagTypes} />
-        <MediumList number={48} sources={sources} tagTagTypes={tagTagTypes} />
-      </Content>
-    )
-  } catch {
-    return (
-      <Content>
+  const query = await fetchSearchQuery(source ?? [], tag ?? []).catch(() => null)
+  return (
+    <Content>
+      {query ? (
+        <>
+          <SearchQueryList sources={query.sources} tagTagTypes={query.tagTagTypes} />
+          <MediumList number={48} sources={query.sources} tagTagTypes={query.tagTagTypes} />
+        </>
+      ) : (
         <SearchQueryList />
-      </Content>
-    )
-  }
+      )}
+    </Content>
+  )
 }
 
 export type SearchParams = Record<string, string | readonly string[]>
