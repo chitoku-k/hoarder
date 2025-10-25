@@ -1,29 +1,18 @@
-import { dirname } from 'node:path'
-import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'eslint/config'
-import { FlatCompat } from '@eslint/eslintrc'
 import eslint from '@eslint/js'
+import nextVitals from 'eslint-config-next/core-web-vitals'
+import nextTs from 'eslint-config-next/typescript'
 import stylistic from '@stylistic/eslint-plugin'
 import tseslint from 'typescript-eslint'
-
-const compat = new FlatCompat({
-  baseDirectory: dirname(fileURLToPath(import.meta.url)),
-})
 
 const configs = defineConfig(
   eslint.configs.recommended,
   stylistic.configs.recommended,
-  compat.extends(
-    'next/core-web-vitals',
-    'next/typescript',
-  ),
+  ...nextVitals,
+  ...nextTs,
   {
     ignores: [
-      '.next/**',
       '.storybook/**',
-      'build/**',
-      'out/**',
-      'next-env.d.ts',
       '**/*.generated.*',
     ],
   },
