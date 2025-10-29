@@ -40,7 +40,7 @@ const MediumItemImageItem: FunctionComponent<MediumItemImageItemProps> = ({
             src={replica.url}
             width={replica.width}
             height={replica.height}
-            priority
+            preload
             unoptimized
             alt=""
           />
