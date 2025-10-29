@@ -1,4 +1,10 @@
-/** @type {import('next').NextConfig} */
+import type { NextConfig } from 'next'
+
+const API_URL = process.env.API_URL
+if (typeof API_URL === 'undefined') {
+  throw new Error('API_URL must be set')
+}
+
 const nextConfig = {
   productionBrowserSourceMaps: true,
   experimental: {
@@ -9,20 +15,20 @@ const nextConfig = {
     qualities: [ 100 ],
   },
   output: 'standalone',
-  rewrites: async () => [
+  rewrites: () => [
     {
       source: '/graphql/:path*',
-      destination: `${process.env.API_URL}/graphql/:path*`,
+      destination: `${API_URL}/graphql/:path*`,
     },
     {
       source: '/objects',
-      destination: `${process.env.API_URL}/objects`,
+      destination: `${API_URL}/objects`,
     },
     {
       source: '/thumbnails/:id',
-      destination: `${process.env.API_URL}/thumbnails/:id`,
+      destination: `${API_URL}/thumbnails/:id`,
     },
   ],
-}
+} satisfies NextConfig
 
 export default nextConfig
