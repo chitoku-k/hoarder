@@ -1,3 +1,5 @@
+'use client'
+
 import type { FunctionComponent } from 'react'
 import Link from 'next/link'
 import AppBar from '@mui/material/AppBar'
