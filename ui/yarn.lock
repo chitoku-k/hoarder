@@ -1458,9 +1458,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/typed-document-node@npm:^6.0.2":
-  version: 6.0.2
-  resolution: "@graphql-codegen/typed-document-node@npm:6.0.2"
+"@graphql-codegen/typed-document-node@npm:^6.1.0":
+  version: 6.1.0
+  resolution: "@graphql-codegen/typed-document-node@npm:6.1.0"
   dependencies:
     "@graphql-codegen/plugin-helpers": "npm:^6.0.0"
     "@graphql-codegen/visitor-plugin-common": "npm:6.1.0"
@@ -1469,7 +1469,7 @@ __metadata:
     tslib: "npm:~2.6.0"
   peerDependencies:
     graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
-  checksum: 10/192702cba1d5d15a71174ed1bcac85bd73c4be99880f7ba6376fe5b4a2057a06f7cfdd4b44a04d9b393185754252436c5baee4dd5d7be6608800fcb7ab788030
+  checksum: 10/3a85ac12c6f4b3507faef04cb3d60d6c3a15bf4ba2588a57f4b5045452d2e4424da2358d70e6a5b7e1c1d195d0375cb064a9a95053fb96393dade2653134c592
   languageName: node
   linkType: hard
 
@@ -6482,7 +6482,7 @@ __metadata:
     "@fontsource/roboto": "npm:^5.2.8"
     "@graphql-codegen/cli": "npm:^6.0.1"
     "@graphql-codegen/near-operation-file-preset": "npm:^3.1.0"
-    "@graphql-codegen/typed-document-node": "npm:^6.0.2"
+    "@graphql-codegen/typed-document-node": "npm:^6.1.0"
     "@graphql-codegen/typescript": "npm:^5.0.2"
     "@graphql-codegen/typescript-operations": "npm:^5.0.2"
     "@graphql-codegen/typescript-resolvers": "npm:^5.1.0"
