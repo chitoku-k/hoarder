@@ -12,7 +12,7 @@ version = "2.0.1"
 features = ["constructor"]
 
 [dependencies.lazy-regex]
-version = "3.4.1"
+version = "3.4.2"
 
 [dev-dependencies.pretty_assertions]
 version = "1.4.1"
