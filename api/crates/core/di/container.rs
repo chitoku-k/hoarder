@@ -103,8 +103,10 @@ fn tag_types_repository(pg_pool: PgPool) -> TagTypesRepositoryImpl {
     PostgresTagTypesRepository::new(pg_pool)
 }
 
-fn objects_repository(collator: CollatorBorrowed<'static>, root_dir: String) -> ObjectsRepositoryImpl {
-    FilesystemObjectsRepository::new(Arc::new(collator), root_dir)
+async fn objects_repository(collator: CollatorBorrowed<'static>, root_dir: &str) -> anyhow::Result<ObjectsRepositoryImpl> {
+    FilesystemObjectsRepository::new(collator, root_dir)
+        .await
+        .context("error instantiating filesystem")
 }
 
 fn normalizer() -> NormalizerImpl {
@@ -191,7 +193,7 @@ impl Application {
                 let tags_repository = tags_repository(pg_pool.clone());
                 let tag_types_repository = tag_types_repository(pg_pool);
 
-                let objects_repository = objects_repository(collator, serve.media_root_dir);
+                let objects_repository = objects_repository(collator, &serve.media_root_dir).await?;
                 let medium_image_processor = medium_image_processor();
 
                 let external_services_service = external_services_service(external_services_repository);
