@@ -1,6 +1,5 @@
-use std::{fs::File as StdFile, io::{self, Read}, path::{Path, PathBuf}, sync::Arc};
+use std::{fs::File as StdFile, io::{self, Read}, path::{Path, PathBuf, MAIN_SEPARATOR_STR}, sync::Arc};
 
-use derive_more::Constructor;
 use domain::{
     entity::objects::{Entry, EntryKind, EntryUrl},
     error::{Error, ErrorKind, Result},
@@ -16,18 +15,31 @@ use crate::{filesystem::{entry::FilesystemEntry, url::FilesystemEntryUrl}, Stora
 mod entry;
 mod url;
 
-#[derive(Clone, Constructor)]
+#[derive(Clone)]
 pub struct FilesystemObjectsRepository {
     collator: Arc<CollatorBorrowed<'static>>,
-    root_dir: String,
+    root_dir: PathBuf,
 }
 
 impl FilesystemObjectsRepository {
+    pub async fn new<P>(collator: CollatorBorrowed<'static>, root_dir: P) -> Result<Self>
+    where
+        P: AsRef<Path>,
+    {
+        let collator = Arc::new(collator);
+        let root_dir = canonicalize(root_dir.as_ref()).await.map_err(Error::other)?;
+
+        Ok(Self {
+            collator,
+            root_dir,
+        })
+    }
+
     fn fullpath<P>(&self, path: P) -> PathBuf
     where
         P: AsRef<Path>,
     {
-        Path::new(&self.root_dir).join(path.as_ref())
+        self.root_dir.join(path.as_ref())
     }
 
     async fn mkdir<P>(&self, path: P) -> io::Result<()>
@@ -58,8 +70,7 @@ impl ObjectsRepository for FilesystemObjectsRepository {
     async fn put(&self, url: EntryUrl, overwrite: ObjectOverwriteBehavior) -> Result<(Entry, ObjectStatus, Self::Write)> {
         let url = FilesystemEntryUrl::try_from(url)?;
         let fullpath = self.fullpath(url.as_path());
-
-        if Path::new(&self.root_dir) == fullpath {
+        if fullpath == self.root_dir {
             return Err(Error::from(ErrorKind::ObjectUrlInvalid { url: url.into_url().into_inner() }))?;
         }
 
@@ -166,7 +177,7 @@ impl ObjectsRepository for FilesystemObjectsRepository {
             Err(e) => return Err(Error::new(ErrorKind::ObjectListFailed { url: url.into_url().into_inner() }, e))?,
         };
 
-        let canonical_path = Path::new("/").join(canonicalize(&fullpath)
+        let canonical_path = Path::new(MAIN_SEPARATOR_STR).join(canonicalize(&fullpath)
             .await
             .map_err(|e| Error::new(ErrorKind::ObjectGetFailed { url: url.to_string() }, e))?
             .strip_prefix(&self.root_dir)
