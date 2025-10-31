@@ -67,7 +67,7 @@
     "@parcel/watcher": "^2.5.1",
     "@stylistic/eslint-plugin": "^5.5.0",
     "eslint": "^9.38.0",
-    "eslint-config-next": "^16.0.0",
+    "eslint-config-next": "^16.0.1",
     "ts-node": "^10.9.2",
     "typescript-eslint": "^8.46.2",
     "typescript-plugin-css-modules": "^5.2.0"
