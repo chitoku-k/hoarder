@@ -15,7 +15,7 @@ workspace = true
 
 [dependencies.derive_more]
 version = "2.1.0"
-features = ["constructor", "display"]
+features = ["display"]
 
 [dependencies.futures]
 version = "0.3.31"
