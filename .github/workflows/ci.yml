@@ -177,7 +177,7 @@ jobs:
           touch "${{ runner.temp }}/digests/${digest#sha256:}"
       - name: Upload digests
         if: ${{ github.ref_name == 'master' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: digests-${{ matrix.app }}-${{ matrix.target.multiarch }}
           path: ${{ runner.temp }}/digests/*
