@@ -5,6 +5,7 @@ use di::container::Application;
 mod di;
 mod env;
 
+#[cfg(not(target_env = "msvc"))]
 #[cfg(feature = "jemallocator")]
 #[global_allocator]
 static ALLOC: tikv_jemallocator::Jemalloc = tikv_jemallocator::Jemalloc;
