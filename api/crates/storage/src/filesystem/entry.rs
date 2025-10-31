@@ -36,7 +36,7 @@ impl FilesystemEntry {
         P: AsRef<Path>,
     {
         let path = path.as_ref();
-        let name = path.file_name().unwrap_or_default().to_string_lossy().into_owned().to_string();
+        let name = path.file_name().unwrap_or_default().to_string_lossy().into_owned();
         let url = FilesystemEntryUrl::from_path(Path::new(MAIN_SEPARATOR_STR).join(path))
             .map(|url| url.into_url())
             .ok();

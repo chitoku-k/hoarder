@@ -150,15 +150,16 @@ impl ObjectsRepository for FilesystemObjectsRepository {
 
         let canonical_path = canonicalize(&fullpath)
             .await
-            .map_err(|e| Error::new(ErrorKind::ObjectGetFailed { url: url.to_string() }, e))?
+            .map_err(|e| Error::new(ErrorKind::ObjectGetFailed { url: url.to_string() }, e))?;
+
+        let canonical_path = canonical_path
             .strip_prefix(&self.root_dir)
-            .map_err(|e| Error::new(ErrorKind::ObjectUrlInvalid { url: url.to_string() }, e))?
-            .to_owned();
+            .map_err(|e| Error::new(ErrorKind::ObjectUrlInvalid { url: url.to_string() }, e))?;
 
         let mut entries: Vec<_> = ReadDirStream::new(readdir)
             .map_err(|e| Error::new(ErrorKind::ObjectListFailed { url: url.to_string() }, e))
             .try_filter_map(|dir| {
-                let canonical_path = Path::new("/").join(&canonical_path);
+                let canonical_path = Path::new("/").join(canonical_path);
                 async move {
                     let entry = FilesystemEntry::from_dir_entry(canonical_path, &dir).await?;
                     Ok(Some(entry.into_entry()))
