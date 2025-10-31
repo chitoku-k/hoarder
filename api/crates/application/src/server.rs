@@ -1,13 +1,15 @@
-use std::{net::{Ipv6Addr, SocketAddr}, sync::Arc};
+use std::{io, net::{Ipv6Addr, SocketAddr}, sync::Arc};
 
 use axum::{extract::MatchedPath, http::Request, routing::{any, get, post}, Router};
 use axum_server::Handle;
-use tokio::{
-    signal::unix::{self, SignalKind},
-    task::JoinHandle,
-};
+use tokio::task::JoinHandle;
 use tower_http::trace::{DefaultOnEos, DefaultOnFailure, DefaultOnRequest, DefaultOnResponse, TraceLayer};
 use tracing::Level;
+
+#[cfg(unix)]
+use tokio::signal::unix::{signal, SignalKind};
+#[cfg(windows)]
+use tokio::signal::windows::{ctrl_c, ctrl_close};
 
 #[cfg(feature = "tls")]
 use axum_server::tls_openssl::OpenSSLConfig;
@@ -151,15 +153,35 @@ fn enable_graceful_shutdown(handle: Handle<SocketAddr>, tls: bool) -> JoinHandle
 
         tracing::info!("listening on {scheme}://{address}/");
 
-        let mut interrupt = unix::signal(SignalKind::interrupt()).map_err(Error::other)?;
-        let mut terminate = unix::signal(SignalKind::terminate()).map_err(Error::other)?;
-
-        tokio::select! {
-            _ = interrupt.recv() => {},
-            _ = terminate.recv() => {},
-        };
+        wait_for_signal().await.map_err(Error::other)?;
 
         handle.graceful_shutdown(None);
         Ok(())
     })
+}
+
+#[cfg(unix)]
+async fn wait_for_signal() -> io::Result<()> {
+    let mut interrupt = signal(SignalKind::interrupt())?;
+    let mut terminate = signal(SignalKind::terminate())?;
+
+    tokio::select! {
+        _ = interrupt.recv() => {},
+        _ = terminate.recv() => {},
+    };
+
+    Ok(())
+}
+
+#[cfg(windows)]
+async fn wait_for_signal() -> io::Result<()> {
+    let mut ctrl_c = ctrl_c()?;
+    let mut ctrl_close = ctrl_close()?;
+
+    tokio::select! {
+        _ = ctrl_c.recv() => {},
+        _ = ctrl_close.recv() => {},
+    };
+
+    Ok(())
 }
