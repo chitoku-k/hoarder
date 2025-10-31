@@ -34,8 +34,12 @@ impl FilesystemObjectsRepository {
     where
         P: AsRef<Path>,
     {
-        DirBuilder::new()
-            .mode(0o0755)
+        let mut builder = DirBuilder::new();
+
+        #[cfg(unix)]
+        builder.mode(0o0755);
+
+        builder
             .recursive(true)
             .create(path)
             .await
