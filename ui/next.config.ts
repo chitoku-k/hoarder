@@ -8,6 +8,7 @@ if (typeof API_URL === 'undefined') {
 const nextConfig = {
   productionBrowserSourceMaps: true,
   experimental: {
+    proxyClientMaxBodySize: 1024 ** 3,
     proxyTimeout: 300_000,
   },
   images: {
