@@ -96,7 +96,7 @@ features = ["unstable"]
 version = "0.5.0"
 
 [dev-dependencies.test-context]
-version = "0.5.0"
+version = "0.5.3"
 
 [dev-dependencies.tokio]
 version = "1.48.0"
