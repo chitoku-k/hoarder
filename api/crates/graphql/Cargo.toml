@@ -64,7 +64,7 @@ version = "1.0.145"
 version = "2.0.17"
 
 [dependencies.tokio-util]
-version = "0.7.16"
+version = "0.7.17"
 features = ["rt"]
 
 [dependencies.tower-service]
