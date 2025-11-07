@@ -23,7 +23,7 @@ features = ["std"]
 default-features = false
 
 [dependencies.icu_collator]
-version = "2.1.0"
+version = "2.1.1"
 
 [dependencies.icu_provider]
 version = "2.0.0"
