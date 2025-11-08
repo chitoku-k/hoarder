@@ -10,19 +10,17 @@ RUN --mount=type=cache,id=api:/var/cache/apt,target=/var/cache/apt \
 COPY . ./
 
 FROM base AS debug
-ARG DEB_BUILD_MULTIARCH=x86_64-linux-gnu
-ENV JEMALLOC_OVERRIDE=/usr/lib/$DEB_BUILD_MULTIARCH/libjemalloc.so
 RUN --mount=type=cache,id=api:/usr/local/cargo/registry,target=/usr/local/cargo/registry \
     --mount=type=cache,id=api:/usr/src/target,target=/usr/src/target \
-    cargo build && \
+    JEMALLOC_OVERRIDE=/usr/lib/$(dpkg-architecture --query DEB_BUILD_MULTIARCH)/libjemalloc.so \
+        cargo build && \
     cp -r target/debug/hoarder /usr/local/bin/hoarder
 
 FROM base AS release
-ARG DEB_BUILD_MULTIARCH=x86_64-linux-gnu
-ENV JEMALLOC_OVERRIDE=/usr/lib/$DEB_BUILD_MULTIARCH/libjemalloc.so
 RUN --mount=type=cache,id=api:/usr/local/cargo/registry,target=/usr/local/cargo/registry \
     --mount=type=cache,id=api:/usr/src/target,target=/usr/src/target \
-    cargo build --release && \
+    JEMALLOC_OVERRIDE=/usr/lib/$(dpkg-architecture --query DEB_BUILD_MULTIARCH)/libjemalloc.so \
+        cargo build --release && \
     cp -r target/release/hoarder /usr/local/bin/hoarder
 
 FROM scratch AS production
