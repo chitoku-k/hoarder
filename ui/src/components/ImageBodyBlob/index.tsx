@@ -1,7 +1,7 @@
 'use client'
 
 import type { ComponentPropsWithoutRef, FunctionComponent, SyntheticEvent } from 'react'
-import { useCallback, useMemo } from 'react'
+import { useCallback } from 'react'
 import { useErrorBoundary } from 'react-error-boundary'
 
 const ImageBodyBlob: FunctionComponent<ImageBodyBlobProps> = ({
@@ -9,8 +9,6 @@ const ImageBodyBlob: FunctionComponent<ImageBodyBlobProps> = ({
   onError,
   ...props
 }) => {
-  const url = useMemo(() => URL.createObjectURL(src), [ src ])
-
   const { showBoundary } = useErrorBoundary()
 
   const handleError = useCallback((e: SyntheticEvent<HTMLImageElement>) => {
@@ -18,18 +16,18 @@ const ImageBodyBlob: FunctionComponent<ImageBodyBlobProps> = ({
     showBoundary(new Error('Error loading the image'))
   }, [ onError, showBoundary ])
 
-  const ref = useCallback((node: HTMLImageElement | null) => {
+  const ref = useCallback((node: HTMLImageElement) => {
+    node.src = URL.createObjectURL(src)
+
     // Revoke object URL on clean up.
     return () => {
-      if (node?.src) {
-        URL.revokeObjectURL(node.src)
-      }
+      URL.revokeObjectURL(node.src)
     }
-  }, [])
+  }, [ src ])
 
   return (
     // eslint-disable-next-line @next/next/no-img-element
-    <img ref={ref} src={url} onError={handleError} {...props} />
+    <img ref={ref} onError={handleError} {...props} />
   )
 }
 
