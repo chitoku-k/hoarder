@@ -27,13 +27,13 @@ const MediumItemImageItem: FunctionComponent<MediumItemImageItemProps> = ({
   const style = { aspectRatio } satisfies CSSProperties
 
   return typeof replica.width === 'number' && typeof replica.height === 'number' ? (
-    <Image
-      className={clsx(styles.item, className)}
-      width={replica.width}
-      height={replica.height}
-      style={style}
-    >
-      <Stack className={clsx(styles.wrapper, className)} alignItems="stretch" justifyContent="stretch" style={style}>
+    <Stack className={clsx(styles.wrapper, className)} alignItems="stretch" justifyContent="stretch" style={style}>
+      <Image
+        className={clsx(styles.item)}
+        width={replica.width}
+        height={replica.height}
+        style={style}
+      >
         {isReplica(replica) ? replica.url ? (
           <ImageBodyNext
             className={styles.image}
@@ -57,9 +57,9 @@ const MediumItemImageItem: FunctionComponent<MediumItemImageItemProps> = ({
             alt=""
           />
         )}
-        {children}
-      </Stack>
-    </Image>
+      </Image>
+      {children}
+    </Stack>
   ) : null
 }
 
