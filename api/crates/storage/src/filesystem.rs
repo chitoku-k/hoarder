@@ -62,7 +62,7 @@ impl ObjectsRepository for FilesystemObjectsRepository {
         if let Some(parent) = fullpath.parent() {
             match self.mkdir(parent).await {
                 Ok(()) => {},
-                Err(e) if matches!(e.kind(), io::ErrorKind::InvalidFilename | io::ErrorKind::InvalidInput) => {
+                Err(e) if matches!(e.kind(), io::ErrorKind::InvalidFilename | io::ErrorKind::InvalidInput | io::ErrorKind::NotFound) => {
                     return Err(Error::new(ErrorKind::ObjectUrlInvalid { url: url.into_url().into_inner() }, e))?
                 },
                 Err(e) => {
@@ -111,7 +111,7 @@ impl ObjectsRepository for FilesystemObjectsRepository {
             Err(e) if e.kind() == io::ErrorKind::IsADirectory => {
                 return Err(Error::new(ErrorKind::ObjectAlreadyExists { url: url.into_url().into_inner(), entry: None }, e))?
             },
-            Err(e) if matches!(e.kind(), io::ErrorKind::InvalidFilename | io::ErrorKind::InvalidInput) => {
+            Err(e) if matches!(e.kind(), io::ErrorKind::InvalidFilename | io::ErrorKind::InvalidInput | io::ErrorKind::NotFound) => {
                 return Err(Error::new(ErrorKind::ObjectUrlInvalid { url: url.into_url().into_inner() }, e))?
             },
             Err(e) => {
