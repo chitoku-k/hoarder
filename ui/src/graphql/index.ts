@@ -16,9 +16,9 @@ interface ApolloRequestInit extends RequestInit {
 disableFragmentWarnings()
 
 export const makeClient = () => {
-  const BASE_URL = typeof window === 'undefined' ? process.env.BASE_URL : ''
-  if (typeof BASE_URL === 'undefined') {
-    throw new Error('BASE_URL must be set')
+  const API_URL = typeof window === 'undefined' ? process.env.API_URL : ''
+  if (typeof API_URL === 'undefined') {
+    throw new Error('API_URL must be set')
   }
 
   return new ApolloClient({
@@ -38,10 +38,10 @@ export const makeClient = () => {
         return definition.kind === Kind.OPERATION_DEFINITION && definition.operation === OperationTypeNode.SUBSCRIPTION
       },
       new GraphQLWsLink(createClient({
-        url: `${BASE_URL}/graphql/subscriptions`,
+        url: `${API_URL}/graphql/subscriptions`,
       })),
       new UploadHttpLink({
-        uri: `${BASE_URL}/graphql`,
+        uri: `${API_URL}/graphql`,
         fetch: buildAxiosFetch(axios, (config, _input, init: ApolloRequestInit = {}) => ({
           ...config,
           signal: init.signal,
