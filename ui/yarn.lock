@@ -2796,7 +2796,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/utils@npm:^7.3.3, @mui/utils@npm:^7.3.5":
+"@mui/utils@npm:^7.3.5":
   version: 7.3.5
   resolution: "@mui/utils@npm:7.3.5"
   dependencies:
@@ -2816,13 +2816,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-date-pickers@npm:^8.17.0":
-  version: 8.17.0
-  resolution: "@mui/x-date-pickers@npm:8.17.0"
+"@mui/x-date-pickers@npm:^8.18.0":
+  version: 8.18.0
+  resolution: "@mui/x-date-pickers@npm:8.18.0"
   dependencies:
     "@babel/runtime": "npm:^7.28.4"
-    "@mui/utils": "npm:^7.3.3"
-    "@mui/x-internals": "npm:8.17.0"
+    "@mui/utils": "npm:^7.3.5"
+    "@mui/x-internals": "npm:8.18.0"
     "@types/react-transition-group": "npm:^4.4.12"
     clsx: "npm:^2.1.1"
     prop-types: "npm:^15.8.1"
@@ -2860,21 +2860,21 @@ __metadata:
       optional: true
     moment-jalaali:
       optional: true
-  checksum: 10/1d6cd584f76ce32725d0c1550d38283228cae85675adea464a5eeb4ba9188f10d8b9f9132c21bc4ec42b97e27865161977842990e52790b49c9beaa7bf3dc823
+  checksum: 10/b7783f025233bbc5ea1fe7b5e2fcc55654b44531ba0785c0730f7b3b3d6e46816650db64c83091921e427231cb228755bba4652fd3b5e27ca6a93c89adcc04b8
   languageName: node
   linkType: hard
 
-"@mui/x-internals@npm:8.17.0":
-  version: 8.17.0
-  resolution: "@mui/x-internals@npm:8.17.0"
+"@mui/x-internals@npm:8.18.0":
+  version: 8.18.0
+  resolution: "@mui/x-internals@npm:8.18.0"
   dependencies:
     "@babel/runtime": "npm:^7.28.4"
-    "@mui/utils": "npm:^7.3.3"
+    "@mui/utils": "npm:^7.3.5"
     reselect: "npm:^5.1.1"
     use-sync-external-store: "npm:^1.6.0"
   peerDependencies:
     react: ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10/5c241f5095af6522d4894b0feeab7c45497cde0406646cd4c00a899e8df6629a8c3e8e1902a48551c16fbeaf432895775dbf5a493ca9d4cef11960860fd62769
+  checksum: 10/a885aeca0c2eee92c7a44f4ed1cedf4be5e7cc1db21d056bc134d1f06a9d67251a7f8dd26ea3ebb5465f0b0f0f37ecfcb5f180d7903837ddc6a5ebb4762cb3a0
   languageName: node
   linkType: hard
 
@@ -6205,7 +6205,7 @@ __metadata:
     "@mui/material": "npm:^7.3.5"
     "@mui/material-nextjs": "npm:^7.3.5"
     "@mui/system": "npm:^7.3.5"
-    "@mui/x-date-pickers": "npm:^8.17.0"
+    "@mui/x-date-pickers": "npm:^8.18.0"
     "@parcel/watcher": "npm:^2.5.1"
     "@react-aria/i18n": "npm:^3.12.13"
     "@stylistic/eslint-plugin": "npm:^5.5.0"
