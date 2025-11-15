@@ -12,6 +12,7 @@
     "codegen": "graphql-codegen --config=codegen.ts"
   },
   "resolutions": {
+    "eslint-config-next/typescript-eslint": "link:typescript-eslint",
     "whatwg-url": "*"
   },
   "dependencies": {

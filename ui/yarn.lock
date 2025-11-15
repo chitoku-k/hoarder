@@ -9470,7 +9470,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript-eslint@npm:^8.46.0, typescript-eslint@npm:^8.46.3":
+"typescript-eslint@link:typescript-eslint::locator=hoarder-ui%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "typescript-eslint@link:typescript-eslint::locator=hoarder-ui%40workspace%3A."
+  languageName: node
+  linkType: soft
+
+"typescript-eslint@npm:^8.46.3":
   version: 8.46.3
   resolution: "typescript-eslint@npm:8.46.3"
   dependencies:
