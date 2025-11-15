@@ -53,6 +53,10 @@ updates:
     mui:
       patterns:
       - "@mui/*"
+    next:
+      patterns:
+      - eslint-config-next
+      - next
     react:
       patterns:
       - react
