@@ -5904,7 +5904,7 @@ __metadata:
     react-error-boundary: "npm:^6.0.0"
     react-virtuoso: "npm:^4.14.1"
     rxjs: "npm:^7.8.2"
-    sass: "npm:^1.93.3"
+    sass: "npm:^1.94.0"
     sharp: "npm:^0.34.5"
     strict-uri-encode: "npm:^2.0.0"
     ts-node: "npm:^10.9.2"
@@ -8180,7 +8180,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sass@npm:^1.70.0, sass@npm:^1.93.3":
+"sass@npm:^1.70.0":
   version: 1.93.3
   resolution: "sass@npm:1.93.3"
   dependencies:
@@ -8194,6 +8194,23 @@ __metadata:
   bin:
     sass: sass.js
   checksum: 10/41f23b10bb203ee46b82b880e566edc3264cd00b0424bb7293c6aedb66fd4d6b9b7a217e91f98fb4653eee6538150bbe1a663abde03ad69cd5172beebf108ae0
+  languageName: node
+  linkType: hard
+
+"sass@npm:^1.94.0":
+  version: 1.94.0
+  resolution: "sass@npm:1.94.0"
+  dependencies:
+    "@parcel/watcher": "npm:^2.4.1"
+    chokidar: "npm:^4.0.0"
+    immutable: "npm:^5.0.2"
+    source-map-js: "npm:>=0.6.2 <2.0.0"
+  dependenciesMeta:
+    "@parcel/watcher":
+      optional: true
+  bin:
+    sass: sass.js
+  checksum: 10/625b4d56758544f30a7f955fbc6590366ffb285042a68c09512b2890f23720c2c28d86cf9773a000d8bde2191d9decc8873f3529e7d91d8ba5f0ef204fd243db
   languageName: node
   linkType: hard
 

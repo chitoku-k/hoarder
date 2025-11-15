@@ -51,7 +51,7 @@
     "react-error-boundary": "^6.0.0",
     "react-virtuoso": "^4.14.1",
     "rxjs": "^7.8.2",
-    "sass": "^1.93.3",
+    "sass": "^1.94.0",
     "sharp": "^0.34.5",
     "strict-uri-encode": "^2.0.0",
     "typescript": "^5.9.3",
