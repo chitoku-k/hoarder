@@ -10,7 +10,7 @@ use tower_http::trace::{DefaultOnEos, DefaultOnFailure, DefaultOnRequest, Defaul
 use tracing::Level;
 
 #[cfg(feature = "tls")]
-use std::sync::mpsc::channel;
+use tokio::{sync::mpsc::unbounded_channel, time::{sleep, Duration}};
 #[cfg(feature = "tls")]
 use axum_server::tls_openssl::OpenSSLConfig;
 #[cfg(feature = "tls")]
@@ -124,19 +124,27 @@ impl Engine {
 
 #[cfg(feature = "tls")]
 fn enable_auto_reload(config: OpenSSLConfig, tls_cert: String, tls_key: String) -> JoinHandle<Result<()>> {
-    let (tx, rx) = channel();
-
     tokio::spawn(async move {
-        let mut watcher = notify::recommended_watcher(tx).map_err(Error::other)?;
-        watcher.watch(tls_cert.as_ref(), notify::RecursiveMode::NonRecursive).map_err(Error::other)?;
+        loop {
+            let (tx, mut rx) = unbounded_channel();
+            let event_handler = move |event| {
+                let _ = tx.send(event);
+            };
 
-        for event in rx {
-            let event = event.map_err(Error::other)?;
-            if event.kind.is_modify() && let Err(e) = config.reload_from_pem_file(&tls_cert, &tls_key) {
-                return Err(Error::new(ErrorKind::ServerCertificateInvalid { cert: tls_cert, key: tls_key }, e));
+            let mut watcher = notify::recommended_watcher(event_handler).map_err(Error::other)?;
+            watcher.watch(tls_cert.as_ref(), notify::RecursiveMode::NonRecursive).map_err(Error::other)?;
+
+            let Some(Ok(event)) = rx.recv().await else { continue };
+            if !event.kind.is_modify() {
+                continue;
+            }
+
+            sleep(Duration::from_secs(5)).await;
+
+            if let Err(e) = config.reload_from_pem_file(&tls_cert, &tls_key) {
+                tracing::warn!("failed to reload TLS certificate\nError: {:?}", e);
             }
         }
-        Ok(())
     })
 }
 
