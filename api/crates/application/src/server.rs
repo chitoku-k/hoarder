@@ -10,11 +10,11 @@ use tower_http::trace::{DefaultOnEos, DefaultOnFailure, DefaultOnRequest, Defaul
 use tracing::Level;
 
 #[cfg(feature = "tls")]
-use tokio::{sync::mpsc::unbounded_channel, time::{sleep, Duration}};
-#[cfg(feature = "tls")]
 use axum_server::tls_openssl::OpenSSLConfig;
 #[cfg(feature = "tls")]
 use notify::Watcher;
+#[cfg(feature = "tls")]
+use tokio::{sync::mpsc::unbounded_channel, time::{sleep, Duration}};
 
 use crate::{
     error::{Error, ErrorKind, Result},
@@ -134,11 +134,7 @@ fn enable_auto_reload(config: OpenSSLConfig, tls_cert: String, tls_key: String) 
             let mut watcher = notify::recommended_watcher(event_handler).map_err(Error::other)?;
             watcher.watch(tls_cert.as_ref(), notify::RecursiveMode::NonRecursive).map_err(Error::other)?;
 
-            let Some(Ok(event)) = rx.recv().await else { continue };
-            if !event.kind.is_modify() {
-                continue;
-            }
-
+            let Some(Ok(_)) = rx.recv().await else { continue };
             sleep(Duration::from_secs(5)).await;
 
             if let Err(e) = config.reload_from_pem_file(&tls_cert, &tls_key) {
