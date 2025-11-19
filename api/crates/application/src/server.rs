@@ -1,7 +1,8 @@
-use std::{io, net::{Ipv6Addr, SocketAddr}, sync::Arc};
+use std::{io, net::{Ipv6Addr, SocketAddr, TcpListener}, sync::Arc};
 
 use axum::{extract::MatchedPath, http::Request, routing::{any, get, post}, Router};
 use axum_server::Handle;
+use socket2::{Domain, Socket, Type};
 use tokio::task::JoinHandle;
 use tower_http::trace::{DefaultOnEos, DefaultOnFailure, DefaultOnRequest, DefaultOnResponse, TraceLayer};
 use tracing::Level;
@@ -12,7 +13,7 @@ use tokio::signal::unix::{signal, SignalKind};
 use tokio::signal::windows::{ctrl_c, ctrl_close};
 
 #[cfg(feature = "tls")]
-use axum_server::tls_openssl::OpenSSLConfig;
+use axum_server::tls_openssl::{OpenSSLAcceptor, OpenSSLConfig};
 #[cfg(feature = "tls")]
 use notify::Watcher;
 #[cfg(feature = "tls")]
@@ -89,6 +90,9 @@ impl Engine {
 
     pub async fn start(self, port: u16, tls: Option<(String, String)>) -> Result<()> {
         let addr = (Ipv6Addr::UNSPECIFIED, port).into();
+        let listener = bind(addr)
+            .and_then(axum_server::from_tcp)
+            .map_err(|e| Error::new(ErrorKind::ServerBindFailed, e))?;
 
         let handle = Handle::new();
         enable_graceful_shutdown(handle.clone(), tls.is_some());
@@ -107,14 +111,15 @@ impl Engine {
                     },
                     Err(e) => return Err(Error::new(ErrorKind::ServerCertificateInvalid { cert: tls_cert, key: tls_key }, e)),
                 };
-                axum_server::bind_openssl(addr, config)
+                listener
+                    .acceptor(OpenSSLAcceptor::new(config))
                     .handle(handle)
                     .serve(self.app.into_make_service())
                     .await
                     .map_err(|e| Error::new(ErrorKind::ServerStartFailed, e))
             },
             None => {
-                axum_server::bind(addr)
+                listener
                     .handle(handle)
                     .serve(self.app.into_make_service())
                     .await
@@ -122,6 +127,14 @@ impl Engine {
             },
         }
     }
+}
+
+fn bind(addr: SocketAddr) -> io::Result<TcpListener> {
+    let socket = Socket::new(Domain::for_address(addr), Type::STREAM, None)?;
+    socket.set_only_v6(false)?;
+    socket.bind(&addr.into())?;
+    socket.listen(1024)?;
+    Ok(socket.into())
 }
 
 #[cfg(feature = "tls")]
