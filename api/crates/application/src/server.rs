@@ -1,8 +1,9 @@
-use std::{io, net::{Ipv6Addr, SocketAddr}, sync::Arc};
+use std::{io, net::{Ipv6Addr, SocketAddr, TcpListener}, sync::Arc};
 
 use axum::{extract::MatchedPath, http::Request, routing::{any, get, post}, Router};
 use axum_server::Handle;
 use futures::TryFutureExt;
+use socket2::{Domain, Socket, Type};
 use tokio::task::JoinHandle;
 use tower_http::trace::{DefaultOnEos, DefaultOnFailure, DefaultOnRequest, DefaultOnResponse, TraceLayer};
 use tracing::Level;
@@ -13,7 +14,7 @@ use tokio::signal::unix::{signal, SignalKind};
 use tokio::signal::windows::{ctrl_c, ctrl_close};
 
 #[cfg(feature = "tls")]
-use axum_server::tls_openssl::OpenSSLConfig;
+use axum_server::tls_openssl::{OpenSSLAcceptor, OpenSSLConfig};
 #[cfg(feature = "tls")]
 use notify::Watcher;
 #[cfg(feature = "tls")]
@@ -94,10 +95,13 @@ impl Engine {
     }
 
     pub fn start(self, port: u16, tls: Option<(String, String)>) -> Result<Server<Result<()>>> {
-        let addr = (Ipv6Addr::UNSPECIFIED, port).into();
+        let listener = bind((Ipv6Addr::UNSPECIFIED, port).into()).map_err(|e| Error::new(ErrorKind::ServerBindFailed, e))?;
+
+        let addr = listener.local_addr().map_err(Error::other)?;
+        let server = axum_server::from_tcp(listener).map_err(Error::other)?;
 
         let handle = Handle::new();
-        enable_graceful_shutdown(handle.clone(), tls.is_some());
+        enable_graceful_shutdown(handle.clone());
 
         enum Serve<H, #[cfg(feature = "tls")] T> {
             Http(H),
@@ -119,34 +123,50 @@ impl Engine {
                     },
                     Err(e) => return Err(Error::new(ErrorKind::ServerCertificateInvalid { cert: tls_cert, key: tls_key }, e)),
                 };
-                let server = axum_server::bind_openssl(addr, config)
+                let serve = server
+                    .acceptor(OpenSSLAcceptor::new(config))
                     .handle(handle.clone())
                     .serve(self.app.into_make_service())
                     .map_err(|e| Error::new(ErrorKind::ServerStartFailed, e));
 
-                Serve::Tls(server)
+                Serve::Tls(serve)
             },
             None => {
-                let server = axum_server::bind(addr)
+                let serve = server
                     .handle(handle.clone())
                     .serve(self.app.into_make_service())
                     .map_err(|e| Error::new(ErrorKind::ServerStartFailed, e));
 
-                Serve::Http(server)
+                Serve::Http(serve)
             },
         };
 
         Ok(Server {
             handle,
-            shutdown: tokio::spawn(async {
+            shutdown: tokio::spawn(async move {
                 match serve {
                     #[cfg(feature = "tls")]
-                    Serve::Tls(serve) => serve.await,
-                    Serve::Http(serve) => serve.await,
+                    Serve::Tls(serve) => {
+                        tracing::info!("listening on https://{addr}/");
+                        serve.await
+                    },
+                    Serve::Http(serve) => {
+                        tracing::info!("listening on http://{addr}/");
+                        serve.await
+                    },
                 }
             }),
         })
     }
+}
+
+fn bind(addr: SocketAddr) -> io::Result<TcpListener> {
+    let socket = Socket::new(Domain::for_address(addr), Type::STREAM, None)?;
+    socket.set_nonblocking(true)?;
+    socket.set_only_v6(false)?;
+    socket.bind(&addr.into())?;
+    socket.listen(1024)?;
+    Ok(socket.into())
 }
 
 #[cfg(feature = "tls")]
@@ -171,13 +191,8 @@ fn enable_auto_reload(config: OpenSSLConfig, tls_cert: String, tls_key: String) 
     })
 }
 
-fn enable_graceful_shutdown(handle: Handle<SocketAddr>, tls: bool) -> JoinHandle<Result<()>> {
+fn enable_graceful_shutdown(handle: Handle<SocketAddr>) -> JoinHandle<Result<()>> {
     tokio::spawn(async move {
-        let address = handle.listening().await.ok_or(ErrorKind::ServerBindFailed)?;
-        let scheme = if tls { "https" } else { "http" };
-
-        tracing::info!("listening on {scheme}://{address}/");
-
         wait_for_signal().await.map_err(Error::other)?;
 
         handle.graceful_shutdown(None);
