@@ -33,6 +33,9 @@ version = "8.2.0"
 [dependencies.serde]
 version = "1.0.228"
 
+[dependencies.socket2]
+version = "0.6.1"
+
 [dependencies.thiserror]
 version = "2.0.17"
 
