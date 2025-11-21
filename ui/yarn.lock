@@ -2816,13 +2816,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-date-pickers@npm:^8.18.0":
-  version: 8.18.0
-  resolution: "@mui/x-date-pickers@npm:8.18.0"
+"@mui/x-date-pickers@npm:^8.19.0":
+  version: 8.19.0
+  resolution: "@mui/x-date-pickers@npm:8.19.0"
   dependencies:
     "@babel/runtime": "npm:^7.28.4"
     "@mui/utils": "npm:^7.3.5"
-    "@mui/x-internals": "npm:8.18.0"
+    "@mui/x-internals": "npm:8.19.0"
     "@types/react-transition-group": "npm:^4.4.12"
     clsx: "npm:^2.1.1"
     prop-types: "npm:^15.8.1"
@@ -2860,13 +2860,13 @@ __metadata:
       optional: true
     moment-jalaali:
       optional: true
-  checksum: 10/b7783f025233bbc5ea1fe7b5e2fcc55654b44531ba0785c0730f7b3b3d6e46816650db64c83091921e427231cb228755bba4652fd3b5e27ca6a93c89adcc04b8
+  checksum: 10/3788534f5803ce66cf671e6cd008cd496b7fa57c0109a6571b11380ba6618af086920650ede64546be93a1267911554a9f0d047f0bec99031a67ab1c20fcbc8b
   languageName: node
   linkType: hard
 
-"@mui/x-internals@npm:8.18.0":
-  version: 8.18.0
-  resolution: "@mui/x-internals@npm:8.18.0"
+"@mui/x-internals@npm:8.19.0":
+  version: 8.19.0
+  resolution: "@mui/x-internals@npm:8.19.0"
   dependencies:
     "@babel/runtime": "npm:^7.28.4"
     "@mui/utils": "npm:^7.3.5"
@@ -2874,7 +2874,7 @@ __metadata:
     use-sync-external-store: "npm:^1.6.0"
   peerDependencies:
     react: ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10/a885aeca0c2eee92c7a44f4ed1cedf4be5e7cc1db21d056bc134d1f06a9d67251a7f8dd26ea3ebb5465f0b0f0f37ecfcb5f180d7903837ddc6a5ebb4762cb3a0
+  checksum: 10/1e55637103207f0a4d0981e7857d07248234e850a907ba6e754882f3a309bb2b24cc070fdb920848da982a0074d634da7e61a70d8b083a421650a5d3b0c34b04
   languageName: node
   linkType: hard
 
@@ -6230,7 +6230,7 @@ __metadata:
     "@mui/material": "npm:^7.3.5"
     "@mui/material-nextjs": "npm:^7.3.5"
     "@mui/system": "npm:^7.3.5"
-    "@mui/x-date-pickers": "npm:^8.18.0"
+    "@mui/x-date-pickers": "npm:^8.19.0"
     "@parcel/watcher": "npm:^2.5.1"
     "@react-aria/i18n": "npm:^3.12.13"
     "@stylistic/eslint-plugin": "npm:^5.5.0"
