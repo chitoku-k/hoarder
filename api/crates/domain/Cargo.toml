@@ -49,7 +49,7 @@ version = "1.48.0"
 features = ["macros", "rt-multi-thread"]
 
 [dependencies.tracing]
-version = "0.1.41"
+version = "0.1.43"
 
 [dependencies.uuid]
 version = "1.18.1"

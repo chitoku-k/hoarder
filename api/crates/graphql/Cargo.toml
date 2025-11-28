@@ -71,7 +71,7 @@ features = ["rt"]
 version = "0.3.3"
 
 [dependencies.tracing]
-version = "0.1.41"
+version = "0.1.43"
 
 [dependencies.tracing-futures]
 version = "0.2.5"
