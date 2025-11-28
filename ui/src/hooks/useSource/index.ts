@@ -6,7 +6,7 @@ import { SourceDocument } from '@/graphql/Source'
 
 type Source = SourceQuery['source']
 
-export function useSource(variables: SourceQueryVariables | SkipToken): Source | null {
+export function useSource(variables: SourceQueryVariables | SkipToken): Source {
   const options = typeof variables === 'symbol'
     ? variables
     : { variables, fetchPolicy: 'no-cache' } satisfies useSuspenseQuery.Options<SourceQueryVariables>
