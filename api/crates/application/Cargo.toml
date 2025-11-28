@@ -40,7 +40,7 @@ version = "0.6.6"
 features = ["trace"]
 
 [dependencies.tracing]
-version = "0.1.41"
+version = "0.1.43"
 
 [dev-dependencies.futures]
 version = "0.3.31"
