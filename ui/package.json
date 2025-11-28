@@ -46,7 +46,7 @@
     "graphql-ws": "^6.0.6",
     "historykana": "^1.0.6",
     "image-size": "^2.0.2",
-    "next": "^16.0.3",
+    "next": "^16.0.5",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-error-boundary": "^6.0.0",
@@ -68,7 +68,7 @@
     "@parcel/watcher": "^2.5.1",
     "@stylistic/eslint-plugin": "^5.6.1",
     "eslint": "^9.39.1",
-    "eslint-config-next": "^16.0.3",
+    "eslint-config-next": "^16.0.5",
     "ts-node": "^10.9.2",
     "typescript-eslint": "^8.47.0",
     "typescript-plugin-css-modules": "^5.2.0"
