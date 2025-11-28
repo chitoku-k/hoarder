@@ -1049,10 +1049,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fontsource/roboto@npm:^5.2.8":
-  version: 5.2.8
-  resolution: "@fontsource/roboto@npm:5.2.8"
-  checksum: 10/b3f04cee5f9554145b824c53865077a100ba540d0e5c9ad025472c13ecb27ed778381bb05edf0f23da3c7f871422f61a37488b0a8c658577241e5d75279def27
+"@fontsource/roboto@npm:^5.2.9":
+  version: 5.2.9
+  resolution: "@fontsource/roboto@npm:5.2.9"
+  checksum: 10/8195c7844ad3371201d77ea11a4a9c1019ddc774b11d3bc3c905416caed03e94d726929b71ea885079a3a2c489ec2bc9cc24d2d871411f6ec83462053ae029dc
   languageName: node
   linkType: hard
 
@@ -3559,13 +3559,6 @@ __metadata:
   linkType: hard
 
 "@typescript-eslint/types@npm:8.47.0, @typescript-eslint/types@npm:^8.47.0":
-  version: 8.47.0
-  resolution: "@typescript-eslint/types@npm:8.47.0"
-  checksum: 10/fc42416c01c512cfe1533bdf521925bca999adc68ffefa246e48552783f1fe9d22487d912611c5cb35fca481604aae3cab88279a53ce76c7cd7510b76775c078
-  languageName: node
-  linkType: hard
-
-"@typescript-eslint/types@npm:^8.47.0":
   version: 8.47.0
   resolution: "@typescript-eslint/types@npm:8.47.0"
   checksum: 10/fc42416c01c512cfe1533bdf521925bca999adc68ffefa246e48552783f1fe9d22487d912611c5cb35fca481604aae3cab88279a53ce76c7cd7510b76775c078
@@ -6241,7 +6234,7 @@ __metadata:
     "@emotion/cache": "npm:^11.14.0"
     "@emotion/react": "npm:^11.14.0"
     "@emotion/styled": "npm:^11.14.1"
-    "@fontsource/roboto": "npm:^5.2.8"
+    "@fontsource/roboto": "npm:^5.2.9"
     "@graphql-codegen/cli": "npm:^6.1.0"
     "@graphql-codegen/near-operation-file-preset": "npm:^3.1.0"
     "@graphql-codegen/typed-document-node": "npm:^6.1.3"
