@@ -23,10 +23,16 @@ RUN --mount=type=bind,from=schema,target=/usr/schema \
 RUN --mount=type=tmpfs,target=/tmp \
     yarn build
 
-FROM scratch AS production
-WORKDIR /app
+FROM scratch AS production-linux-amd64
 ARG DEB_BUILD_MULTIARCH=x86_64-linux-gnu
 ARG LD=/lib64/ld-linux-x86-64.so.2
+
+FROM scratch AS production-linux-arm64
+ARG DEB_BUILD_MULTIARCH=aarch64-linux-gnu
+ARG LD=/lib/ld-linux-aarch64.so.1
+
+FROM production-$TARGETOS-$TARGETARCH AS production
+WORKDIR /app
 ARG PORT=3000
 ENV PORT=$PORT
 ENV NODE_ENV=production
