@@ -126,7 +126,7 @@ jobs:
             reviewdog -f=eslint -reporter=github-pr-annotations -filter-mode=nofilter -fail-level=any -tee
 
   build:
-    name: Build ${{ matrix.app }} (${{ matrix.target.platform }})
+    name: Build ${{ matrix.app }} (${{ matrix.target.os }}/${{ matrix.target.arch }})
     strategy:
       matrix:
         app:
@@ -134,9 +134,11 @@ jobs:
           - ui
         target:
           - label: ubuntu-24.04
-            platform: linux/amd64
+            os: linux
+            arch: amd64
           - label: ubuntu-24.04-arm
-            platform: linux/arm64
+            os: linux
+            arch: arm64
     runs-on: ${{ matrix.target.label }}
     steps:
       - name: Checkout repository
@@ -159,7 +161,7 @@ jobs:
           targets: ${{ matrix.app }}
           set: |
             ${{ matrix.app }}.tags=ghcr.io/chitoku-k/hoarder/${{ matrix.app }}
-            *.platform=${{ matrix.target.platform }}
+            *.platform=${{ matrix.target.os }}/${{ matrix.target.arch }}
             *.cache-from=type=gha
             *.cache-to=type=gha,mode=max
             *.output=type=image,push=${{ github.ref_name == 'master' }},push-by-digest=${{ github.ref_name == 'master' }}
@@ -173,7 +175,7 @@ jobs:
         if: ${{ github.ref_name == 'master' }}
         uses: actions/upload-artifact@v5
         with:
-          name: digests-${{ matrix.app }}-${{ matrix.target.multiarch }}
+          name: digests-${{ matrix.app }}-${{ matrix.target.os }}-${{ matrix.target.arch }}
           path: ${{ runner.temp }}/digests/*
           if-no-files-found: error
           retention-days: 1
