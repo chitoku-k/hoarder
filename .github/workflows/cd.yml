@@ -24,12 +24,8 @@ jobs:
         target:
           - label: ubuntu-24.04
             platform: linux/amd64
-            multiarch: x86_64-linux-gnu
-            ld: /lib64/ld-linux-x86-64.so.2
           - label: ubuntu-24.04-arm
             platform: linux/arm64
-            multiarch: aarch64-linux-gnu
-            ld: /lib/ld-linux-aarch64.so.1
     runs-on: ${{ matrix.target.label }}
     steps:
       - name: Checkout repository
@@ -52,8 +48,6 @@ jobs:
           set: |
             ${{ matrix.app }}.tags=ghcr.io/chitoku-k/hoarder/${{ matrix.app }}
             *.platform=${{ matrix.target.platform }}
-            *.args.DEB_BUILD_MULTIARCH=${{ matrix.target.multiarch }}
-            *.args.LD=${{ matrix.target.ld }}
             *.cache-from=type=gha
             *.cache-to=type=gha,mode=max
             *.output=type=image,push=true,push-by-digest=true
