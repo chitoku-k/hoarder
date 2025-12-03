@@ -31,7 +31,7 @@ FROM scratch AS production-linux-arm64
 ARG DEB_BUILD_MULTIARCH=aarch64-linux-gnu
 ARG LD=/lib/ld-linux-aarch64.so.1
 
-FROM production-$TARGETOS-$TARGETARCH AS production
+FROM production-${TARGETPLATFORM//\//-} AS production
 WORKDIR /app
 ARG PORT=3000
 ENV PORT=$PORT
