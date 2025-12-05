@@ -129,8 +129,8 @@ version = "0.7.16"
 features = ["rt"]
 
 [dependencies.tracing]
-version = "0.1.41"
+version = "0.1.43"
 
 [dependencies.tracing-subscriber]
-version = "0.3.19"
+version = "0.3.22"
 features = ["env-filter"]
