@@ -29,7 +29,7 @@ services:
         target: /media
 
   static:
-    image: nginx:1.28
+    image: nginx:1.29
     ports:
       - '8081:80'
     environment:
