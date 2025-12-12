@@ -1,4 +1,4 @@
-use std::{net::Ipv6Addr, sync::Arc};
+use std::{net::{Ipv6Addr, SocketAddr}, sync::Arc};
 
 use axum::{extract::MatchedPath, http::Request, routing::{any, get, post}, Router};
 use axum_server::Handle;
@@ -144,7 +144,7 @@ fn enable_auto_reload(config: OpenSSLConfig, tls_cert: String, tls_key: String) 
     })
 }
 
-fn enable_graceful_shutdown(handle: Handle, tls: bool) -> JoinHandle<Result<()>> {
+fn enable_graceful_shutdown(handle: Handle<SocketAddr>, tls: bool) -> JoinHandle<Result<()>> {
     tokio::spawn(async move {
         let address = handle.listening().await.ok_or(ErrorKind::ServerBindFailed)?;
         let scheme = if tls { "https" } else { "http" };
