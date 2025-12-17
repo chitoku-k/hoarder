@@ -4,6 +4,7 @@ group "default" {
 
 target "api" {
     context = "./api"
+    target = "production"
 }
 
 target "ui" {
@@ -11,4 +12,5 @@ target "ui" {
     contexts = {
         schema = "./schema"
     }
+    target = "production"
 }
