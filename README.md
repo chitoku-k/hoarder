@@ -5,21 +5,29 @@ Hoarder
 
 Collects your favorite media and organizes them with the hierarchical tag system.
 
-## Set up
+## Production
 
-### Development
+Run the following command with api to run migration:
 
-```bash
+```console
+$ hoarder migration apply
+```
+
+### Container images
+
+- [ghcr.io/chitoku-k/hoarder/api](https://github.com/chitoku-k/hoarder/pkgs/container/hoarder%2Fapi)
+- [ghcr.io/chitoku-k/hoarder/ui](https://github.com/chitoku-k/hoarder/pkgs/container/hoarder%2Fui)
+
+```console
+$ docker buildx bake
+```
+
+## Development
+
+```console
 $ yarn && yarn codegen
 $ docker compose up -d --build
 $ docker compose exec api hoarder migration apply
-```
-
-### Production
-
-```bash
-$ docker buildx bake -f docker-bake.hcl
-$ docker run --rm -it ghcr.io/chitoku-k/hoarder/api migration apply
 ```
 
 ## Configuration
@@ -90,13 +98,13 @@ The following environment variable can be used to configure UI:
 
 Install [cargo-make] first in case it's not installed.
 
-```bash
+```console
 $ cargo install cargo-make
 ```
 
 Run all tests.
 
-```bash
+```console
 $ cargo make test
 ```
 
