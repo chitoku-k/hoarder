@@ -2514,12 +2514,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@internationalized/date@npm:^3.10.0":
-  version: 3.10.0
-  resolution: "@internationalized/date@npm:3.10.0"
+"@internationalized/date@npm:^3.10.1":
+  version: 3.10.1
+  resolution: "@internationalized/date@npm:3.10.1"
   dependencies:
     "@swc/helpers": "npm:^0.5.0"
-  checksum: 10/5940667ea2b0be54b798088ef995f787508bf4305d3741babc8b1f48de008c872555a5440ae61fa7399461a7339d3257fb8e86cc2111e72e185fc37d99e06392
+  checksum: 10/f259285157e7b9930d7679cea06e09215c4f6773efd093804bd711cff22cd6f3e5afb1208237c177e752da196b10302bb8adf539e76301af49bfad0baa70565c
   languageName: node
   linkType: hard
 
@@ -3181,22 +3181,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-aria/i18n@npm:^3.12.13":
-  version: 3.12.13
-  resolution: "@react-aria/i18n@npm:3.12.13"
+"@react-aria/i18n@npm:^3.12.14":
+  version: 3.12.14
+  resolution: "@react-aria/i18n@npm:3.12.14"
   dependencies:
-    "@internationalized/date": "npm:^3.10.0"
+    "@internationalized/date": "npm:^3.10.1"
     "@internationalized/message": "npm:^3.1.8"
     "@internationalized/number": "npm:^3.6.5"
     "@internationalized/string": "npm:^3.2.7"
     "@react-aria/ssr": "npm:^3.9.10"
-    "@react-aria/utils": "npm:^3.31.0"
+    "@react-aria/utils": "npm:^3.32.0"
     "@react-types/shared": "npm:^3.32.1"
     "@swc/helpers": "npm:^0.5.0"
   peerDependencies:
     react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
     react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
-  checksum: 10/a5464213e626c60d63e0dbab84907ab452c53022a27a5c482c8f86f23c96b53522e52005c5cfc829f388c807eaf246cded69d5bee24b9e0fc08f34f9b0359e82
+  checksum: 10/87b10d152fc104892621ad344c536fd5308fb3be5954bd9ef7a4cd58fde3ada75feb4f9ed0cb08abd93eb4ec7b43485c7954640bf6cc06a899547e1fbebf594a
   languageName: node
   linkType: hard
 
@@ -3211,20 +3211,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-aria/utils@npm:^3.31.0":
-  version: 3.31.0
-  resolution: "@react-aria/utils@npm:3.31.0"
+"@react-aria/utils@npm:^3.32.0":
+  version: 3.32.0
+  resolution: "@react-aria/utils@npm:3.32.0"
   dependencies:
     "@react-aria/ssr": "npm:^3.9.10"
     "@react-stately/flags": "npm:^3.1.2"
-    "@react-stately/utils": "npm:^3.10.8"
+    "@react-stately/utils": "npm:^3.11.0"
     "@react-types/shared": "npm:^3.32.1"
     "@swc/helpers": "npm:^0.5.0"
     clsx: "npm:^2.0.0"
   peerDependencies:
     react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
     react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
-  checksum: 10/b021d2c3704ce934ec41cfc4d87fa6904fb3e007030e31b824cd8287053e866076cb7c7f072d6ed2fee82ca68f2e3f4677f3d58d7938e4b3315831f1fdea4d90
+  checksum: 10/be60a6b175568880828f3d2d492386458c78b90574601d3f70689e1fabd3d0af26b6e6006b3ac919af5332e7b096e5982a107b8413cf6c10419049b3914465bf
   languageName: node
   linkType: hard
 
@@ -3237,14 +3237,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-stately/utils@npm:^3.10.8":
-  version: 3.10.8
-  resolution: "@react-stately/utils@npm:3.10.8"
+"@react-stately/utils@npm:^3.11.0":
+  version: 3.11.0
+  resolution: "@react-stately/utils@npm:3.11.0"
   dependencies:
     "@swc/helpers": "npm:^0.5.0"
   peerDependencies:
     react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
-  checksum: 10/7878ec47b132075566708bae630cb86d8237dde976eb3793bba43695abbb29fcaea9d00ea3f4f7244fcda253368f5b2b85263c37665c24e390500cdcc978c6fe
+  checksum: 10/ae3414559cde99230cfd05c19a6498fffa94d268d139825fb4777f5beba4ec5b39f19f1199c8e625d5977ae7f568d1c0dd447b87ec0ab4ed12721303409b9f16
   languageName: node
   linkType: hard
 
@@ -6250,7 +6250,7 @@ __metadata:
     "@mui/system": "npm:^7.3.6"
     "@mui/x-date-pickers": "npm:^8.22.1"
     "@parcel/watcher": "npm:^2.5.1"
-    "@react-aria/i18n": "npm:^3.12.13"
+    "@react-aria/i18n": "npm:^3.12.14"
     "@stylistic/eslint-plugin": "npm:^5.6.1"
     "@types/deep-equal": "npm:^1.0.4"
     "@types/historykana": "npm:^1.0.4"
