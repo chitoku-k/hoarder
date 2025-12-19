@@ -69,7 +69,7 @@
     "eslint": "^9.39.1",
     "eslint-config-next": "^16.0.10",
     "ts-node": "^10.9.2",
-    "typescript-eslint": "^8.49.0",
+    "typescript-eslint": "^8.50.0",
     "typescript-plugin-css-modules": "^5.2.0"
   }
 }
