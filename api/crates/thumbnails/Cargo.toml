@@ -26,4 +26,4 @@ features = ["bmp", "gif", "jpeg", "png", "webp"]
 default-features = false
 
 [dependencies.tracing]
-version = "0.1.43"
+version = "0.1.44"

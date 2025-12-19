@@ -129,7 +129,7 @@ version = "0.7.17"
 features = ["rt"]
 
 [dependencies.tracing]
-version = "0.1.43"
+version = "0.1.44"
 
 [dependencies.tracing-subscriber]
 version = "0.3.22"

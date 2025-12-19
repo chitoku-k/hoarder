@@ -21,4 +21,4 @@ version = "2.1.0"
 features = ["constructor"]
 
 [dependencies.tracing]
-version = "0.1.43"
+version = "0.1.44"
