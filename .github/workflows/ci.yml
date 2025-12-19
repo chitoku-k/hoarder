@@ -173,7 +173,7 @@ jobs:
           touch "${{ runner.temp }}/digests/${digest#sha256:}"
       - name: Upload digests
         if: ${{ github.ref_name == 'master' }}
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: digests-${{ matrix.app }}-${{ matrix.target.os }}-${{ matrix.target.arch }}
           path: ${{ runner.temp }}/digests/*
@@ -195,7 +195,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Download digests
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           path: ${{ runner.temp }}/digests
           pattern: digests-${{ matrix.app }}-*
