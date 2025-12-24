@@ -1,0 +1,53 @@
+name: Test
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+  workflow_call:
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  api:
+    name: api (${{ matrix.platform.os }}/${{ matrix.platform.arch }})
+    runs-on: ${{ matrix.platform.label }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - os: linux
+            arch: amd64
+            label: ubuntu-24.04
+          - os: linux
+            arch: arm64
+            label: ubuntu-24.04-arm
+          - os: windows
+            arch: amd64
+            label: windows-2025
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Set up Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          rust-src-dir: api
+          components: clippy
+      - name: Set up PostgreSQL
+        uses: chitoku-k/actions/setup-postgres@master
+        with:
+          postgres-version: 17
+          database: hoarder_test
+          username: hoarder_test
+          password: hoarder_test
+      - name: Run tests
+        working-directory: api
+        env:
+          PGHOST: localhost
+          PGDATABASE: hoarder_test
+          PGUSER: hoarder_test
+          PGPASSWORD: hoarder_test
+        run: |
+          cargo test --workspace --no-default-features
