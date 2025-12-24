@@ -115,7 +115,7 @@ $ cargo make test
 Icon made by [Freepik] from [www.flaticon.com][flaticon]
 
 [workflow-link]:    https://github.com/chitoku-k/hoarder/actions?query=branch:master
-[workflow-badge]:   https://img.shields.io/github/actions/workflow/status/chitoku-k/hoarder/ci.yml?branch=master&style=flat-square
+[workflow-badge]:   https://img.shields.io/github/actions/workflow/status/chitoku-k/hoarder/publish-image.yml?branch=master&style=flat-square
 [cargo-make]:       https://github.com/sagiegurari/cargo-make
 [Freepik]:          https://www.flaticon.com/authors/freepik
 [flaticon]:         https://www.flaticon.com/

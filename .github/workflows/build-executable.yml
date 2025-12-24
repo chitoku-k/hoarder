@@ -1,0 +1,75 @@
+name: Build executable
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+  workflow_call:
+    inputs:
+      upload:
+        type: boolean
+        default: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  api:
+    name: api (${{ matrix.platform.os }}/${{ matrix.platform.arch }})
+    runs-on: ${{ matrix.platform.label }}
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - os: linux
+            arch: amd64
+            label: ubuntu-24.04
+          - os: linux
+            arch: arm64
+            label: ubuntu-24.04-arm
+          - os: windows
+            arch: amd64
+            label: windows-2025
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          filter: tree:0
+      - name: Set up Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          rust-src-dir: api
+      - name: Set up cargo-edit
+        uses: taiki-e/cache-cargo-install-action@v2
+        with:
+          tool: cargo-edit
+          features: set-version
+          no-default-features: true
+      - name: Get version
+        uses: chitoku-k/actions/describe-git-tag@master
+        id: version
+        with:
+          semantic-versioning: true
+      - name: Set version
+        working-directory: api
+        run: |
+          cargo set-version ${{ steps.version.outputs.value }} --package=hoarder
+      - name: Build
+        working-directory: api
+        env:
+          X86_64_PC_WINDOWS_MSVC_OPENSSL_INCLUDE_DIR: C:\Program Files\OpenSSL\include
+          X86_64_PC_WINDOWS_MSVC_OPENSSL_LIB_DIR: C:\Program Files\OpenSSL\lib\VC\x64\MD
+        run: |
+          cargo build --release --target-dir="${{ runner.temp }}/artifacts"
+      - name: Upload
+        if: ${{ inputs.upload || false }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: artifacts-api-${{ matrix.platform.os }}-${{ matrix.platform.arch }}
+          path: ${{ runner.temp }}/artifacts/release/hoarder
+          if-no-files-found: error
+          retention-days: 1

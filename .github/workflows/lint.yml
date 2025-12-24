@@ -1,0 +1,79 @@
+name: Lint
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+  workflow_call:
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  clippy:
+    name: Clippy (${{ matrix.platform.os }}/${{ matrix.platform.arch }})
+    runs-on: ${{ matrix.platform.label }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - os: linux
+            arch: amd64
+            label: ubuntu-24.04
+          - os: linux
+            arch: arm64
+            label: ubuntu-24.04-arm
+          - os: windows
+            arch: amd64
+            label: windows-2025
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Set up reviewdog
+        uses: reviewdog/action-setup@v1
+      - name: Set up Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          rust-src-dir: api
+          components: clippy
+      - name: Run clippy
+        working-directory: api
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ github.token }}
+          X86_64_PC_WINDOWS_MSVC_OPENSSL_INCLUDE_DIR: C:\Program Files\OpenSSL\include
+          X86_64_PC_WINDOWS_MSVC_OPENSSL_LIB_DIR: C:\Program Files\OpenSSL\lib\VC\x64\MD
+        run: |
+          cargo clippy --tests --workspace --quiet --message-format=short --color=never 2>&1 |
+            reviewdog -f=clippy -reporter=github-pr-annotations -filter-mode=nofilter -fail-level=any -tee
+
+  eslint:
+    name: ESLint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: ui/.node-version
+      - name: Install corepack
+        working-directory: ui
+        run: |
+          npm install -g -f corepack
+          corepack enable
+      - name: Install dependencies
+        working-directory: ui
+        run: |
+          yarn install
+      - name: Run graphql-codegen
+        working-directory: ui
+        run: |
+          yarn codegen
+      - name: Run eslint
+        uses: reviewdog/action-eslint@v1
+        with:
+          reporter: github-pr-annotations
+          filter_mode: nofilter
+          fail_level: any
+          workdir: ui

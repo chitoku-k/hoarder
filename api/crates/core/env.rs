@@ -56,7 +56,7 @@ pub fn init() -> Config {
 }
 
 const fn version() -> &'static str {
-    crate_version!()
+    concat!("v", crate_version!())
 }
 
 impl Config {

@@ -9,6 +9,26 @@
   "rangeStrategy": "bump",
   "customManagers": [
     {
+      "customType": "jsonata",
+      "fileFormat": "yaml",
+      "managerFilePatterns": [".github/workflows/*.yml"],
+      "matchStrings": [
+        "jobs.*.strategy.matrix.platform[label].{\"depName\": $substringBefore(label, \"-\"), \"currentValue\": $substringAfter(label, \"-\")}",
+        "jobs.*.strategy.matrix.exclude.platform[label].{\"depName\": $substringBefore(label, \"-\"), \"currentValue\": $substringAfter(label, \"-\")}",
+        "jobs.*.strategy.matrix.include.platform[label].{\"depName\": $substringBefore(label, \"-\"), \"currentValue\": $substringAfter(label, \"-\")}"
+      ],
+      "datasourceTemplate": "github-runners"
+    },
+    {
+      "customType": "jsonata",
+      "fileFormat": "yaml",
+      "managerFilePatterns": [".github/workflows/*.yml"],
+      "matchStrings": ["jobs.*.steps.with[$exists(`postgres-version`)].{\"currentValue\": $string(`postgres-version`)}"],
+      "depNameTemplate": "postgres",
+      "lookupNameTemplate": "postgres",
+      "datasourceTemplate": "docker"
+    },
+    {
       "customType": "regex",
       "managerFilePatterns": ["api/scripts/setup-postgres.bash"],
       "matchStrings": ["POSTGRES_IMAGE=.*postgres:(?<currentValue>\\d+\\.\\d+(\\.\\d+)?).*"],

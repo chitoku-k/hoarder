@@ -13,7 +13,7 @@ if (values.version) {
       type: 'json',
     },
   })
-  process.stdout.write(`${app.name} ${app.version}\n`)
+  process.stdout.write(`${app.name} v${app.version}\n`)
   process.exit()
 }
 
