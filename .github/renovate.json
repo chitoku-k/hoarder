@@ -10,6 +10,14 @@
   "customManagers": [
     {
       "customType": "regex",
+      "managerFilePatterns": ["api/scripts/setup-postgres.bash"],
+      "matchStrings": ["POSTGRES_IMAGE=.*postgres:(?<currentValue>\\d+\\.\\d+(\\.\\d+)?).*"],
+      "depNameTemplate": "postgres",
+      "lookupNameTemplate": "postgres",
+      "datasourceTemplate": "docker"
+    },
+    {
+      "customType": "regex",
       "managerFilePatterns": ["/(^|/)rust-toolchain\\.toml$/"],
       "matchStrings": ["channel\\s*=\\s*\"(?<currentValue>\\d+\\.\\d+(\\.\\d+)?)\""],
       "depNameTemplate": "rust",
