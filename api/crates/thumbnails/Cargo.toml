@@ -14,7 +14,7 @@ workspace = true
 workspace = true
 
 [dependencies.axum]
-version = "0.8.7"
+version = "0.8.8"
 
 [dependencies.derive_more]
 version = "2.1.0"
