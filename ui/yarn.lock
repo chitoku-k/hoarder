@@ -6283,7 +6283,7 @@ __metadata:
     react: "npm:^19.2.3"
     react-dom: "npm:^19.2.3"
     react-error-boundary: "npm:^6.0.0"
-    react-virtuoso: "npm:^4.17.0"
+    react-virtuoso: "npm:^4.18.0"
     rxjs: "npm:^7.8.2"
     sass: "npm:^1.97.0"
     sharp: "npm:^0.34.5"
@@ -8298,13 +8298,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-virtuoso@npm:^4.17.0":
-  version: 4.17.0
-  resolution: "react-virtuoso@npm:4.17.0"
+"react-virtuoso@npm:^4.18.0":
+  version: 4.18.0
+  resolution: "react-virtuoso@npm:4.18.0"
   peerDependencies:
     react: ">=16 || >=17 || >= 18 || >= 19"
     react-dom: ">=16 || >=17 || >= 18 || >=19"
-  checksum: 10/7c4f531174399e837b27f45bda00c32a2524715d70ad039e2f1109c06c7367f88bfd59244f9d4486863735bed04d8f365e3a6c6c3ab9df6d9e66599684bf1b34
+  checksum: 10/04140e7a6f282c236f155780e42427cc82d0b1d9bba482e3f9c75bfc6b38d90670a683233e3d7d5af566976703c29ede68b6f5764aa6fdbf255197cf3c05fbc2
   languageName: node
   linkType: hard
 
