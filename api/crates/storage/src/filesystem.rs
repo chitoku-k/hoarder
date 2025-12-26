@@ -1,4 +1,4 @@
-use std::{fs::File as StdFile, io::{self, Read}, path::{Path, PathBuf, MAIN_SEPARATOR_STR}, sync::Arc};
+use std::{fs::File as StdFile, io::{self, Read, Seek}, path::{MAIN_SEPARATOR_STR, Path, PathBuf}, sync::Arc};
 
 use domain::{
     entity::objects::{Entry, EntryKind, EntryUrl},
@@ -169,6 +169,7 @@ impl ObjectsRepository for FilesystemObjectsRepository {
     where
         R: Read,
     {
+        write.rewind().map_err(Error::other)?;
         write.set_len(0).map_err(Error::other)?;
 
         let written = io::copy(read, write).map_err(Error::other)?;

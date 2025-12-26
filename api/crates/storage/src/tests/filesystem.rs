@@ -8,7 +8,7 @@ use icu_collator::CollatorBorrowed;
 use icu_locale_core::Locale;
 use pretty_assertions::{assert_eq, assert_matches};
 use tempfile::tempdir;
-use tokio::{fs::{File, create_dir_all}, io::AsyncWriteExt};
+use tokio::{fs::{File, create_dir_all}, io::{AsyncReadExt, AsyncWriteExt}};
 use tokio_stream::wrappers::ReadDirStream;
 
 use crate::filesystem::FilesystemObjectsRepository;
@@ -215,6 +215,35 @@ async fn put_fails_with_invalid_filename() {
 
     let expected_url = "file:///%E3%82%86%E3%82%8B%E3%82%86%E3%82%8A/%00.png";
     assert_matches!(actual.kind(), ErrorKind::ObjectUrlInvalid { url } if url == expected_url);
+}
+
+#[tokio::test]
+async fn copy_succeeds() {
+    let collator = CollatorBorrowed::try_new(Locale::UNKNOWN.into(), Default::default()).unwrap();
+    let root_dir = tempdir().unwrap();
+
+    const OLD_BUF: &[u8] = &[0xFF, 0xFE, 0xFD, 0xFC, 0xFB, 0xFA, 0xF9, 0xF8];
+
+    let mut file = File::create_new(root_dir.path().join("77777777-7777-7777-7777-777777777777.png")).await.unwrap();
+    file.write_all(OLD_BUF).await.unwrap();
+    file.flush().await.unwrap();
+
+    const NEW_BUF: &[u8] = &[0x00, 0x01, 0x02, 0x03];
+
+    let repository = FilesystemObjectsRepository::new(collator, root_dir.path()).await.unwrap();
+    let actual_written = tokio::task::spawn_blocking(move || {
+        let mut read = NEW_BUF;
+        let mut write = file.try_into_std().unwrap();
+        repository.copy(&mut read, &mut write).unwrap()
+    }).await.unwrap();
+
+    assert_eq!(actual_written, NEW_BUF.len() as u64);
+
+    let mut actual_buf = Vec::with_capacity(NEW_BUF.len());
+    let mut file = File::open(root_dir.path().join("77777777-7777-7777-7777-777777777777.png")).await.unwrap();
+    file.read_to_end(&mut actual_buf).await.unwrap();
+
+    assert_eq!(actual_buf, NEW_BUF);
 }
 
 #[tokio::test]
