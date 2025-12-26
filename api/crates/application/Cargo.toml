@@ -14,7 +14,7 @@ tls = ["axum-server/tls-openssl"]
 workspace = true
 
 [dependencies.axum]
-version = "0.8.7"
+version = "0.8.8"
 
 [dependencies.axum-server]
 version = "0.8.0"
