@@ -7,7 +7,7 @@ use domain::{
 };
 use futures::{TryFutureExt, TryStreamExt};
 use icu_collator::CollatorBorrowed;
-use tokio::fs::{canonicalize, read_dir, remove_file, DirBuilder, File};
+use tokio::fs::{canonicalize, metadata, read_dir, remove_file, DirBuilder, File};
 use tokio_stream::wrappers::ReadDirStream;
 
 use crate::{filesystem::{entry::FilesystemEntry, url::FilesystemEntryUrl}, StorageEntry, StorageEntryUrl};
@@ -55,6 +55,13 @@ impl FilesystemObjectsRepository {
             .recursive(true)
             .create(path)
             .await
+    }
+
+    async fn is_dir<P>(&self, path: P) -> io::Result<bool>
+    where
+        P: AsRef<Path>,
+    {
+        metadata(path).await.map(|metadata| metadata.is_dir())
     }
 }
 
@@ -123,7 +130,7 @@ impl ObjectsRepository for FilesystemObjectsRepository {
 
                 return Err(Error::new(ErrorKind::ObjectAlreadyExists { url: url.into_url().into_inner(), entry }, e))?;
             },
-            Err(e) if e.kind() == io::ErrorKind::IsADirectory => {
+            Err(e) if e.kind() == io::ErrorKind::IsADirectory || e.kind() == io::ErrorKind::PermissionDenied && self.is_dir(&fullpath).await.unwrap_or_default() => {
                 return Err(Error::new(ErrorKind::ObjectAlreadyExists { url: url.into_url().into_inner(), entry: None }, e))?
             },
             Err(e) if matches!(e.kind(), io::ErrorKind::InvalidFilename | io::ErrorKind::InvalidInput | io::ErrorKind::NotFound) => {

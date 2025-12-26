@@ -150,6 +150,23 @@ async fn put_fails_with_invalid_directory() {
 }
 
 #[tokio::test]
+async fn put_fails_with_existing_directory_by_creating_file() {
+    let collator = CollatorBorrowed::try_new(Locale::UNKNOWN.into(), Default::default()).unwrap();
+    let root_dir = tempdir().unwrap();
+
+    create_dir_all(root_dir.path().join("ゆるゆり").join("77777777-7777-7777-7777-777777777777.png")).await.unwrap();
+
+    let repository = FilesystemObjectsRepository::new(collator, root_dir.path()).await.unwrap();
+    let actual = repository.put(
+        EntryUrl::from_path_str("file://", "/ゆるゆり/77777777-7777-7777-7777-777777777777.png"),
+        ObjectOverwriteBehavior::Fail,
+    ).await.unwrap_err();
+
+    let expected_url = "file:///%E3%82%86%E3%82%8B%E3%82%86%E3%82%8A/77777777-7777-7777-7777-777777777777.png";
+    assert_matches!(actual.kind(), ErrorKind::ObjectAlreadyExists { url, entry } if url == expected_url && entry.is_none());
+}
+
+#[tokio::test]
 async fn put_fails_with_existing_file_by_creating_file() {
     let collator = CollatorBorrowed::try_new(Locale::UNKNOWN.into(), Default::default()).unwrap();
     let root_dir = tempdir().unwrap();
