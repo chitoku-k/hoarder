@@ -42,3 +42,13 @@ features = ["fs"]
 
 [dependencies.tracing]
 version = "0.1.44"
+
+[dev-dependencies.icu_locale_core]
+version = "2.1.1"
+
+[dev-dependencies.pretty_assertions]
+version = "1.4.1"
+features = ["unstable"]
+
+[dev-dependencies.tempfile]
+version = "3.23.0"

@@ -11,3 +11,6 @@ pub(crate) trait StorageEntryUrl: TryFrom<EntryUrl, Error = Error> {
 
     fn into_url(self) -> EntryUrl;
 }
+
+#[cfg(test)]
+mod tests;
