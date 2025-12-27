@@ -38,7 +38,7 @@ jobs:
       - name: Set up PostgreSQL
         uses: chitoku-k/actions/setup-postgres@master
         with:
-          postgres-version: 17
+          postgres-version: 18
           database: hoarder_test
           username: hoarder_test
           password: hoarder_test
