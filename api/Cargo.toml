@@ -63,12 +63,12 @@ opt-level = "z"
 lto = true
 codegen-units = 1
 
-[profile.dev.package."*"]
+[profile.dev]
 debug = false
 
 [features]
 default = ["jemallocator", "tls"]
-jemallocator = ["dep:tikv-jemallocator", "tikv-jemallocator/unprefixed_malloc_on_supported_platforms"]
+jemallocator = ["dep:tikv-jemallocator", "tikv-jemallocator/override_allocator_on_supported_platforms"]
 tls = ["application/tls", "postgres/tls"]
 
 [dependencies.application]
