@@ -15,6 +15,7 @@ jobs:
     name: Build
     uses: ./.github/workflows/build-executable.yml
     with:
+      release: true
       upload: true
 
   upload:
