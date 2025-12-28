@@ -64,7 +64,14 @@ jobs:
           X86_64_PC_WINDOWS_MSVC_OPENSSL_INCLUDE_DIR: C:\Program Files\OpenSSL\include
           X86_64_PC_WINDOWS_MSVC_OPENSSL_LIB_DIR: C:\Program Files\OpenSSL\lib\VC\x64\MD
         run: |
-          cargo build --release --target-dir="${{ runner.temp }}/artifacts"
+          cargo build --release --target-dir="${{ runner.temp }}/artifacts" --timings
+      - name: Upload timings
+        uses: actions/upload-artifact@v6
+        with:
+          name: timings-api-${{ matrix.platform.os }}-${{ matrix.platform.arch }}
+          path: ${{ runner.temp }}/artifacts/cargo-timings/cargo-timing.html
+          if-no-files-found: error
+          retention-days: 1
       - name: Upload
         if: ${{ inputs.upload || false }}
         uses: actions/upload-artifact@v6
