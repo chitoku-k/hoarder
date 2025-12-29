@@ -33,7 +33,7 @@ import type { ReplicaCreate } from '@/components/MediumItemImageEdit'
 import { isReplica } from '@/components/MediumItemImageEdit'
 import { ReplicaPhase } from '@/graphql/types.generated'
 import type { ObjectAlreadyExists, ReplicaOriginalUrlDuplicate } from '@/hooks'
-import { OBJECT_ALREADY_EXISTS, REPLICA_ORIGINAL_URL_DUPLICATE, useCreateReplica, useError, useWatchMedium } from '@/hooks'
+import { OBJECT_ALREADY_EXISTS, REPLICA_ORIGINAL_URL_DUPLICATE, useCreateReplica, useDeleteReplica, useError, useWatchMedium } from '@/hooks'
 import type { Medium, Replica } from '@/types'
 
 import styles from './styles.module.scss'
@@ -71,6 +71,7 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
   onComplete,
 }) => {
   const [ createReplica ] = useCreateReplica()
+  const [ deleteReplica ] = useDeleteReplica()
   const [ watchMedium ] = useWatchMedium()
   const { graphQLError } = useError()
 
@@ -161,10 +162,12 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
         .subscribe(replica => {
           switch (replica.status.phase) {
             case ReplicaPhase.Ready: {
-              return resolve(null)
+              resolve(null)
+              return
             }
             case ReplicaPhase.Error: {
-              return reject()
+              deleteReplica({ id: newReplica.id, deleteObject: true }).then(reject, reject)
+              return
             }
           }
         })
@@ -226,7 +229,7 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
       }
       throw new Error('error creating replica', { cause: e })
     }
-  }, [ container, abortSignal, createReplica, graphQLError, handleUploadProgress ])
+  }, [ container, abortSignal, createReplica, deleteReplica, graphQLError, handleUploadProgress ])
 
   const handleClickUpload = useCallback(async () => {
     setUploading(true)
