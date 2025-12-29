@@ -13,14 +13,14 @@ RUN --mount=type=cache,id=api:/usr/local/cargo/registry,target=/usr/local/cargo/
     --mount=type=cache,id=api:/usr/src/target,target=/usr/src/target \
     JEMALLOC_OVERRIDE=/usr/lib/$(dpkg-architecture --query DEB_BUILD_MULTIARCH)/libjemalloc.so \
         cargo build && \
-    cp -r target/debug/hoarder /usr/local/bin/hoarder
+    cp target/debug/hoarder /usr/local/bin/hoarder
 
 FROM base AS release
 RUN --mount=type=cache,id=api:/usr/local/cargo/registry,target=/usr/local/cargo/registry \
     --mount=type=cache,id=api:/usr/src/target,target=/usr/src/target \
     JEMALLOC_OVERRIDE=/usr/lib/$(dpkg-architecture --query DEB_BUILD_MULTIARCH)/libjemalloc.so \
         cargo build --release && \
-    cp -r target/release/hoarder /usr/local/bin/hoarder
+    cp target/release/hoarder /usr/local/bin/hoarder
 
 FROM scratch AS production-linux-amd64
 ARG DEB_BUILD_MULTIARCH=x86_64-linux-gnu
