@@ -7,18 +7,28 @@ import type { ImageProps } from 'next/image'
 import Image from 'next/image'
 
 const ImageBodyNext: FunctionComponent<ImageBodyNextProps> = ({
+  onLoad,
   onError,
   ...props
 }) => {
   const { showBoundary } = useErrorBoundary()
 
+  const showError = useCallback((e?: unknown) => {
+    showBoundary(new Error('Error loading the image', { cause: e }))
+  }, [ showBoundary ])
+
+  const handleLoad = useCallback((e: SyntheticEvent<HTMLImageElement>) => {
+    onLoad?.(e)
+    e.currentTarget.decode().catch(showError)
+  }, [ onLoad, showError ])
+
   const handleError = useCallback((e: SyntheticEvent<HTMLImageElement>) => {
     onError?.(e)
-    showBoundary(new Error('Error loading the image'))
-  }, [ onError, showBoundary ])
+    showError()
+  }, [ onError, showError ])
 
   return (
-    <Image onError={handleError} {...props} />
+    <Image onLoad={handleLoad} onError={handleError} {...props} />
   )
 }
 
