@@ -63,7 +63,7 @@ const MediumItemFileOverwriteDialogBody: FunctionComponent<MediumItemFileOverwri
           <Stack spacing={1}>
             <Typography>アップロード中のファイル:</Typography>
             <Stack spacing={2} direction="row">
-              <Image>
+              <Image className={styles.imageWrapper}>
                 <Stack className={styles.imageWrapper} alignItems="center" justifyContent="center" flexShrink={0}>
                   <ImageBodyBlob className={styles.image} src={uploading.blob} alt="" />
                 </Stack>
