@@ -18,7 +18,7 @@ use super::DatabaseContext;
 
 #[test_context(DatabaseContext)]
 #[tokio::test]
-async fn succeeds(ctx: &DatabaseContext) {
+async fn ready_succeeds(ctx: &DatabaseContext) {
     let mut listener = PgListener::connect_with(&ctx.pool).await.unwrap();
     listener.listen("replicas").await.unwrap();
 
@@ -74,6 +74,59 @@ async fn succeeds(ctx: &DatabaseContext) {
 
     assert_eq!(actual.get("id"), Some(&json!("1706c7bb-4152-44b2-9bbb-1179d09a19be")));
     assert_eq!(actual.get("medium_id"), Some(&json!("6356503d-6ab6-4e39-bb86-3311219c7fd1")));
+
+    assert_toml_snapshot!(ctx.queries());
+}
+
+#[test_context(DatabaseContext)]
+#[tokio::test]
+async fn error_succeeds(ctx: &DatabaseContext) {
+    let mut listener = PgListener::connect_with(&ctx.pool).await.unwrap();
+    listener.listen("replicas").await.unwrap();
+
+    let stream = listener.into_stream();
+    pin_mut!(stream);
+
+    let repository = PostgresReplicasRepository::new(ctx.pool.clone());
+    let actual_replica = repository.update_by_id(
+        ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be")),
+        Some(None),
+        None,
+        Some(None),
+        Some(ReplicaStatus::Error),
+    ).instrument(ctx.span.clone()).await.unwrap();
+
+    assert_eq!(actual_replica.id, ReplicaId::from(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be")));
+    assert_eq!(actual_replica.display_order, 1);
+    assert_eq!(actual_replica.original_url, "file:///1706c7bb-4152-44b2-9bbb-1179d09a19be.png".to_string());
+    assert_eq!(actual_replica.mime_type, None);
+    assert_eq!(actual_replica.size, None);
+    assert_eq!(actual_replica.status, ReplicaStatus::Error);
+    assert_eq!(actual_replica.created_at, Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 10).unwrap());
+    assert_ne!(actual_replica.updated_at, Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap());
+    assert!(actual_replica.thumbnail.is_none());
+
+    let actual = sqlx::query(r#"SELECT "id", "medium_id", "display_order", "original_url", "mime_type", "width", "height", "phase" FROM "replicas" WHERE "id" = $1"#)
+        .bind(uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be"))
+        .fetch_one(&ctx.pool)
+        .await
+        .unwrap();
+
+    assert_eq!(actual.get::<Uuid, &str>("medium_id"), uuid!("6356503d-6ab6-4e39-bb86-3311219c7fd1"));
+    assert_eq!(actual.get::<i32, &str>("display_order"), 1);
+    assert_eq!(actual.get::<&str, &str>("original_url"), "file:///1706c7bb-4152-44b2-9bbb-1179d09a19be.png".to_string());
+    assert_eq!(actual.get::<Option<&str>, &str>("mime_type"), None);
+    assert_eq!(actual.get::<Option<i32>, &str>("width"), None);
+    assert_eq!(actual.get::<Option<i32>, &str>("height"), None);
+    assert_eq!(actual.get::<&str, &str>("phase"), "error");
+
+    let actual = sqlx::query(r#"SELECT "id", "replica_id", "data", "width", "height" FROM "thumbnails" WHERE "replica_id" = $1"#)
+        .bind(*actual_replica.id)
+        .fetch_optional(&ctx.pool)
+        .await
+        .unwrap();
+
+    assert!(actual.is_none());
 
     assert_toml_snapshot!(ctx.queries());
 }
