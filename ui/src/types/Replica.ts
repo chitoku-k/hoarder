@@ -15,8 +15,10 @@ export interface Replica {
   readonly width?: number | null
   readonly height?: number | null
   readonly status: {
-    readonly phase: string
+    readonly phase: ReplicaPhase
   }
   readonly createdAt: string
   readonly updatedAt: string
 }
+
+export type ReplicaPhase = 'READY' | 'PROCESSING' | 'ERROR'
