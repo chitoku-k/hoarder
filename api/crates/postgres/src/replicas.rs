@@ -571,11 +571,7 @@ impl ReplicasRepository for PostgresReplicasRepository {
             Err(e) => return Err(Error::other(e)),
         };
 
-        if let Some(thumbnail_image) = thumbnail_image {
-            let (body, width, height) = match thumbnail_image {
-                Some(thumbnail_image) => (Some(thumbnail_image.body), Some(thumbnail_image.size.width), Some(thumbnail_image.size.height)),
-                None => (None, None, None),
-            };
+        if let Some(Some(thumbnail_image)) = thumbnail_image {
             let (sql, values) = Query::insert()
                 .into_table(PostgresThumbnail::Table)
                 .columns([
@@ -586,9 +582,9 @@ impl ReplicasRepository for PostgresReplicasRepository {
                 ])
                 .values([
                     Expr::value(PostgresReplicaId::from(replica.id)),
-                    Expr::value(body),
-                    Expr::value(width),
-                    Expr::value(height),
+                    Expr::value(thumbnail_image.body),
+                    Expr::value(thumbnail_image.size.width),
+                    Expr::value(thumbnail_image.size.height),
                 ])
                 .map_err(Error::other)?
                 .on_conflict(
@@ -620,6 +616,18 @@ impl ReplicasRepository for PostgresReplicasRepository {
             };
 
             replica.thumbnail = Some(thumbnail);
+        } else if let Some(None) = thumbnail_image {
+            let (sql, values) = Query::delete()
+                .from_table(PostgresThumbnail::Table)
+                .and_where(Expr::col(PostgresThumbnail::ReplicaId).eq(PostgresReplicaId::from(replica.id)))
+                .build_sqlx(PostgresQueryBuilder);
+
+            sqlx::query_with(&sql, values)
+                .execute(&mut *tx)
+                .await
+                .map_err(Error::other)?;
+
+            replica.thumbnail = None;
         }
 
         let (sql, values) = Query::select()
