@@ -6,15 +6,25 @@ import { useErrorBoundary } from 'react-error-boundary'
 
 const ImageBodyBlob: FunctionComponent<ImageBodyBlobProps> = ({
   src,
+  onLoad,
   onError,
   ...props
 }) => {
   const { showBoundary } = useErrorBoundary()
 
+  const showError = useCallback((e?: unknown) => {
+    showBoundary(new Error('Error loading the image', { cause: e }))
+  }, [ showBoundary ])
+
+  const handleLoad = useCallback((e: SyntheticEvent<HTMLImageElement>) => {
+    onLoad?.(e)
+    e.currentTarget.decode().catch(showError)
+  }, [ onLoad, showError ])
+
   const handleError = useCallback((e: SyntheticEvent<HTMLImageElement>) => {
     onError?.(e)
-    showBoundary(new Error('Error loading the image'))
-  }, [ onError, showBoundary ])
+    showError()
+  }, [ onError, showError ])
 
   const ref = useCallback((node: HTMLImageElement) => {
     node.src = URL.createObjectURL(src)
@@ -27,7 +37,7 @@ const ImageBodyBlob: FunctionComponent<ImageBodyBlobProps> = ({
 
   return (
     // eslint-disable-next-line @next/next/no-img-element
-    <img ref={ref} onError={handleError} {...props} />
+    <img ref={ref} onLoad={handleLoad} onError={handleError} {...props} />
   )
 }
 
