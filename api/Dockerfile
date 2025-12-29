@@ -3,7 +3,6 @@ FROM rust:1.92.0-trixie AS base
 WORKDIR /usr/src
 RUN --mount=type=cache,id=api:/var/cache/apt,target=/var/cache/apt \
     --mount=type=cache,id=api:/var/lib/apt/lists,target=/var/lib/apt/lists \
-    rustup component add clippy && \
     apt-get -y update && \
     apt-get -y install \
         libjemalloc-dev
