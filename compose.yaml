@@ -60,7 +60,7 @@ services:
         target: /usr/src
 
   database:
-    image: postgres:17.5
+    image: postgres:17.7
     ports:
       - '5432:5432'
     environment:
