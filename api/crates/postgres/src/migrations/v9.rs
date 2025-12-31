@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use sea_query::{ColumnDef, DeleteStatement, Expr, ExprTrait, Iden, PostgresQueryBuilder, Query, Table};
+use sea_query::{ColumnDef, Expr, ExprTrait, Iden, PostgresQueryBuilder, Query, Table};
 use sqlx::{PgConnection, Postgres};
 use sqlx_migrator::{error::Error, migration::Migration, operation::Operation, vec_box};
 
@@ -98,7 +98,7 @@ impl Operation<Postgres> for ReplicasPhaseOperation {
 
     #[tracing::instrument(skip_all)]
     async fn down(&self, connection: &mut PgConnection) -> Result<(), Error> {
-        let sql = DeleteStatement::new()
+        let sql = Query::delete()
             .from_table(PostgresReplica::Table)
             .and_where(Expr::col(PostgresReplica::Phase).ne(PostgresReplicaPhase::Ready))
             .to_string(PostgresQueryBuilder);
