@@ -52,7 +52,7 @@ jobs:
           rust-src-dir: api
       - name: Set up cargo-edit
         if: ${{ matrix.target == 'api' }}
-        uses: taiki-e/cache-cargo-install-action@v2
+        uses: taiki-e/cache-cargo-install-action@v3
         with:
           tool: cargo-edit
           features: set-version

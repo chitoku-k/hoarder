@@ -47,7 +47,7 @@ jobs:
         with:
           rust-src-dir: api
       - name: Set up cargo-edit
-        uses: taiki-e/cache-cargo-install-action@v2
+        uses: taiki-e/cache-cargo-install-action@v3
         with:
           tool: cargo-edit
           features: set-version
