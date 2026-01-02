@@ -1225,6 +1225,9 @@ entities without requiring a central allocating authority.
 """
 scalar UUID
 
+"""
+A multipart file upload
+"""
 scalar Upload
 
 """
