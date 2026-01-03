@@ -231,8 +231,9 @@ impl Application {
 
                 let tls = Option::zip(serve.tls_cert, serve.tls_key);
                 Engine::new(graphql_service, objects_service, thumbnails_service)
-                    .start(serve.port, tls)
-                    .await?;
+                    .start(serve.port, tls)?
+                    .shutdown
+                    .await??;
 
                 task_tracker.close();
                 task_tracker.wait().await;

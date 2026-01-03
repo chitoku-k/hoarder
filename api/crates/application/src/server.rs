@@ -2,6 +2,7 @@ use std::{io, net::{Ipv6Addr, SocketAddr}, sync::Arc};
 
 use axum::{extract::MatchedPath, http::Request, routing::{any, get, post}, Router};
 use axum_server::Handle;
+use futures::TryFutureExt;
 use tokio::task::JoinHandle;
 use tower_http::trace::{DefaultOnEos, DefaultOnFailure, DefaultOnRequest, DefaultOnResponse, TraceLayer};
 use tracing::Level;
@@ -26,6 +27,11 @@ use crate::{
         thumbnails::{self, ThumbnailsServiceInterface},
     },
 };
+
+pub struct Server<S> {
+    pub handle: Handle<SocketAddr>,
+    pub shutdown: JoinHandle<S>,
+}
 
 pub struct Engine {
     app: Router,
@@ -87,13 +93,19 @@ impl Engine {
         self.app
     }
 
-    pub async fn start(self, port: u16, tls: Option<(String, String)>) -> Result<()> {
+    pub fn start(self, port: u16, tls: Option<(String, String)>) -> Result<Server<Result<()>>> {
         let addr = (Ipv6Addr::UNSPECIFIED, port).into();
 
         let handle = Handle::new();
         enable_graceful_shutdown(handle.clone(), tls.is_some());
 
-        match tls {
+        enum Serve<H, #[cfg(feature = "tls")] T> {
+            Http(H),
+            #[cfg(feature = "tls")]
+            Tls(T),
+        }
+
+        let serve = match tls {
             #[cfg(not(feature = "tls"))]
             Some(_) => {
                 panic!("TLS is not enabled.");
@@ -107,20 +119,33 @@ impl Engine {
                     },
                     Err(e) => return Err(Error::new(ErrorKind::ServerCertificateInvalid { cert: tls_cert, key: tls_key }, e)),
                 };
-                axum_server::bind_openssl(addr, config)
-                    .handle(handle)
+                let server = axum_server::bind_openssl(addr, config)
+                    .handle(handle.clone())
                     .serve(self.app.into_make_service())
-                    .await
-                    .map_err(|e| Error::new(ErrorKind::ServerStartFailed, e))
+                    .map_err(|e| Error::new(ErrorKind::ServerStartFailed, e));
+
+                Serve::Tls(server)
             },
             None => {
-                axum_server::bind(addr)
-                    .handle(handle)
+                let server = axum_server::bind(addr)
+                    .handle(handle.clone())
                     .serve(self.app.into_make_service())
-                    .await
-                    .map_err(|e| Error::new(ErrorKind::ServerStartFailed, e))
+                    .map_err(|e| Error::new(ErrorKind::ServerStartFailed, e));
+
+                Serve::Http(server)
             },
-        }
+        };
+
+        Ok(Server {
+            handle,
+            shutdown: tokio::spawn(async {
+                match serve {
+                    #[cfg(feature = "tls")]
+                    Serve::Tls(serve) => serve.await,
+                    Serve::Http(serve) => serve.await,
+                }
+            }),
+        })
     }
 }
 
