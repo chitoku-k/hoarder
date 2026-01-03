@@ -22,6 +22,11 @@ version = "0.8.0"
 [dependencies.derive_more]
 version = "2.1.1"
 
+[dependencies.futures]
+version = "0.3.31"
+features = ["std"]
+default-features = false
+
 [dependencies.notify]
 version = "8.2.0"
 
@@ -41,11 +46,6 @@ features = ["trace"]
 
 [dependencies.tracing]
 version = "0.1.44"
-
-[dev-dependencies.futures]
-version = "0.3.31"
-features = ["std"]
-default-features = false
 
 [dev-dependencies.hyper]
 version = "1.8.1"
