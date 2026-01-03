@@ -49,5 +49,7 @@ jobs:
           PGDATABASE: hoarder_test
           PGUSER: hoarder_test
           PGPASSWORD: hoarder_test
+          X86_64_PC_WINDOWS_MSVC_OPENSSL_INCLUDE_DIR: C:\Program Files\OpenSSL\include
+          X86_64_PC_WINDOWS_MSVC_OPENSSL_LIB_DIR: C:\Program Files\OpenSSL\lib\VC\x64\MD
         run: |
-          cargo test --workspace --no-default-features
+          cargo test --workspace
