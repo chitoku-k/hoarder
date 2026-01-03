@@ -1,3 +1,3 @@
 mod mocks;
 
-mod service;
+mod server;
