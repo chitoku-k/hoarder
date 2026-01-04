@@ -20,6 +20,7 @@ default-features = false
 
 [dependencies.async-graphql-axum]
 version = "7.1.0"
+features = ["tracing"]
 
 [dependencies.axum]
 version = "0.8.8"
