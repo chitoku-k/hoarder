@@ -26,3 +26,6 @@ impl MediaURLFactoryInterface for NoopMediaURLFactory {
         None
     }
 }
+
+#[cfg(test)]
+mod tests;

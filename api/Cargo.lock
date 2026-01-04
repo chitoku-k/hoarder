@@ -2021,6 +2021,7 @@ version = "0.0.0"
 dependencies = [
  "application",
  "derive_more",
+ "pretty_assertions",
 ]
 
 [[package]]
