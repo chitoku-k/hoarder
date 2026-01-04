@@ -1,13 +1,16 @@
 use std::net::{Ipv4Addr, Ipv6Addr, SocketAddr};
 
+use axum::body::Body;
 use hyper::{StatusCode, Uri};
+use hyper_util::{client::legacy::{Client, connect::HttpConnector}, rt::TokioExecutor};
 use pretty_assertions::{assert_eq, assert_ne};
-use reqwest::ClientBuilder;
 
 use crate::{server::Engine, service::graphql::GraphQLEndpoints};
 
 #[cfg(feature = "tls")]
-use reqwest::Certificate;
+use hyper_openssl::client::legacy::HttpsConnector;
+#[cfg(feature = "tls")]
+use openssl::{ssl::{SslConnector, SslMethod}, x509::{X509, store::X509StoreBuilder}};
 #[cfg(feature = "tls")]
 use super::generate_certificate;
 
@@ -44,13 +47,11 @@ async fn start_http_succeeds_with_ipv4() {
         .build()
         .unwrap();
 
-    let client = ClientBuilder::new().build().unwrap();
-    let actual = client.get(uri.to_string()).send().await.unwrap();
-    assert_eq!(actual.status(), StatusCode::OK);
+    let http = HttpConnector::new();
+    let client = Client::builder(TokioExecutor::new()).build::<_, Body>(http);
 
-    let actual = actual.bytes().await.unwrap();
-    let actual = String::from_utf8(actual.to_vec()).unwrap();
-    assert_eq!(actual, "OK");
+    let actual = client.get(uri).await.unwrap();
+    assert_eq!(actual.status(), StatusCode::OK);
 
     server.handle.shutdown();
     server.shutdown.await.unwrap().unwrap();
@@ -79,20 +80,17 @@ async fn start_http_succeeds_with_ipv6() {
         .build()
         .unwrap();
 
-    let client = ClientBuilder::new().build().unwrap();
-    let actual = client.get(uri.to_string()).send().await.unwrap();
-    assert_eq!(actual.status(), StatusCode::OK);
+    let http = HttpConnector::new();
+    let client = Client::builder(TokioExecutor::new()).build::<_, Body>(http);
 
-    let actual = actual.bytes().await.unwrap();
-    let actual = String::from_utf8(actual.to_vec()).unwrap();
-    assert_eq!(actual, "OK");
+    let actual = client.get(uri).await.unwrap();
+    assert_eq!(actual.status(), StatusCode::OK);
 
     server.handle.shutdown();
     server.shutdown.await.unwrap().unwrap();
 }
 
 #[cfg(feature = "tls")]
-#[cfg_attr(not(unix), ignore = "native-tls does not yet support TLS 1.3 (sfackler/rust-native-tls#140)")]
 #[tokio::test]
 async fn start_https_succeeds_with_ipv4() {
     let mut mock_graphql_service = MockGraphQLServiceInterface::new();
@@ -120,24 +118,32 @@ async fn start_https_succeeds_with_ipv4() {
         .build()
         .unwrap();
 
-    let client = ClientBuilder::new()
-        .tls_certs_only(Certificate::from_pem_bundle(&ca).unwrap())
-        .build()
-        .unwrap();
+    let mut http = HttpConnector::new();
+    http.enforce_http(false);
 
-    let actual = client.get(uri.to_string()).send().await.unwrap();
+    let mut x509_store_builder = X509StoreBuilder::new().unwrap();
+    x509_store_builder.add_cert(X509::from_pem(&ca).unwrap()).unwrap();
+
+    let mut ssl = SslConnector::builder(SslMethod::tls()).unwrap();
+    ssl.set_verify_cert_store(x509_store_builder.build()).unwrap();
+
+    let mut https = HttpsConnector::with_connector(http, ssl).unwrap();
+    https.set_callback(|config, _uri| {
+        config.set_use_server_name_indication(false);
+        config.set_verify_hostname(false);
+        config.param_mut().set_host("localhost")?;
+        Ok(())
+    });
+    let client = Client::builder(TokioExecutor::new()).build::<_, Body>(https);
+
+    let actual = client.get(uri).await.unwrap();
     assert_eq!(actual.status(), StatusCode::OK);
-
-    let actual = actual.bytes().await.unwrap();
-    let actual = String::from_utf8(actual.to_vec()).unwrap();
-    assert_eq!(actual, "OK");
 
     server.handle.shutdown();
     server.shutdown.await.unwrap().unwrap();
 }
 
 #[cfg(feature = "tls")]
-#[cfg_attr(not(unix), ignore = "native-tls does not yet support TLS 1.3 (sfackler/rust-native-tls#140)")]
 #[tokio::test]
 async fn start_https_succeeds_with_ipv6() {
     let mut mock_graphql_service = MockGraphQLServiceInterface::new();
@@ -165,17 +171,26 @@ async fn start_https_succeeds_with_ipv6() {
         .build()
         .unwrap();
 
-    let client = ClientBuilder::new()
-        .tls_certs_only(Certificate::from_pem_bundle(&ca).unwrap())
-        .build()
-        .unwrap();
+    let mut http = HttpConnector::new();
+    http.enforce_http(false);
 
-    let actual = client.get(uri.to_string()).send().await.unwrap();
+    let mut x509_store_builder = X509StoreBuilder::new().unwrap();
+    x509_store_builder.add_cert(X509::from_pem(&ca).unwrap()).unwrap();
+
+    let mut ssl = SslConnector::builder(SslMethod::tls()).unwrap();
+    ssl.set_verify_cert_store(x509_store_builder.build()).unwrap();
+
+    let mut https = HttpsConnector::with_connector(http, ssl).unwrap();
+    https.set_callback(|config, _uri| {
+        config.set_use_server_name_indication(false);
+        config.set_verify_hostname(false);
+        config.param_mut().set_host("localhost")?;
+        Ok(())
+    });
+    let client = Client::builder(TokioExecutor::new()).build::<_, Body>(https);
+
+    let actual = client.get(uri).await.unwrap();
     assert_eq!(actual.status(), StatusCode::OK);
-
-    let actual = actual.bytes().await.unwrap();
-    let actual = String::from_utf8(actual.to_vec()).unwrap();
-    assert_eq!(actual, "OK");
 
     server.handle.shutdown();
     server.shutdown.await.unwrap().unwrap();
