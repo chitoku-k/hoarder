@@ -18,7 +18,7 @@ use axum_server::tls_openssl::{OpenSSLAcceptor, OpenSSLConfig};
 #[cfg(feature = "tls")]
 use notify::Watcher;
 #[cfg(feature = "tls")]
-use tokio::{sync::mpsc::unbounded_channel, time::{sleep, Duration}};
+use tokio::sync::mpsc::unbounded_channel;
 
 use crate::{
     error::{Error, ErrorKind, Result},
@@ -173,17 +173,23 @@ fn bind(addr: SocketAddr) -> io::Result<TcpListener> {
 fn enable_auto_reload(config: OpenSSLConfig, tls_cert: String, tls_key: String) -> JoinHandle<Result<()>> {
     tokio::spawn(async move {
         loop {
-            let (tx, mut rx) = unbounded_channel();
-            let event_handler = move |event| {
-                let _ = tx.send(event);
+            let (cert_tx, mut cert_rx) = unbounded_channel();
+            let cert_event_handler = move |event| {
+                let _ = cert_tx.send(event);
             };
 
-            let mut watcher = notify::recommended_watcher(event_handler).map_err(Error::other)?;
-            watcher.watch(tls_cert.as_ref(), notify::RecursiveMode::NonRecursive).map_err(Error::other)?;
+            let mut cert_watcher = notify::recommended_watcher(cert_event_handler).map_err(Error::other)?;
+            cert_watcher.watch(tls_cert.as_ref(), notify::RecursiveMode::NonRecursive).map_err(Error::other)?;
 
-            let Some(Ok(_)) = rx.recv().await else { continue };
-            sleep(Duration::from_secs(5)).await;
+            let (key_tx, mut key_rx) = unbounded_channel();
+            let key_event_handler = move |event| {
+                let _ = key_tx.send(event);
+            };
 
+            let mut key_watcher = notify::recommended_watcher(key_event_handler).map_err(Error::other)?;
+            key_watcher.watch(tls_key.as_ref(), notify::RecursiveMode::NonRecursive).map_err(Error::other)?;
+
+            let (Some(Ok(_)), Some(Ok(_))) = tokio::join!(cert_rx.recv(), key_rx.recv()) else { continue };
             if let Err(e) = config.reload_from_pem_file(&tls_cert, &tls_key) {
                 tracing::warn!("failed to reload TLS certificate\nError: {:?}", e);
             }
