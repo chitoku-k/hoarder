@@ -75,7 +75,7 @@ async fn succeeds() {
                     )),
                 ),
                 ObjectStatus::Created,
-                Cursor::new(Vec::new()),
+                Vec::new(),
             )))
         });
 
@@ -88,7 +88,7 @@ async fn succeeds() {
                 .expect_copy()
                 .withf(|read, write| (read, write) == (
                     &Cursor::new(&[0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08]),
-                    &Cursor::new(Vec::new()),
+                    &Vec::new(),
                 ))
                 .returning(|read, write| Box::pin(ok(copy(read, write).unwrap())));
 
@@ -244,7 +244,7 @@ async fn succeeds_and_copy_fails() {
                     )),
                 ),
                 ObjectStatus::Created,
-                Cursor::new(Vec::new()),
+                Vec::new(),
             )))
         });
 
@@ -257,7 +257,7 @@ async fn succeeds_and_copy_fails() {
                 .expect_copy()
                 .withf(|read, write| (read, write) == (
                     &Cursor::new(&[0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08]),
-                    &Cursor::new(Vec::new()),
+                    &Vec::new(),
                 ))
                 .returning(|_, _| Box::pin(err(Error::other(anyhow!("No such file or directory")))));
 
@@ -411,7 +411,7 @@ async fn succeeds_and_process_fails() {
                     )),
                 ),
                 ObjectStatus::Created,
-                Cursor::new(Vec::new()),
+                Vec::new(),
             )))
         });
 
@@ -424,7 +424,7 @@ async fn succeeds_and_process_fails() {
                 .expect_copy()
                 .withf(|read, write| (read, write) == (
                     &Cursor::new(&[0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08]),
-                    &Cursor::new(Vec::new()),
+                    &Vec::new(),
                 ))
                 .returning(|read, write| Box::pin(ok(copy(read, write).unwrap())));
 
@@ -578,7 +578,7 @@ async fn succeeds_and_update_fails() {
                     )),
                 ),
                 ObjectStatus::Created,
-                Cursor::new(Vec::new()),
+                Vec::new(),
             )))
         });
 
@@ -591,7 +591,7 @@ async fn succeeds_and_update_fails() {
                 .expect_copy()
                 .withf(|read, write| (read, write) == (
                     &Cursor::new(&[0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08]),
-                    &Cursor::new(Vec::new()),
+                    &Vec::new(),
                 ))
                 .returning(|read, write| Box::pin(ok(copy(read, write).unwrap())));
 
@@ -708,7 +708,7 @@ async fn fails() {
                     )),
                 ),
                 ObjectStatus::Created,
-                Cursor::new(Vec::new()),
+                Vec::new(),
             )))
         });
 
@@ -791,7 +791,7 @@ async fn fails_and_delete_fails() {
                     )),
                 ),
                 ObjectStatus::Created,
-                Cursor::new(Vec::new()),
+                Vec::new(),
             )))
         });
 
@@ -870,7 +870,7 @@ async fn fails_with_no_url() {
                     None,
                 ),
                 ObjectStatus::Created,
-                Cursor::new(Vec::new()),
+                Vec::new(),
             )))
         });
 
