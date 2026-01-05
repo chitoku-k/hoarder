@@ -1,4 +1,4 @@
-use std::{fs::File as StdFile, io::{self, Read, Seek}, path::{MAIN_SEPARATOR_STR, Path, PathBuf}, sync::Arc};
+use std::{path::{MAIN_SEPARATOR_STR, Path, PathBuf}, sync::Arc};
 
 use domain::{
     entity::objects::{Entry, EntryKind, EntryUrl},
@@ -7,7 +7,7 @@ use domain::{
 };
 use futures::{TryFutureExt, TryStreamExt};
 use icu_collator::CollatorBorrowed;
-use tokio::fs::{canonicalize, metadata, read_dir, remove_file, DirBuilder, File};
+use tokio::{fs::{DirBuilder, File, canonicalize, metadata, read_dir, remove_file}, io::{self, AsyncRead, AsyncSeekExt}};
 use tokio_stream::wrappers::ReadDirStream;
 
 use crate::{filesystem::{entry::FilesystemEntry, url::FilesystemEntryUrl}, StorageEntry, StorageEntryUrl};
@@ -66,8 +66,8 @@ impl FilesystemObjectsRepository {
 }
 
 impl ObjectsRepository for FilesystemObjectsRepository {
-    type Read = StdFile;
-    type Write = StdFile;
+    type Read = File;
+    type Write = File;
 
     fn scheme() -> &'static str {
         "file"
@@ -145,7 +145,7 @@ impl ObjectsRepository for FilesystemObjectsRepository {
         };
 
         let entry = FilesystemEntry::from_file(url.as_path(), &file).await?;
-        Ok((entry.into_entry(), status, file.into_std().await))
+        Ok((entry.into_entry(), status, file))
     }
 
     #[tracing::instrument(skip_all)]
@@ -156,7 +156,7 @@ impl ObjectsRepository for FilesystemObjectsRepository {
         match File::open(&fullpath).await {
             Ok(file) => {
                 let entry = FilesystemEntry::from_file(url.as_path(), &file).await?;
-                Ok((entry.into_entry(), file.into_std().await))
+                Ok((entry.into_entry(), file))
             },
             Err(e) if e.kind() == io::ErrorKind::NotFound => Err(Error::new(ErrorKind::ObjectNotFound { url: url.into_url().into_inner() }, e))?,
             Err(e) if matches!(e.kind(), io::ErrorKind::InvalidFilename | io::ErrorKind::InvalidInput) => Err(Error::new(ErrorKind::ObjectUrlInvalid { url: url.into_url().into_inner() }, e))?,
@@ -165,14 +165,14 @@ impl ObjectsRepository for FilesystemObjectsRepository {
     }
 
     #[tracing::instrument(skip_all)]
-    fn copy<R>(&self, read: &mut R, write: &mut Self::Write) -> Result<u64>
+    async fn copy<R>(&self, read: &mut R, write: &mut Self::Write) -> Result<u64>
     where
-        R: Read,
+        R: AsyncRead + Send + Unpin,
     {
-        write.rewind().map_err(Error::other)?;
-        write.set_len(0).map_err(Error::other)?;
+        write.rewind().await.map_err(Error::other)?;
+        write.set_len(0).await.map_err(Error::other)?;
 
-        let written = io::copy(read, write).map_err(Error::other)?;
+        let written = io::copy(read, write).await.map_err(Error::other)?;
         Ok(written)
     }
 

@@ -90,7 +90,7 @@ async fn succeeds() {
                     &Cursor::new(&[0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08]),
                     &Cursor::new(Vec::new()),
                 ))
-                .returning(|read, write| Ok(copy(read, write).unwrap()));
+                .returning(|read, write| Box::pin(ok(copy(read, write).unwrap())));
 
             mock_objects_repository
         });
@@ -259,7 +259,7 @@ async fn succeeds_and_copy_fails() {
                     &Cursor::new(&[0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08]),
                     &Cursor::new(Vec::new()),
                 ))
-                .returning(|_, _| Err(Error::other(anyhow!("No such file or directory"))));
+                .returning(|_, _| Box::pin(err(Error::other(anyhow!("No such file or directory")))));
 
             mock_objects_repository
         });
@@ -426,7 +426,7 @@ async fn succeeds_and_process_fails() {
                     &Cursor::new(&[0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08]),
                     &Cursor::new(Vec::new()),
                 ))
-                .returning(|read, write| Ok(copy(read, write).unwrap()));
+                .returning(|read, write| Box::pin(ok(copy(read, write).unwrap())));
 
             mock_objects_repository
         });
@@ -593,7 +593,7 @@ async fn succeeds_and_update_fails() {
                     &Cursor::new(&[0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08]),
                     &Cursor::new(Vec::new()),
                 ))
-                .returning(|read, write| Ok(copy(read, write).unwrap()));
+                .returning(|read, write| Box::pin(ok(copy(read, write).unwrap())));
 
             mock_objects_repository
         });

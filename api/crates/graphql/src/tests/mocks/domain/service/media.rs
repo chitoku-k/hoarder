@@ -1,5 +1,3 @@
-use std::io::{Seek, Read};
-
 use chrono::{DateTime, Utc};
 use domain::{
     entity::{
@@ -17,6 +15,7 @@ use domain::{
     service::media::{MediaServiceInterface, MediumSource},
 };
 use futures::{future::BoxFuture, stream::BoxStream};
+use tokio::io::{AsyncRead, AsyncSeek};
 
 mockall::mock! {
     pub(crate) MediaServiceInterface {}
@@ -30,7 +29,7 @@ mockall::mock! {
 
         fn create_replica<R>(&self, medium_id: MediumId, medium_source: MediumSource<R>) -> impl Future<Output = Result<(Replica, BoxFuture<'static, Result<Replica>>)>> + Send
         where
-            R: Read + Seek + Send + 'static;
+            R: AsyncRead + AsyncSeek + Send + Unpin + 'static;
 
         fn create_source(&self, external_service_id: ExternalServiceId, external_metadata: ExternalMetadata) -> impl Future<Output = Result<Source>> + Send;
 
@@ -127,7 +126,7 @@ mockall::mock! {
 
         fn update_replica_by_id<R>(&self, id: ReplicaId, medium_source: MediumSource<R>) -> impl Future<Output = Result<(Replica, BoxFuture<'static, Result<Replica>>)>> + Send
         where
-            R: Read + Seek + Send + 'static;
+            R: AsyncRead + AsyncSeek + Send + Unpin + 'static;
 
         fn update_source_by_id(&self, id: SourceId, external_service_id: Option<ExternalServiceId>, external_metadata: Option<ExternalMetadata>) -> impl Future<Output = Result<Source>> + Send;
 
