@@ -12,8 +12,8 @@ mockall::mock! {
     pub(crate) ObjectsRepository {}
 
     impl ObjectsRepository for ObjectsRepository {
-        type Read = Cursor<&'static [u8]>;
-        type Write = Vec<u8>;
+        type Put = Vec<u8>;
+        type Get = Cursor<&'static [u8]>;
 
         fn scheme() -> &'static str;
 
