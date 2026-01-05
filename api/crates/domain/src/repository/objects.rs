@@ -21,7 +21,7 @@ pub enum ObjectStatus {
 
 pub trait ObjectsRepository: Send + Sync + 'static {
     type Read: AsyncRead + AsyncSeek + Send + Unpin + 'static;
-    type Write: AsyncWrite + AsyncSeek + Send + Unpin + 'static;
+    type Write: AsyncWrite + Send + Unpin + 'static;
 
     fn scheme() -> &'static str;
 

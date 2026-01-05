@@ -13,15 +13,15 @@ mockall::mock! {
 
     impl ObjectsRepository for ObjectsRepository {
         type Read = Cursor<&'static [u8]>;
-        type Write = Cursor<Vec<u8>>;
+        type Write = Vec<u8>;
 
         fn scheme() -> &'static str;
 
-        fn put(&self, url: EntryUrl, overwrite: ObjectOverwriteBehavior) -> impl Future<Output = Result<(Entry, ObjectStatus, Cursor<Vec<u8>>)>> + Send;
+        fn put(&self, url: EntryUrl, overwrite: ObjectOverwriteBehavior) -> impl Future<Output = Result<(Entry, ObjectStatus, Vec<u8>)>> + Send;
 
         fn get(&self, url: EntryUrl) -> impl Future<Output = Result<(Entry, Cursor<&'static [u8]>)>> + Send;
 
-        fn copy<R>(&self, read: &mut R, write: &mut Cursor<Vec<u8>>) -> impl Future<Output = Result<u64>> + Send
+        fn copy<R>(&self, read: &mut R, write: &mut Vec<u8>) -> impl Future<Output = Result<u64>> + Send
         where
             R: AsyncRead + Send + Unpin + 'static;
 
