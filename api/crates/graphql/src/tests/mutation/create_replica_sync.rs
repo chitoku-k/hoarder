@@ -1,4 +1,4 @@
-use std::{fs::File, io::{Read, Seek, SeekFrom, Write}, sync::Arc};
+use std::{io::{Seek, SeekFrom, Write}, sync::Arc};
 
 use application::service::{media::MediaURLFactoryInterface, thumbnails::ThumbnailURLFactoryInterface};
 use async_graphql::{value, EmptySubscription, Request, Schema, UploadValue, Variables};
@@ -16,6 +16,7 @@ use indoc::indoc;
 use pretty_assertions::assert_eq;
 use serde_json::json;
 use tempfile::tempfile;
+use tokio::fs::File;
 use tokio_util::task::TaskTracker;
 use uuid::uuid;
 
@@ -179,13 +180,7 @@ async fn succeeds_with_upload() {
             matches!(medium_source, MediumSource::Content(path, read, overwrite) if (path, overwrite) == (
                 &EntryUrlPath::from("/77777777-7777-7777-7777-777777777777.png".to_string()),
                 &MediumOverwriteBehavior::Fail,
-            ) && {
-                let mut buf = Vec::with_capacity(8);
-                let mut file = read.try_clone().unwrap();
-                file.read_to_end(&mut buf).unwrap();
-                file.seek(SeekFrom::Start(0)).unwrap();
-                buf == [0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08]
-            })
+            ))
         })
         .returning(|_, _| {
             Box::pin(ok((

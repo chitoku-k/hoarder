@@ -1,4 +1,6 @@
-use std::io::{Cursor, Read};
+use std::io::Cursor;
+
+use tokio::io::AsyncRead;
 
 use crate::{
     entity::objects::{Entry, EntryUrl},
@@ -19,9 +21,9 @@ mockall::mock! {
 
         fn get(&self, url: EntryUrl) -> impl Future<Output = Result<(Entry, Cursor<&'static [u8]>)>> + Send;
 
-        fn copy<R>(&self, read: &mut R, write: &mut Cursor<Vec<u8>>) -> Result<u64>
+        fn copy<R>(&self, read: &mut R, write: &mut Cursor<Vec<u8>>) -> impl Future<Output = Result<u64>> + Send
         where
-            R: Read + 'static;
+            R: AsyncRead + Send + Unpin + 'static;
 
         fn list(&self, prefix: EntryUrl) -> impl Future<Output = Result<Vec<Entry>>> + Send;
 

@@ -1,6 +1,5 @@
-use std::io::{Read, Seek, Write};
-
 use strum::EnumIs;
+use tokio::io::{AsyncRead, AsyncSeek, AsyncWrite};
 
 use crate::{
     entity::objects::{Entry, EntryUrl},
@@ -21,8 +20,8 @@ pub enum ObjectStatus {
 }
 
 pub trait ObjectsRepository: Send + Sync + 'static {
-    type Read: Read + Seek + Send + Unpin + 'static;
-    type Write: Write + Seek + Send + Unpin + 'static;
+    type Read: AsyncRead + AsyncSeek + Send + Unpin + 'static;
+    type Write: AsyncWrite + AsyncSeek + Send + Unpin + 'static;
 
     fn scheme() -> &'static str;
 
@@ -30,9 +29,9 @@ pub trait ObjectsRepository: Send + Sync + 'static {
 
     fn get(&self, url: EntryUrl) -> impl Future<Output = Result<(Entry, Self::Read)>> + Send;
 
-    fn copy<R>(&self, read: &mut R, write: &mut Self::Write) -> Result<u64>
+    fn copy<R>(&self, read: &mut R, write: &mut Self::Write) -> impl Future<Output = Result<u64>> + Send
     where
-        for<'a> R: Read + 'a;
+        for<'a> R: AsyncRead + Send + Unpin + 'a;
 
     fn list(&self, prefix: EntryUrl) -> impl Future<Output = Result<Vec<Entry>>> + Send;
 

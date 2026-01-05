@@ -1,4 +1,4 @@
-use std::{io::{Read, Seek}, marker::PhantomData};
+use std::marker::PhantomData;
 
 use async_graphql::{Context, Object, SimpleObject};
 use chrono::{DateTime, FixedOffset};
@@ -12,6 +12,7 @@ use domain::{
     },
 };
 use normalizer::NormalizerInterface;
+use tokio::{fs::File, io::{AsyncRead, AsyncSeek}};
 use tokio_util::task::TaskTracker;
 use uuid::Uuid;
 
@@ -47,7 +48,7 @@ pub struct Mutation<ExternalServicesService, MediaService, TagsService, Normaliz
     normalizer: PhantomData<fn() -> Normalizer>,
 }
 
-async fn create_medium_source(ctx: &Context<'_>, original_url: Option<String>, upload: Option<ReplicaInput>) -> Result<MediumSource<impl Read + Seek + Send + Sync + 'static>> {
+async fn create_medium_source(ctx: &Context<'_>, original_url: Option<String>, upload: Option<ReplicaInput>) -> Result<MediumSource<impl AsyncRead + AsyncSeek + Send + Sync + 'static>> {
     match (original_url, upload) {
         (None, None) => Err(Error::new(ErrorKind::ArgumentRequired { one_of: vec!["original_url", "upload"] })),
         (Some(_), Some(_)) => Err(Error::new(ErrorKind::ArgumentsMutuallyExclusive { arguments: vec!["original_url", "upload"] })),
@@ -55,7 +56,7 @@ async fn create_medium_source(ctx: &Context<'_>, original_url: Option<String>, u
         (None, Some(input)) => {
             let (file, overwrite) = input.into();
             let value = file.value(ctx).map_err(|_| Error::new(ErrorKind::InternalServerError))?;
-            Ok(MediumSource::Content(EntryUrlPath::from(value.filename), value.content, overwrite))
+            Ok(MediumSource::Content(EntryUrlPath::from(value.filename), File::from_std(value.content), overwrite))
         },
     }
 }

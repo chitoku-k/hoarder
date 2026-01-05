@@ -27,7 +27,7 @@ async fn put_succeeds_with_new_file() {
     let root_dir = tempdir().unwrap();
 
     let repository = FilesystemObjectsRepository::new(collator, root_dir.path()).await.unwrap();
-    let (actual_entry, actual_status, actual_write) = repository.put(
+    let (actual_entry, actual_status, mut actual_write) = repository.put(
         EntryUrl::from_path_str("file://", "/77777777-7777-7777-7777-777777777777.png"),
         ObjectOverwriteBehavior::Fail,
     ).await.unwrap();
@@ -39,9 +39,8 @@ async fn put_succeeds_with_new_file() {
 
     const BUF: &[u8] = &[0x00, 0x01, 0x02, 0x03];
 
-    let mut file = File::from_std(actual_write);
-    file.write_all(BUF).await.unwrap();
-    file.flush().await.unwrap();
+    actual_write.write_all(BUF).await.unwrap();
+    actual_write.flush().await.unwrap();
 
     let readdir = tokio::fs::read_dir(root_dir.path()).await.unwrap();
     let actual: Vec<_> = ReadDirStream::new(readdir).try_collect().await.unwrap();
@@ -59,7 +58,7 @@ async fn put_succeeds_with_new_directory_and_new_file() {
     let root_dir = tempdir().unwrap();
 
     let repository = FilesystemObjectsRepository::new(collator, root_dir.path()).await.unwrap();
-    let (actual_entry, actual_status, actual_write) = repository.put(
+    let (actual_entry, actual_status, mut actual_write) = repository.put(
         EntryUrl::from_path_str("file://", "/ゆるゆり/77777777-7777-7777-7777-777777777777.png"),
         ObjectOverwriteBehavior::Fail,
     ).await.unwrap();
@@ -71,9 +70,8 @@ async fn put_succeeds_with_new_directory_and_new_file() {
 
     const BUF: &[u8] = &[0x00, 0x01, 0x02, 0x03];
 
-    let mut file = File::from_std(actual_write);
-    file.write_all(BUF).await.unwrap();
-    file.flush().await.unwrap();
+    actual_write.write_all(BUF).await.unwrap();
+    actual_write.flush().await.unwrap();
 
     let readdir = tokio::fs::read_dir(root_dir.path()).await.unwrap();
     let actual: Vec<_> = ReadDirStream::new(readdir).try_collect().await.unwrap();
@@ -99,7 +97,7 @@ async fn put_succeeds_with_existing_directory_and_new_file() {
     create_dir_all(root_dir.path().join("ゆるゆり")).await.unwrap();
 
     let repository = FilesystemObjectsRepository::new(collator, root_dir.path()).await.unwrap();
-    let (actual_entry, actual_status, actual_write) = repository.put(
+    let (actual_entry, actual_status, mut actual_write) = repository.put(
         EntryUrl::from_path_str("file://", "/ゆるゆり/77777777-7777-7777-7777-777777777777.png"),
         ObjectOverwriteBehavior::Fail,
     ).await.unwrap();
@@ -111,9 +109,8 @@ async fn put_succeeds_with_existing_directory_and_new_file() {
 
     const BUF: &[u8] = &[0x00, 0x01, 0x02, 0x03];
 
-    let mut file = File::from_std(actual_write);
-    file.write_all(BUF).await.unwrap();
-    file.flush().await.unwrap();
+    actual_write.write_all(BUF).await.unwrap();
+    actual_write.flush().await.unwrap();
 
     let readdir = tokio::fs::read_dir(root_dir.path()).await.unwrap();
     let actual: Vec<_> = ReadDirStream::new(readdir).try_collect().await.unwrap();
@@ -143,7 +140,7 @@ async fn put_succeeds_with_existing_file() {
     file.flush().await.unwrap();
 
     let repository = FilesystemObjectsRepository::new(collator, root_dir.path()).await.unwrap();
-    let (actual_entry, actual_status, actual_write) = repository.put(
+    let (actual_entry, actual_status, mut actual_write) = repository.put(
         EntryUrl::from_path_str("file://", "/77777777-7777-7777-7777-777777777777.png"),
         ObjectOverwriteBehavior::Overwrite,
     ).await.unwrap();
@@ -155,10 +152,9 @@ async fn put_succeeds_with_existing_file() {
 
     const NEW_BUF: &[u8] = &[0x00, 0x01, 0x02, 0x03];
 
-    let mut file = File::from_std(actual_write);
-    file.set_len(0).await.unwrap();
-    file.write_all(NEW_BUF).await.unwrap();
-    file.flush().await.unwrap();
+    actual_write.set_len(0).await.unwrap();
+    actual_write.write_all(NEW_BUF).await.unwrap();
+    actual_write.flush().await.unwrap();
 
     let readdir = tokio::fs::read_dir(root_dir.path()).await.unwrap();
     let actual: Vec<_> = ReadDirStream::new(readdir).try_collect().await.unwrap();
@@ -184,7 +180,7 @@ async fn put_succeeds_with_existing_directory_and_existing_file() {
     file.flush().await.unwrap();
 
     let repository = FilesystemObjectsRepository::new(collator, root_dir.path()).await.unwrap();
-    let (actual_entry, actual_status, actual_write) = repository.put(
+    let (actual_entry, actual_status, mut actual_write) = repository.put(
         EntryUrl::from_path_str("file://", "/ゆるゆり/77777777-7777-7777-7777-777777777777.png"),
         ObjectOverwriteBehavior::Overwrite,
     ).await.unwrap();
@@ -196,10 +192,9 @@ async fn put_succeeds_with_existing_directory_and_existing_file() {
 
     const NEW_BUF: &[u8] = &[0x00, 0x01, 0x02, 0x03];
 
-    let mut file = File::from_std(actual_write);
-    file.set_len(0).await.unwrap();
-    file.write_all(NEW_BUF).await.unwrap();
-    file.flush().await.unwrap();
+    actual_write.set_len(0).await.unwrap();
+    actual_write.write_all(NEW_BUF).await.unwrap();
+    actual_write.flush().await.unwrap();
 
     let readdir = tokio::fs::read_dir(root_dir.path()).await.unwrap();
     let actual: Vec<_> = ReadDirStream::new(readdir).try_collect().await.unwrap();
@@ -227,7 +222,7 @@ async fn put_succeeds_with_long_filename() {
     let long_path = format!("/{long_directory}/{long_filename}");
 
     let repository = FilesystemObjectsRepository::new(collator, root_dir.path()).await.unwrap();
-    let (actual_entry, actual_status, actual_write) = repository.put(
+    let (actual_entry, actual_status, mut actual_write) = repository.put(
         EntryUrl::from_path_str("file://", &long_path),
         ObjectOverwriteBehavior::Fail,
     ).await.unwrap();
@@ -240,9 +235,8 @@ async fn put_succeeds_with_long_filename() {
 
     const BUF: &[u8] = &[0x00, 0x01, 0x02, 0x03];
 
-    let mut file = File::from_std(actual_write);
-    file.write_all(BUF).await.unwrap();
-    file.flush().await.unwrap();
+    actual_write.write_all(BUF).await.unwrap();
+    actual_write.flush().await.unwrap();
 
     let readdir = tokio::fs::read_dir(root_dir.path()).await.unwrap();
     let actual: Vec<_> = ReadDirStream::new(readdir).try_collect().await.unwrap();
@@ -387,7 +381,7 @@ async fn get_succeeds() {
     file.flush().await.unwrap();
 
     let repository = FilesystemObjectsRepository::new(collator, root_dir.path()).await.unwrap();
-    let (actual_entry, actual_file) = repository.get(EntryUrl::from_path_str("file://", "/ゆるゆり/77777777-7777-7777-7777-777777777777.png")).await.unwrap();
+    let (actual_entry, mut actual_file) = repository.get(EntryUrl::from_path_str("file://", "/ゆるゆり/77777777-7777-7777-7777-777777777777.png")).await.unwrap();
     let actual_metadata = actual_entry.metadata.unwrap();
 
     assert_eq!(actual_entry.name, "77777777-7777-7777-7777-777777777777.png");
@@ -396,8 +390,7 @@ async fn get_succeeds() {
     assert_eq!(actual_metadata.size, BUF.len() as u64);
 
     let mut actual_buf = Vec::with_capacity(BUF.len());
-    let mut file = File::from_std(actual_file);
-    file.read_to_end(&mut actual_buf).await.unwrap();
+    actual_file.read_to_end(&mut actual_buf).await.unwrap();
 
     assert_eq!(actual_buf, BUF);
 }
@@ -460,11 +453,11 @@ async fn copy_succeeds() {
     const NEW_BUF: &[u8] = &[0x00, 0x01, 0x02, 0x03];
 
     let repository = FilesystemObjectsRepository::new(collator, root_dir.path()).await.unwrap();
-    let actual_written = tokio::task::spawn_blocking(move || {
+    let actual_written = {
         let mut read = NEW_BUF;
-        let mut write = file.try_into_std().unwrap();
-        repository.copy(&mut read, &mut write).unwrap()
-    }).await.unwrap();
+        let mut write = file;
+        repository.copy(&mut read, &mut write).await.unwrap()
+    };
 
     assert_eq!(actual_written, NEW_BUF.len() as u64);
 
