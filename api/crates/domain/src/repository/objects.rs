@@ -20,16 +20,16 @@ pub enum ObjectStatus {
 }
 
 pub trait ObjectsRepository: Send + Sync + 'static {
-    type Read: AsyncRead + AsyncSeek + Send + Unpin + 'static;
-    type Write: AsyncWrite + Send + Unpin + 'static;
+    type Put: AsyncWrite + Send + Unpin + 'static;
+    type Get: AsyncRead + AsyncSeek + Send + Unpin + 'static;
 
     fn scheme() -> &'static str;
 
-    fn put(&self, url: EntryUrl, overwrite: ObjectOverwriteBehavior) -> impl Future<Output = Result<(Entry, ObjectStatus, Self::Write)>> + Send;
+    fn put(&self, url: EntryUrl, overwrite: ObjectOverwriteBehavior) -> impl Future<Output = Result<(Entry, ObjectStatus, Self::Put)>> + Send;
 
-    fn get(&self, url: EntryUrl) -> impl Future<Output = Result<(Entry, Self::Read)>> + Send;
+    fn get(&self, url: EntryUrl) -> impl Future<Output = Result<(Entry, Self::Get)>> + Send;
 
-    fn copy<R>(&self, read: &mut R, write: &mut Self::Write) -> impl Future<Output = Result<u64>> + Send
+    fn copy<R>(&self, read: &mut R, write: &mut Self::Put) -> impl Future<Output = Result<u64>> + Send
     where
         for<'a> R: AsyncRead + Send + Unpin + 'a;
 

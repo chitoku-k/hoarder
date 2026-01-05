@@ -66,15 +66,15 @@ impl FilesystemObjectsRepository {
 }
 
 impl ObjectsRepository for FilesystemObjectsRepository {
-    type Read = File;
-    type Write = File;
+    type Put = File;
+    type Get = File;
 
     fn scheme() -> &'static str {
         "file"
     }
 
     #[tracing::instrument(skip_all)]
-    async fn put(&self, url: EntryUrl, overwrite: ObjectOverwriteBehavior) -> Result<(Entry, ObjectStatus, Self::Write)> {
+    async fn put(&self, url: EntryUrl, overwrite: ObjectOverwriteBehavior) -> Result<(Entry, ObjectStatus, Self::Put)> {
         let url = FilesystemEntryUrl::try_from(url)?;
         let fullpath = self.fullpath(url.as_path());
         if fullpath == self.root_dir {
@@ -149,7 +149,7 @@ impl ObjectsRepository for FilesystemObjectsRepository {
     }
 
     #[tracing::instrument(skip_all)]
-    async fn get(&self, url: EntryUrl) -> Result<(Entry, Self::Read)> {
+    async fn get(&self, url: EntryUrl) -> Result<(Entry, Self::Get)> {
         let url = FilesystemEntryUrl::try_from(url)?;
         let fullpath = self.fullpath(url.as_path());
 
@@ -165,7 +165,7 @@ impl ObjectsRepository for FilesystemObjectsRepository {
     }
 
     #[tracing::instrument(skip_all)]
-    async fn copy<R>(&self, read: &mut R, write: &mut Self::Write) -> Result<u64>
+    async fn copy<R>(&self, read: &mut R, write: &mut Self::Put) -> Result<u64>
     where
         R: AsyncRead + Send + Unpin,
     {

@@ -189,7 +189,7 @@ impl<MediaRepository, ObjectsRepository, ReplicasRepository, SourcesRepository, 
 where
     ObjectsRepository: objects::ObjectsRepository,
 {
-    async fn get_image(&self, url: EntryUrl) -> Result<(EntryUrl, ObjectsRepository::Read)> {
+    async fn get_image(&self, url: EntryUrl) -> Result<(EntryUrl, ObjectsRepository::Get)> {
         match self.objects_repository.get(url).await {
             Ok((entry, read)) => {
                 if let Some(url) = entry.url {
@@ -205,7 +205,7 @@ where
         }
     }
 
-    async fn put_image(&self, url: EntryUrl, overwrite: MediumOverwriteBehavior) -> Result<(EntryUrl, objects::ObjectStatus, ObjectsRepository::Write)> {
+    async fn put_image(&self, url: EntryUrl, overwrite: MediumOverwriteBehavior) -> Result<(EntryUrl, objects::ObjectStatus, ObjectsRepository::Put)> {
         match self.objects_repository.put(url, overwrite.into()).await {
             Ok((entry, status, write)) => {
                 if let Some(url) = entry.url {
