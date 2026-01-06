@@ -3,10 +3,7 @@ use std::{
     path::{Path, MAIN_SEPARATOR_STR},
 };
 
-use domain::{
-    entity::objects::{Entry, EntryMetadata, EntryKind, EntryUrl},
-    error::Result,
-};
+use domain::entity::objects::{Entry, EntryMetadata, EntryKind, EntryUrl};
 use tokio::fs::{DirEntry, File};
 
 use crate::{filesystem::FilesystemEntryUrl, StorageEntry, StorageEntryUrl};
@@ -14,7 +11,7 @@ use crate::{filesystem::FilesystemEntryUrl, StorageEntry, StorageEntryUrl};
 pub(crate) struct FilesystemEntry(Entry);
 
 impl FilesystemEntry {
-    pub(crate) async fn from_dir_entry<P>(path: P, entry: &DirEntry) -> Result<Self>
+    pub(crate) async fn from_dir_entry<P>(path: P, entry: &DirEntry) -> Self
     where
         P: AsRef<Path>,
     {
@@ -24,18 +21,18 @@ impl FilesystemEntry {
             .map(Self::kind)
             .unwrap_or(EntryKind::Unknown);
 
-        Ok(Self(Entry::new(name, url, kind, None)))
+        Self(Entry::new(name, url, kind, None))
     }
 
-    pub(crate) async fn from_file<P>(path: P, file: &File) -> Result<Self>
+    pub(crate) async fn from_file<P>(path: P, file: &File) -> Self
     where
         P: AsRef<Path>,
     {
         match file.metadata().await.ok() {
-            Some(metadata) => Ok(Self::from_metadata(path, &metadata)),
+            Some(metadata) => Self::from_metadata(path, &metadata),
             None => {
                 let (name, url) = Self::path(path);
-                Ok(Self(Entry::new(name, url, EntryKind::Unknown, None)))
+                Self(Entry::new(name, url, EntryKind::Unknown, None))
             },
         }
     }
