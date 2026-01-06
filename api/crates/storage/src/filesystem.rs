@@ -165,6 +165,19 @@ impl ObjectsRepository for FilesystemObjectsRepository {
     }
 
     #[tracing::instrument(skip_all)]
+    async fn entry(&self, url: EntryUrl) -> Result<Entry> {
+        let url = FilesystemEntryUrl::try_from(url)?;
+        let fullpath = self.fullpath(url.as_path());
+
+        match metadata(&fullpath).await {
+            Ok(metadata) => Ok(FilesystemEntry::from_metadata(url.as_path(), &metadata).into_entry()),
+            Err(e) if e.kind() == io::ErrorKind::NotFound => Err(Error::new(ErrorKind::ObjectNotFound { url: url.into_url().into_inner() }, e))?,
+            Err(e) if matches!(e.kind(), io::ErrorKind::InvalidFilename | io::ErrorKind::InvalidInput) => Err(Error::new(ErrorKind::ObjectUrlInvalid { url: url.into_url().into_inner() }, e))?,
+            Err(e) => Err(Error::new(ErrorKind::ObjectGetFailed { url: url.into_url().into_inner() }, e))?,
+        }
+    }
+
+    #[tracing::instrument(skip_all)]
     async fn copy<R>(&self, read: &mut R, write: &mut Self::Put) -> Result<u64>
     where
         R: AsyncRead + Send + Unpin,

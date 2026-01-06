@@ -29,6 +29,8 @@ pub trait ObjectsRepository: Send + Sync + 'static {
 
     fn get(&self, url: EntryUrl) -> impl Future<Output = Result<(Entry, Self::Get)>> + Send;
 
+    fn entry(&self, url: EntryUrl) -> impl Future<Output = Result<Entry>> + Send;
+
     fn copy<R>(&self, read: &mut R, write: &mut Self::Put) -> impl Future<Output = Result<u64>> + Send
     where
         for<'a> R: AsyncRead + Send + Unpin + 'a;

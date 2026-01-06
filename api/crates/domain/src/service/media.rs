@@ -560,8 +560,8 @@ where
 
     #[tracing::instrument(skip_all)]
     async fn get_object(&self, url: EntryUrl) -> Result<Entry> {
-        match self.objects_repository.get(url).await {
-            Ok((entry, ..)) => Ok(entry),
+        match self.objects_repository.entry(url).await {
+            Ok(entry) => Ok(entry),
             Err(e) => {
                 tracing::error!("failed to get the object\nError: {e:?}");
                 Err(e)

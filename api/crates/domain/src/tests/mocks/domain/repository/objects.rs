@@ -21,6 +21,8 @@ mockall::mock! {
 
         fn get(&self, url: EntryUrl) -> impl Future<Output = Result<(Entry, Cursor<&'static [u8]>)>> + Send;
 
+        fn entry(&self, url: EntryUrl) -> impl Future<Output = Result<Entry>> + Send;
+
         fn copy<R>(&self, read: &mut R, write: &mut Vec<u8>) -> impl Future<Output = Result<u64>> + Send
         where
             R: AsyncRead + Send + Unpin + 'static;

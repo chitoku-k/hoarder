@@ -4,7 +4,7 @@ use std::{
 };
 
 use domain::{
-    entity::objects::{Entry, EntryMetadata, EntryKind},
+    entity::objects::{Entry, EntryMetadata, EntryKind, EntryUrl},
     error::Result,
 };
 use tokio::fs::{DirEntry, File};
@@ -18,11 +18,7 @@ impl FilesystemEntry {
     where
         P: AsRef<Path>,
     {
-        let path = path.as_ref();
-        let name = entry.file_name().to_string_lossy().into_owned();
-        let url = FilesystemEntryUrl::from_path(Path::new(MAIN_SEPARATOR_STR).join(path).join(entry.file_name()))
-            .map(|url| url.into_url())
-            .ok();
+        let (name, url) = Self::path(path.as_ref().join(entry.file_name()));
         let kind = entry.file_type()
             .await
             .map(Self::kind)
@@ -35,21 +31,36 @@ impl FilesystemEntry {
     where
         P: AsRef<Path>,
     {
+        match file.metadata().await.ok() {
+            Some(metadata) => Ok(Self::from_metadata(path, &metadata)),
+            None => {
+                let (name, url) = Self::path(path);
+                Ok(Self(Entry::new(name, url, EntryKind::Unknown, None)))
+            },
+        }
+    }
+
+    pub(crate) fn from_metadata<P>(path: P, metadata: &Metadata) -> Self
+    where
+        P: AsRef<Path>,
+    {
+        let (name, url) = Self::path(path);
+        let kind = Self::kind(metadata.file_type());
+        let metadata = Some(Self::metadata(metadata));
+        Self(Entry::new(name, url, kind, metadata))
+    }
+
+    fn path<P>(path: P) -> (String, Option<EntryUrl>)
+    where
+        P: AsRef<Path>,
+    {
         let path = path.as_ref();
         let name = path.file_name().unwrap_or_default().to_string_lossy().into_owned();
         let url = FilesystemEntryUrl::from_path(Path::new(MAIN_SEPARATOR_STR).join(path))
             .map(|url| url.into_url())
             .ok();
-        let (kind, metadata) = file.metadata()
-            .await
-            .map(|metadata| {
-                let kind = Self::kind(metadata.file_type());
-                let metadata = Some(Self::metadata(&metadata));
-                (kind, metadata)
-            })
-            .unwrap_or((EntryKind::Unknown, None));
 
-        Ok(Self(Entry::new(name, url, kind, metadata)))
+        (name, url)
     }
 
     fn kind(file_type: FileType) -> EntryKind {
