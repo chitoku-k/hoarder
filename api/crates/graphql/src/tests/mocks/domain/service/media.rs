@@ -15,12 +15,14 @@ use domain::{
     service::media::{MediaServiceInterface, MediumSource},
 };
 use futures::{future::BoxFuture, stream::BoxStream};
-use tokio::io::{AsyncRead, AsyncSeek};
+use tokio::{fs::File, io::{AsyncRead, AsyncSeek}};
 
 mockall::mock! {
     pub(crate) MediaServiceInterface {}
 
     impl MediaServiceInterface for MediaServiceInterface {
+        type Read = File;
+
         #[mockall::concretize]
         fn create_medium<T, U>(&self, source_ids: T, created_at: Option<DateTime<Utc>>, tag_tag_type_ids: U, tag_depth: Option<TagDepth>, sources: bool) -> impl Future<Output = Result<Medium>> + Send
         where
@@ -98,6 +100,8 @@ mockall::mock! {
         fn get_thumbnail_by_id(&self, id: ThumbnailId) -> impl Future<Output = Result<Vec<u8>>> + Send;
 
         fn get_object(&self, url: EntryUrl) -> impl Future<Output = Result<Entry>> + Send;
+
+        fn read_object(&self, url: EntryUrl) -> impl Future<Output = Result<File>> + Send;
 
         fn get_objects(&self, prefix: EntryUrlPath, kind: Option<EntryKind>) -> impl Future<Output = Result<Vec<Entry>>> + Send;
 

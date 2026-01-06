@@ -68,6 +68,7 @@ impl FilesystemObjectsRepository {
 impl ObjectsRepository for FilesystemObjectsRepository {
     type Put = File;
     type Get = File;
+    type Read = File;
 
     fn scheme() -> &'static str {
         "file"
@@ -174,6 +175,19 @@ impl ObjectsRepository for FilesystemObjectsRepository {
             Err(e) if e.kind() == io::ErrorKind::NotFound => Err(Error::new(ErrorKind::ObjectNotFound { url: url.into_url().into_inner() }, e))?,
             Err(e) if matches!(e.kind(), io::ErrorKind::InvalidFilename | io::ErrorKind::InvalidInput) => Err(Error::new(ErrorKind::ObjectUrlInvalid { url: url.into_url().into_inner() }, e))?,
             Err(e) => Err(Error::new(ErrorKind::ObjectGetFailed { url: url.into_url().into_inner() }, e))?,
+        }
+    }
+
+    #[tracing::instrument(skip_all)]
+    async fn read(&self, url: EntryUrl) -> Result<Self::Read> {
+        let url = FilesystemEntryUrl::try_from(url)?;
+        let fullpath = self.fullpath(url.as_path());
+
+        match File::open(&fullpath).await {
+            Ok(file) => Ok(file),
+            Err(e) if e.kind() == io::ErrorKind::NotFound => Err(Error::new(ErrorKind::ObjectNotFound { url: url.into_url().into_inner() }, e))?,
+            Err(e) if matches!(e.kind(), io::ErrorKind::InvalidFilename | io::ErrorKind::InvalidInput) => Err(Error::new(ErrorKind::ObjectUrlInvalid { url: url.into_url().into_inner() }, e))?,
+            Err(e) => Err(Error::new(ErrorKind::ObjectReadFailed { url: url.into_url().into_inner() }, e))?,
         }
     }
 

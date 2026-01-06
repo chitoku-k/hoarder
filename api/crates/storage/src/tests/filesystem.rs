@@ -497,6 +497,72 @@ async fn entry_fails_with_invalid_filename() {
 }
 
 #[tokio::test]
+async fn read_succeeds() {
+    let collator = CollatorBorrowed::try_new(Locale::UNKNOWN.into(), Default::default()).unwrap();
+    let root_dir = tempdir().unwrap();
+
+    create_dir_all(root_dir.path().join("ゆるゆり")).await.unwrap();
+
+    const BUF: &[u8] = &[0x00, 0x01, 0x02, 0x03];
+
+    let mut file = File::create_new(root_dir.path().join("ゆるゆり").join("77777777-7777-7777-7777-777777777777.png")).await.unwrap();
+    file.write_all(BUF).await.unwrap();
+    file.flush().await.unwrap();
+
+    let repository = FilesystemObjectsRepository::new(collator, root_dir.path()).await.unwrap();
+    let mut actual_file = repository.read(EntryUrl::from_path_str("file://", "/ゆるゆり/77777777-7777-7777-7777-777777777777.png")).await.unwrap();
+
+    let mut actual_buf = Vec::with_capacity(BUF.len());
+    actual_file.read_to_end(&mut actual_buf).await.unwrap();
+
+    assert_eq!(actual_buf, BUF);
+}
+
+#[tokio::test]
+async fn read_fails_with_parent_directory() {
+    let collator = CollatorBorrowed::try_new(Locale::UNKNOWN.into(), Default::default()).unwrap();
+    let root_dir = tempdir().unwrap();
+
+    create_dir_all(root_dir.path().join("ゆるゆり")).await.unwrap();
+
+    const BUF: &[u8] = &[0x00, 0x01, 0x02, 0x03];
+
+    let mut file = File::create_new(root_dir.path().join("ゆるゆり").join("77777777-7777-7777-7777-777777777777.png")).await.unwrap();
+    file.write_all(BUF).await.unwrap();
+    file.flush().await.unwrap();
+
+    let repository = FilesystemObjectsRepository::new(collator, root_dir.path()).await.unwrap();
+    let actual = repository.read(EntryUrl::from_path_str("file://", "/../ゆるゆり/77777777-7777-7777-7777-777777777777.png")).await.unwrap_err();
+
+    let expected_url = "file:///../%E3%82%86%E3%82%8B%E3%82%86%E3%82%8A/77777777-7777-7777-7777-777777777777.png";
+    assert_matches!(actual.kind(), ErrorKind::ObjectUrlInvalid { url } if url == expected_url);
+}
+
+#[tokio::test]
+async fn read_fails_with_not_found() {
+    let collator = CollatorBorrowed::try_new(Locale::UNKNOWN.into(), Default::default()).unwrap();
+    let root_dir = tempdir().unwrap();
+
+    let repository = FilesystemObjectsRepository::new(collator, root_dir.path()).await.unwrap();
+    let actual = repository.read(EntryUrl::from_path_str("file://", "/ゆるゆり/77777777-7777-7777-7777-777777777777.png")).await.unwrap_err();
+
+    let expected_url = "file:///%E3%82%86%E3%82%8B%E3%82%86%E3%82%8A/77777777-7777-7777-7777-777777777777.png";
+    assert_matches!(actual.kind(), ErrorKind::ObjectNotFound { url } if url == expected_url);
+}
+
+#[tokio::test]
+async fn read_fails_with_invalid_filename() {
+    let collator = CollatorBorrowed::try_new(Locale::UNKNOWN.into(), Default::default()).unwrap();
+    let root_dir = tempdir().unwrap();
+
+    let repository = FilesystemObjectsRepository::new(collator, root_dir.path()).await.unwrap();
+    let actual = repository.read(EntryUrl::from_path_str("file://", "/ゆるゆり/\x00.png")).await.unwrap_err();
+
+    let expected_url = "file:///%E3%82%86%E3%82%8B%E3%82%86%E3%82%8A/%00.png";
+    assert_matches!(actual.kind(), ErrorKind::ObjectUrlInvalid { url } if url == expected_url);
+}
+
+#[tokio::test]
 async fn copy_succeeds() {
     let collator = CollatorBorrowed::try_new(Locale::UNKNOWN.into(), Default::default()).unwrap();
     let root_dir = tempdir().unwrap();
