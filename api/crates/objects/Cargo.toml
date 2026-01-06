@@ -20,5 +20,9 @@ version = "0.8.8"
 version = "2.1.1"
 features = ["constructor"]
 
+[dependencies.tokio-util]
+version = "0.7.17"
+features = ["codec"]
+
 [dependencies.tracing]
 version = "0.1.44"

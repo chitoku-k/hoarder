@@ -45,7 +45,7 @@ impl From<MediumOverwriteBehavior> for objects::ObjectOverwriteBehavior {
 }
 
 pub trait MediaServiceInterface: Send + Sync + 'static {
-    type Read;
+    type Read: AsyncRead + Send;
 
     /// Creates a medium.
     fn create_medium<T, U>(&self, source_ids: T, created_at: Option<DateTime<Utc>>, tag_tag_type_ids: U, tag_depth: Option<TagDepth>, sources: bool) -> impl Future<Output = Result<Medium>> + Send

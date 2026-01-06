@@ -17,7 +17,7 @@ use super::mocks::application::service::{
 };
 
 #[tokio::test]
-async fn redirect() {
+async fn serve_succeeds() {
     let mut mock_graphql_service = MockGraphQLServiceInterface::new();
     mock_graphql_service
         .expect_endpoints()
@@ -26,7 +26,7 @@ async fn redirect() {
 
     let mut mock_objects_service = MockObjectsServiceInterface::new();
     mock_objects_service
-        .expect_redirect()
+        .expect_serve()
         .times(1)
         .withf(|url| url == "file:///77777777-7777-7777-7777-777777777777.png")
         .returning(|_| {
