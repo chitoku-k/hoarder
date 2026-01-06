@@ -57,7 +57,7 @@ impl Engine {
             .with_state(Arc::new(graphql_service));
 
         let objects = Router::new()
-            .route("/objects", get(objects::redirect::<ObjectsService>))
+            .route("/objects", get(objects::serve::<ObjectsService>))
             .with_state(Arc::new(objects_service));
 
         let thumbnails = Router::new()

@@ -6,6 +6,6 @@ mockall::mock! {
     pub(crate) ObjectsServiceInterface {}
 
     impl ObjectsServiceInterface for ObjectsServiceInterface {
-        fn redirect(&self, url: String) -> impl Future<Output = Response> + Send;
+        fn serve(&self, url: String) -> impl Future<Output = Response> + Send;
     }
 }
