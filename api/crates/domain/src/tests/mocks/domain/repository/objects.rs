@@ -14,6 +14,7 @@ mockall::mock! {
     impl ObjectsRepository for ObjectsRepository {
         type Put = Vec<u8>;
         type Get = Cursor<&'static [u8]>;
+        type Read = &'static [u8];
 
         fn scheme() -> &'static str;
 
@@ -22,6 +23,8 @@ mockall::mock! {
         fn get(&self, url: EntryUrl) -> impl Future<Output = Result<(Entry, Cursor<&'static [u8]>)>> + Send;
 
         fn entry(&self, url: EntryUrl) -> impl Future<Output = Result<Entry>> + Send;
+
+        fn read(&self, url: EntryUrl) -> impl Future<Output = Result<&'static [u8]>> + Send;
 
         fn copy<R>(&self, read: &mut R, write: &mut Vec<u8>) -> impl Future<Output = Result<u64>> + Send
         where

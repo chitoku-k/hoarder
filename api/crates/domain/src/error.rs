@@ -168,6 +168,9 @@ pub enum ErrorKind {
     #[error("the object was unable to be put")]
     ObjectPutFailed { url: String },
 
+    #[error("the object was unable to be read")]
+    ObjectReadFailed { url: String },
+
     #[error("the object URL is invalid")]
     ObjectUrlInvalid { url: String },
 

@@ -45,6 +45,8 @@ impl From<MediumOverwriteBehavior> for objects::ObjectOverwriteBehavior {
 }
 
 pub trait MediaServiceInterface: Send + Sync + 'static {
+    type Read;
+
     /// Creates a medium.
     fn create_medium<T, U>(&self, source_ids: T, created_at: Option<DateTime<Utc>>, tag_tag_type_ids: U, tag_depth: Option<TagDepth>, sources: bool) -> impl Future<Output = Result<Medium>> + Send
     where
@@ -130,6 +132,9 @@ pub trait MediaServiceInterface: Send + Sync + 'static {
 
     /// Gets the object by its URL.
     fn get_object(&self, url: EntryUrl) -> impl Future<Output = Result<Entry>> + Send;
+
+    /// Reads the object by its URL.
+    fn read_object(&self, url: EntryUrl) -> impl Future<Output = Result<Self::Read>> + Send;
 
     /// Gets objects.
     fn get_objects(&self, prefix: EntryUrlPath, kind: Option<EntryKind>) -> impl Future<Output = Result<Vec<Entry>>> + Send;
@@ -352,6 +357,8 @@ where
     SourcesRepository: sources::SourcesRepository,
     MediumImageProcessor: processor::media::MediumImageProcessor + Clone,
 {
+    type Read = ObjectsRepository::Read;
+
     #[tracing::instrument(skip_all)]
     async fn create_medium<T, U>(&self, source_ids: T, created_at: Option<DateTime<Utc>>, tag_tag_type_ids: U, tag_depth: Option<TagDepth>, sources: bool) -> Result<Medium>
     where
@@ -564,6 +571,17 @@ where
             Ok(entry) => Ok(entry),
             Err(e) => {
                 tracing::error!("failed to get the object\nError: {e:?}");
+                Err(e)
+            },
+        }
+    }
+
+    #[tracing::instrument(skip_all)]
+    async fn read_object(&self, url: EntryUrl) -> Result<Self::Read> {
+        match self.objects_repository.read(url).await {
+            Ok(read) => Ok(read),
+            Err(e) => {
+                tracing::error!("failed to read the object\nError: {e:?}");
                 Err(e)
             },
         }

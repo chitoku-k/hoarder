@@ -19,6 +19,7 @@ mod get_source_by_external_metadata;
 mod get_sources_by_external_metadata_like;
 mod get_sources_by_ids;
 mod get_thumbnail_by_id;
+mod read_object;
 mod update_medium_by_id;
 mod update_replica_by_id_from_content;
 mod update_replica_by_id_from_url;

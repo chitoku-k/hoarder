@@ -102,6 +102,9 @@ pub(crate) enum ErrorKind {
     #[error("the object was unable to be put")]
     ObjectPutFailed { url: String },
 
+    #[error("the object was unable to be read")]
+    ObjectReadFailed { url: String },
+
     #[error("the object URL is invalid")]
     ObjectUrlInvalid { url: String },
 
@@ -191,6 +194,7 @@ impl From<domain::error::ErrorKind> for ErrorKind {
             ObjectNotFound { url } => ErrorKind::ObjectNotFound { url },
             ObjectPathInvalid => ErrorKind::ObjectPathInvalid,
             ObjectPutFailed { url, .. } => ErrorKind::ObjectPutFailed { url },
+            ObjectReadFailed { url, .. } => ErrorKind::ObjectReadFailed { url },
             ObjectUrlInvalid { url } => ErrorKind::ObjectUrlInvalid { url },
             ObjectUrlUnsupported { url } => ErrorKind::ObjectUrlUnsupported { url },
             ReplicaNotFound { id } => ErrorKind::ReplicaNotFound { id },
