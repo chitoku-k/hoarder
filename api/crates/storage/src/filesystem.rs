@@ -123,7 +123,7 @@ impl ObjectsRepository for FilesystemObjectsRepository {
                     .and_then(|file| {
                         let path = url.as_path();
                         async move {
-                            let entry = FilesystemEntry::from_file(path, &file).await?;
+                            let entry = FilesystemEntry::from_file(path, &file).await;
                             Ok(Box::new(entry.into_entry()))
                         }
                     })
@@ -144,7 +144,7 @@ impl ObjectsRepository for FilesystemObjectsRepository {
             },
         };
 
-        let entry = FilesystemEntry::from_file(url.as_path(), &file).await?;
+        let entry = FilesystemEntry::from_file(url.as_path(), &file).await;
         Ok((entry.into_entry(), status, file))
     }
 
@@ -155,7 +155,7 @@ impl ObjectsRepository for FilesystemObjectsRepository {
 
         match File::open(&fullpath).await {
             Ok(file) => {
-                let entry = FilesystemEntry::from_file(url.as_path(), &file).await?;
+                let entry = FilesystemEntry::from_file(url.as_path(), &file).await;
                 Ok((entry.into_entry(), file))
             },
             Err(e) if e.kind() == io::ErrorKind::NotFound => Err(Error::new(ErrorKind::ObjectNotFound { url: url.into_url().into_inner() }, e))?,
@@ -212,7 +212,7 @@ impl ObjectsRepository for FilesystemObjectsRepository {
             .try_filter_map(|dir| {
                 let canonical_path = canonical_path.as_path();
                 async move {
-                    let entry = FilesystemEntry::from_dir_entry(canonical_path, &dir).await?;
+                    let entry = FilesystemEntry::from_dir_entry(canonical_path, &dir).await;
                     Ok(Some(entry.into_entry()))
                 }
             })
