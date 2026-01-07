@@ -1,5 +1,0 @@
-# vim: set ft=nginx sw=4:
-
-location / {
-    try_files $uri =404;
-}
