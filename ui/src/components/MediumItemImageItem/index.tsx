@@ -4,7 +4,6 @@ import type { CSSProperties, FunctionComponent, ReactNode } from 'react'
 import { memo } from 'react'
 import clsx from 'clsx'
 import Stack from '@mui/material/Stack'
-import PhotoIcon from '@mui/icons-material/Photo'
 
 import Image from '@/components/Image'
 import ImageBodyBlob from '@/components/ImageBodyBlob'
@@ -28,6 +27,7 @@ const MediumItemImageItem: FunctionComponent<MediumItemImageItemProps> = ({
 
   const style = { aspectRatio } satisfies CSSProperties
   const phase = isReplica(replica) ? replica.status.phase : 'READY'
+  const src = isReplica(replica) ? replica.url ?? `/objects?url=${encodeURIComponent(replica.originalUrl)}` : replica.blob
 
   return (
     <Stack className={clsx(styles.wrapper, className)} alignItems="stretch" justifyContent="stretch" style={style}>
@@ -38,10 +38,10 @@ const MediumItemImageItem: FunctionComponent<MediumItemImageItemProps> = ({
           height={replica.height}
           style={style}
         >
-          {isReplica(replica) ? replica.url ? (
+          {typeof src === 'string' ? (
             <ImageBodyNext
               className={styles.image}
-              src={replica.url}
+              src={src}
               width={replica.width}
               height={replica.height}
               preload
@@ -49,13 +49,9 @@ const MediumItemImageItem: FunctionComponent<MediumItemImageItemProps> = ({
               alt=""
             />
           ) : (
-            <Stack className={styles.noimage} alignItems="center" justifyContent="center">
-              <PhotoIcon className={styles.noimageIcon} />
-            </Stack>
-          ) : (
             <ImageBodyBlob
               className={styles.image}
-              src={replica.blob}
+              src={src}
               width={replica.width}
               height={replica.height}
               alt=""
