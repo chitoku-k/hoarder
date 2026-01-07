@@ -1,4 +1,3 @@
-use anyhow::anyhow;
 use futures::future::{err, ok};
 use pretty_assertions::{assert_eq, assert_matches};
 use uuid::uuid;
@@ -83,7 +82,7 @@ async fn fails() {
     mock_external_services_repository
         .expect_fetch_all()
         .times(1)
-        .returning(|| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
+        .returning(|| Box::pin(err(Error::other("error communicating with database"))));
 
     let service = ExternalServicesService::new(mock_external_services_repository);
     let actual = service.get_external_services().await.unwrap_err();

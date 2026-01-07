@@ -1,4 +1,3 @@
-use anyhow::anyhow;
 use chrono::{TimeZone, Utc};
 use futures::future::{err, ok};
 use pretty_assertions::{assert_eq, assert_matches};
@@ -87,7 +86,7 @@ async fn fails() {
         .expect_fetch_by_external_metadata_like_id()
         .times(1)
         .withf(|id| id == "56736941")
-        .returning(|_| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
+        .returning(|_| Box::pin(err(Error::other("error communicating with database"))));
 
     let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.get_sources_by_external_metadata_like_id("56736941").await.unwrap_err();

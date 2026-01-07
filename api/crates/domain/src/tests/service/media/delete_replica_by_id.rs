@@ -1,4 +1,3 @@
-use anyhow::anyhow;
 use chrono::{TimeZone, Utc};
 use futures::future::{err, ok};
 use pretty_assertions::{assert_eq, assert_matches};
@@ -127,7 +126,7 @@ async fn fails() {
         .expect_delete_by_id()
         .times(1)
         .withf(|id| id == &ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")))
-        .returning(|_| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
+        .returning(|_| Box::pin(err(Error::other("error communicating with database"))));
 
     let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.delete_replica_by_id(ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")), false).await.unwrap_err();
@@ -147,7 +146,7 @@ async fn fails_with_fetching_replica() {
         .expect_fetch_by_ids()
         .times(1)
         .withf(|ids| ids.clone_box().eq([ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666"))]))
-        .returning(|_| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
+        .returning(|_| Box::pin(err(Error::other("error communicating with database"))));
 
     let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.delete_replica_by_id(ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")), true).await.unwrap_err();
@@ -166,12 +165,7 @@ async fn fails_with_deleting_object() {
         .expect_delete()
         .times(1)
         .withf(|url| url == &EntryUrl::from("file:///77777777-7777-7777-7777-777777777777.png".to_string()))
-        .returning(|_| {
-            Box::pin(err(Error::new(
-                ErrorKind::ObjectDeleteFailed { url: "file:///77777777-7777-7777-7777-777777777777.png".to_string() },
-                anyhow!("No such file or directory"),
-            )))
-        });
+        .returning(|_| Box::pin(err(Error::from(ErrorKind::ObjectDeleteFailed { url: "file:///77777777-7777-7777-7777-777777777777.png".to_string() }))));
 
     let mut mock_replicas_repository = MockReplicasRepository::new();
     mock_replicas_repository

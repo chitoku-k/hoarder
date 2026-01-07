@@ -1,4 +1,3 @@
-use anyhow::anyhow;
 use futures::future::{err, ok};
 use pretty_assertions::{assert_eq, assert_matches};
 
@@ -50,12 +49,7 @@ async fn fails() {
         .expect_entry()
         .times(1)
         .withf(|url| url == &EntryUrl::from("file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string()))
-        .returning(|_| {
-            Box::pin(err(Error::new(
-                ErrorKind::ObjectNotFound { url: "file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string() },
-                anyhow!("No such file or directory"),
-            )))
-        });
+        .returning(|_| Box::pin(err(Error::from(ErrorKind::ObjectNotFound { url: "file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string() }))));
 
     let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.get_object(EntryUrl::from("file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string())).await.unwrap_err();

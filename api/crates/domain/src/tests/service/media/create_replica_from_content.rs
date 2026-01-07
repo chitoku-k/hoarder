@@ -1,6 +1,5 @@
 use std::io::{copy, Cursor};
 
-use anyhow::anyhow;
 use chrono::{TimeZone, Utc};
 use futures::future::{err, ok};
 use pretty_assertions::{assert_eq, assert_matches};
@@ -259,7 +258,7 @@ async fn succeeds_and_copy_fails() {
                     &Cursor::new(&[0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08]),
                     &Vec::new(),
                 ))
-                .returning(|_, _| Box::pin(err(Error::other(anyhow!("No such file or directory")))));
+                .returning(|_, _| Box::pin(err(Error::other("No such file or directory"))));
 
             mock_objects_repository
         });
@@ -382,7 +381,7 @@ async fn succeeds_and_process_fails() {
             mock_medium_image_processor
                 .expect_generate_thumbnail()
                 .times(1)
-                .returning(|_| Err(Error::new(ErrorKind::MediumReplicaUnsupported, anyhow!("unsupported"))));
+                .returning(|_| Err(Error::from(ErrorKind::MediumReplicaUnsupported)));
 
             mock_medium_image_processor
         });
@@ -549,7 +548,7 @@ async fn succeeds_and_update_fails() {
             mock_medium_image_processor
                 .expect_generate_thumbnail()
                 .times(1)
-                .returning(|_| Err(Error::new(ErrorKind::MediumReplicaUnsupported, anyhow!("unsupported"))));
+                .returning(|_| Err(Error::from(ErrorKind::MediumReplicaUnsupported)));
 
             mock_medium_image_processor
         });
@@ -647,7 +646,7 @@ async fn succeeds_and_update_fails() {
                         &Some(ReplicaStatus::Error),
                     )
                 })
-                .returning(|_, _, _, _, _| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
+                .returning(|_, _, _, _, _| Box::pin(err(Error::other("error communicating with database"))));
 
             mock_replicas_repository
         });
@@ -741,7 +740,7 @@ async fn fails() {
                 &ReplicaStatus::Processing,
             )
         })
-        .returning(|_, _, _, _, _| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
+        .returning(|_, _, _, _, _| Box::pin(err(Error::other("error communicating with database"))));
 
     let mut mock_medium_image_processor = MockMediumImageProcessor::new();
     mock_medium_image_processor
@@ -799,7 +798,7 @@ async fn fails_and_delete_fails() {
         .expect_delete()
         .times(1)
         .withf(|url| url == &EntryUrl::from("file:///77777777-7777-7777-7777-777777777777.png".to_string()))
-        .returning(|_| Box::pin(err(Error::other(anyhow!("No such file or directory")))));
+        .returning(|_| Box::pin(err(Error::other("No such file or directory"))));
 
     mock_objects_repository
         .expect_clone()
@@ -824,7 +823,7 @@ async fn fails_and_delete_fails() {
                 &ReplicaStatus::Processing,
             )
         })
-        .returning(|_, _, _, _, _| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
+        .returning(|_, _, _, _, _| Box::pin(err(Error::other("error communicating with database"))));
 
     let mut mock_medium_image_processor = MockMediumImageProcessor::new();
     mock_medium_image_processor
@@ -913,12 +912,7 @@ async fn fails_with_replica_already_exists() {
                 &ObjectOverwriteBehavior::Fail,
             )
         })
-        .returning(|_, _| {
-            Box::pin(err(Error::new(
-                ErrorKind::ObjectAlreadyExists { url: "file:///77777777-7777-7777-7777-777777777777.png".to_string(), entry: None },
-                anyhow!("File exists"),
-            )))
-        });
+        .returning(|_, _| Box::pin(err(Error::from(ErrorKind::ObjectAlreadyExists { url: "file:///77777777-7777-7777-7777-777777777777.png".to_string(), entry: None }))));
 
     let mock_objects_repository_scheme = MockObjectsRepository::scheme_context();
     mock_objects_repository_scheme
@@ -983,12 +977,7 @@ async fn fails_with_replica_already_exists_and_fetch_fails() {
                 &ObjectOverwriteBehavior::Fail,
             )
         })
-        .returning(|_, _| {
-            Box::pin(err(Error::new(
-                ErrorKind::ObjectAlreadyExists { url: "file:///77777777-7777-7777-7777-777777777777.png".to_string(), entry: None },
-                anyhow!("File exists"),
-            )))
-        });
+        .returning(|_, _| Box::pin(err(Error::from(ErrorKind::ObjectAlreadyExists { url: "file:///77777777-7777-7777-7777-777777777777.png".to_string(), entry: None }))));
 
     let mock_objects_repository_scheme = MockObjectsRepository::scheme_context();
     mock_objects_repository_scheme
@@ -1000,7 +989,7 @@ async fn fails_with_replica_already_exists_and_fetch_fails() {
         .expect_fetch_by_original_url()
         .times(1)
         .withf(|url| url == "file:///77777777-7777-7777-7777-777777777777.png")
-        .returning(|_| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
+        .returning(|_| Box::pin(err(Error::other("error communicating with database"))));
 
     let mut mock_medium_image_processor = MockMediumImageProcessor::new();
     mock_medium_image_processor
