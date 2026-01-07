@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use application::service::objects::ObjectsServiceInterface;
-use axum::{body, http::header::{CONTENT_LENGTH, CONTENT_TYPE, LOCATION}};
+use axum::{body, http::header::{CONTENT_LENGTH, CONTENT_TYPE, ETAG, LAST_MODIFIED, LOCATION}};
 use chrono::{TimeZone, Utc};
 use domain::{entity::objects::{Entry, EntryKind, EntryMetadata, EntryUrl}, error::{Error, ErrorKind}};
 use futures::future::{err, ok};
@@ -47,6 +47,8 @@ async fn serve_redirects_with_public_url() {
 
     assert_eq!(actual.status(), 302);
     assert_eq!(actual.headers()[LOCATION], "https://original.example.com/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg");
+    assert!(!actual.headers().contains_key(ETAG));
+    assert!(!actual.headers().contains_key(LAST_MODIFIED));
 }
 
 #[tokio::test]
@@ -88,6 +90,95 @@ async fn serve_serves_content_without_public_url() {
 
     assert_eq!(actual.status(), 200);
     assert_eq!(actual.headers()[CONTENT_LENGTH], "10000");
+    assert_eq!(actual.headers()[ETAG], r#""2710-5e06bafe9a240""#);
+    assert_eq!(actual.headers()[LAST_MODIFIED], "Thu, 02 Jun 2022 00:00:01 GMT");
+
+    let actual = body::to_bytes(actual.into_body(), usize::MAX).await.unwrap();
+    assert_eq!(&actual, &[0x01; 10000][..]);
+}
+
+#[tokio::test]
+async fn serve_serves_content_without_public_url_and_updated_at() {
+    let mut mock_media_service = MockMediaServiceInterface::new();
+    mock_media_service
+        .expect_get_object()
+        .times(1)
+        .withf(|url| url == &EntryUrl::from("file:///77777777-7777-7777-7777-777777777777.png".to_string()))
+        .returning(|_| {
+            Box::pin(ok(Entry::new(
+                "77777777-7777-7777-7777-777777777777.jpg".to_string(),
+                Some(EntryUrl::from("file:///77777777-7777-7777-7777-777777777777.png".to_string())),
+                EntryKind::Object,
+                Some(EntryMetadata::new(
+                    10000,
+                    None,
+                    None,
+                    None,
+                )),
+            )))
+        });
+
+    mock_media_service
+        .expect_read_object()
+        .times(1)
+        .withf(|url| url == &EntryUrl::from("file:///77777777-7777-7777-7777-777777777777.png".to_string()))
+        .returning(|_| Box::pin(ok(&[0x01; 10000][..])));
+
+    let mut mock_media_url_factory = MockMediaURLFactoryInterface::new();
+    mock_media_url_factory
+        .expect_public_url()
+        .times(1)
+        .withf(|original_url| original_url == "file:///77777777-7777-7777-7777-777777777777.png")
+        .returning(|_| None);
+
+    let objects_service = ObjectsService::new(mock_media_service, Arc::new(mock_media_url_factory));
+    let actual = objects_service.serve("file:///77777777-7777-7777-7777-777777777777.png".to_string()).await;
+
+    assert_eq!(actual.status(), 200);
+    assert_eq!(actual.headers()[CONTENT_LENGTH], "10000");
+    assert_eq!(actual.headers()[ETAG], r#""2710""#);
+    assert!(!actual.headers().contains_key(LAST_MODIFIED));
+
+    let actual = body::to_bytes(actual.into_body(), usize::MAX).await.unwrap();
+    assert_eq!(&actual, &[0x01; 10000][..]);
+}
+
+#[tokio::test]
+async fn serve_serves_content_without_public_url_and_size_and_updated_at() {
+    let mut mock_media_service = MockMediaServiceInterface::new();
+    mock_media_service
+        .expect_get_object()
+        .times(1)
+        .withf(|url| url == &EntryUrl::from("file:///77777777-7777-7777-7777-777777777777.png".to_string()))
+        .returning(|_| {
+            Box::pin(ok(Entry::new(
+                "77777777-7777-7777-7777-777777777777.jpg".to_string(),
+                Some(EntryUrl::from("file:///77777777-7777-7777-7777-777777777777.png".to_string())),
+                EntryKind::Object,
+                None,
+            )))
+        });
+
+    mock_media_service
+        .expect_read_object()
+        .times(1)
+        .withf(|url| url == &EntryUrl::from("file:///77777777-7777-7777-7777-777777777777.png".to_string()))
+        .returning(|_| Box::pin(ok(&[0x01; 10000][..])));
+
+    let mut mock_media_url_factory = MockMediaURLFactoryInterface::new();
+    mock_media_url_factory
+        .expect_public_url()
+        .times(1)
+        .withf(|original_url| original_url == "file:///77777777-7777-7777-7777-777777777777.png")
+        .returning(|_| None);
+
+    let objects_service = ObjectsService::new(mock_media_service, Arc::new(mock_media_url_factory));
+    let actual = objects_service.serve("file:///77777777-7777-7777-7777-777777777777.png".to_string()).await;
+
+    assert_eq!(actual.status(), 200);
+    assert!(!actual.headers().contains_key(CONTENT_LENGTH));
+    assert!(!actual.headers().contains_key(ETAG));
+    assert!(!actual.headers().contains_key(LAST_MODIFIED));
 
     let actual = body::to_bytes(actual.into_body(), usize::MAX).await.unwrap();
     assert_eq!(&actual, &[0x01; 10000][..]);

@@ -9,20 +9,20 @@ use axum::{
     http::{
         Response as HttpResponse,
         StatusCode,
-        header::{CONTENT_LENGTH, CONTENT_TYPE, LOCATION},
+        header::{CONTENT_LENGTH, CONTENT_TYPE, ETAG, LAST_MODIFIED, LOCATION},
     },
     response::{IntoResponse, Response},
 };
 use derive_more::Constructor;
 use domain::{
-    entity::objects::{EntryMetadata, EntryUrl},
+    entity::objects::EntryUrl,
     error::{Error, ErrorKind},
     service::media::MediaServiceInterface,
 };
 use tokio_util::io::ReaderStream;
 
 mod http;
-use crate::http::ResponseBuilderExt;
+use crate::http::{HttpContentLength, HttpLastModified, HttpETag, ResponseBuilderExt};
 
 #[derive(Clone, Constructor)]
 pub struct ObjectsService<MediaService> {
@@ -36,9 +36,9 @@ where
 {
     #[tracing::instrument(skip_all)]
     async fn serve(&self, url: String) -> Response {
-        enum Serve<'a, Read> {
+        enum Serve<Read> {
             Redirect(String),
-            Content(Read, Option<&'a EntryMetadata>),
+            Content(Read, Option<HttpContentLength>, Option<HttpETag>, Option<HttpLastModified>),
             Error(Error),
         }
 
@@ -48,16 +48,26 @@ where
             .map(|entry| (entry.url, entry.metadata));
 
         let object = match object {
-            Ok((Some(url), ref metadata)) => Ok((self.media_url_factory.public_url(&url), metadata)),
-            Ok((None, ref metadata)) => Ok((None, metadata)),
+            Ok((Some(url), metadata)) => Ok((self.media_url_factory.public_url(&url), metadata)),
+            Ok((None, metadata)) => Ok((None, metadata)),
             Err(e) => Err(e),
         };
 
         let serve = match object {
             Ok((Some(public_url), ..)) => Serve::Redirect(public_url),
-            Ok((None, metadata)) => match self.media_service.read_object(EntryUrl::from(url)).await {
-                Ok(read) => Serve::Content(read, metadata.as_ref()),
-                Err(e) => Serve::Error(e),
+            Ok((None, metadata)) => {
+                let (content_length, etag, last_modified) = if let Some(metadata) = metadata {
+                    let content_length = HttpContentLength(metadata.size);
+                    let etag = HttpETag(metadata.size, metadata.updated_at);
+                    let last_modified = metadata.updated_at.map(HttpLastModified);
+                    (Some(content_length), Some(etag), last_modified)
+                } else {
+                    (None, None, None)
+                };
+                match self.media_service.read_object(EntryUrl::from(url)).await {
+                    Ok(read) => Serve::Content(read, content_length, etag, last_modified),
+                    Err(e) => Serve::Error(e),
+                }
             },
             Err(e) => Serve::Error(e),
         };
@@ -71,10 +81,12 @@ where
                     .unwrap()
                     .into_response()
             },
-            Serve::Content(read, metadata) => {
+            Serve::Content(read, content_length, etag, last_modified) => {
                 HttpResponse::builder()
                     .status(StatusCode::OK)
-                    .header_opt(CONTENT_LENGTH, metadata.map(|m| m.size))
+                    .header_opt(CONTENT_LENGTH, content_length)
+                    .header_opt(ETAG, etag)
+                    .header_opt(LAST_MODIFIED, last_modified)
                     .body(Body::from_stream(ReaderStream::new(read)))
                     .unwrap()
                     .into_response()
