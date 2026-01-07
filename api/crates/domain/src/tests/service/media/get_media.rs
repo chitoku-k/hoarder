@@ -1,4 +1,3 @@
-use anyhow::anyhow;
 use chrono::{TimeZone, Utc};
 use futures::future::{err, ok};
 use ordermap::OrderMap;
@@ -129,7 +128,7 @@ async fn fails() {
                 &10,
             )
         })
-        .returning(|_, _, _, _, _, _, _| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
+        .returning(|_, _, _, _, _, _, _| Box::pin(err(Error::other("error communicating with database"))));
 
     let mock_objects_repository = MockObjectsRepository::new();
     let mock_replicas_repository = MockReplicasRepository::new();

@@ -1,4 +1,3 @@
-use anyhow::anyhow;
 use chrono::{TimeZone, Utc};
 use futures::future::{err, ok};
 use pretty_assertions::{assert_eq, assert_matches};
@@ -122,7 +121,7 @@ async fn fails() {
         .expect_fetch_by_name_or_alias_like()
         .times(1)
         .withf(|query, depth| query.clone_box().eq(["り".to_string()]) && depth == &TagDepth::new(0, 1))
-        .returning(|_, _| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
+        .returning(|_, _| Box::pin(err(Error::other("error communicating with database"))));
 
     let mock_tag_types_repository = MockTagTypesRepository::new();
 

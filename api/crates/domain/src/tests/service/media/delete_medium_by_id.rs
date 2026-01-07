@@ -1,4 +1,3 @@
-use anyhow::anyhow;
 use chrono::{TimeZone, Utc};
 use futures::future::{err, ok};
 use ordermap::OrderMap;
@@ -185,7 +184,7 @@ async fn fails() {
         .expect_delete_by_id()
         .times(1)
         .withf(|id| id == &MediumId::from(uuid!("77777777-7777-7777-7777-777777777777")))
-        .returning(|_| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
+        .returning(|_| Box::pin(err(Error::other("error communicating with database"))));
 
     let mock_objects_repository = MockObjectsRepository::new();
     let mock_replicas_repository = MockReplicasRepository::new();
@@ -214,7 +213,7 @@ async fn fails_with_fetching_medium() {
                 &false,
             )
         })
-        .returning(|_, _, _, _| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
+        .returning(|_, _, _, _| Box::pin(err(Error::other("error communicating with database"))));
 
     let mock_objects_repository = MockObjectsRepository::new();
     let mock_replicas_repository = MockReplicasRepository::new();
@@ -295,10 +294,7 @@ async fn fails_with_deleting_object() {
         .times(1)
         .withf(|url| url == &EntryUrl::from("file:///77777777-7777-7777-7777-777777777777.png".to_string()))
         .returning(|_| {
-            Box::pin(err(Error::new(
-                ErrorKind::ObjectDeleteFailed { url: "file:///77777777-7777-7777-7777-777777777777.png".to_string() },
-                anyhow!("No such file or directory"),
-            )))
+            Box::pin(err(Error::from(ErrorKind::ObjectDeleteFailed { url: "file:///77777777-7777-7777-7777-777777777777.png".to_string() })))
         });
 
     let mock_replicas_repository = MockReplicasRepository::new();
@@ -385,7 +381,7 @@ async fn fails_with_deleting_replica() {
         .expect_delete_by_id()
         .times(1)
         .withf(|id| id == &ReplicaId::from(uuid!("66666666-6666-6666-6666-666666666666")))
-        .returning(|_| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
+        .returning(|_| Box::pin(err(Error::other("error communicating with database"))));
 
     let mock_sources_repository = MockSourcesRepository::new();
     let mock_medium_image_processor = MockMediumImageProcessor::new();

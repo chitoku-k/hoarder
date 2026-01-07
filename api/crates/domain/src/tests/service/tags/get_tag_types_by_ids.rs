@@ -1,4 +1,3 @@
-use anyhow::anyhow;
 use futures::future::{err, ok};
 use pretty_assertions::{assert_eq, assert_matches};
 use uuid::uuid;
@@ -72,7 +71,7 @@ async fn fails() {
             TagTypeId::from(uuid!("44444444-4444-4444-4444-444444444444")),
             TagTypeId::from(uuid!("55555555-5555-5555-5555-555555555555")),
         ]))
-        .returning(|_| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
+        .returning(|_| Box::pin(err(Error::other("error communicating with database"))));
 
     let service = TagsService::new(mock_tags_repository, mock_tag_types_repository);
     let actual = service.get_tag_types_by_ids([

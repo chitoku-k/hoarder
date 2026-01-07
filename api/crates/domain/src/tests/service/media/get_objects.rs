@@ -1,4 +1,3 @@
-use anyhow::anyhow;
 use futures::future::{err, ok};
 use pretty_assertions::{assert_eq, assert_matches};
 use serial_test::serial;
@@ -194,12 +193,7 @@ async fn fails() {
         .expect_list()
         .times(1)
         .withf(|prefix| prefix == &EntryUrl::from("file:///path/to/dest".to_string()))
-        .returning(|_| {
-            Box::pin(err(Error::new(
-                ErrorKind::ObjectGetFailed { url: "file:///path/to/dest".to_string() },
-                anyhow!("failed to read dir: /path/to/dest"),
-            )))
-        });
+        .returning(|_| Box::pin(err(Error::from(ErrorKind::ObjectGetFailed { url: "file:///path/to/dest".to_string() }))));
 
     let mock_objects_repository_scheme = MockObjectsRepository::scheme_context();
     mock_objects_repository_scheme

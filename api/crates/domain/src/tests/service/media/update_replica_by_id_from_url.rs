@@ -1,6 +1,5 @@
 use std::io::Cursor;
 
-use anyhow::anyhow;
 use chrono::{TimeZone, Utc};
 use futures::future::{err, ok};
 use pretty_assertions::{assert_eq, assert_matches};
@@ -187,7 +186,7 @@ async fn succeeds_and_process_fails() {
             mock_medium_image_processor
                 .expect_generate_thumbnail()
                 .times(1)
-                .returning(|_| Err(Error::new(ErrorKind::MediumReplicaUnsupported, anyhow!("unsupported"))));
+                .returning(|_| Err(Error::from(ErrorKind::MediumReplicaUnsupported)));
 
             mock_medium_image_processor
         });
@@ -322,7 +321,7 @@ async fn succeeds_and_update_fails() {
             mock_medium_image_processor
                 .expect_generate_thumbnail()
                 .times(1)
-                .returning(|_| Err(Error::new(ErrorKind::MediumReplicaUnsupported, anyhow!("unsupported"))));
+                .returning(|_| Err(Error::from(ErrorKind::MediumReplicaUnsupported)));
 
             mock_medium_image_processor
         });
@@ -393,7 +392,7 @@ async fn succeeds_and_update_fails() {
                         &Some(ReplicaStatus::Error),
                     )
                 })
-                .returning(|_, _, _, _, _| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
+                .returning(|_, _, _, _, _| Box::pin(err(Error::other("error communicating with database"))));
 
             mock_replicas_repository
         });
@@ -466,7 +465,7 @@ async fn fails() {
                 &Some(ReplicaStatus::Processing),
             )
         })
-        .returning(|_, _, _, _, _| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
+        .returning(|_, _, _, _, _| Box::pin(err(Error::other("error communicating with database"))));
 
     let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.update_replica_by_id(
@@ -532,12 +531,7 @@ async fn fails_with_no_entry() {
         .expect_get()
         .times(1)
         .withf(|url| url == &EntryUrl::from("file:///aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg".to_string()))
-        .returning(|_| {
-            Box::pin(err(Error::new(
-                ErrorKind::ObjectGetFailed { url: "file:///77777777-7777-7777-7777-777777777777.png".to_string() },
-                anyhow!("No such file or directory"),
-            )))
-        });
+        .returning(|_| Box::pin(err(Error::from(ErrorKind::ObjectGetFailed { url: "file:///77777777-7777-7777-7777-777777777777.png".to_string() }))));
 
     let service = MediaService::new(mock_media_repository, mock_objects_repository, mock_replicas_repository, mock_sources_repository, mock_medium_image_processor);
     let actual = service.update_replica_by_id(

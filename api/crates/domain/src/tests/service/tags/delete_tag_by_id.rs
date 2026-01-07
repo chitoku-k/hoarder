@@ -1,4 +1,3 @@
-use anyhow::anyhow;
 use futures::future::{err, ok};
 use pretty_assertions::{assert_eq, assert_matches};
 use uuid::uuid;
@@ -36,7 +35,7 @@ async fn fails() {
         .expect_delete_by_id()
         .times(1)
         .withf(|id, recursive| id == &TagId::from(uuid!("33333333-3333-3333-3333-333333333333")) && *recursive)
-        .returning(|_, _| Box::pin(err(Error::other(anyhow!("error communicating with database")))));
+        .returning(|_, _| Box::pin(err(Error::other("error communicating with database"))));
 
     let mock_tag_types_repository = MockTagTypesRepository::new();
 
