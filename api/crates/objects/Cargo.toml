@@ -26,3 +26,22 @@ features = ["codec"]
 
 [dependencies.tracing]
 version = "0.1.44"
+
+[dev-dependencies.chrono]
+version = "0.4.42"
+features = ["clock", "std"]
+default-features = false
+
+[dev-dependencies.futures]
+version = "0.3.31"
+default-features = false
+
+[dev-dependencies.mockall]
+version = "0.14.0"
+
+[dev-dependencies.pretty_assertions]
+version = "1.4.1"
+
+[dev-dependencies.tokio]
+version = "1.48.0"
+features = ["macros", "rt-multi-thread"]
