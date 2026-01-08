@@ -156,13 +156,13 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
         },
       )
 
-      const { promise, resolve, reject } = Promise.withResolvers<null>()
+      const { promise, resolve, reject } = Promise.withResolvers<Replica>()
       const subscription = observable
         .pipe(filter(({ id }) => id === newReplica.id))
-        .subscribe(replica => {
-          switch (replica.status.phase) {
+        .subscribe(newReplica => {
+          switch (newReplica.status.phase) {
             case ReplicaPhase.Ready: {
-              resolve(null)
+              resolve(newReplica)
               return
             }
             case ReplicaPhase.Error: {
@@ -173,13 +173,12 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
         })
 
       try {
-        await promise
+        const newReplica = await promise
+        handleUploadProgress(replica, { status: 'done' })
+        return newReplica
       } finally {
         subscription.unsubscribe()
       }
-
-      handleUploadProgress(replica, { status: 'done' })
-      return newReplica
     } catch (e) {
       const replicaOriginalUrlDuplicate = graphQLError(e, REPLICA_ORIGINAL_URL_DUPLICATE)
       if (replicaOriginalUrlDuplicate) {
