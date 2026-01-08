@@ -103,6 +103,7 @@ dependencies = [
  "derive_more",
  "domain",
  "futures",
+ "headers",
  "hyper",
  "hyper-openssl",
  "hyper-util",
