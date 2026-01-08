@@ -1,16 +1,9 @@
 use std::sync::Arc;
 
-use application::service::{
-    media::MediaURLFactoryInterface,
-    objects::ObjectsServiceInterface,
-};
+use application::{Precondition, service::{media::MediaURLFactoryInterface, objects::ObjectsServiceInterface}};
 use axum::{
     body::Body,
-    http::{
-        Response as HttpResponse,
-        StatusCode,
-        header::{CONTENT_LENGTH, CONTENT_TYPE, ETAG, LAST_MODIFIED, LOCATION},
-    },
+    http::{Response as HttpResponse, StatusCode, header::{CONTENT_LENGTH, CONTENT_TYPE, ETAG, LAST_MODIFIED, LOCATION}},
     response::{IntoResponse, Response},
 };
 use derive_more::Constructor;
@@ -35,9 +28,11 @@ where
     MediaService: MediaServiceInterface,
 {
     #[tracing::instrument(skip_all)]
-    async fn serve(&self, url: String) -> Response {
+    async fn serve(&self, url: String, precondition: Option<Precondition>) -> Response {
         enum Serve<Read> {
             Redirect(String),
+            NotModified(HttpETag, HttpLastModified),
+            RangeNotSatisfiable(HttpETag, HttpLastModified),
             Content(Read, Option<HttpContentLength>, Option<HttpETag>, Option<HttpLastModified>),
             Error(Error),
         }
@@ -64,9 +59,20 @@ where
                 } else {
                     (None, None, None)
                 };
-                match self.media_service.read_object(EntryUrl::from(url)).await {
-                    Ok(read) => Serve::Content(read, content_length, etag, last_modified),
-                    Err(e) => Serve::Error(e),
+                match (precondition, etag, last_modified) {
+                    (Some(Precondition::IfNoneMatch(if_none_match)), Some(etag), Some(last_modified)) if !if_none_match.precondition_passes(&etag.into()) => {
+                        Serve::NotModified(etag, last_modified)
+                    },
+                    (Some(Precondition::IfMatch(if_match)), Some(etag), Some(last_modified)) if !if_match.precondition_passes(&etag.into()) => {
+                        Serve::RangeNotSatisfiable(etag, last_modified)
+                    },
+                    (Some(Precondition::IfModifiedSince(if_modified_since)), Some(etag), Some(last_modified)) if !if_modified_since.is_modified(last_modified.0.into()) => {
+                        Serve::NotModified(etag, last_modified)
+                    },
+                    (_, etag, last_modified) => match self.media_service.read_object(EntryUrl::from(url)).await {
+                        Ok(read) => Serve::Content(read, content_length, etag, last_modified),
+                        Err(e) => Serve::Error(e),
+                    },
                 }
             },
             Err(e) => Serve::Error(e),
@@ -77,6 +83,24 @@ where
                 HttpResponse::builder()
                     .status(StatusCode::FOUND)
                     .header(LOCATION, public_url)
+                    .body(Body::from(()))
+                    .unwrap()
+                    .into_response()
+            },
+            Serve::NotModified(etag, last_modified) => {
+                HttpResponse::builder()
+                    .status(StatusCode::NOT_MODIFIED)
+                    .header(ETAG, etag)
+                    .header(LAST_MODIFIED, last_modified)
+                    .body(Body::from(()))
+                    .unwrap()
+                    .into_response()
+            },
+            Serve::RangeNotSatisfiable(etag, last_modified) => {
+                HttpResponse::builder()
+                    .status(StatusCode::RANGE_NOT_SATISFIABLE)
+                    .header(ETAG, etag)
+                    .header(LAST_MODIFIED, last_modified)
                     .body(Body::from(()))
                     .unwrap()
                     .into_response()

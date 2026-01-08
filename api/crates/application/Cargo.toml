@@ -27,6 +27,9 @@ version = "0.3.31"
 features = ["std"]
 default-features = false
 
+[dependencies.headers]
+version = "0.4.1"
+
 [dependencies.notify]
 version = "8.2.0"
 

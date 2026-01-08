@@ -28,8 +28,8 @@ async fn serve_succeeds() {
     mock_objects_service
         .expect_serve()
         .times(1)
-        .withf(|url| url == "file:///77777777-7777-7777-7777-777777777777.png")
-        .returning(|_| {
+        .withf(|url, precondition| url == "file:///77777777-7777-7777-7777-777777777777.png" && precondition.is_none())
+        .returning(|_, _| {
             Box::pin(ready(
                 Response::builder()
                     .status(StatusCode::FOUND)
