@@ -7,11 +7,29 @@ pub mod error;
 pub mod server;
 pub mod service;
 
-#[derive(Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum Precondition {
     IfNoneMatch(IfNoneMatch),
     IfMatch(IfMatch),
     IfModifiedSince(IfModifiedSince),
+}
+
+impl From<IfNoneMatch> for Precondition {
+    fn from(value: IfNoneMatch) -> Self {
+        Self::IfNoneMatch(value)
+    }
+}
+
+impl From<IfMatch> for Precondition {
+    fn from(value: IfMatch) -> Self {
+        Self::IfMatch(value)
+    }
+}
+
+impl From<IfModifiedSince> for Precondition {
+    fn from(value: IfModifiedSince) -> Self {
+        Self::IfModifiedSince(value)
+    }
 }
 
 impl<S> OptionalFromRequestParts<S> for Precondition
