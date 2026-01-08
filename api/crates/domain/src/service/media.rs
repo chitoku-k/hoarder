@@ -330,7 +330,7 @@ where
     {
         let replicas_repository = self.replicas_repository.clone();
         async move {
-            let (original_image, thumbnail_image, status) = match task::spawn(process).await.map_err(Error::other).and_then(|result| result) {
+            let (original_image, thumbnail_image, status) = match task::spawn(process).await.map_err(Error::other).flatten() {
                 Ok((original_image, thumbnail_image)) => (Some(original_image), Some(thumbnail_image), ReplicaStatus::Ready),
                 Err(e) => {
                     tracing::error!("failed to process a medium\nError: {e:?}");
