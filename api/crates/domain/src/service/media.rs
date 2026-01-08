@@ -5,7 +5,7 @@ use derive_more::Constructor;
 use futures::Stream;
 use tokio::{io::{AsyncRead, AsyncSeek, AsyncSeekExt}, task};
 use tokio_util::io::SyncIoBridge;
-use tracing::{Instrument, Span};
+use tracing::Instrument;
 
 use crate::{
     entity::{
@@ -289,7 +289,7 @@ where
                 Process::Read(read) => read.await,
                 Process::Write(write) => write.await,
             }
-        }.instrument(Span::current());
+        }.in_current_span();
 
         Ok((url, status, process))
     }
