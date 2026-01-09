@@ -49,11 +49,23 @@ async fn generate_certificate() -> (Vec<u8>, NamedTempFile, NamedTempFile) {
     let cert = leaf_builder.build().to_pem().unwrap();
     let key = leaf_pkey.private_key_to_pem_pkcs8().unwrap();
 
-    let cert_file = NamedTempFile::new().unwrap();
-    File::from_std(cert_file.reopen().unwrap()).write_all(&cert).await.unwrap();
+    let cert_file = {
+        let (file, path) = NamedTempFile::new().unwrap().into_parts();
 
-    let key_file = NamedTempFile::new().unwrap();
-    File::from_std(key_file.reopen().unwrap()).write_all(&key).await.unwrap();
+        let mut file = File::from_std(file);
+        file.write_all(&cert).await.unwrap();
+
+        NamedTempFile::from_parts(file.into_std().await, path)
+    };
+
+    let key_file = {
+        let (file, path) = NamedTempFile::new().unwrap().into_parts();
+
+        let mut file = File::from_std(file);
+        file.write_all(&key).await.unwrap();
+
+        NamedTempFile::from_parts(file.into_std().await, path)
+    };
 
     (ca, cert_file, key_file)
 }
