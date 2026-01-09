@@ -49,7 +49,7 @@ version = "1.48.0"
 features = ["macros", "rt-multi-thread"]
 
 [dependencies.tokio-util]
-version = "0.7.17"
+version = "0.7.18"
 features = ["io-util"]
 
 [dependencies.tracing]
