@@ -121,7 +121,7 @@ version = "2.1.1"
 version = "1.48.0"
 
 [dependencies.tokio-util]
-version = "0.7.17"
+version = "0.7.18"
 features = ["rt"]
 
 [dependencies.tracing]
