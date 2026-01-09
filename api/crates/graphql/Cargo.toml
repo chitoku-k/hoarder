@@ -65,7 +65,7 @@ version = "1.0.148"
 version = "2.0.17"
 
 [dependencies.tokio]
-version = "1.48.0"
+version = "1.49.0"
 features = ["fs", "io-std"]
 
 [dependencies.tokio-util]
@@ -101,5 +101,5 @@ version = "1.4.1"
 version = "3.24.0"
 
 [dev-dependencies.tokio]
-version = "1.48.0"
+version = "1.49.0"
 features = ["macros", "rt-multi-thread"]

@@ -118,7 +118,7 @@ version = "2.1.1"
 version = "2.1.1"
 
 [dependencies.tokio]
-version = "1.48.0"
+version = "1.49.0"
 
 [dependencies.tokio-util]
 version = "0.7.17"

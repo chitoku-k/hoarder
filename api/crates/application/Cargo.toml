@@ -43,7 +43,7 @@ version = "0.6.1"
 version = "2.0.17"
 
 [dependencies.tokio]
-version = "1.48.0"
+version = "1.49.0"
 features = ["macros", "net", "process", "rt-multi-thread", "signal"]
 
 [dependencies.tower-http]
