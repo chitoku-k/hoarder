@@ -85,7 +85,7 @@ version = "1.3.0"
 version = "0.7.4"
 
 [dev-dependencies.insta]
-version = "1.45.1"
+version = "1.46.0"
 features = ["toml"]
 
 [dev-dependencies.pretty_assertions]
