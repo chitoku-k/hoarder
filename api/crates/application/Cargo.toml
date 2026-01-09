@@ -77,7 +77,7 @@ version = "0.10.75"
 version = "1.4.1"
 
 [dev-dependencies.serde_json]
-version = "1.0.148"
+version = "1.0.149"
 
 [dev-dependencies.tempfile]
 version = "3.24.0"
