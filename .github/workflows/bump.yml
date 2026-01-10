@@ -1,4 +1,4 @@
-name: Bump Workflow
+name: Bump version
 on:
   workflow_dispatch:
     inputs:
@@ -18,7 +18,7 @@ defaults:
 
 jobs:
   bump:
-    name: Bump
+    name: ${{ inputs.strategy }}
     runs-on: ubuntu-latest
     env:
       GIT_AUTHOR_NAME: 'github-actions[bot]'
@@ -29,28 +29,56 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
+          fetch-depth: 0
+          filter: tree:0
           token: ${{ secrets.PAT }}
+      - name: Generate next version
+        uses: chitoku-k/actions/generate-next-version@master
+        id: next-version
+        with:
+          strategy: ${{ inputs.strategy }}
       - name: Set up cargo-edit
         uses: taiki-e/cache-cargo-install-action@v3
         with:
           tool: cargo-edit
           features: set-version
           no-default-features: true
+      - name: Install corepack
+        working-directory: ui
+        run: |
+          npm install -g -f corepack
+          corepack enable
       - name: Bump api version
         working-directory: api
         run: |
-          cargo set-version --bump="${{ inputs.strategy }}" --package=hoarder
+          cargo set-version ${{ steps.next-version.outputs.value }} --package=hoarder
           git add Cargo.{lock,toml}
-      - name: Install yarn
-        working-directory: ui
-        run: |
-          corepack enable
       - name: Bump ui version
         working-directory: ui
         run: |
-          yarn version "${{ inputs.strategy }}"
+          yarn version ${{ steps.next-version.outputs.value }}
+          git add package.json
+      - name: Create commit and tag
+        run: |
+          git commit --message="Bump to v${{ steps.next-version.outputs.value }}"
+          git tag v${{ steps.next-version.outputs.value }}
+      - name: Generate pre-release version
+        uses: chitoku-k/actions/generate-next-version@master
+        id: pre-release-version
+        with:
+          strategy: patch
+          pre-release: dev
+      - name: Prepare the pre-release api version
+        working-directory: api
+        run: |
+          cargo set-version ${{ steps.pre-release-version.outputs.value }} --package=hoarder
+          git add Cargo.{lock,toml}
+      - name: Prepare the pre-release ui version
+        working-directory: ui
+        run: |
+          yarn version ${{ steps.pre-release-version.outputs.value }}
           git add package.json
       - name: Commit and push
         run: |
-          git commit --message="Bump to v$(jq -r .version ui/package.json)"
-          git push origin HEAD
+          git commit --message="Prepare v${{ steps.pre-release-version.outputs.value }}"
+          git push origin HEAD --tags
