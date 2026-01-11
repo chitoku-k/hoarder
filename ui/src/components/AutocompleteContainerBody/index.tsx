@@ -88,8 +88,9 @@ const AutocompleteContainerBody: FunctionComponent<AutocompleteContainerBodyProp
       startTransition(() => {
         setValue(highlight)
       })
+      onChangeContainer?.(`${highlight}/`)
     }
-  }, [ highlight ])
+  }, [ highlight, onChangeContainer ])
 
   const handleChange = useCallback((_e: SyntheticEvent, value: string | null) => {
     onChangeContainer?.(value)
