@@ -83,7 +83,7 @@ version = "1.0.149"
 version = "3.24.0"
 
 [dev-dependencies.tower]
-version = "0.5.2"
+version = "0.5.3"
 features = ["util"]
 
 [dev-dependencies.tungstenite]
