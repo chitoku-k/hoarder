@@ -1,7 +1,7 @@
 'use client'
 
 import type { FunctionComponent } from 'react'
-import { useCallback, useState } from 'react'
+import { Activity, useCallback, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Divider from '@mui/material/Divider'
 import Grid from '@mui/material/Grid'
@@ -279,16 +279,18 @@ const MediumCreateView: FunctionComponent = () => {
           )}
         </Stack>
       </Grid>
-      {resolveMedium && uploading ? (
-        <MediumItemFileUploadDialog
-          abortSignal={uploadAbortController.signal}
-          resolveMedium={resolveMedium}
-          replicas={replicas}
-          setReplicas={setReplicas}
-          close={closeUpload}
-          onProgress={handleProgress}
-          onComplete={handleComplete}
-        />
+      {resolveMedium ? (
+        <Activity mode={uploading ? 'visible' : 'hidden'}>
+          <MediumItemFileUploadDialog
+            abortSignal={uploadAbortController.signal}
+            resolveMedium={resolveMedium}
+            replicas={replicas}
+            setReplicas={setReplicas}
+            close={closeUpload}
+            onProgress={handleProgress}
+            onComplete={handleComplete}
+          />
+        </Activity>
       ) : null}
       {uploadAborting ? (
         <MediumItemFileUploadAbortDialog
