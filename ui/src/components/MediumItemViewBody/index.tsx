@@ -1,7 +1,7 @@
 'use client'
 
 import type { FunctionComponent } from 'react'
-import { useCallback, useState } from 'react'
+import { Activity, useCallback, useState } from 'react'
 import * as uuid from 'uuid'
 import { useRouter } from 'next/navigation'
 import Divider from '@mui/material/Divider'
@@ -302,7 +302,7 @@ const MediumItemViewBody: FunctionComponent<MediumItemViewBodyProps> = ({
           )}
         </Stack>
       </Grid>
-      {uploading ? (
+      <Activity mode={uploading ? 'visible' : 'hidden'}>
         <MediumItemFileUploadDialog
           abortSignal={uploadAbortController.signal}
           resolveMedium={() => Promise.resolve(medium)}
@@ -312,7 +312,7 @@ const MediumItemViewBody: FunctionComponent<MediumItemViewBodyProps> = ({
           onProgress={handleProgress}
           onComplete={handleComplete}
         />
-      ) : null}
+      </Activity>
       {uploadAborting ? (
         <MediumItemFileUploadAbortDialog
           close={closeUploadAbort}
