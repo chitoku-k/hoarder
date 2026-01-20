@@ -1,7 +1,7 @@
 'use client'
 
-import type { FunctionComponent } from 'react'
-import { useCallback, useMemo, useState } from 'react'
+import type { FunctionComponent, RefAttributes } from 'react'
+import { useCallback, useImperativeHandle, useMemo, useState } from 'react'
 import type { TableComponents } from 'react-virtuoso'
 import { TableVirtuoso } from 'react-virtuoso'
 import strictUriEncode from 'strict-uri-encode'
@@ -62,6 +62,7 @@ const extractEntry = (e: ReplicaOriginalUrlDuplicate | ObjectAlreadyExists): Rep
 }
 
 const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDialogBodyProps> = ({
+  ref,
   abortSignal,
   resolveMedium,
   replicas,
@@ -79,6 +80,15 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
   const [ uploads, setUploads ] = useState<ReadonlyMap<ReplicaCreateID, ReplicaUpload>>(new Map())
   const [ overwriting, setOverwriting ] = useState<readonly ReplicaUploadOverwrite[]>([])
   const [ error, setError ] = useState<unknown>(null)
+
+  const isCancelable = uploads.size === 0 || uploads.values().some(upload => upload.status !== 'creating')
+  useImperativeHandle(ref, () => ({
+    close() {
+      if (isCancelable) {
+        close()
+      }
+    },
+  }), [ close, isCancelable ])
 
   const defaultContainer = useMemo(() => {
     let current = ''
@@ -147,14 +157,11 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
         {
           signal: abortSignal,
           onUploadProgress: ({ loaded, total }) => {
-            if (loaded < total) {
-              handleUploadProgress(replica, { status: 'uploading', progress: { loaded, total } })
-            } else {
-              handleUploadProgress(replica, { status: 'creating' })
-            }
+            handleUploadProgress(replica, { status: 'uploading', progress: { loaded, total } })
           },
         },
       )
+      handleUploadProgress(replica, { status: 'creating' })
 
       const { promise, resolve, reject } = Promise.withResolvers<Replica>()
       const subscription = observable
@@ -377,7 +384,7 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClickCancel} autoFocus>キャンセル</Button>
+        <Button onClick={handleClickCancel} autoFocus disabled={!isCancelable}>キャンセル</Button>
         <Button onClick={handleClickUpload} loading={uploading} disabled={hasValidationErrors}>アップロード</Button>
       </DialogActions>
       {currentOverwrite ? (
@@ -407,7 +414,11 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
   )
 }
 
-export interface MediumItemFileUploadDialogBodyProps {
+export interface MediumItemFileUploadDialogBodyRef {
+  readonly close: () => void
+}
+
+export interface MediumItemFileUploadDialogBodyProps extends RefAttributes<MediumItemFileUploadDialogBodyRef> {
   readonly abortSignal?: AbortSignal
   readonly resolveMedium: () => Promise<Medium>
   readonly replicas: readonly (Replica | ReplicaCreate)[]

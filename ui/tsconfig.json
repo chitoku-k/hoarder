@@ -6,6 +6,7 @@
       "dom.iterable",
       "es2024",
       "esnext.array",
+      "esnext.iterator",
       "webworker"
     ],
     "skipLibCheck": true,
