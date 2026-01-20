@@ -194,6 +194,7 @@ const MediumItemViewBody: FunctionComponent<MediumItemViewBodyProps> = ({
       try {
         deleteObject = await confirm
       } catch {
+        setReplicas(replicas)
         return
       }
     }
