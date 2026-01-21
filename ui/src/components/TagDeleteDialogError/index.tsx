@@ -1,5 +1,3 @@
-'use client'
-
 import type { FunctionComponent } from 'react'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'

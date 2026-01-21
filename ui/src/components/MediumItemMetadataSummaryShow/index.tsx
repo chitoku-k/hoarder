@@ -1,7 +1,4 @@
-'use client'
-
 import type { FunctionComponent } from 'react'
-import { useCallback } from 'react'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -16,26 +13,20 @@ import styles from './styles.module.scss'
 const MediumItemMetadataSummaryShow: FunctionComponent<MediumItemMetadataSummaryShowProps> = ({
   medium,
   edit,
-}) => {
-  const handleClickEdit = useCallback(() => {
-    edit()
-  }, [ edit ])
-
-  return (
-    <Stack>
-      <MediumItemMetadataHeader title="メディア">
-        <Button onClick={handleClickEdit}>編集</Button>
-      </MediumItemMetadataHeader>
-      <Stack className={styles.createdAt} direction="row" spacing={1} alignItems="center">
-        <CalendarMonthIcon className={styles.icon} fontSize="small" />
-        <Stack direction="row" spacing={0.5}>
-          <DateTime date={new Date(medium.createdAt)} format="Pp" />
-          <Typography>登録</Typography>
-        </Stack>
+}) => (
+  <Stack>
+    <MediumItemMetadataHeader title="メディア">
+      <Button onClick={edit}>編集</Button>
+    </MediumItemMetadataHeader>
+    <Stack className={styles.createdAt} direction="row" spacing={1} alignItems="center">
+      <CalendarMonthIcon className={styles.icon} fontSize="small" />
+      <Stack direction="row" spacing={0.5}>
+        <DateTime date={new Date(medium.createdAt)} format="Pp" />
+        <Typography>登録</Typography>
       </Stack>
     </Stack>
-  )
-}
+  </Stack>
+)
 
 export interface MediumItemMetadataSummaryShowProps {
   readonly medium: Medium

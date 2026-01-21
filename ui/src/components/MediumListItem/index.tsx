@@ -1,5 +1,3 @@
-'use client'
-
 import type { FunctionComponent } from 'react'
 import Link from 'next/link'
 import ImageListItem from '@mui/material/ImageListItem'

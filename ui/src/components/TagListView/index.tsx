@@ -1,5 +1,3 @@
-'use client'
-
 import type { FunctionComponent } from 'react'
 import { Suspense } from 'react'
 import clsx from 'clsx'

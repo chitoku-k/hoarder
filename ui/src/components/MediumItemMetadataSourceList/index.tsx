@@ -1,7 +1,4 @@
-'use client'
-
 import type { FunctionComponent } from 'react'
-import { useCallback } from 'react'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -16,10 +13,6 @@ const MediumItemMetadataSourceList: FunctionComponent<MediumItemMetadataSourceLi
   medium,
   edit,
 }) => {
-  const handleClickEdit = useCallback(() => {
-    edit()
-  }, [ edit ])
-
   const sources = medium.sources ?? []
   const groups: readonly ReadonlySourceGroup[] = sources.reduce<SourceGroup[]>((groups, source) => {
     const group = groups.find(s => s.externalService.id === source.externalService.id)
@@ -37,7 +30,7 @@ const MediumItemMetadataSourceList: FunctionComponent<MediumItemMetadataSourceLi
   return (
     <Stack>
       <MediumItemMetadataHeader title="ソース">
-        <Button onClick={handleClickEdit}>編集</Button>
+        <Button onClick={edit}>編集</Button>
       </MediumItemMetadataHeader>
       <Stack spacing={4}>
         {groups.length ? groups.map(({ externalService, sources }) => (

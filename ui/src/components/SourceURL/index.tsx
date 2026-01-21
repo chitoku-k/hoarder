@@ -1,5 +1,3 @@
-'use client'
-
 import type { ComponentType, FunctionComponent } from 'react'
 import clsx from 'clsx'
 import Link from '@mui/material/Link'
