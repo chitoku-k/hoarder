@@ -1,5 +1,3 @@
-'use client'
-
 import type { FunctionComponent, MouseEventHandler, ReactNode } from 'react'
 import clsx from 'clsx'
 import ListItemButton from '@mui/material/ListItemButton'

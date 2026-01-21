@@ -1,5 +1,3 @@
-'use client'
-
 import type { FunctionComponent } from 'react'
 import { Suspense } from 'react'
 import Dialog from '@mui/material/Dialog'

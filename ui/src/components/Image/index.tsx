@@ -1,5 +1,3 @@
-'use client'
-
 import type { CSSProperties, FunctionComponent, ReactNode } from 'react'
 import { Suspense } from 'react'
 import { ErrorBoundary } from 'react-error-boundary'

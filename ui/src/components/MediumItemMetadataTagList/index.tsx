@@ -1,7 +1,4 @@
-'use client'
-
 import type { FunctionComponent } from 'react'
-import { useCallback } from 'react'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -16,10 +13,6 @@ const MediumItemMetadataTagList: FunctionComponent<MediumItemMetadataTagListProp
   medium,
   edit,
 }) => {
-  const handleEdit = useCallback(() => {
-    edit()
-  }, [ edit ])
-
   const tags = medium.tags ?? []
   const groups: readonly ReadonlyTagGroup[] = tags.reduce<TagGroup[]>((groups, { tag, type }) => {
     const group = groups.find(t => t.type.id === type.id)
@@ -37,7 +30,7 @@ const MediumItemMetadataTagList: FunctionComponent<MediumItemMetadataTagListProp
   return (
     <Stack>
       <MediumItemMetadataHeader title="タグ">
-        <Button onClick={handleEdit}>編集</Button>
+        <Button onClick={edit}>編集</Button>
       </MediumItemMetadataHeader>
       <Stack spacing={4}>
         {groups.length ? groups.map(({ type, tags }) => (

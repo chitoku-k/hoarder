@@ -1,5 +1,3 @@
-'use client'
-
 import type { ComponentPropsWithoutRef, FunctionComponent } from 'react'
 import Typography from '@mui/material/Typography'
 

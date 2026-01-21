@@ -1,5 +1,3 @@
-'use client'
-
 import type { CSSProperties, FunctionComponent, ReactNode } from 'react'
 import clsx from 'clsx'
 import Stack from '@mui/material/Stack'

@@ -1,5 +1,3 @@
-'use client'
-
 import type { ComponentType, FunctionComponent } from 'react'
 import type { SvgIconProps } from '@mui/material'
 import Filter2Icon from '@mui/icons-material/Filter2'
