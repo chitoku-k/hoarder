@@ -15,7 +15,7 @@
     "eslint-config-next/typescript-eslint": "link:typescript-eslint"
   },
   "dependencies": {
-    "@apollo/client": "^4.1.0",
+    "@apollo/client": "^4.1.2",
     "@apollo/client-integration-nextjs": "^0.14.4",
     "@date-fns/tz": "^1.4.1",
     "@emotion/cache": "^11.14.0",
