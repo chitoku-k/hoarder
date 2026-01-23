@@ -37,7 +37,7 @@ version = "8.2.0"
 version = "1.0.228"
 
 [dependencies.socket2]
-version = "0.6.1"
+version = "0.6.2"
 
 [dependencies.thiserror]
 version = "2.0.17"
