@@ -19,7 +19,7 @@ features = ["chrono", "custom-error-conversion", "graphiql", "tempfile", "tracin
 default-features = false
 
 [dependencies.async-graphql-axum]
-version = "7.1.0"
+version = "7.2.1"
 features = ["tracing"]
 
 [dependencies.axum]
