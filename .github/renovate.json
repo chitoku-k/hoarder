@@ -81,11 +81,17 @@
     },
     {
       "matchDepNames": [
-        "async-graphql",
-        "async-graphql-*",
+        "async-graphql-axum",
         "axum"
       ],
       "groupName": "axum"
+    },
+    {
+      "matchDepNames": [
+        "async-graphql",
+        "async-graphql-*"
+      ],
+      "groupName": "async-graphql"
     },
     {
       "matchDepNames": [
