@@ -76,7 +76,7 @@ version = "0.2.5"
 features = ["futures-03"]
 
 [dependencies.uuid]
-version = "1.19.0"
+version = "1.20.0"
 
 [dev-dependencies.guardian]
 version = "1.3.0"
