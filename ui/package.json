@@ -37,7 +37,7 @@
     "@types/strict-uri-encode": "^2.0.2",
     "@types/uuid": "^11.0.0",
     "apollo-upload-client": "^19.0.0",
-    "axios": "^1.13.2",
+    "axios": "^1.13.4",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "deep-equal": "^2.2.3",
