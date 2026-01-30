@@ -2991,9 +2991,9 @@ checksum = "b84345e4c9bd703274a082fb80caaa99b7612be48dfaa1dd9266577ec412309d"
 
 [[package]]
 name = "sea-query"
-version = "1.0.0-rc.29"
+version = "1.0.0-rc.30"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "93948054fb2d208555a96d03d2c887591deb42ffe3210eedbd8a3234c6fb6d34"
+checksum = "c6a067a2f6f13250f615f0bedb5bc3a6c872fec70776d0b43b43caeaa699e232"
 dependencies = [
  "chrono",
  "inherent",
@@ -3004,9 +3004,9 @@ dependencies = [
 
 [[package]]
 name = "sea-query-derive"
-version = "1.0.0-rc.9"
+version = "1.0.0-rc.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "217e9422de35f26c16c5f671fce3c075a65e10322068dbc66078428634af6195"
+checksum = "8d88ad44b6ad9788c8b9476b6b91f94c7461d1e19d39cd8ea37838b1e6ff5aa8"
 dependencies = [
  "darling 0.20.10",
  "heck 0.4.1",
@@ -3018,15 +3018,12 @@ dependencies = [
 
 [[package]]
 name = "sea-query-sqlx"
-version = "0.8.0-rc.11"
+version = "0.8.0-rc.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "693f3ac3a10a228afaf3512b122cffc07c57b4269d233c7ff60571ebb4f0dd17"
+checksum = "e4377164b09a11bb692dec6966eb0e6908d63d768defef0be689b39e02cf8544"
 dependencies = [
- "chrono",
  "sea-query",
- "serde_json",
  "sqlx",
- "uuid",
 ]
 
 [[package]]
