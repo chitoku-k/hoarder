@@ -49,9 +49,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/client@npm:^4.1.2":
-  version: 4.1.2
-  resolution: "@apollo/client@npm:4.1.2"
+"@apollo/client@npm:^4.1.3":
+  version: 4.1.3
+  resolution: "@apollo/client@npm:4.1.3"
   dependencies:
     "@graphql-typed-document-node/core": "npm:^3.1.1"
     "@wry/caches": "npm:^1.0.0"
@@ -76,7 +76,7 @@ __metadata:
       optional: true
     subscriptions-transport-ws:
       optional: true
-  checksum: 10/94b6df54b178cf8e4e055131b5eb6107cff913a808f5c402ae74fe28d19b512315b6b84ce66081809a720d3d59253d7e6b52050c3c72636941d4708a7f85cc66
+  checksum: 10/04002c62a019984565e2b4c7c402a42f69f48ed5b13616a14b7d569e824aa53a85a8f5c8ac73bde800786d99eb4343e972edeada33403d44f12227b88b071924
   languageName: node
   linkType: hard
 
@@ -6281,7 +6281,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "hoarder-ui@workspace:."
   dependencies:
-    "@apollo/client": "npm:^4.1.2"
+    "@apollo/client": "npm:^4.1.3"
     "@apollo/client-integration-nextjs": "npm:^0.14.4"
     "@date-fns/tz": "npm:^1.4.1"
     "@emotion/cache": "npm:^11.14.0"
