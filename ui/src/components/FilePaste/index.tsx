@@ -1,6 +1,6 @@
 'use client'
 
-import type { ClipboardEvent, DragEvent, FormEvent, FunctionComponent, ReactNode } from 'react'
+import type { ClipboardEvent, CompositionEvent, DragEvent, FunctionComponent, InputEvent, ReactNode } from 'react'
 import { useCallback, useEffect, useState } from 'react'
 import clsx from 'clsx'
 
@@ -52,14 +52,14 @@ const FilePaste: FunctionComponent<FilePasteProps> = ({
     onSelect?.(Promise.resolve([ ...e.clipboardData.files ]))
   }, [ onSelect ])
 
-  const handleInput = useCallback((e: FormEvent<HTMLElement>) => {
+  const handleInput = useCallback((e: InputEvent<HTMLElement>) => {
     const focusNode = document.getSelection()?.focusNode
     if (focusNode !== e.currentTarget && e.nativeEvent.constructor.name === 'InputEvent') {
       focusNode?.parentNode?.removeChild(focusNode)
     }
   }, [])
 
-  const handleCompositionUpdate = useCallback((e: FormEvent<HTMLElement>) => {
+  const handleCompositionUpdate = useCallback((e: CompositionEvent<HTMLElement>) => {
     e.currentTarget.blur()
   }, [])
 
