@@ -58,6 +58,8 @@ version = "1.0.149"
 
 [dependencies.serde_with]
 version = "3.16.1"
+features = ["macros"]
+default-features = false
 
 [dependencies.sqlx]
 version = "0.8.6"
