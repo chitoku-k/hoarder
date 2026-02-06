@@ -32,7 +32,6 @@ const AutocompleteContainerBody: FunctionComponent<AutocompleteContainerBodyProp
   const [ highlight, setHighlight ] = useState<string | null>(null)
 
   const [ loading, startTransition ] = useTransition()
-  // eslint-disable-next-line @typescript-eslint/unbound-method
   const { contains } = useFilter({
     usage: 'search',
     sensitivity: 'accent',
