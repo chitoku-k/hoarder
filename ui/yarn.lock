@@ -2875,9 +2875,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-date-pickers@npm:^8.26.0":
-  version: 8.26.0
-  resolution: "@mui/x-date-pickers@npm:8.26.0"
+"@mui/x-date-pickers@npm:^8.27.0":
+  version: 8.27.0
+  resolution: "@mui/x-date-pickers@npm:8.27.0"
   dependencies:
     "@babel/runtime": "npm:^7.28.4"
     "@mui/utils": "npm:^7.3.5"
@@ -2919,7 +2919,7 @@ __metadata:
       optional: true
     moment-jalaali:
       optional: true
-  checksum: 10/86b62a4d0313d3f38bc66943d3c060eccb2ac88c773acfeedd2b1951409a0341286f55a9a1d4b9ee240af046153aa06fda8c5a63e06597d1e174c23f75fe7b2c
+  checksum: 10/5ef4a9a2ee081146cf9df025bd09c58e39ee38bcf2af52b24ea65d86a1a9363f9b9759ebd08a55527f60b698eb8609c2d44c46b05d3644f6f2892ad04407db8b
   languageName: node
   linkType: hard
 
@@ -6318,7 +6318,7 @@ __metadata:
     "@mui/material": "npm:^7.3.7"
     "@mui/material-nextjs": "npm:^7.3.7"
     "@mui/system": "npm:^7.3.7"
-    "@mui/x-date-pickers": "npm:^8.26.0"
+    "@mui/x-date-pickers": "npm:^8.27.0"
     "@parcel/watcher": "npm:^2.5.6"
     "@react-aria/i18n": "npm:^3.12.15"
     "@stylistic/eslint-plugin": "npm:^5.7.1"
