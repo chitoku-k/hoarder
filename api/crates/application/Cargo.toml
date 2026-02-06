@@ -61,7 +61,7 @@ version = "0.10.2"
 features = ["client-legacy", "tokio"]
 
 [dev-dependencies.hyper-util]
-version = "0.1.19"
+version = "0.1.20"
 features = ["client-legacy"]
 
 [dev-dependencies.indoc]
