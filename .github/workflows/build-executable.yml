@@ -67,12 +67,12 @@ jobs:
           X86_64_PC_WINDOWS_MSVC_OPENSSL_INCLUDE_DIR: C:\Program Files\OpenSSL\include
           X86_64_PC_WINDOWS_MSVC_OPENSSL_LIB_DIR: C:\Program Files\OpenSSL\lib\VC\x64\MD
         run: |
-          cargo build --target-dir="${{ runner.temp }}/artifacts" ${{ inputs.release && '--release' || '' }}
+          cargo build --target-dir="${{ runner.temp }}/artifacts" ${{ case(inputs.release || false, '--release', '') }}
       - name: Upload
         if: ${{ inputs.upload || false }}
         uses: actions/upload-artifact@v6
         with:
           name: artifacts-api-${{ matrix.platform.os }}-${{ matrix.platform.arch }}
-          path: ${{ runner.temp }}/artifacts/release/hoarder${{ matrix.platform.os == 'windows' && '.exe' || '' }}
+          path: ${{ runner.temp }}/artifacts/release/hoarder${{ case(matrix.platform.os != 'windows', '', '.exe') }}
           if-no-files-found: error
           retention-days: 1
