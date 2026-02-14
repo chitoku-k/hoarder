@@ -85,8 +85,7 @@ const TagListViewBody: FunctionComponent<TagListViewBodyProps> = ({
 
     setColumns(columns => {
       const currentColumn = columns[column.index]
-      if (currentColumn
-        && column.creating === currentColumn.creating
+      if (column.creating === currentColumn?.creating
         && column.editing === currentColumn.editing
         && column.selected === currentColumn.selected
         && column.parent === currentColumn.parent
