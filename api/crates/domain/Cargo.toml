@@ -17,7 +17,7 @@ version = "2.1.1"
 features = ["constructor", "deref", "display", "from"]
 
 [dependencies.futures]
-version = "0.3.31"
+version = "0.3.32"
 features = ["std"]
 default-features = false
 
