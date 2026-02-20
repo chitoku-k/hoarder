@@ -41,7 +41,7 @@ features = ["clock", "std"]
 default-features = false
 
 [dev-dependencies.futures]
-version = "0.3.31"
+version = "0.3.32"
 default-features = false
 
 [dev-dependencies.mockall]
