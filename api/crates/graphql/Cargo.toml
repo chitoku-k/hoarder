@@ -29,7 +29,7 @@ version = "0.8.8"
 version = "0.22.1"
 
 [dependencies.chrono]
-version = "0.4.43"
+version = "0.4.44"
 features = ["clock", "serde", "std"]
 default-features = false
 
