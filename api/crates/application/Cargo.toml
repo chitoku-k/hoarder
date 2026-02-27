@@ -80,7 +80,7 @@ version = "1.4.1"
 version = "1.0.149"
 
 [dev-dependencies.tempfile]
-version = "3.25.0"
+version = "3.26.0"
 
 [dev-dependencies.tower]
 version = "0.5.3"
