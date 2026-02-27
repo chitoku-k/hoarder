@@ -1142,9 +1142,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/cli@npm:^6.1.1":
-  version: 6.1.1
-  resolution: "@graphql-codegen/cli@npm:6.1.1"
+"@graphql-codegen/cli@npm:^6.1.2":
+  version: 6.1.2
+  resolution: "@graphql-codegen/cli@npm:6.1.2"
   dependencies:
     "@babel/generator": "npm:^7.18.13"
     "@babel/template": "npm:^7.18.10"
@@ -1191,7 +1191,7 @@ __metadata:
     graphql-code-generator: cjs/bin.js
     graphql-codegen: cjs/bin.js
     graphql-codegen-esm: esm/bin.js
-  checksum: 10/cdc35e211e3ff9f0b5e5b34d12824dd17f46c1cf5d98b55fe8470bef83e2acbed60da65f3700f6923ef95862f95542ec1608e79912057d4b046ba43d223c6d7f
+  checksum: 10/18f2d8106a513523b459f465412aa0387abc0dd8fd68e65dc04d3f0591a9f4714c21002f334cfe4f327b9a411ceb79da4be1fd436bcb10c46d1d48649ee36578
   languageName: node
   linkType: hard
 
@@ -6369,7 +6369,7 @@ __metadata:
     "@emotion/react": "npm:^11.14.0"
     "@emotion/styled": "npm:^11.14.1"
     "@fontsource/roboto": "npm:^5.2.10"
-    "@graphql-codegen/cli": "npm:^6.1.1"
+    "@graphql-codegen/cli": "npm:^6.1.2"
     "@graphql-codegen/near-operation-file-preset": "npm:^4.0.0"
     "@graphql-codegen/typed-document-node": "npm:^6.1.6"
     "@graphql-codegen/typescript": "npm:^5.0.8"
