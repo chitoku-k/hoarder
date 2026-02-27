@@ -70,7 +70,7 @@ jobs:
           cargo build --target-dir="${{ runner.temp }}/artifacts" ${{ case(inputs.release || false, '--release', '') }}
       - name: Upload
         if: ${{ inputs.upload || false }}
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: artifacts-api-${{ matrix.platform.os }}-${{ matrix.platform.arch }}
           path: ${{ runner.temp }}/artifacts/release/hoarder${{ case(matrix.platform.os != 'windows', '', '.exe') }}
