@@ -119,7 +119,7 @@ impl ExternalServiceKind {
 
 impl From<String> for ExternalServiceKind {
     fn from(value: String) -> Self {
-        Self::try_from(value.as_str()).unwrap()
+        Self::from(value.as_str())
     }
 }
 
