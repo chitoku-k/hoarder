@@ -85,7 +85,7 @@ jobs:
           yarn version ${{ steps.version.outputs.value }}
       - name: Log into Container Registry
         if: ${{ inputs.push || false }}
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
