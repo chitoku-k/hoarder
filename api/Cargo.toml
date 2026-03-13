@@ -128,7 +128,7 @@ features = ["rt"]
 version = "0.1.44"
 
 [dependencies.tracing-subscriber]
-version = "0.3.22"
+version = "0.3.23"
 features = ["env-filter"]
 
 [target.'cfg(not(target_env = "msvc"))'.dependencies.tikv-jemallocator]
