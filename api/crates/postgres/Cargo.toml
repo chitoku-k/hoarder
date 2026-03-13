@@ -105,4 +105,4 @@ version = "1.50.0"
 features = ["macros", "rt-multi-thread"]
 
 [dev-dependencies.tracing-subscriber]
-version = "0.3.22"
+version = "0.3.23"
