@@ -59,7 +59,7 @@
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^6.2.1",
-    "@graphql-codegen/near-operation-file-preset": "^4.0.0",
+    "@graphql-codegen/near-operation-file-preset": "^5.0.0",
     "@graphql-codegen/typed-document-node": "^6.1.7",
     "@graphql-codegen/typescript": "^5.0.9",
     "@graphql-codegen/typescript-operations": "^5.0.9",
