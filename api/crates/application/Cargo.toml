@@ -87,4 +87,4 @@ version = "0.5.3"
 features = ["util"]
 
 [dev-dependencies.tungstenite]
-version = "0.28.0"
+version = "0.29.0"
