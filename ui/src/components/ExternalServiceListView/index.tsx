@@ -34,7 +34,7 @@ const ExternalServiceListView: FunctionComponent<ExternalServiceListViewProps> =
   })
 
   const [ creating, setCreating ] = useState(false)
-  const [ showingExternalService, setShowingExternalService ] = useState<ExternalService | null>(initial ?? null)
+  const [ showingExternalService, setShowingExternalService ] = useState(initial ?? null)
   const [ editingExternalService, setEditingExternalService ] = useState<ExternalService | null>(null)
   const [ deletingExternalService, setDeletingExternalService ] = useState<ExternalService | null>(null)
 

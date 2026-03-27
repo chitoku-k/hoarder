@@ -34,7 +34,7 @@ const TagTypeListView: FunctionComponent<TagTypeListViewProps> = ({
   })
 
   const [ creating, setCreating ] = useState(false)
-  const [ showingTagType, setShowingTagType ] = useState<TagType | null>(initial ?? null)
+  const [ showingTagType, setShowingTagType ] = useState(initial ?? null)
   const [ editingTagType, setEditingTagType ] = useState<TagType | null>(null)
   const [ deletingTagType, setDeletingTagType ] = useState<TagType | null>(null)
 
