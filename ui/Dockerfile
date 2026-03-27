@@ -1,5 +1,5 @@
 # syntax = docker/dockerfile:1
-FROM node:25.8.1-trixie AS base
+FROM node:25.8.2-trixie AS base
 WORKDIR /usr/src
 COPY package.json yarn.lock .yarnrc.yml /usr/src/
 
