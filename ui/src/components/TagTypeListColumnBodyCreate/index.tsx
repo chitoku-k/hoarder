@@ -28,7 +28,7 @@ const TagTypeListColumnBodyCreate: FunctionComponent<TagTypeListColumnBodyCreate
     })
   }, [])
 
-  const [ tagType, setTagType ] = useState<TagTypeCreate>({
+  const [ tagType, setTagType ] = useState({
     name: '',
     slug: '',
     kana: '',
