@@ -19,23 +19,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/client-integration-nextjs@npm:^0.14.4":
-  version: 0.14.4
-  resolution: "@apollo/client-integration-nextjs@npm:0.14.4"
+"@apollo/client-integration-nextjs@npm:^0.14.5":
+  version: 0.14.5
+  resolution: "@apollo/client-integration-nextjs@npm:0.14.5"
   dependencies:
-    "@apollo/client-react-streaming": "npm:0.14.4"
+    "@apollo/client-react-streaming": "npm:0.14.5"
   peerDependencies:
     "@apollo/client": ^4.0.0
     next: ^15.2.3 || ^16.0.0
     react: ^19
     rxjs: ^7.3.0
-  checksum: 10/107123d6c975e6eb0d34eb8524d9de4bc76104e64077d9215382ce2a59a603090732e87f31d1ed89cdebe8cce64055b080255a56c0d8df2ce4411c3e4cd5275f
+  checksum: 10/05f1cf0e8dccca56350eed6ed73019751b2fe9e8217ad43e387021655dfa3c8eb2aac034545480b630af33f4cef6cee463127f97ae52c2fe388bb72ad060c97b
   languageName: node
   linkType: hard
 
-"@apollo/client-react-streaming@npm:0.14.4":
-  version: 0.14.4
-  resolution: "@apollo/client-react-streaming@npm:0.14.4"
+"@apollo/client-react-streaming@npm:0.14.5":
+  version: 0.14.5
+  resolution: "@apollo/client-react-streaming@npm:0.14.5"
   dependencies:
     "@types/react-dom": "npm:^19.0.0"
     "@wry/equality": "npm:^0.5.6"
@@ -45,13 +45,13 @@ __metadata:
     react: ^19
     react-dom: ^19
     rxjs: ^7.3.0
-  checksum: 10/0481fb447f7d0cdcc61ec47133dfee27f86c79a44724e6e0c3518fc5391a4c9866616eb914c6617012188619f372d4cab1e5140f7de88e78892a80d7b5bab8bc
+  checksum: 10/4176392b974bbcc2f64c93dc40f3ee54e072dd314ce141b9b3ebbdea3e64cdcf211e8e72ef49dea74ce45974e90e9eb32c54a9391aa1f9258f6afe8ce68c3399
   languageName: node
   linkType: hard
 
-"@apollo/client@npm:^4.1.6":
-  version: 4.1.6
-  resolution: "@apollo/client@npm:4.1.6"
+"@apollo/client@npm:^4.1.7":
+  version: 4.1.7
+  resolution: "@apollo/client@npm:4.1.7"
   dependencies:
     "@graphql-typed-document-node/core": "npm:^3.1.1"
     "@wry/caches": "npm:^1.0.0"
@@ -76,7 +76,7 @@ __metadata:
       optional: true
     subscriptions-transport-ws:
       optional: true
-  checksum: 10/43d90cd41757b4d39c08f3747496365db6941718fbd9ea0ba756aa19dca4a555afc13c21fc23e544740f34374bf1a3e767c8bef44c51558a2c02fb0abc1c5654
+  checksum: 10/eb2861c2bb9bb00b9c6b25fd6f0defafeada325552f01943755b52642ba536f85f0b6037a4b51ba81be8084122aee5544831877ee0f8e10417117269fac36755
   languageName: node
   linkType: hard
 
@@ -5807,8 +5807,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "hoarder-ui@workspace:."
   dependencies:
-    "@apollo/client": "npm:^4.1.6"
-    "@apollo/client-integration-nextjs": "npm:^0.14.4"
+    "@apollo/client": "npm:^4.1.7"
+    "@apollo/client-integration-nextjs": "npm:^0.14.5"
     "@date-fns/tz": "npm:^1.4.1"
     "@emotion/cache": "npm:^11.14.0"
     "@emotion/react": "npm:^11.14.0"
