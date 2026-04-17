@@ -108,7 +108,7 @@ version = "1.0.0"
 version = "1.0.102"
 
 [dependencies.clap]
-version = "4.6.0"
+version = "4.6.1"
 features = ["cargo", "derive", "env", "error-context", "string"]
 
 [dependencies.icu_collator]
