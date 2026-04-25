@@ -35,7 +35,6 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@types/strict-uri-encode": "^2.0.2",
-    "@types/uuid": "^11.0.0",
     "apollo-upload-client": "^19.0.0",
     "axios": "^1.15.2",
     "clsx": "^2.1.1",
