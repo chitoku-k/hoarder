@@ -68,7 +68,7 @@
     "eslint": "^9.39.4",
     "eslint-config-next": "^16.2.4",
     "ts-node": "^10.9.2",
-    "typescript-eslint": "^8.59.0",
+    "typescript-eslint": "^8.59.1",
     "typescript-plugin-css-modules": "^5.2.0"
   },
   "stableVersion": "0.9.0"
