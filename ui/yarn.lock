@@ -949,9 +949,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/near-operation-file-preset@npm:^5.2.0":
-  version: 5.2.0
-  resolution: "@graphql-codegen/near-operation-file-preset@npm:5.2.0"
+"@graphql-codegen/near-operation-file-preset@npm:^5.2.1":
+  version: 5.2.1
+  resolution: "@graphql-codegen/near-operation-file-preset@npm:5.2.1"
   dependencies:
     "@graphql-codegen/add": "npm:^7.0.0"
     "@graphql-codegen/plugin-helpers": "npm:^7.0.0"
@@ -961,7 +961,7 @@ __metadata:
     tslib: "npm:^2.8.1"
   peerDependencies:
     graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
-  checksum: 10/ed37c59b93c688c14b820fd8bcbae25830da31519acdaedacbdba9c1587aaf35ea93799d9c89407d5131c992ad5cc4aa3c32af5ce35cca0850abbd493f0498a0
+  checksum: 10/beeaf451f7c704caaaa091ae0d24e5813958187c8ddd115ce1d88d3fe806f045de8dd4abf592ec1758b0c594a147e3b8ded7044d888eb471a4782b9b1887efe9
   languageName: node
   linkType: hard
 
@@ -977,6 +977,21 @@ __metadata:
   peerDependencies:
     graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
   checksum: 10/415f8ec07f9b4414195dd116c4023ce01612a5db200467452d09861de1279484434da8206116ed54df6201d9cd8d96fe5d4fff554cde99949a196f07662910f4
+  languageName: node
+  linkType: hard
+
+"@graphql-codegen/plugin-helpers@npm:^7.0.1":
+  version: 7.0.1
+  resolution: "@graphql-codegen/plugin-helpers@npm:7.0.1"
+  dependencies:
+    "@graphql-tools/utils": "npm:^11.0.0"
+    change-case-all: "npm:^2.1.0"
+    common-tags: "npm:1.8.2"
+    import-from: "npm:4.0.0"
+    tslib: "npm:^2.8.0"
+  peerDependencies:
+    graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
+  checksum: 10/f93d8b26a6ca7f6e061091c18bf4f236f85495a689fc08e3390167cd8e91d3f73d13044e6e6e6a73e14a36e0a8a4d1cb3a64ef0a38bf052e7c5ab5b1a96649fd
   languageName: node
   linkType: hard
 
@@ -1027,9 +1042,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/typescript-operations@npm:^6.0.1":
-  version: 6.0.1
-  resolution: "@graphql-codegen/typescript-operations@npm:6.0.1"
+"@graphql-codegen/typescript-operations@npm:^6.0.2":
+  version: 6.0.2
+  resolution: "@graphql-codegen/typescript-operations@npm:6.0.2"
   dependencies:
     "@graphql-codegen/plugin-helpers": "npm:^7.0.0"
     "@graphql-codegen/schema-ast": "npm:^6.0.0"
@@ -1042,15 +1057,15 @@ __metadata:
   peerDependenciesMeta:
     graphql-sock:
       optional: true
-  checksum: 10/25d6c4ee89f3d91ac02b19a4b25ab06fbec394fade410216cb5735436eedb2a8da40615f94cfa3e2ea4f1ab60e86f091b94b5f8f97b1c506ed08d4eec57b6059
+  checksum: 10/dfa07d484d3737ea4c176f4b62f71ba0226f90153051fd0d68e630a4e5ebf6724841563cb87b0e8c52b80d53844a22bff8ebed57c524023b94e7f26bd5d4a0f2
   languageName: node
   linkType: hard
 
-"@graphql-codegen/typescript-resolvers@npm:^6.0.0":
-  version: 6.0.0
-  resolution: "@graphql-codegen/typescript-resolvers@npm:6.0.0"
+"@graphql-codegen/typescript-resolvers@npm:^6.0.1":
+  version: 6.0.1
+  resolution: "@graphql-codegen/typescript-resolvers@npm:6.0.1"
   dependencies:
-    "@graphql-codegen/plugin-helpers": "npm:^7.0.0"
+    "@graphql-codegen/plugin-helpers": "npm:^7.0.1"
     "@graphql-codegen/typescript": "npm:^6.0.0"
     "@graphql-codegen/visitor-plugin-common": "npm:^7.0.0"
     "@graphql-tools/utils": "npm:^11.0.0"
@@ -1062,7 +1077,7 @@ __metadata:
   peerDependenciesMeta:
     graphql-sock:
       optional: true
-  checksum: 10/56497d65cf20bba5302f05a7cd2093c63173873c877bad5410ed7128ac37b4cef13cd746b6fcf6d4b9e2995dcc4414d555ca3cca9fca651da26d8552e08ed7a9
+  checksum: 10/0266e95c2897423bc7efbda9683f030a78164c011239ae32d4aabfcb5ad5f1cd0a91fc141aa65babfb1fad595e3c2e850b48d1b887473af3e20fb255a7094ea5
   languageName: node
   linkType: hard
 
@@ -5775,11 +5790,11 @@ __metadata:
     "@emotion/styled": "npm:^11.14.1"
     "@fontsource/roboto": "npm:^5.2.10"
     "@graphql-codegen/cli": "npm:^7.0.0"
-    "@graphql-codegen/near-operation-file-preset": "npm:^5.2.0"
+    "@graphql-codegen/near-operation-file-preset": "npm:^5.2.1"
     "@graphql-codegen/typed-document-node": "npm:^7.0.0"
     "@graphql-codegen/typescript": "npm:^6.0.1"
-    "@graphql-codegen/typescript-operations": "npm:^6.0.1"
-    "@graphql-codegen/typescript-resolvers": "npm:^6.0.0"
+    "@graphql-codegen/typescript-operations": "npm:^6.0.2"
+    "@graphql-codegen/typescript-resolvers": "npm:^6.0.1"
     "@lifeomic/axios-fetch": "npm:^3.1.0"
     "@mui/icons-material": "npm:^7.3.9"
     "@mui/material": "npm:^7.3.9"
