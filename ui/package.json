@@ -17,7 +17,7 @@
   "dependencies": {
     "@apollo/client": "^4.1.9",
     "@apollo/client-integration-nextjs": "^0.14.5",
-    "@date-fns/tz": "^1.4.1",
+    "@date-fns/tz": "^1.5.0",
     "@emotion/cache": "^11.14.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
@@ -38,7 +38,7 @@
     "apollo-upload-client": "^19.0.0",
     "axios": "^1.16.1",
     "clsx": "^2.1.1",
-    "date-fns": "^4.1.0",
+    "date-fns": "^4.2.1",
     "deep-equal": "^2.2.3",
     "graphql": "^16.14.0",
     "graphql-ws": "^6.0.8",
