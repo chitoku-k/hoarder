@@ -29,7 +29,7 @@ version = "2.1.1"
 features = ["constructor", "from", "into"]
 
 [dependencies.either]
-version = "1.15.0"
+version = "1.16.0"
 
 [dependencies.futures]
 version = "0.3.32"
