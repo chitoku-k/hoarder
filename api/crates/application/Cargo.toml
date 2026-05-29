@@ -54,7 +54,7 @@ features = ["trace"]
 version = "0.1.44"
 
 [dev-dependencies.hyper]
-version = "1.9.0"
+version = "1.10.1"
 
 [dev-dependencies.hyper-openssl]
 version = "0.10.2"
