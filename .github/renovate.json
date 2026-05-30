@@ -81,17 +81,19 @@
     },
     {
       "matchDepNames": [
-        "async-graphql-axum",
-        "axum"
-      ],
-      "groupName": "axum"
-    },
-    {
-      "matchDepNames": [
         "async-graphql",
         "async-graphql-*"
       ],
       "groupName": "async-graphql"
+    },
+    {
+      "matchDepNames": [
+        "async-graphql",
+        "async-graphql-axum",
+        "axum"
+      ],
+      "groupName": "axum",
+      "minimumGroupSize": 3
     },
     {
       "matchDepNames": [
@@ -125,17 +127,19 @@
     },
     {
       "matchDepNames": [
-        "sea-query-sqlx",
-        "sqlx"
-      ],
-      "groupName": "sqlx"
-    },
-    {
-      "matchDepNames": [
         "sea-query",
         "sea-query-*"
       ],
       "groupName": "sea-query"
+    },
+    {
+      "matchDepNames": [
+        "sea-query",
+        "sea-query-*",
+        "sqlx"
+      ],
+      "groupName": "sqlx",
+      "minimumGroupSize": 3
     },
     {
       "matchDepNames": ["*"],
