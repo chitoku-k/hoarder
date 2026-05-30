@@ -338,7 +338,7 @@ where
         .order_by((TAG_DESCENDANTS, PostgresTag::Kana), Order::Asc)
         .build_sqlx(PostgresQueryBuilder);
 
-    let rows: Vec<_> = sqlx::query_as_with::<_, PostgresTagRelativeRow, _>(&sql, values)
+    let rows: Vec<_> = sqlx::query_as_with::<_, PostgresTagRelativeRow, _>(sqlx::AssertSqlSafe(sql.as_str()), values)
         .fetch(&mut *conn)
         .try_collect()
         .await
@@ -429,7 +429,7 @@ async fn attach_parent(tx: &mut Transaction<'_, Postgres>, id: TagId, parent_id:
         .map_err(Error::other)?
         .build_sqlx(PostgresQueryBuilder);
 
-    match sqlx::query_with(&sql, values).execute(&mut *tx).await {
+    match sqlx::query_with(sqlx::AssertSqlSafe(sql.as_str()), values).execute(&mut *tx).await {
         Ok(_) => (),
         Err(sqlx::Error::Database(e)) if e.is_foreign_key_violation() => return Err(ErrorKind::TagNotFound { id })?,
         Err(e) => return Err(Error::other(e)),
@@ -446,7 +446,7 @@ async fn attach_parent(tx: &mut Transaction<'_, Postgres>, id: TagId, parent_id:
         .map_err(Error::other)?
         .build_sqlx(PostgresQueryBuilder);
 
-    sqlx::query_with(&sql, values)
+    sqlx::query_with(sqlx::AssertSqlSafe(sql.as_str()), values)
         .execute(&mut *tx)
         .await
         .map_err(Error::other)?;
@@ -470,7 +470,7 @@ async fn detach_parent(tx: &mut Transaction<'_, Postgres>, id: TagId) -> Result<
         )
         .build_sqlx(PostgresQueryBuilder);
 
-    sqlx::query_with(&sql, values)
+    sqlx::query_with(sqlx::AssertSqlSafe(sql.as_str()), values)
         .execute(&mut *tx)
         .await
         .map_err(Error::other)?;
@@ -487,7 +487,7 @@ async fn detach_parent(tx: &mut Transaction<'_, Postgres>, id: TagId) -> Result<
         )
         .build_sqlx(PostgresQueryBuilder);
 
-    sqlx::query_with(&sql, values)
+    sqlx::query_with(sqlx::AssertSqlSafe(sql.as_str()), values)
         .execute(&mut *tx)
         .await
         .map_err(Error::other)?;
@@ -520,7 +520,7 @@ impl TagsRepository for PostgresTagsRepository {
             .returning(Query::returning().column(PostgresTag::Id))
             .build_sqlx(PostgresQueryBuilder);
 
-        let tag_id = sqlx::query_as_with::<_, PostgresTagIdRow, _>(&sql, values)
+        let tag_id = sqlx::query_as_with::<_, PostgresTagIdRow, _>(sqlx::AssertSqlSafe(sql.as_str()), values)
             .fetch_one(&mut *tx)
             .map_ok(|r| TagId::from(r.id))
             .await
@@ -541,7 +541,7 @@ impl TagsRepository for PostgresTagsRepository {
             .map_err(Error::other)?
             .build_sqlx(PostgresQueryBuilder);
 
-        sqlx::query_with(&sql, values)
+        sqlx::query_with(sqlx::AssertSqlSafe(sql.as_str()), values)
             .execute(&mut *tx)
             .await
             .map_err(Error::other)?;
@@ -748,7 +748,7 @@ impl TagsRepository for PostgresTagsRepository {
         sql.order_by((PostgresTag::Table, PostgresTag::Kana), Order::Asc);
 
         let (sql, values) = sql.build_sqlx(PostgresQueryBuilder);
-        let ids: Vec<_> = sqlx::query_as_with::<_, PostgresTagIdRow, _>(&sql, values)
+        let ids: Vec<_> = sqlx::query_as_with::<_, PostgresTagIdRow, _>(sqlx::AssertSqlSafe(sql.as_str()), values)
             .fetch(&mut *conn)
             .map_ok(|r| TagId::from(r.id))
             .try_collect()
@@ -801,7 +801,7 @@ impl TagsRepository for PostgresTagsRepository {
         }
 
         let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
-        let ids: Vec<_> = sqlx::query_as_with::<_, PostgresTagIdRow, _>(&sql, values)
+        let ids: Vec<_> = sqlx::query_as_with::<_, PostgresTagIdRow, _>(sqlx::AssertSqlSafe(sql.as_str()), values)
             .fetch(&self.pool)
             .map_ok(|r| TagId::from(r.id))
             .try_collect()
@@ -848,7 +848,7 @@ impl TagsRepository for PostgresTagsRepository {
             .lock(LockType::Update)
             .build_sqlx(PostgresQueryBuilder);
 
-        let mut tag = match sqlx::query_as_with::<_, PostgresTagRow, _>(&sql, values).fetch_one(&mut *tx).await {
+        let mut tag = match sqlx::query_as_with::<_, PostgresTagRow, _>(sqlx::AssertSqlSafe(sql.as_str()), values).fetch_one(&mut *tx).await {
             Ok(row) => Tag::from(row),
             Err(sqlx::Error::RowNotFound) => return Err(ErrorKind::TagNotFound { id })?,
             Err(e) => return Err(Error::other(e)),
@@ -871,7 +871,7 @@ impl TagsRepository for PostgresTagsRepository {
             .and_where(Expr::col(PostgresTag::Id).eq(PostgresTagId::from(id)))
             .build_sqlx(PostgresQueryBuilder);
 
-        sqlx::query_with(&sql, values)
+        sqlx::query_with(sqlx::AssertSqlSafe(sql.as_str()), values)
             .execute(&mut *tx)
             .await
             .map_err(Error::other)?;
@@ -902,7 +902,7 @@ impl TagsRepository for PostgresTagsRepository {
             .and_where(Expr::col(PostgresTagPath::DescendantId).eq(PostgresTagId::from(parent_id)))
             .build_sqlx(PostgresQueryBuilder);
 
-        let count: i64 = sqlx::query_with(&sql, values)
+        let count: i64 = sqlx::query_with(sqlx::AssertSqlSafe(sql.as_str()), values)
             .fetch_one(&mut *tx)
             .await
             .and_then(|r| r.try_get(0))
@@ -960,7 +960,7 @@ impl TagsRepository for PostgresTagsRepository {
             .lock(LockType::Update)
             .build_sqlx(PostgresQueryBuilder);
 
-        let (ids, children) = sqlx::query_as_with::<_, PostgresTagDescendantRow, _>(&sql, values)
+        let (ids, children) = sqlx::query_as_with::<_, PostgresTagDescendantRow, _>(sqlx::AssertSqlSafe(sql.as_str()), values)
             .fetch(&mut *tx)
             .try_fold((Vec::new(), Vec::new()), |(mut ids, mut children), row| async move {
                 ids.push(row.descendant_id.clone());
@@ -981,7 +981,7 @@ impl TagsRepository for PostgresTagsRepository {
             .and_where(Expr::col(PostgresTag::Id).is_in(ids))
             .build_sqlx(PostgresQueryBuilder);
 
-        let affected = sqlx::query_with(&sql, values)
+        let affected = sqlx::query_with(sqlx::AssertSqlSafe(sql.as_str()), values)
             .execute(&mut *tx)
             .await
             .map_err(Error::other)?

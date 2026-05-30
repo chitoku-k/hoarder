@@ -41,7 +41,7 @@ impl Operation<Postgres> for ExternalServiceKindOperation {
             .rename_column(PostgresExternalService::Name, PostgresExternalServiceTemporary::NameOld)
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Table::alter()
             .table(PostgresExternalService::Table)
@@ -50,7 +50,7 @@ impl Operation<Postgres> for ExternalServiceKindOperation {
             .add_column(ColumnDef::new(PostgresExternalService::BaseUrl).text())
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Query::update()
             .table(PostgresExternalService::Table)
@@ -58,7 +58,7 @@ impl Operation<Postgres> for ExternalServiceKindOperation {
             .value(PostgresExternalService::Name, Expr::col(PostgresExternalServiceTemporary::NameOld))
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Query::update()
             .table(PostgresExternalService::Table)
@@ -73,7 +73,7 @@ impl Operation<Postgres> for ExternalServiceKindOperation {
             )
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Table::alter()
             .table(PostgresExternalService::Table)
@@ -82,7 +82,7 @@ impl Operation<Postgres> for ExternalServiceKindOperation {
             .modify_column(ColumnDef::new(PostgresExternalService::Name).not_null())
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         Ok(())
     }
@@ -95,7 +95,7 @@ impl Operation<Postgres> for ExternalServiceKindOperation {
             .drop_column(PostgresExternalService::BaseUrl)
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         Ok(())
     }

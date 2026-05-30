@@ -76,7 +76,7 @@ impl Operation<Postgres> for ExternalServiceTwitterToX {
             .and_where(Expr::col(PostgresExternalService::Kind).eq(OLD_KIND))
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         Ok(())
     }
@@ -125,7 +125,7 @@ impl Operation<Postgres> for ExternalServiceTwitterToX {
             .and_where(Expr::col(PostgresExternalService::Kind).eq(OLD_KIND))
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         Ok(())
     }
@@ -160,7 +160,7 @@ impl Operation<Postgres> for SourceTwitterToX {
             .and_where(Expr::col(PostgresSource::ExternalMetadata).cast_json_field("type").eq(OLD_TYPE))
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         Ok(())
     }
@@ -190,7 +190,7 @@ impl Operation<Postgres> for SourceTwitterToX {
             .and_where(Expr::col(PostgresSource::ExternalMetadata).cast_json_field("type").eq(OLD_TYPE))
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         Ok(())
     }

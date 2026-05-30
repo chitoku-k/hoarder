@@ -53,7 +53,7 @@ impl Operation<Postgres> for ReplicaUrlOperation {
             .lock(LockType::Update)
             .build_sqlx(PostgresQueryBuilder);
 
-        let replicas = sqlx::query_as_with::<_, PostgresReplicaOriginalUrlRow, _>(&sql, values)
+        let replicas = sqlx::query_as_with::<_, PostgresReplicaOriginalUrlRow, _>(sqlx::AssertSqlSafe(sql.as_str()), values)
             .fetch_all(&mut *tx)
             .await?;
 
@@ -66,7 +66,7 @@ impl Operation<Postgres> for ReplicaUrlOperation {
                     .and_where(Expr::col(PostgresReplica::Id).eq(replica.id))
                     .build_sqlx(PostgresQueryBuilder);
 
-                sqlx::query_with(&sql, values)
+                sqlx::query_with(sqlx::AssertSqlSafe(sql.as_str()), values)
                     .execute(&mut *tx)
                     .await?;
             }
@@ -89,7 +89,7 @@ impl Operation<Postgres> for ReplicaUrlOperation {
             .lock(LockType::Update)
             .build_sqlx(PostgresQueryBuilder);
 
-        let replicas = sqlx::query_as_with::<_, PostgresReplicaOriginalUrlRow, _>(&sql, values)
+        let replicas = sqlx::query_as_with::<_, PostgresReplicaOriginalUrlRow, _>(sqlx::AssertSqlSafe(sql.as_str()), values)
             .fetch_all(&mut *tx)
             .await?;
 
@@ -104,7 +104,7 @@ impl Operation<Postgres> for ReplicaUrlOperation {
                         .and_where(Expr::col(PostgresReplica::Id).eq(replica.id))
                         .build_sqlx(PostgresQueryBuilder);
 
-                    sqlx::query_with(&sql, values)
+                    sqlx::query_with(sqlx::AssertSqlSafe(sql.as_str()), values)
                         .execute(&mut *tx)
                         .await?;
                 },
