@@ -89,7 +89,7 @@ impl ExternalServicesRepository for PostgresExternalServicesRepository {
             )
             .build_sqlx(PostgresQueryBuilder);
 
-        match sqlx::query_as_with::<_, PostgresExternalServiceRow, _>(&sql, values).fetch_one(&self.pool).await {
+        match sqlx::query_as_with::<_, PostgresExternalServiceRow, _>(sqlx::AssertSqlSafe(sql.as_str()), values).fetch_one(&self.pool).await {
             Ok(external_service) => Ok(external_service.into()),
             Err(sqlx::Error::Database(e)) if e.is_unique_violation() => Err(ErrorKind::ExternalServiceSlugDuplicate { slug: slug.to_string() })?,
             Err(e) => Err(Error::other(e)),
@@ -115,7 +115,7 @@ impl ExternalServicesRepository for PostgresExternalServicesRepository {
             .order_by(PostgresExternalService::Slug, Order::Asc)
             .build_sqlx(PostgresQueryBuilder);
 
-        let external_services = sqlx::query_as_with::<_, PostgresExternalServiceRow, _>(&sql, values)
+        let external_services = sqlx::query_as_with::<_, PostgresExternalServiceRow, _>(sqlx::AssertSqlSafe(sql.as_str()), values)
             .fetch(&self.pool)
             .map_ok(Into::into)
             .try_collect()
@@ -140,7 +140,7 @@ impl ExternalServicesRepository for PostgresExternalServicesRepository {
             .order_by(PostgresExternalService::Slug, Order::Asc)
             .build_sqlx(PostgresQueryBuilder);
 
-        let external_services = sqlx::query_as_with::<_, PostgresExternalServiceRow, _>(&sql, values)
+        let external_services = sqlx::query_as_with::<_, PostgresExternalServiceRow, _>(sqlx::AssertSqlSafe(sql.as_str()), values)
             .fetch(&self.pool)
             .map_ok(Into::into)
             .try_collect()
@@ -168,7 +168,7 @@ impl ExternalServicesRepository for PostgresExternalServicesRepository {
             .lock(LockType::Update)
             .build_sqlx(PostgresQueryBuilder);
 
-        let external_service = match sqlx::query_as_with::<_, PostgresExternalServiceRow, _>(&sql, values).fetch_one(&mut *tx).await {
+        let external_service = match sqlx::query_as_with::<_, PostgresExternalServiceRow, _>(sqlx::AssertSqlSafe(sql.as_str()), values).fetch_one(&mut *tx).await {
             Ok(row) => ExternalService::from(row),
             Err(sqlx::Error::RowNotFound) => return Err(ErrorKind::ExternalServiceNotFound { id })?,
             Err(e) => return Err(Error::other(e)),
@@ -199,7 +199,7 @@ impl ExternalServicesRepository for PostgresExternalServicesRepository {
             )
             .build_sqlx(PostgresQueryBuilder);
 
-        let external_service = match sqlx::query_as_with::<_, PostgresExternalServiceRow, _>(&sql, values).fetch_one(&mut *tx).await {
+        let external_service = match sqlx::query_as_with::<_, PostgresExternalServiceRow, _>(sqlx::AssertSqlSafe(sql.as_str()), values).fetch_one(&mut *tx).await {
             Ok(row) => ExternalService::from(row),
             Err(e) => return Err(Error::other(e)),
         };
@@ -215,7 +215,7 @@ impl ExternalServicesRepository for PostgresExternalServicesRepository {
             .and_where(Expr::col(PostgresExternalService::Id).eq(PostgresExternalServiceId::from(id)))
             .build_sqlx(PostgresQueryBuilder);
 
-        let affected = sqlx::query_with(&sql, values)
+        let affected = sqlx::query_with(sqlx::AssertSqlSafe(sql.as_str()), values)
             .execute(&self.pool)
             .await
             .map_err(Error::other)?

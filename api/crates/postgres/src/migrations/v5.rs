@@ -44,14 +44,14 @@ impl Operation<Postgres> for SourceExternalMetadataExtraOperation {
             .rename_column(PostgresSource::CreatedAt, PostgresSourceTemporary::CreatedAtOld)
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Table::alter()
             .table(PostgresSource::Table)
             .rename_column(PostgresSource::UpdatedAt, PostgresSourceTemporary::UpdatedAtOld)
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Table::alter()
             .table(PostgresSource::Table)
@@ -60,7 +60,7 @@ impl Operation<Postgres> for SourceExternalMetadataExtraOperation {
             .add_column(ColumnDef::new(PostgresSource::UpdatedAt).timestamp_with_time_zone())
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Query::update()
             .table(PostgresSource::Table)
@@ -78,7 +78,7 @@ impl Operation<Postgres> for SourceExternalMetadataExtraOperation {
             .value(PostgresSource::UpdatedAt, Expr::col(PostgresSourceTemporary::UpdatedAtOld))
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Query::update()
             .table(PostgresSource::Table)
@@ -93,7 +93,7 @@ impl Operation<Postgres> for SourceExternalMetadataExtraOperation {
             .and_where(Expr::col(PostgresSource::ExternalMetadata).cast_json_field("type").is_in(EXTERNAL_SERVICE_EXTRA_FIELD_KINDS))
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Table::alter()
             .table(PostgresSource::Table)
@@ -104,7 +104,7 @@ impl Operation<Postgres> for SourceExternalMetadataExtraOperation {
             .modify_column(ColumnDef::new(PostgresSource::UpdatedAt).timestamp_with_time_zone().not_null().default(Expr::current_timestamp()))
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         Ok(())
     }
@@ -119,14 +119,14 @@ impl Operation<Postgres> for SourceExternalMetadataExtraOperation {
             )
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Table::alter()
             .table(PostgresSource::Table)
             .drop_column(PostgresSource::ExternalMetadataExtra)
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         Ok(())
     }

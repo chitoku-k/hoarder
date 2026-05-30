@@ -77,7 +77,7 @@ impl TagTypesRepository for PostgresTagTypesRepository {
             )
             .build_sqlx(PostgresQueryBuilder);
 
-        let tag_type = match sqlx::query_as_with::<_, PostgresTagTypeRow, _>(&sql, values).fetch_one(&self.pool).await {
+        let tag_type = match sqlx::query_as_with::<_, PostgresTagTypeRow, _>(sqlx::AssertSqlSafe(sql.as_str()), values).fetch_one(&self.pool).await {
             Ok(row) => row.into(),
             Err(sqlx::Error::Database(e)) if e.is_unique_violation() => return Err(ErrorKind::TagTypeSlugDuplicate { slug: slug.to_string() })?,
             Err(e) => return Err(Error::other(e)),
@@ -103,7 +103,7 @@ impl TagTypesRepository for PostgresTagTypesRepository {
             .order_by(PostgresTagType::Kana, Order::Asc)
             .build_sqlx(PostgresQueryBuilder);
 
-        let tag_types = sqlx::query_as_with::<_, PostgresTagTypeRow, _>(&sql, values)
+        let tag_types = sqlx::query_as_with::<_, PostgresTagTypeRow, _>(sqlx::AssertSqlSafe(sql.as_str()), values)
             .fetch(&self.pool)
             .map_ok(Into::into)
             .try_collect()
@@ -126,7 +126,7 @@ impl TagTypesRepository for PostgresTagTypesRepository {
             .order_by(PostgresTagType::Kana, Order::Asc)
             .build_sqlx(PostgresQueryBuilder);
 
-        let tag_types = sqlx::query_as_with::<_, PostgresTagTypeRow, _>(&sql, values)
+        let tag_types = sqlx::query_as_with::<_, PostgresTagTypeRow, _>(sqlx::AssertSqlSafe(sql.as_str()), values)
             .fetch(&self.pool)
             .map_ok(Into::into)
             .try_collect()
@@ -152,7 +152,7 @@ impl TagTypesRepository for PostgresTagTypesRepository {
             .lock(LockType::Update)
             .build_sqlx(PostgresQueryBuilder);
 
-        let tag_type = match sqlx::query_as_with::<_, PostgresTagTypeRow, _>(&sql, values).fetch_one(&mut *tx).await {
+        let tag_type = match sqlx::query_as_with::<_, PostgresTagTypeRow, _>(sqlx::AssertSqlSafe(sql.as_str()), values).fetch_one(&mut *tx).await {
             Ok(row) => TagType::from(row),
             Err(sqlx::Error::RowNotFound) => return Err(ErrorKind::TagTypeNotFound { id })?,
             Err(e) => return Err(Error::other(e)),
@@ -179,7 +179,7 @@ impl TagTypesRepository for PostgresTagTypesRepository {
             )
             .build_sqlx(PostgresQueryBuilder);
 
-        let tag_type = match sqlx::query_as_with::<_, PostgresTagTypeRow, _>(&sql, values).fetch_one(&mut *tx).await {
+        let tag_type = match sqlx::query_as_with::<_, PostgresTagTypeRow, _>(sqlx::AssertSqlSafe(sql.as_str()), values).fetch_one(&mut *tx).await {
             Ok(row) => TagType::from(row),
             Err(sqlx::Error::Database(e)) if e.is_unique_violation() => return Err(ErrorKind::TagTypeSlugDuplicate { slug: slug.to_string() })?,
             Err(e) => return Err(Error::other(e)),
@@ -196,7 +196,7 @@ impl TagTypesRepository for PostgresTagTypesRepository {
             .and_where(Expr::col(PostgresTagType::Id).eq(PostgresTagTypeId::from(id)))
             .build_sqlx(PostgresQueryBuilder);
 
-        let affected = sqlx::query_with(&sql, values)
+        let affected = sqlx::query_with(sqlx::AssertSqlSafe(sql.as_str()), values)
             .execute(&self.pool)
             .await
             .map_err(Error::other)?

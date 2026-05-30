@@ -42,14 +42,14 @@ impl Operation<Postgres> for ReplicasPhaseOperation {
             .rename_column(PostgresReplica::CreatedAt, PostgresReplicaTemporary::CreatedAtOld)
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Table::alter()
             .table(PostgresReplica::Table)
             .rename_column(PostgresReplica::UpdatedAt, PostgresReplicaTemporary::UpdatedAtOld)
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Table::alter()
             .table(PostgresReplica::Table)
@@ -58,7 +58,7 @@ impl Operation<Postgres> for ReplicasPhaseOperation {
             .add_column(ColumnDef::new(PostgresReplica::UpdatedAt).timestamp_with_time_zone())
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Query::update()
             .table(PostgresReplica::Table)
@@ -67,7 +67,7 @@ impl Operation<Postgres> for ReplicasPhaseOperation {
             .value(PostgresReplica::UpdatedAt, Expr::col(PostgresReplicaTemporary::UpdatedAtOld))
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Table::alter()
             .table(PostgresReplica::Table)
@@ -81,7 +81,7 @@ impl Operation<Postgres> for ReplicasPhaseOperation {
             .modify_column(ColumnDef::new(PostgresReplica::UpdatedAt).timestamp_with_time_zone().not_null().default(Expr::current_timestamp()))
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = r#"
             ALTER TABLE "replicas"
@@ -103,7 +103,7 @@ impl Operation<Postgres> for ReplicasPhaseOperation {
             .and_where(Expr::col(PostgresReplica::Phase).ne(PostgresReplicaPhase::Ready))
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = r#"
             ALTER TABLE "replicas"
@@ -120,7 +120,7 @@ impl Operation<Postgres> for ReplicasPhaseOperation {
             .modify_column(ColumnDef::new(PostgresReplica::Height).integer().not_null())
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         Ok(())
     }

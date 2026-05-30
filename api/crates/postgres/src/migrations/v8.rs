@@ -36,7 +36,7 @@ impl Operation<Postgres> for ExternalServiceUrlPatternOperation {
             .add_column(ColumnDef::new(PostgresExternalService::UrlPattern).text())
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Query::update()
             .table(PostgresExternalService::Table)
@@ -47,7 +47,7 @@ impl Operation<Postgres> for ExternalServiceUrlPatternOperation {
             .and_where(Expr::col(PostgresExternalService::Kind).eq("bluesky"))
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Query::update()
             .table(PostgresExternalService::Table)
@@ -58,7 +58,7 @@ impl Operation<Postgres> for ExternalServiceUrlPatternOperation {
             .and_where(Expr::col(PostgresExternalService::Kind).eq("fantia"))
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Query::update()
             .table(PostgresExternalService::Table)
@@ -81,7 +81,7 @@ impl Operation<Postgres> for ExternalServiceUrlPatternOperation {
             .and_where(Expr::col(PostgresExternalService::BaseUrl).is_not_null())
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Query::update()
             .table(PostgresExternalService::Table)
@@ -104,7 +104,7 @@ impl Operation<Postgres> for ExternalServiceUrlPatternOperation {
             .and_where(Expr::col(PostgresExternalService::BaseUrl).is_not_null())
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Query::update()
             .table(PostgresExternalService::Table)
@@ -115,7 +115,7 @@ impl Operation<Postgres> for ExternalServiceUrlPatternOperation {
             .and_where(Expr::col(PostgresExternalService::Kind).eq("nijie"))
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Query::update()
             .table(PostgresExternalService::Table)
@@ -126,7 +126,7 @@ impl Operation<Postgres> for ExternalServiceUrlPatternOperation {
             .and_where(Expr::col(PostgresExternalService::Kind).eq("pixiv"))
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Query::update()
             .table(PostgresExternalService::Table)
@@ -137,7 +137,7 @@ impl Operation<Postgres> for ExternalServiceUrlPatternOperation {
             .and_where(Expr::col(PostgresExternalService::Kind).eq("pixiv_fanbox"))
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Query::update()
             .table(PostgresExternalService::Table)
@@ -160,7 +160,7 @@ impl Operation<Postgres> for ExternalServiceUrlPatternOperation {
             .and_where(Expr::col(PostgresExternalService::BaseUrl).is_not_null())
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Query::update()
             .table(PostgresExternalService::Table)
@@ -171,7 +171,7 @@ impl Operation<Postgres> for ExternalServiceUrlPatternOperation {
             .and_where(Expr::col(PostgresExternalService::Kind).eq("seiga"))
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Query::update()
             .table(PostgresExternalService::Table)
@@ -182,7 +182,7 @@ impl Operation<Postgres> for ExternalServiceUrlPatternOperation {
             .and_where(Expr::col(PostgresExternalService::Kind).eq("skeb"))
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Query::update()
             .table(PostgresExternalService::Table)
@@ -193,7 +193,7 @@ impl Operation<Postgres> for ExternalServiceUrlPatternOperation {
             .and_where(Expr::col(PostgresExternalService::Kind).eq("threads"))
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Query::update()
             .table(PostgresExternalService::Table)
@@ -204,7 +204,7 @@ impl Operation<Postgres> for ExternalServiceUrlPatternOperation {
             .and_where(Expr::col(PostgresExternalService::Kind).eq("xfolio"))
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Query::update()
             .table(PostgresExternalService::Table)
@@ -215,7 +215,7 @@ impl Operation<Postgres> for ExternalServiceUrlPatternOperation {
             .and_where(Expr::col(PostgresExternalService::Kind).eq("x"))
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         Ok(())
     }
@@ -227,7 +227,7 @@ impl Operation<Postgres> for ExternalServiceUrlPatternOperation {
             .drop_column(PostgresExternalService::UrlPattern)
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         Ok(())
     }

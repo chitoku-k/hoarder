@@ -48,7 +48,7 @@ impl Operation<Postgres> for SourceExternalMetadataOperation {
             .and_where(Expr::col(PostgresSource::ExternalMetadata).binary(BinOper::Custom("?"), OLD_NAME))
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         Ok(())
     }
@@ -72,7 +72,7 @@ impl Operation<Postgres> for SourceExternalMetadataOperation {
             .and_where(Expr::col(PostgresSource::ExternalMetadata).binary(BinOper::Custom("?"), OLD_NAME))
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         Ok(())
     }

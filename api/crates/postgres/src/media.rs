@@ -254,7 +254,7 @@ where
         .order_by(DISPLAY_ORDER, Order::Asc)
         .build_sqlx(PostgresQueryBuilder);
 
-    let rows: Vec<_> = sqlx::query_as_with::<_, PostgresMediumTagTypeRow, _>(&sql, values)
+    let rows: Vec<_> = sqlx::query_as_with::<_, PostgresMediumTagTypeRow, _>(sqlx::AssertSqlSafe(sql.as_str()), values)
         .fetch(&mut *conn)
         .try_collect()
         .await
@@ -320,7 +320,7 @@ where
         .order_by(PostgresReplica::DisplayOrder, Order::Asc)
         .build_sqlx(PostgresQueryBuilder);
 
-    let replicas = sqlx::query_as_with::<_, PostgresReplicaThumbnailRow, _>(&sql, values)
+    let replicas = sqlx::query_as_with::<_, PostgresReplicaThumbnailRow, _>(sqlx::AssertSqlSafe(sql.as_str()), values)
         .fetch(&mut *conn)
         .map_ok(Into::into)
         .try_fold(HashMap::<_, Vec<_>>::new(), |mut replicas, (medium_id, replica)| async move {
@@ -372,7 +372,7 @@ where
         .order_by((PostgresSource::Table, PostgresSource::ExternalMetadata), Order::Asc)
         .build_sqlx(PostgresQueryBuilder);
 
-    let sources = sqlx::query_as_with::<_, PostgresMediumSourceExternalServiceRow, _>(&sql, values)
+    let sources = sqlx::query_as_with::<_, PostgresMediumSourceExternalServiceRow, _>(sqlx::AssertSqlSafe(sql.as_str()), values)
         .fetch(conn)
         .map_err(Error::other)
         .and_then(|row| ready(row.try_into()))
@@ -448,7 +448,7 @@ impl MediaRepository for PostgresMediaRepository {
             )
             .build_sqlx(PostgresQueryBuilder);
 
-        let medium: Medium = sqlx::query_as_with::<_, PostgresMediumRow, _>(&sql, values)
+        let medium: Medium = sqlx::query_as_with::<_, PostgresMediumRow, _>(sqlx::AssertSqlSafe(sql.as_str()), values)
             .fetch_one(&mut *tx)
             .await
             .map_err(Error::other)?
@@ -481,7 +481,7 @@ impl MediaRepository for PostgresMediaRepository {
         };
         if let Some(query) = query {
             let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
-            match sqlx::query_with(&sql, values).execute(&mut *tx).await {
+            match sqlx::query_with(sqlx::AssertSqlSafe(sql.as_str()), values).execute(&mut *tx).await {
                 Ok(_) => (),
                 Err(sqlx::Error::Database(e)) if e.is_foreign_key_violation() => return Err(ErrorKind::MediumSourceNotFound { id: medium.id })?,
                 Err(e) => return Err(Error::other(e)),
@@ -517,7 +517,7 @@ impl MediaRepository for PostgresMediaRepository {
         };
         if let Some(query) = query {
             let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
-            match sqlx::query_with(&sql, values).execute(&mut *tx).await {
+            match sqlx::query_with(sqlx::AssertSqlSafe(sql.as_str()), values).execute(&mut *tx).await {
                 Ok(_) => (),
                 Err(sqlx::Error::Database(e)) if e.is_foreign_key_violation() => return Err(ErrorKind::MediumTagNotFound { id: medium.id })?,
                 Err(e) => return Err(Error::other(e)),
@@ -551,7 +551,7 @@ impl MediaRepository for PostgresMediaRepository {
             .order_by(PostgresMedium::CreatedAt, Order::Asc)
             .build_sqlx(PostgresQueryBuilder);
 
-        let mut media: Vec<_> = sqlx::query_as_with::<_, PostgresMediumRow, _>(&sql, values)
+        let mut media: Vec<_> = sqlx::query_as_with::<_, PostgresMediumRow, _>(sqlx::AssertSqlSafe(sql.as_str()), values)
             .fetch(&mut *conn)
             .map_ok(Into::into)
             .try_collect()
@@ -617,7 +617,7 @@ impl MediaRepository for PostgresMediaRepository {
             .limit(limit)
             .build_sqlx(PostgresQueryBuilder);
 
-        let mut media: Vec<_> = sqlx::query_as_with::<_, PostgresMediumRow, _>(&sql, values)
+        let mut media: Vec<_> = sqlx::query_as_with::<_, PostgresMediumRow, _>(sqlx::AssertSqlSafe(sql.as_str()), values)
             .fetch(&mut *conn)
             .map_ok(Into::into)
             .try_collect()
@@ -710,7 +710,7 @@ impl MediaRepository for PostgresMediaRepository {
             .limit(limit)
             .build_sqlx(PostgresQueryBuilder);
 
-        let mut media: Vec<_> = sqlx::query_as_with::<_, PostgresMediumRow, _>(&sql, values)
+        let mut media: Vec<_> = sqlx::query_as_with::<_, PostgresMediumRow, _>(sqlx::AssertSqlSafe(sql.as_str()), values)
             .fetch(&mut *conn)
             .map_ok(Into::into)
             .try_collect()
@@ -768,7 +768,7 @@ impl MediaRepository for PostgresMediaRepository {
             .limit(limit)
             .build_sqlx(PostgresQueryBuilder);
 
-        let mut media: Vec<_> = sqlx::query_as_with::<_, PostgresMediumRow, _>(&sql, values)
+        let mut media: Vec<_> = sqlx::query_as_with::<_, PostgresMediumRow, _>(sqlx::AssertSqlSafe(sql.as_str()), values)
             .fetch(&mut *conn)
             .map_ok(Into::into)
             .try_collect()
@@ -801,7 +801,7 @@ impl MediaRepository for PostgresMediaRepository {
                 .and_where(Expr::col(PostgresMedium::Id).eq(PostgresMediumId::from(id)))
                 .build_sqlx(PostgresQueryBuilder);
 
-            let medium = sqlx::query_as_with::<_, PostgresMediumRow, _>(&sql, values)
+            let medium = sqlx::query_as_with::<_, PostgresMediumRow, _>(sqlx::AssertSqlSafe(sql.as_str()), values)
                 .fetch_one(&mut *conn)
                 .await
                 .map_err(Error::other)?
@@ -878,7 +878,7 @@ impl MediaRepository for PostgresMediaRepository {
             .lock(LockType::Update)
             .build_sqlx(PostgresQueryBuilder);
 
-        let replica_ids: OrderSet<_> = sqlx::query_as_with::<_, PostgresMediumReplicaRow, _>(&sql, values)
+        let replica_ids: OrderSet<_> = sqlx::query_as_with::<_, PostgresMediumReplicaRow, _>(sqlx::AssertSqlSafe(sql.as_str()), values)
             .fetch(&mut *tx)
             .map_ok(<(Medium, ReplicaId)>::from)
             .map_ok(|(_, replica_id)| replica_id)
@@ -900,7 +900,7 @@ impl MediaRepository for PostgresMediaRepository {
                 .and_where(Expr::col(PostgresReplica::MediumId).eq(PostgresMediumId::from(id)))
                 .build_sqlx(PostgresQueryBuilder);
 
-            sqlx::query_with(&sql, values)
+            sqlx::query_with(sqlx::AssertSqlSafe(sql.as_str()), values)
                 .execute(&mut *tx)
                 .await
                 .map_err(Error::other)?;
@@ -912,7 +912,7 @@ impl MediaRepository for PostgresMediaRepository {
                     .and_where(Expr::col(PostgresReplica::Id).eq(PostgresReplicaId::from(replica_id)))
                     .build_sqlx(PostgresQueryBuilder);
 
-                sqlx::query_with(&sql, values)
+                sqlx::query_with(sqlx::AssertSqlSafe(sql.as_str()), values)
                     .execute(&mut *tx)
                     .await
                     .map_err(Error::other)?;
@@ -944,7 +944,7 @@ impl MediaRepository for PostgresMediaRepository {
         };
         if let Some(query) = query {
             let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
-            match sqlx::query_with(&sql, values).execute(&mut *tx).await {
+            match sqlx::query_with(sqlx::AssertSqlSafe(sql.as_str()), values).execute(&mut *tx).await {
                 Ok(_) => (),
                 Err(sqlx::Error::Database(e)) if e.is_foreign_key_violation() => return Err(ErrorKind::MediumSourceNotFound { id })?,
                 Err(e) => return Err(Error::other(e)),
@@ -966,7 +966,7 @@ impl MediaRepository for PostgresMediaRepository {
         };
         if let Some(query) = query {
             let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
-            sqlx::query_with(&sql, values)
+            sqlx::query_with(sqlx::AssertSqlSafe(sql.as_str()), values)
                 .execute(&mut *tx)
                 .await
                 .map_err(Error::other)?;
@@ -1002,7 +1002,7 @@ impl MediaRepository for PostgresMediaRepository {
         };
         if let Some(query) = query {
             let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
-            match sqlx::query_with(&sql, values).execute(&mut *tx).await {
+            match sqlx::query_with(sqlx::AssertSqlSafe(sql.as_str()), values).execute(&mut *tx).await {
                 Ok(_) => (),
                 Err(sqlx::Error::Database(e)) if e.is_foreign_key_violation() => return Err(ErrorKind::MediumTagNotFound { id })?,
                 Err(e) => return Err(Error::other(e)),
@@ -1034,7 +1034,7 @@ impl MediaRepository for PostgresMediaRepository {
         };
         if let Some(query) = query {
             let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
-            sqlx::query_with(&sql, values)
+            sqlx::query_with(sqlx::AssertSqlSafe(sql.as_str()), values)
                 .execute(&mut *tx)
                 .await
                 .map_err(Error::other)?;
@@ -1059,7 +1059,7 @@ impl MediaRepository for PostgresMediaRepository {
         }
 
         let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
-        let medium = sqlx::query_as_with::<_, PostgresMediumRow, _>(&sql, values)
+        let medium = sqlx::query_as_with::<_, PostgresMediumRow, _>(sqlx::AssertSqlSafe(sql.as_str()), values)
             .fetch_one(&mut *tx)
             .await
             .map_err(Error::other)?
@@ -1081,7 +1081,7 @@ impl MediaRepository for PostgresMediaRepository {
             .and_where(Expr::col(PostgresMedium::Id).eq(PostgresMediumId::from(id)))
             .build_sqlx(PostgresQueryBuilder);
 
-        let affected = sqlx::query_with(&sql, values)
+        let affected = sqlx::query_with(sqlx::AssertSqlSafe(sql.as_str()), values)
             .execute(&self.pool)
             .await
             .map_err(Error::other)?

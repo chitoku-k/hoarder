@@ -54,7 +54,7 @@ impl Operation<Postgres> for CreateTableOperation {
             .col(ColumnDef::new(PostgresExternalService::Name).text().not_null())
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Table::create()
             .table(PostgresSource::Table)
@@ -78,7 +78,7 @@ impl Operation<Postgres> for CreateTableOperation {
             )
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Table::create()
             .table(PostgresMedium::Table)
@@ -88,7 +88,7 @@ impl Operation<Postgres> for CreateTableOperation {
             .col(ColumnDef::new(PostgresMedium::UpdatedAt).timestamp_with_time_zone().not_null().default(Expr::current_timestamp()))
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Table::create()
             .table(PostgresMediumSource::Table)
@@ -115,7 +115,7 @@ impl Operation<Postgres> for CreateTableOperation {
             )
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Table::create()
             .table(PostgresReplica::Table)
@@ -144,7 +144,7 @@ impl Operation<Postgres> for CreateTableOperation {
             )
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Table::create()
             .table(PostgresThumbnail::Table)
@@ -164,7 +164,7 @@ impl Operation<Postgres> for CreateTableOperation {
             )
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Table::create()
             .table(PostgresTag::Table)
@@ -177,7 +177,7 @@ impl Operation<Postgres> for CreateTableOperation {
             .col(ColumnDef::new(PostgresTag::UpdatedAt).timestamp_with_time_zone().not_null().default(Expr::current_timestamp()))
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Table::create()
             .table(PostgresTagPath::Table)
@@ -213,7 +213,7 @@ impl Operation<Postgres> for CreateTableOperation {
             )
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Table::create()
             .table(PostgresTagType::Table)
@@ -223,7 +223,7 @@ impl Operation<Postgres> for CreateTableOperation {
             .col(ColumnDef::new(PostgresTagType::Name).text().not_null())
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Table::create()
             .table(PostgresMediumTag::Table)
@@ -258,7 +258,7 @@ impl Operation<Postgres> for CreateTableOperation {
             )
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         Ok(())
     }
@@ -269,61 +269,61 @@ impl Operation<Postgres> for CreateTableOperation {
             .table(PostgresMediumTag::Table)
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Table::drop()
             .table(PostgresTagType::Table)
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Table::drop()
             .table(PostgresTagPath::Table)
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Table::drop()
             .table(PostgresTag::Table)
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Table::drop()
             .table(PostgresThumbnail::Table)
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Table::drop()
             .table(PostgresReplica::Table)
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Table::drop()
             .table(PostgresMediumSource::Table)
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Table::drop()
             .table(PostgresMedium::Table)
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Table::drop()
             .table(PostgresSource::Table)
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Table::drop()
             .table(PostgresExternalService::Table)
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         Ok(())
     }
@@ -343,7 +343,7 @@ impl Operation<Postgres> for CreateIndexOperation {
             .col(PostgresMedium::Id)
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Index::create()
             .name("replicas_medium_id_idx")
@@ -352,7 +352,7 @@ impl Operation<Postgres> for CreateIndexOperation {
             .col(PostgresReplica::MediumId)
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Index::create()
             .name("tags_aliases_idx")
@@ -361,7 +361,7 @@ impl Operation<Postgres> for CreateIndexOperation {
             .col(PostgresTag::Aliases)
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Index::create()
             .name("tags_kana_id_idx")
@@ -371,7 +371,7 @@ impl Operation<Postgres> for CreateIndexOperation {
             .col(PostgresTag::Id)
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Index::create()
             .name("tag_paths_distance_ancestor_id_descendant_id_idx")
@@ -382,7 +382,7 @@ impl Operation<Postgres> for CreateIndexOperation {
             .col(PostgresTagPath::DescendantId)
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         Ok(())
     }
@@ -393,31 +393,31 @@ impl Operation<Postgres> for CreateIndexOperation {
             .name("media_created_at_id_idx")
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Index::drop()
             .name("replicas_medium_id_idx")
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Index::drop()
             .name("tags_aliases_idx")
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Index::drop()
             .name("tags_kana_id_idx")
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Index::drop()
             .name("tag_paths_distance_ancestor_id_descendant_id_idx")
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         Ok(())
     }
@@ -450,7 +450,7 @@ impl Operation<Postgres> for InsertRootTagsOperation {
             .on_conflict(OnConflict::new().do_nothing().to_owned())
             .build_sqlx(PostgresQueryBuilder);
 
-        sqlx::query_with(&sql, values).execute(&mut *connection).await?;
+        sqlx::query_with(sqlx::AssertSqlSafe(sql.as_str()), values).execute(&mut *connection).await?;
 
         let (sql, values) = Query::insert()
             .into_table(PostgresTagPath::Table)
@@ -467,7 +467,7 @@ impl Operation<Postgres> for InsertRootTagsOperation {
             .on_conflict(OnConflict::new().do_nothing().to_owned())
             .build_sqlx(PostgresQueryBuilder);
 
-        sqlx::query_with(&sql, values).execute(&mut *connection).await?;
+        sqlx::query_with(sqlx::AssertSqlSafe(sql.as_str()), values).execute(&mut *connection).await?;
 
         Ok(())
     }
@@ -484,14 +484,14 @@ impl Operation<Postgres> for InsertRootTagsOperation {
             )
             .build_sqlx(PostgresQueryBuilder);
 
-        sqlx::query_with(&sql, values).execute(&mut *tx).await?;
+        sqlx::query_with(sqlx::AssertSqlSafe(sql.as_str()), values).execute(&mut *tx).await?;
 
         let (sql, values) = Query::delete()
             .from_table(PostgresTag::Table)
             .and_where(Expr::col(PostgresTag::Id).eq(PostgresTagId::from(TagId::root())))
             .build_sqlx(PostgresQueryBuilder);
 
-        sqlx::query_with(&sql, values).execute(&mut *tx).await?;
+        sqlx::query_with(sqlx::AssertSqlSafe(sql.as_str()), values).execute(&mut *tx).await?;
 
         tx.commit().await?;
         Ok(())

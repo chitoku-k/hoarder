@@ -36,21 +36,21 @@ impl Operation<Postgres> for TagTypeKanaOperation {
             .add_column(ColumnDef::new(PostgresTagType::Kana).text())
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Query::update()
             .table(PostgresTagType::Table)
             .value(PostgresTagType::Kana, "")
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Table::alter()
             .table(PostgresTagType::Table)
             .modify_column(ColumnDef::new(PostgresTagType::Kana).text().not_null())
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         Ok(())
     }
@@ -62,7 +62,7 @@ impl Operation<Postgres> for TagTypeKanaOperation {
             .drop_column(PostgresTagType::Kana)
             .to_string(PostgresQueryBuilder);
 
-        sqlx::query(&sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         Ok(())
     }
