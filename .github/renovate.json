@@ -125,6 +125,13 @@
     },
     {
       "matchDepNames": [
+        "sea-query-sqlx",
+        "sqlx"
+      ],
+      "groupName": "sqlx"
+    },
+    {
+      "matchDepNames": [
         "sea-query",
         "sea-query-*"
       ],
