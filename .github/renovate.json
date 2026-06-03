@@ -136,7 +136,8 @@
       "matchDepNames": [
         "sea-query",
         "sea-query-*",
-        "sqlx"
+        "sqlx",
+        "sqlx_migrator"
       ],
       "groupName": "sqlx",
       "minimumGroupSize": 3
