@@ -42,12 +42,12 @@ const MediumItemFileOverwriteDialogBody: FunctionComponent<MediumItemFileOverwri
               <Typography>既にアップロード先にあるファイル:</Typography>
               <Stack spacing={2} direction="row">
                 <Image className={styles.imageWrapper}>
-                  <Stack className={styles.imageWrapper} alignItems="center" justifyContent="center" flexShrink={0}>
+                  <Stack className={styles.imageWrapper}>
                     <ImageBodyNext className={styles.image} src={existing.url} fill unoptimized alt="" />
                   </Stack>
                 </Image>
                 <Stack>
-                  <Typography component="strong" fontWeight="bold">{existing.name}</Typography>
+                  <Typography className={styles.name} component="strong">{existing.name}</Typography>
                   {typeof existing.size === 'number' ? (
                     <Typography className={styles.description}>サイズ: {filesize(existing.size)}</Typography>
                   ) : null}
@@ -64,12 +64,12 @@ const MediumItemFileOverwriteDialogBody: FunctionComponent<MediumItemFileOverwri
             <Typography>アップロード中のファイル:</Typography>
             <Stack spacing={2} direction="row">
               <Image className={styles.imageWrapper}>
-                <Stack className={styles.imageWrapper} alignItems="center" justifyContent="center" flexShrink={0}>
+                <Stack className={styles.imageWrapper}>
                   <ImageBodyBlob className={styles.image} src={uploading.blob} alt="" />
                 </Stack>
               </Image>
               <Stack>
-                <Typography component="strong" fontWeight="bold">{uploading.name}</Typography>
+                <Typography className={styles.name} component="strong">{uploading.name}</Typography>
                 <Typography className={styles.description}>サイズ: {filesize(uploading.size)}</Typography>
                 <Typography className={styles.description}>
                   更新日時: <DateTime date={uploading.lastModified} format="Pp" />

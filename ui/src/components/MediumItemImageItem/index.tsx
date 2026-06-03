@@ -30,7 +30,7 @@ const MediumItemImageItem: FunctionComponent<MediumItemImageItemProps> = ({
   const src = isReplica(replica) ? replica.url ?? `/objects?url=${encodeURIComponent(replica.originalUrl)}` : replica.blob
 
   return (
-    <Stack className={clsx(styles.wrapper, className)} alignItems="stretch" justifyContent="stretch" style={style}>
+    <Stack className={clsx(styles.wrapper, className)} style={style}>
       {phase === 'READY' && typeof replica.width === 'number' && typeof replica.height === 'number' ? (
         <Image
           className={styles.item}

@@ -8,7 +8,7 @@ import styles from './styles.module.scss'
 const MediumItemFileAppendDialogLoading: FunctionComponent<MediumItemFileAppendDialogLoadingProps> = ({
   cancel,
 }) => (
-  <Stack className={styles.container} spacing={2} alignItems="center" justifyContent="center">
+  <Stack className={styles.container} spacing={2}>
     <CircularProgress color="inherit" />
     <Button color="inherit" onClick={cancel}>キャンセル</Button>
   </Stack>

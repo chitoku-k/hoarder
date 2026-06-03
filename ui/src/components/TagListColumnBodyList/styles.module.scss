@@ -16,6 +16,13 @@
   }
 }
 
+.header {
+  &:global(.MuiStack-root) {
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
 .name {
   &:global(.MuiStack-root) {
     padding: 1px 0;

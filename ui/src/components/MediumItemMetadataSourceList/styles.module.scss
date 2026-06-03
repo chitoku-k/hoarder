@@ -1,5 +1,6 @@
 .header {
   &:global(.MuiStack-root) {
+    align-items: center;
     min-height: 36px;
     padding: 0 0 6px;
   }
@@ -8,6 +9,12 @@
 .title {
   &:global(.MuiTypography-root) {
     font-size: 1.05rem;
+  }
+}
+
+.source {
+  &:global(.MuiStack-root) {
+    align-items: center;
   }
 }
 

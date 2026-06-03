@@ -143,8 +143,9 @@ const AutocompleteContainerBody: FunctionComponent<AutocompleteContainerBodyProp
           variant={variant}
           inputRef={ref}
           slotProps={{
+            ...params.slotProps,
             input: {
-              ...params.InputProps,
+              ...params.slotProps.input,
               onKeyDown: handleOnKeyDown,
               startAdornment: Icon ? (
                 <Icon className={styles.icon} fontSize="small" />
@@ -152,7 +153,7 @@ const AutocompleteContainerBody: FunctionComponent<AutocompleteContainerBodyProp
               endAdornment: (
                 <>
                   {loading ? <CircularProgress color="inherit" size={20} /> : null}
-                  {params.InputProps.endAdornment}
+                  {params.slotProps.input.endAdornment}
                 </>
               ),
             },

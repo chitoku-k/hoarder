@@ -6,8 +6,8 @@ import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
-import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline'
+import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined'
+import RemoveCircleOutlineOutlinedIcon from '@mui/icons-material/RemoveCircleOutlineOutlined'
 import SellIcon from '@mui/icons-material/Sell'
 
 import AutocompleteTag from '@/components/AutocompleteTag'
@@ -78,16 +78,16 @@ const MediumItemMetadataTagGroupEdit: FunctionComponent<MediumItemMetadataTagGro
 
   return (
     <Stack>
-      <Stack className={styles.header} direction="row" alignItems="center" justifyContent="space-between">
+      <Stack className={styles.header} direction="row">
         {removingTagType || (removingTags.length > 0 && removingTags.length === tags.length && addingTags.length === 0) ? (
           <>
             <Typography className={styles.title} variant="h4">
               <del>{type.name}</del>
             </Typography>
-            <Stack direction="row" alignItems="center">
+            <Stack className={styles.body} direction="row">
               <Tooltip title="元に戻す" placement="right">
                 <IconButton size="small" disabled={loading} onClick={handleClickRestoreTagType}>
-                  <AddCircleOutlineIcon fontSize="inherit" />
+                  <AddCircleOutlineOutlinedIcon fontSize="inherit" />
                 </IconButton>
               </Tooltip>
             </Stack>
@@ -97,10 +97,10 @@ const MediumItemMetadataTagGroupEdit: FunctionComponent<MediumItemMetadataTagGro
             <Typography className={styles.title} variant="h4">
               {type.name}
             </Typography>
-            <Stack direction="row" alignItems="center">
+            <Stack className={styles.body} direction="row">
               <Tooltip title="削除" placement="right">
                 <IconButton size="small" disabled={loading} onClick={handleClickRemoveTagType}>
-                  <RemoveCircleOutlineIcon fontSize="inherit" />
+                  <RemoveCircleOutlineOutlinedIcon fontSize="inherit" />
                 </IconButton>
               </Tooltip>
             </Stack>
@@ -109,13 +109,13 @@ const MediumItemMetadataTagGroupEdit: FunctionComponent<MediumItemMetadataTagGro
       </Stack>
       <Stack spacing={0.5}>
         {allTags.map(tag => (
-          <Stack key={tag.id} direction="row" alignItems="center" justifyContent="space-between">
+          <Stack key={tag.id} className={styles.tag} direction="row">
             {removingTags.some(({ id }) => id === tag.id) ? (
               <>
                 <TagBreadcrumbsList className={styles.removed} tag={tag} />
                 <Tooltip title="元に戻す" placement="right">
                   <IconButton size="small" disabled={loading} onClick={() => handleClickRestoreTag(tag)}>
-                    <AddCircleOutlineIcon fontSize="inherit" />
+                    <AddCircleOutlineOutlinedIcon fontSize="inherit" />
                   </IconButton>
                 </Tooltip>
               </>
@@ -124,14 +124,14 @@ const MediumItemMetadataTagGroupEdit: FunctionComponent<MediumItemMetadataTagGro
                 <TagBreadcrumbsList tag={tag} />
                 <Tooltip title="削除" placement="right">
                   <IconButton size="small" disabled={loading} onClick={() => handleClickRemoveTag(tag)}>
-                    <RemoveCircleOutlineIcon fontSize="inherit" />
+                    <RemoveCircleOutlineOutlinedIcon fontSize="inherit" />
                   </IconButton>
                 </Tooltip>
               </>
             )}
           </Stack>
         ))}
-        <Stack flexGrow={1} direction="row">
+        <Stack className={styles.newTagContainer} direction="row">
           <AutocompleteTag
             className={styles.newTag}
             size="small"

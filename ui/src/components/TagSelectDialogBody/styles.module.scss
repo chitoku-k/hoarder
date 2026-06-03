@@ -17,6 +17,18 @@
   }
 }
 
+.body {
+  &:global(.MuiStack-root) {
+    align-items: center;
+  }
+}
+
+.label {
+  &:global(.MuiTypography-root) {
+   flex-shrink: 0;
+  }
+}
+
 .destination {
   &:global(.MuiCard-root) {
     flex-grow: 1;

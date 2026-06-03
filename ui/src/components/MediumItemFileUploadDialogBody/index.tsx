@@ -354,8 +354,8 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
           fixedHeaderContent={tableFixedHeaderContent}
           itemContent={tableItemContent}
         />
-        <Stack spacing={2} direction="row" alignItems="center">
-          <Typography flexShrink={0}>アップロード先</Typography>
+        <Stack className={styles.destinationContainer} spacing={2} direction="row">
+          <Typography className={styles.destinationLabel}>アップロード先</Typography>
           <Card className={styles.destination}>
             <AutocompleteContainer
               className={styles.containerComplete}

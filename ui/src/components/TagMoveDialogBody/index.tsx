@@ -81,7 +81,7 @@ const TagMoveDialogBody: FunctionComponent<TagMoveDialogBodyProps> = ({
       <DialogContent>
         <DialogContentText>
           タグ「
-          <Typography component="strong" fontWeight="bold">{tag.name}</Typography>
+          <Typography className={styles.name} component="strong">{tag.name}</Typography>
           」の移動
         </DialogContentText>
         <TagListView
@@ -93,8 +93,8 @@ const TagMoveDialogBody: FunctionComponent<TagMoveDialogBodyProps> = ({
           onSelect={select}
           selectable="column"
         />
-        <Stack spacing={2} direction="row" alignItems="center">
-          <Typography flexShrink={0}>移動先</Typography>
+        <Stack className={styles.body} spacing={2} direction="row">
+          <Typography className={styles.label}>移動先</Typography>
           <Card className={styles.destination}>
             <Stack className={styles.breadcrumbs} spacing={1} direction="row">
               {destination ? (

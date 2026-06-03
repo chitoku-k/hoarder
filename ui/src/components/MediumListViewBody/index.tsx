@@ -34,13 +34,13 @@ const MediumListViewBody: FunctionComponent<MediumListViewBodyProps> = ({
   }, [ fetchMore ])
 
   return media.length ? (
-    <Stack flexGrow={1}>
+    <Stack className={styles.media}>
       <ImageList className={styles.container} gap={40}>
         {media.map(medium => (
           <MediumListItem key={medium.id} medium={medium} size={160} />
         ))}
       </ImageList>
-      <Stack className={styles.pagination} alignItems="center">
+      <Stack className={styles.pagination}>
         {hasNextPage ? (
           <Button
             variant="outlined"
@@ -55,7 +55,7 @@ const MediumListViewBody: FunctionComponent<MediumListViewBodyProps> = ({
       </Stack>
     </Stack>
   ) : (
-    <Stack className={styles.noMedia} flexGrow={1} alignItems="center" justifyContent="center" spacing={2}>
+    <Stack className={styles.noMedia} spacing={2}>
       <CollectionsIcon className={styles.icon} />
       <Typography className={styles.text}>
         メディアがありません

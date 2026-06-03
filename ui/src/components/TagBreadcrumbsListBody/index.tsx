@@ -59,7 +59,6 @@ const TagBreadcrumbsListBody: FunctionComponent<TagBreadcrumbsListBodyProps> = (
       className={clsx(styles.breadcrumbsContainer, noWrap && styles.nowrap, className)}
       direction="row"
       spacing={1}
-      alignItems="start"
     >
       <SellIcon className={styles.icon} fontSize="small" />
       <Breadcrumbs className={clsx(styles.breadcrumbs, noWrap && styles.nowrap)} separator={null}>

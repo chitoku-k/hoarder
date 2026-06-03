@@ -1,5 +1,12 @@
+.header {
+  &:global(.MuiStack-root) {
+    justify-content: flex-end;
+  }
+}
+
 .container {
   &:global(.MuiStack-root) {
+    justify-content: flex-end;
     padding: 12px 20px;
     height: 100%;
   }

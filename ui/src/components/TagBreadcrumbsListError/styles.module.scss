@@ -1,5 +1,6 @@
 .breadcrumbs {
   &:global(.MuiStack-root) {
+    align-items: center;
     margin: 0;
   }
 }
@@ -8,6 +9,12 @@
   &:global(.MuiSvgIcon-root) {
     color: #666;
     min-height: 1.5rem;
+  }
+}
+
+.body {
+  &:global(.MuiStack-root) {
+    align-items: center;
   }
 }
 
@@ -20,6 +27,7 @@
 
 .retry {
   &:global(.MuiLink-root) {
+    font-size: 14;
     cursor: pointer;
   }
 }

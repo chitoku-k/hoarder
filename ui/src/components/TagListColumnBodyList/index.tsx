@@ -10,7 +10,7 @@ import IconButton from '@mui/material/IconButton'
 import List from '@mui/material/List'
 import Stack from '@mui/material/Stack'
 import AddIcon from '@mui/icons-material/Add'
-import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
+import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import SearchIcon from '@mui/icons-material/Search'
@@ -187,7 +187,7 @@ const TagListColumnBodyList: FunctionComponent<TagListColumnBodyListProps> = ({
             onMouseDown={handleMouseDownDeleteTag}
             onClick={e => handleClickDeleteTag(e, tag)}
           >
-            <DeleteOutlinedIcon fontSize={dense ? 'small' : 'medium'} />
+            <DeleteOutlineOutlinedIcon fontSize={dense ? 'small' : 'medium'} />
           </IconButton>
         </>
       ) : null}
@@ -244,7 +244,7 @@ const TagListColumnBodyList: FunctionComponent<TagListColumnBodyListProps> = ({
   return (
     <Stack className={styles.container}>
       <Stack className={clsx(styles.title, !readonly && styles.buttons)}>
-        <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between">
+        <Stack className={styles.header} direction="row" spacing={1}>
           {parent && !hit ? (
             <Stack className={styles.name}>{parent.name}</Stack>
           ) : (

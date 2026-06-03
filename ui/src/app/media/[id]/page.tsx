@@ -13,7 +13,7 @@ const Page: FunctionComponent<PageProps> = async ({
 }) => {
   const { id } = await params
   return (
-    <Content size={12}>
+    <Content>
       <MediumItem id={id} />
     </Content>
   )

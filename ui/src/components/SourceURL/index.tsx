@@ -41,7 +41,7 @@ const SourceURL: FunctionComponent<SourceURLProps> = ({
   const url = buildURL(externalService, externalMetadata as Record<string, Record<string, unknown>>)
 
   return (
-    <Stack className={className} direction="row" alignItems="start">
+    <Stack className={clsx(className, styles.url)} direction="row">
       <Icon className={styles.icon} fontSize="small" />
       {noLink && url ? (
         <span className={clsx(styles.item, styles.noLink)}>

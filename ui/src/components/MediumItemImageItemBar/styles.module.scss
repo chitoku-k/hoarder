@@ -4,6 +4,12 @@
   }
 }
 
+.titleWrapper {
+  &:global(.MuiStack-root) {
+    align-items: center;
+  }
+}
+
 .title {
   &:global(.MuiTypography-root) {
     padding: 0 4px;

@@ -107,7 +107,7 @@ const TagListColumnBodyEdit: FunctionComponent<TagListColumnBodyEditProps> = ({
   useBeforeUnload(changed)
 
   return (
-    <Stack className={styles.container} direction="column-reverse" justifyContent="flex-end">
+    <Stack className={styles.container} direction="column-reverse">
       <Stack>
         <TextField
           margin="normal"
@@ -142,7 +142,7 @@ const TagListColumnBodyEdit: FunctionComponent<TagListColumnBodyEditProps> = ({
           onChange={handleChangeAliases}
         />
       </Stack>
-      <Stack spacing={1} direction="row" justifyContent="space-between" alignItems="center">
+      <Stack className={styles.header} spacing={1} direction="row">
         <Stack className={styles.breadcrumbs} spacing={1} direction="row">
           <TagBreadcrumbsList id={tag.id} parent root noWrap />
         </Stack>

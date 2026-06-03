@@ -3,6 +3,10 @@
   color: rgba(0, 0, 0, 0.6);
 }
 
+.name {
+  font-weight: bold;
+}
+
 .label {
   &:global(.MuiFormControlLabel-root) {
     color: rgba(0, 0, 0, 0.6);

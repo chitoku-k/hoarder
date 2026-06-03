@@ -1,3 +1,18 @@
+.container {
+  &:global(.MuiStack-root) {
+    flex-grow: 1;
+    align-items: center;
+  }
+}
+
+.body {
+  &:global(.MuiStack-root) {
+    flex-grow: 1;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
 .icon {
   &:global(.MuiSvgIcon-root) {
     color: #666;

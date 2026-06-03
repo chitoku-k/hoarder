@@ -14,9 +14,9 @@ const AutocompleteTagError: FunctionComponent = () => {
   const { resetBoundary } = useErrorBoundary()
 
   return (
-    <Stack direction="row" spacing={1} flexGrow={1} alignItems="center">
+    <Stack className={styles.container} direction="row" spacing={1}>
       <ErrorIcon className={styles.icon} fontSize="small" />
-      <Stack direction="row" flexGrow={1} alignItems="center" justifyContent="space-between">
+      <Stack className={styles.body} direction="row">
         <Typography className={styles.text}>
           読み込めませんでした
         </Typography>

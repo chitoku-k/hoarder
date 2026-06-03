@@ -4,6 +4,13 @@
   }
 }
 
+.inner {
+  &:global(.MuiStack-root) {
+    align-items: center;
+    justify-content: center;
+  }
+}
+
 .icon {
   &:global(.MuiSvgIcon-root) {
     font-size: 72px;

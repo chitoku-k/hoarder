@@ -52,8 +52,8 @@ const TagSelectDialogBody: FunctionComponent<TagSelectDialogBodyProps> = ({
           onSelect={select}
           selectable="tag"
         />
-        <Stack spacing={2} direction="row" alignItems="center">
-          <Typography flexShrink={0}>タグ</Typography>
+        <Stack className={styles.body} spacing={2} direction="row">
+          <Typography className={styles.label}>タグ</Typography>
           <Card className={styles.destination}>
             <Stack className={styles.breadcrumbs} spacing={1} direction="row">
               {tag ? (

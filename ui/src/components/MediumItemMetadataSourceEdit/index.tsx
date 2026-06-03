@@ -240,9 +240,9 @@ const MediumItemMetadataSourceEdit: FunctionComponent<MediumItemMetadataSourceEd
 
   const renderExternalServiceOption = useCallback(({ key, ...props }: ComponentPropsWithoutRef<'li'>, option: ExternalService) => (
     <li key={key} {...props}>
-      <Stack direction="row" spacing={0.5} alignItems="start">
-        <FolderSpecialIcon className={styles.externalServiceSearchIcon} fontSize="small" />
-        <span className={styles.externalServiceSearchText}>{option.name}</span>
+      <Stack className={styles.externalService} direction="row" spacing={0.5}>
+        <FolderSpecialIcon className={styles.externalServiceIcon} fontSize="small" />
+        <span className={styles.externalServiceText}>{option.name}</span>
       </Stack>
     </li>
   ), [])
@@ -296,7 +296,7 @@ const MediumItemMetadataSourceEdit: FunctionComponent<MediumItemMetadataSourceEd
             restoreSource={restoreSource}
           />
         ))}
-        <Stack spacing={0.5} direction="row" alignItems="center" justifyContent="space-between">
+        <Stack className={styles.addExternalService} spacing={0.5} direction="row">
           <AutocompleteExternalService
             fullWidth
             openOnFocus

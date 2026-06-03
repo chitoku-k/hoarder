@@ -3,6 +3,7 @@
 import type { ChangeEvent, FunctionComponent, SyntheticEvent } from 'react'
 import { useCallback, useState } from 'react'
 import { useCollator } from '@react-aria/i18n'
+import clsx from 'clsx'
 import Autocomplete from '@mui/material/Autocomplete'
 import Button from '@mui/material/Button'
 import Portal from '@mui/material/Portal'
@@ -102,7 +103,7 @@ const TagListColumnBodyCreate: FunctionComponent<TagListColumnBodyCreateProps> =
   useBeforeUnload(changed)
 
   return (
-    <Stack className={styles.container} direction="column-reverse" justifyContent="flex-end">
+    <Stack className={styles.container} direction="column-reverse">
       <Stack>
         <TextField
           margin="normal"
@@ -137,7 +138,7 @@ const TagListColumnBodyCreate: FunctionComponent<TagListColumnBodyCreateProps> =
           onChange={handleChangeAliases}
         />
       </Stack>
-      <Stack spacing={1} direction="row" justifyContent={parent ? 'space-between' : 'end'} alignItems="center">
+      <Stack className={clsx(styles.header, parent === null && styles.root)} spacing={1} direction="row">
         <Stack className={styles.breadcrumbs} spacing={1} direction="row">
           {parent ? (
             <TagBreadcrumbsList id={parent.id} root noWrap />

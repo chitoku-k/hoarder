@@ -21,7 +21,7 @@ const MediumListItemThumbnail: FunctionComponent<MediumListItemThumbnailProps> =
     alt=""
   />
 ) : (
-  <Stack className={styles.noimage} alignItems="center" justifyContent="center">
+  <Stack className={styles.noimage}>
     <PhotoOutlinedIcon className={styles.noimageIcon} />
   </Stack>
 )

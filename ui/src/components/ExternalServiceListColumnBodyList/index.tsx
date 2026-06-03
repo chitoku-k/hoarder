@@ -8,7 +8,7 @@ import IconButton from '@mui/material/IconButton'
 import List from '@mui/material/List'
 import Stack from '@mui/material/Stack'
 import AddIcon from '@mui/icons-material/Add'
-import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
+import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import FolderSpecialIcon from '@mui/icons-material/FolderSpecial'
 import SearchIcon from '@mui/icons-material/Search'
@@ -105,7 +105,7 @@ const ExternalServiceListColumnBodyList: FunctionComponent<ExternalServiceListCo
 
   const renderExternalServiceOption = useCallback(({ key, ...props }: ComponentPropsWithoutRef<'li'>, option: ExternalService) => (
     <li key={key} {...props}>
-      <Stack direction="row" spacing={0.5} alignItems="start">
+      <Stack className={styles.externalServiceSearchItem} direction="row" spacing={0.5}>
         <FolderSpecialIcon className={styles.externalServiceSearchIcon} fontSize="small" />
         <span className={styles.externalServiceSearchText}>{option.name}</span>
       </Stack>
@@ -119,7 +119,7 @@ const ExternalServiceListColumnBodyList: FunctionComponent<ExternalServiceListCo
   return (
     <Stack className={styles.container}>
       <Stack className={clsx(styles.title, !readonly && styles.buttons)}>
-        <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between">
+        <Stack className={styles.externalServiceSearchContainer} direction="row" spacing={1}>
           <AutocompleteExternalService
             className={styles.externalServiceSearch}
             size="small"
@@ -179,7 +179,7 @@ const ExternalServiceListColumnBodyList: FunctionComponent<ExternalServiceListCo
                   onMouseDown={handleMouseDownDeleteExternalService}
                   onClick={e => handleClickDeleteExternalService(e, externalService)}
                 >
-                  <DeleteOutlinedIcon fontSize={dense ? 'small' : 'medium'} />
+                  <DeleteOutlineOutlinedIcon fontSize={dense ? 'small' : 'medium'} />
                 </IconButton>
               </>
             ) : null}

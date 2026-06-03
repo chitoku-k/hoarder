@@ -11,6 +11,8 @@ import Typography from '@mui/material/Typography'
 import { useDeleteExternalService } from '@/hooks'
 import type { ExternalService } from '@/types'
 
+import styles from './styles.module.scss'
+
 const ExternalServiceDeleteDialogBody: FunctionComponent<ExternalServiceDeleteDialogBodyProps> = ({
   externalService,
   close,
@@ -46,7 +48,7 @@ const ExternalServiceDeleteDialogBody: FunctionComponent<ExternalServiceDeleteDi
       <DialogContent>
         <DialogContentText>
           サービス「
-          <Typography component="strong" fontWeight="bold">{externalService.name}</Typography>
+          <Typography className={styles.name} component="strong">{externalService.name}</Typography>
           」を削除しますか？
         </DialogContentText>
       </DialogContent>

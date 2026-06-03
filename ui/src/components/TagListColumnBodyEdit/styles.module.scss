@@ -1,7 +1,15 @@
 .container {
   &:global(.MuiStack-root) {
+    justify-content: flex-end;
     padding: 12px 20px;
     height: 100%;
+  }
+}
+
+.header {
+  &:global(.MuiStack-root) {
+    align-items: center;
+    justify-content: space-between;
   }
 }
 

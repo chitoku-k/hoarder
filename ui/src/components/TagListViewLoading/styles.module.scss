@@ -1,9 +1,7 @@
 .container {
   &:global(.MuiStack-root) {
-    position: fixed;
-    inset: 0;
     align-items: center;
     justify-content: center;
-    color: white;
+    flex-grow: 1;
   }
 }

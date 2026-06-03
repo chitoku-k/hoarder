@@ -18,7 +18,7 @@ const MediumItemMetadataSummaryShow: FunctionComponent<MediumItemMetadataSummary
     <MediumItemMetadataHeader title="メディア">
       <Button onClick={edit}>編集</Button>
     </MediumItemMetadataHeader>
-    <Stack className={styles.createdAt} direction="row" spacing={1} alignItems="center">
+    <Stack className={styles.createdAt} direction="row" spacing={1}>
       <CalendarMonthIcon className={styles.icon} fontSize="small" />
       <Stack direction="row" spacing={0.5}>
         <DateTime date={new Date(medium.createdAt)} format="Pp" />

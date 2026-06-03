@@ -7,7 +7,7 @@ import SellIcon from '@mui/icons-material/Sell'
 import styles from './styles.module.scss'
 
 const TagBreadcrumbsListLoading: FunctionComponent = () => (
-  <Stack className={styles.breadcrumbs} direction="row" alignItems="top">
+  <Stack className={styles.breadcrumbs} direction="row">
     <SellIcon className={styles.icon} fontSize="small" />
     <NavigateNextIcon className={styles.nextIcon} fontSize="small" />
     <CircularProgress className={styles.icon} size={20} />

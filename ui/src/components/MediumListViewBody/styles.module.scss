@@ -1,3 +1,9 @@
+.media {
+  &:global(.MuiStack-root) {
+    flex-grow: 1;
+  }
+}
+
 .container {
   &:global(.MuiImageList-root) {
     grid-template-columns: repeat(3, 1fr) !important;
@@ -18,12 +24,16 @@
 
 .pagination {
   &:global(.MuiStack-root) {
+    align-items: center;
     margin: 48px auto;
   }
 }
 
 .noMedia {
   &:global(.MuiStack-root) {
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
     padding-bottom: 48px;
   }
 }

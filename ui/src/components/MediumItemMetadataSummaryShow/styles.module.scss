@@ -1,11 +1,12 @@
-.icon {
-  &:global(.MuiSvgIcon-root) {
-    color: #666;
+.createdAt {
+  &:global(.MuiStack-root) {
+    align-items: center;
+    padding: 4px 0;
   }
 }
 
-.createdAt {
-  &:global(.MuiStack-root) {
-    padding: 4px 0;
+.icon {
+  &:global(.MuiSvgIcon-root) {
+    color: #666;
   }
 }

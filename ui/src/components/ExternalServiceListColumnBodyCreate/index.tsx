@@ -137,7 +137,7 @@ const ExternalServiceListColumnBodyCreate: FunctionComponent<ExternalServiceList
   const empty = externalService.name.length === 0 || externalService.slug.length == 0
 
   return (
-    <Stack className={styles.container} direction="column-reverse" justifyContent="flex-end">
+    <Stack className={styles.container} direction="column-reverse">
       <Stack>
         <TextField
           margin="normal"
@@ -189,7 +189,7 @@ const ExternalServiceListColumnBodyCreate: FunctionComponent<ExternalServiceList
               <Stack>
                 パターンが正しくありません
                 {externalServiceUrlPatternInvalidDescription ? (
-                  <Stack overflow="auto" whiteSpace="pre">
+                  <Stack className={styles.invalidDescription}>
                     <code>
                       {externalServiceUrlPatternInvalidDescription}
                     </code>
@@ -238,7 +238,7 @@ const ExternalServiceListColumnBodyCreate: FunctionComponent<ExternalServiceList
           />
         )}
       </Stack>
-      <Stack direction="row" justifyContent="flex-end">
+      <Stack className={styles.buttonsContainer} direction="row">
         <Stack className={styles.buttons} spacing={1} direction="row-reverse">
           <Button onClick={handleClickSubmit} loading={loading} disabled={empty || isSlugDuplicate}>
             保存

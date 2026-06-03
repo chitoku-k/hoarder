@@ -1,3 +1,11 @@
+.container {
+  &:global(.MuiStack-root) {
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+  }
+}
+
 .icon {
   &:global(.MuiSvgIcon-root) {
     font-size: 4rem;
@@ -14,6 +22,7 @@
 .retry {
   &:global(.MuiLink-root) {
     margin-bottom: 24px;
+    font-size: 14;
     cursor: pointer;
   }
 }

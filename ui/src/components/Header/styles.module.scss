@@ -11,6 +11,18 @@
   }
 }
 
+.links {
+  &:global(.MuiStack-root) {
+    align-items: center;
+  }
+}
+
+.buttons {
+  &:global(.MuiStack-root) {
+    justify-content: end;
+  }
+}
+
 .nav {
   &:global(.MuiStack-root) {
     margin-left: 24px;

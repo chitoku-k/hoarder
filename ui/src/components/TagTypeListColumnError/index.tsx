@@ -18,7 +18,7 @@ const TagTypeListColumnError: FunctionComponent = () => {
       <Typography className={styles.text}>
         タイプを読み込めませんでした
       </Typography>
-      <Link className={styles.retry} fontSize={14} underline="hover" onClick={resetBoundary}>
+      <Link className={styles.retry} underline="hover" onClick={resetBoundary}>
         再読み込み
       </Link>
     </Stack>

@@ -9,7 +9,7 @@ export const metadata = {
 } satisfies Metadata
 
 const Page: FunctionComponent = () => (
-  <Content size={12}>
+  <Content>
     <MediumCreate />
   </Content>
 )
