@@ -1,5 +1,7 @@
 .header {
   &:global(.MuiStack-root) {
+    align-items: center;
+    justify-content: space-between;
     min-height: 36px;
     padding: 0 0 6px;
   }
@@ -11,8 +13,27 @@
   }
 }
 
+.body {
+  &:global(.MuiStack-root) {
+    align-items: center;
+  }
+}
+
+.tag {
+  &:global(.MuiStack-root) {
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
 .removed {
   text-decoration-line: line-through;
+}
+
+.newTagContainer {
+  &:global(.MuiStack-root) {
+    flex-grow: 1;
+  }
 }
 
 .newTag {

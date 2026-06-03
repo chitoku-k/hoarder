@@ -44,6 +44,12 @@
   }
 }
 
+.progressLabel {
+  &:global(.MuiStack-root) {
+    align-items: center;
+  }
+}
+
 .progress {
   &:global(.MuiLinearProgress-root) {
     color: rgb(224, 224, 224);

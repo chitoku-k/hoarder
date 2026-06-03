@@ -1,3 +1,9 @@
+.createdAt {
+  &:global(.MuiStack-root) {
+    flex-grow: 1;
+  }
+}
+
 .icon {
   &:global(.MuiSvgIcon-root) {
     color: #666;

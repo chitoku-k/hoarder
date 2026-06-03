@@ -106,7 +106,7 @@ const MediumItemMetadataTagCreate: FunctionComponent<MediumItemMetadataTagCreate
 
   const renderTagTypeOption = useCallback(({ key, ...props }: ComponentPropsWithoutRef<'li'>, option: TagType) => (
     <li key={key} {...props}>
-      <Stack direction="row" spacing={0.5} alignItems="start">
+      <Stack className={styles.tagType} direction="row" spacing={0.5}>
         <LabelIcon className={styles.tagTypeSearchIcon} fontSize="small" />
         <span className={styles.tagTypeSearchText}>{option.name}</span>
       </Stack>
@@ -135,7 +135,7 @@ const MediumItemMetadataTagCreate: FunctionComponent<MediumItemMetadataTagCreate
             removeTag={removeTag}
           />
         ))}
-        <Stack spacing={0.5} direction="row" alignItems="center" justifyContent="space-between">
+        <Stack className={styles.newTagType} spacing={0.5} direction="row">
           <AutocompleteTagType
             fullWidth
             openOnFocus

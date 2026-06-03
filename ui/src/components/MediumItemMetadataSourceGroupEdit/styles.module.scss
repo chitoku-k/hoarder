@@ -1,5 +1,7 @@
 .header {
   &:global(.MuiStack-root) {
+    align-items: center;
+    justify-content: space-between;
     min-height: 36px;
     padding: 0 0 6px;
   }
@@ -8,6 +10,25 @@
 .title {
   &:global(.MuiTypography-root) {
     font-size: 1.05rem;
+  }
+}
+
+.body {
+  &:global(.MuiStack-root) {
+    align-items: center;
+  }
+}
+
+.source {
+  &:global(.MuiStack-root) {
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.newSourceContainer {
+  &:global(.MuiStack-root) {
+    flex-grow: 1;
   }
 }
 

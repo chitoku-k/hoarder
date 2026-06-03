@@ -19,7 +19,7 @@ const TagTypeListColumnBodyShow: FunctionComponent<TagTypeListColumnBodyShowProp
   }, [ tagType, edit ])
 
   return (
-    <Stack className={styles.container} direction="column-reverse" justifyContent="flex-end">
+    <Stack className={styles.container} direction="column-reverse">
       <Stack>
         <TextField
           margin="normal"
@@ -45,7 +45,7 @@ const TagTypeListColumnBodyShow: FunctionComponent<TagTypeListColumnBodyShowProp
           onDoubleClick={handleClickEdit}
         />
       </Stack>
-      <Stack direction="row" justifyContent="flex-end">
+      <Stack className={styles.buttons} direction="row">
         <Stack spacing={1} direction="row-reverse">
           <Button onClick={handleClickEdit}>
             <span>編集</span>

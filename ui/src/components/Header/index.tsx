@@ -1,6 +1,7 @@
 'use client'
 
 import type { FunctionComponent } from 'react'
+import clsx from 'clsx'
 import Link from 'next/link'
 import AppBar from '@mui/material/AppBar'
 import Button from '@mui/material/Button'
@@ -17,7 +18,7 @@ import styles from './styles.module.scss'
 const Header: FunctionComponent = () => (
   <AppBar>
     <Toolbar className={styles.toolbar}>
-      <Stack className={styles.inner} alignItems="center" direction="row">
+      <Stack className={clsx(styles.inner, styles.links)} direction="row">
         <Typography variant="h6" noWrap component="div">
           Hoarder
         </Typography>
@@ -34,7 +35,7 @@ const Header: FunctionComponent = () => (
         </Stack>
       </Stack>
       <SearchBar className={styles.inner} />
-      <Stack className={styles.inner} justifyContent="end" direction="row">
+      <Stack className={clsx(styles.inner, styles.buttons)} direction="row">
         <IconButton href="/media/new" LinkComponent={Link} size="large" color="inherit">
           <LibraryAddOutlinedIcon />
         </IconButton>

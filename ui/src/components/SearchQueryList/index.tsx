@@ -21,7 +21,7 @@ const SearchQueryList: FunctionComponent<SearchQueryListProps> = ({
 
   return (
     <Toolbar className={styles.search}>
-      <Stack className={styles.queries} direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+      <Stack className={styles.queries} direction="row" spacing={1} useFlexGap>
         {sources?.map(source => (
           <Chip
             key={source.id}
@@ -33,8 +33,8 @@ const SearchQueryList: FunctionComponent<SearchQueryListProps> = ({
           <Chip
             key={`${type.id}:${tag.id}`}
             label={
-              <Stack direction="row" spacing={1} alignItems="start">
-                <Stack direction="row" alignItems="start">
+              <Stack className={styles.tagTagType} direction="row" spacing={1}>
+                <Stack className={styles.tagType} direction="row">
                   <LabelIcon className={styles.tagTypeIcon} fontSize="small" />
                   <span className={styles.tagTypeText}>{type.name}:</span>
                 </Stack>

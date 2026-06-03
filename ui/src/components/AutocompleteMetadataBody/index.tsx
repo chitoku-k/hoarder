@@ -235,12 +235,13 @@ const AutocompleteMetadataBody: FunctionComponent<AutocompleteMetadataBodyProps>
             variant={variant}
             inputRef={ref}
             slotProps={{
+              ...params.slotProps,
               input: {
-                ...params.InputProps,
+                ...params.slotProps.input,
                 startAdornment: (
                   <>
                     {Icon ? <Icon className={styles.icon} fontSize="small" /> : null}
-                    {params.InputProps.startAdornment}
+                    {params.slotProps.input.startAdornment}
                   </>
                 ),
                 endAdornment: (
@@ -252,7 +253,7 @@ const AutocompleteMetadataBody: FunctionComponent<AutocompleteMetadataBodyProps>
                         <ArrowOutwardIcon fontSize="inherit" />
                       </IconButton>
                     ) : null}
-                    {params.InputProps.endAdornment}
+                    {params.slotProps.input.endAdornment}
                   </>
                 ),
               },

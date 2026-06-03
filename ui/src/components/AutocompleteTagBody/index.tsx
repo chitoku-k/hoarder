@@ -113,15 +113,16 @@ const AutocompleteTagBody: FunctionComponent<AutocompleteTagBodyProps> = ({
             variant={variant}
             inputRef={ref}
             slotProps={{
+              ...params.slotProps,
               input: {
-                ...params.InputProps,
+                ...params.slotProps.input,
                 startAdornment: Icon ? (
                   <Icon className={styles.icon} fontSize="small" />
                 ) : null,
                 endAdornment: (
                   <>
                     {loading ? <CircularProgress color="inherit" size={20} /> : null}
-                    {params.InputProps.endAdornment}
+                    {params.slotProps.input.endAdornment}
                     {selector ? (
                       <Tooltip title="参照..." placement="right">
                         <IconButton size="small" disabled={disabled} onClick={openSelectDialog}>

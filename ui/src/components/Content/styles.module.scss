@@ -1,5 +1,11 @@
 .content {
-  &:global(.MuiGrid-root) {
+  &:global(.MuiStack-root) {
     height: 100%;
+  }
+}
+
+.body {
+  &:global(.MuiStack-root) {
+    flex-grow: 1;
   }
 }

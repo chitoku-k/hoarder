@@ -35,12 +35,12 @@ const MediumItemMetadataTagList: FunctionComponent<MediumItemMetadataTagListProp
       <Stack spacing={4}>
         {groups.length ? groups.map(({ type, tags }) => (
           <Stack key={type.id}>
-            <Stack className={styles.header} direction="row" alignItems="center">
+            <Stack className={styles.header} direction="row">
               <Typography className={styles.title} variant="h4">{type.name}</Typography>
             </Stack>
             <Stack spacing={0.5}>
               {tags.map(tag => (
-                <Stack key={tag.id} direction="row" alignItems="center">
+                <Stack key={tag.id} className={styles.tag} direction="row">
                   <TagBreadcrumbsList tag={tag} />
                   <Stack className={styles.buttonArea} />
                 </Stack>

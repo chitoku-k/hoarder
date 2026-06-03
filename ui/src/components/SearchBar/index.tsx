@@ -36,7 +36,7 @@ const MetadataOption: FunctionComponent<MetadataOptionProps> = ({
     }
     case isMetadataTagType(metadata): {
       return (
-        <Stack className={className} direction="row" alignItems="start">
+        <Stack className={clsx(className, styles.tagType)} direction="row">
           <LabelIcon className={styles.tagTypeIcon} fontSize="small" />
           <span className={styles.tagTypeText}>{metadata.tagType.name}</span>
         </Stack>
@@ -120,7 +120,7 @@ const SearchBar: FunctionComponent<SearchBarProps> = ({
   )
 
   return (
-    <Stack className={clsx(className, styles.container)} spacing={0.8} alignItems="center" direction="row">
+    <Stack className={clsx(className, styles.container)} spacing={0.8} direction="row">
       <AutocompleteMetadata
         className={styles.input}
         variant="filled"

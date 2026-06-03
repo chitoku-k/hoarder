@@ -1,5 +1,5 @@
 .autocomplete {
-  &:global(.MuiAutocomplete-root .MuiInputBase-inputSizeSmall) {
+  &:global(.MuiAutocomplete-root .MuiInputBase-sizeSmall .MuiInputBase-input) {
     padding-left: 6px;
   }
 }

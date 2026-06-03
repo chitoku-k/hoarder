@@ -11,6 +11,8 @@ import Typography from '@mui/material/Typography'
 import { useDeleteTagType } from '@/hooks'
 import type { TagType } from '@/types'
 
+import styles from './styles.module.scss'
+
 const TagTypeDeleteDialogBody: FunctionComponent<TagTypeDeleteDialogBodyProps> = ({
   tagType,
   close,
@@ -42,7 +44,7 @@ const TagTypeDeleteDialogBody: FunctionComponent<TagTypeDeleteDialogBodyProps> =
       <DialogContent>
         <DialogContentText>
           タイプ「
-          <Typography component="strong" fontWeight="bold">{tagType.name}</Typography>
+          <Typography className={styles.name} component="strong">{tagType.name}</Typography>
           」を削除しますか？
         </DialogContentText>
       </DialogContent>

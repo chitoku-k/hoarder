@@ -8,7 +8,7 @@ import IconButton from '@mui/material/IconButton'
 import List from '@mui/material/List'
 import Stack from '@mui/material/Stack'
 import AddIcon from '@mui/icons-material/Add'
-import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
+import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import LabelIcon from '@mui/icons-material/Label'
 import SearchIcon from '@mui/icons-material/Search'
@@ -105,7 +105,7 @@ const TagTypeListColumnBodyList: FunctionComponent<TagTypeListColumnBodyListProp
 
   const renderTagTypeOption = useCallback(({ key, ...props }: ComponentPropsWithoutRef<'li'>, option: TagType) => (
     <li key={key} {...props}>
-      <Stack direction="row" spacing={0.5} alignItems="start">
+      <Stack className={styles.tagTypeSearchItem} direction="row" spacing={0.5}>
         <LabelIcon className={styles.tagTypeSearchIcon} fontSize="small" />
         <span className={styles.tagTypeSearchText}>{option.name}</span>
       </Stack>
@@ -119,7 +119,7 @@ const TagTypeListColumnBodyList: FunctionComponent<TagTypeListColumnBodyListProp
   return (
     <Stack className={styles.container}>
       <Stack className={clsx(styles.title, !readonly && styles.buttons)}>
-        <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between">
+        <Stack className={styles.tagTypeSearchContainer} direction="row" spacing={1}>
           <AutocompleteTagType
             className={styles.tagTypeSearch}
             size="small"
@@ -180,7 +180,7 @@ const TagTypeListColumnBodyList: FunctionComponent<TagTypeListColumnBodyListProp
                   onMouseDown={handleMouseDownDeleteTagType}
                   onClick={e => handleClickDeleteTagType(e, tagType)}
                 >
-                  <DeleteOutlinedIcon fontSize={dense ? 'small' : 'medium'} />
+                  <DeleteOutlineOutlinedIcon fontSize={dense ? 'small' : 'medium'} />
                 </IconButton>
               </>
             ) : null}

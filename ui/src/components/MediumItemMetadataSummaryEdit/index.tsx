@@ -72,7 +72,7 @@ const MediumItemMetadataSummaryEdit: FunctionComponent<MediumItemMetadataSummary
           キャンセル
         </Button>
       </MediumItemMetadataHeader>
-      <Stack flexGrow={1} spacing={3}>
+      <Stack className={styles.createdAt} spacing={3}>
         <DateTimeField
           fullWidth
           variant="standard"
@@ -83,17 +83,19 @@ const MediumItemMetadataSummaryEdit: FunctionComponent<MediumItemMetadataSummary
           shouldRespectLeadingZeros
           slotProps={{
             textField: {
-              InputProps: {
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <CalendarMonthIcon className={styles.icon} fontSize="small" />
-                  </InputAdornment>
-                ),
-                endAdornment: (
-                  <InputAdornment position="end">
-                    登録
-                  </InputAdornment>
-                ),
+              slotProps: {
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <CalendarMonthIcon className={styles.icon} fontSize="small" />
+                    </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      登録
+                    </InputAdornment>
+                  ),
+                },
               },
             },
           }}

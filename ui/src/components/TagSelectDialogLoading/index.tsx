@@ -5,7 +5,7 @@ import Stack from '@mui/material/Stack'
 import styles from './styles.module.scss'
 
 const TagSelectDialogLoading: FunctionComponent = () => (
-  <Stack className={styles.container} alignItems="center" justifyContent="center">
+  <Stack className={styles.container}>
     <CircularProgress color="inherit" />
   </Stack>
 )

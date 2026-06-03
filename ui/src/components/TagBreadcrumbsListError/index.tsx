@@ -13,13 +13,13 @@ const TagBreadcrumbsListError: FunctionComponent = () => {
   const { resetBoundary } = useErrorBoundary()
 
   return (
-    <Stack className={styles.breadcrumbs} direction="row" spacing={1} alignItems="center">
+    <Stack className={styles.breadcrumbs} direction="row" spacing={1}>
       <ErrorIcon className={styles.icon} fontSize="small" />
-      <Stack direction="row" spacing={1} alignItems="center">
+      <Stack className={styles.body} direction="row" spacing={1}>
         <Typography className={styles.text}>
           タグを読み込めませんでした
         </Typography>
-        <Link className={styles.retry} fontSize={14} underline="hover" onClick={resetBoundary}>
+        <Link className={styles.retry} underline="hover" onClick={resetBoundary}>
           再読み込み
         </Link>
       </Stack>

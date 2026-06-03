@@ -1,4 +1,10 @@
-.externalServiceSearchIcon {
+.externalService {
+  &:global(.MuiStack-root) {
+    align-items: start;
+  }
+}
+
+.externalServiceIcon {
   &:global(.MuiSvgIcon-root) {
     margin-top: 2px;
     margin-right: 6px;
@@ -6,6 +12,13 @@
   }
 }
 
-.externalServiceSearchText {
+.externalServiceText {
   color: #666;
+}
+
+.addExternalService {
+  &:global(.MuiStack-root) {
+    align-items: center;
+    justify-content: space-between;
+  }
 }

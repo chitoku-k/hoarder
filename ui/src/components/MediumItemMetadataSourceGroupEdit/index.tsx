@@ -7,8 +7,8 @@ import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
-import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline'
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
+import RemoveCircleOutlineOutlinedIcon from '@mui/icons-material/RemoveCircleOutlineOutlined'
+import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined'
 import AddLinkIcon from '@mui/icons-material/AddLink'
 
 import type { SourceCreate } from '@/components/AutocompleteSourceBody'
@@ -85,16 +85,16 @@ const MediumItemMetadataSourceGroupEdit: FunctionComponent<MediumItemMetadataSou
 
   return (
     <Stack>
-      <Stack className={styles.header} direction="row" alignItems="center" justifyContent="space-between">
+      <Stack className={styles.header} direction="row">
         {removingExternalService || (removingSources.length > 0 && removingSources.length === sources.length && addingSources.length === 0) ? (
           <>
             <Typography className={styles.title} variant="h4">
               <del>{externalService.name}</del>
             </Typography>
-            <Stack direction="row" alignItems="center">
+            <Stack className={styles.body} direction="row">
               <Tooltip title="元に戻す" placement="right">
                 <IconButton size="small" disabled={loading} onClick={handleClickRestoreExternalService}>
-                  <AddCircleOutlineIcon fontSize="inherit" />
+                  <AddCircleOutlineOutlinedIcon fontSize="inherit" />
                 </IconButton>
               </Tooltip>
             </Stack>
@@ -104,10 +104,10 @@ const MediumItemMetadataSourceGroupEdit: FunctionComponent<MediumItemMetadataSou
             <Typography className={styles.title} variant="h4">
               {externalService.name}
             </Typography>
-            <Stack direction="row" alignItems="center">
+            <Stack className={styles.body} direction="row">
               <Tooltip title="削除" placement="right">
                 <IconButton size="small" disabled={loading} onClick={handleClickRemoveExternalService}>
-                  <RemoveCircleOutlineIcon fontSize="inherit" />
+                  <RemoveCircleOutlineOutlinedIcon fontSize="inherit" />
                 </IconButton>
               </Tooltip>
             </Stack>
@@ -116,13 +116,13 @@ const MediumItemMetadataSourceGroupEdit: FunctionComponent<MediumItemMetadataSou
       </Stack>
       <Stack spacing={0.5}>
         {allSources.map((source, i) => (
-          <Stack key={isSource(source) ? source.id : i} direction="row" alignItems="center" justifyContent="space-between">
+          <Stack key={isSource(source) ? source.id : i} className={styles.source} direction="row">
             {isSource(source) && removingSources.some(({ id }) => id === source.id) ? (
               <>
                 <del><SourceURL source={source} noLink /></del>
                 <Tooltip title="元に戻す" placement="right">
                   <IconButton size="small" disabled={loading} onClick={() => handleClickRestoreSource(source)}>
-                    <AddCircleOutlineIcon fontSize="inherit" />
+                    <AddCircleOutlineOutlinedIcon fontSize="inherit" />
                   </IconButton>
                 </Tooltip>
               </>
@@ -131,7 +131,7 @@ const MediumItemMetadataSourceGroupEdit: FunctionComponent<MediumItemMetadataSou
                 <SourceURL source={source} noLink />
                 <Tooltip title="削除" placement="right">
                   <IconButton size="small" disabled={loading} onClick={() => handleClickRemoveSource(source)}>
-                    <RemoveCircleOutlineIcon fontSize="inherit" />
+                    <RemoveCircleOutlineOutlinedIcon fontSize="inherit" />
                   </IconButton>
                 </Tooltip>
               </>
@@ -140,14 +140,14 @@ const MediumItemMetadataSourceGroupEdit: FunctionComponent<MediumItemMetadataSou
                 <SourceURL icon={AddLinkIcon} externalService={source.externalService} externalMetadata={source.externalMetadata} noLink />
                 <Tooltip title="削除" placement="right">
                   <IconButton size="small" disabled={loading} onClick={() => handleClickRemoveSource(source)}>
-                    <RemoveCircleOutlineIcon fontSize="inherit" />
+                    <RemoveCircleOutlineOutlinedIcon fontSize="inherit" />
                   </IconButton>
                 </Tooltip>
               </>
             )}
           </Stack>
         ))}
-        <Stack flexGrow={1} direction="row">
+        <Stack className={styles.newSourceContainer} direction="row">
           <AutocompleteSource
             className={styles.newSource}
             size="small"

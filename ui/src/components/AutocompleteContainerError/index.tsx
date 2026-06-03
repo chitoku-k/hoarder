@@ -14,9 +14,9 @@ const AutocompleteContainerError: FunctionComponent = () => {
   const { resetBoundary } = useErrorBoundary()
 
   return (
-    <Stack className={styles.container} direction="row" spacing={1} flexGrow={1} alignItems="center">
+    <Stack className={styles.container} direction="row" spacing={1}>
       <FolderOffIcon className={styles.icon} fontSize="small" />
-      <Stack direction="row" flexGrow={1} alignItems="center" justifyContent="space-between">
+      <Stack direction="row">
         <Typography className={styles.text}>
           読み込めませんでした
         </Typography>

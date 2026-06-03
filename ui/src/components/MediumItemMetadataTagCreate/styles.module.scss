@@ -1,3 +1,9 @@
+.tagType {
+  &:global(.MuiStack-root) {
+    align-items: start;
+  }
+}
+
 .tagTypeSearchIcon {
   &:global(.MuiSvgIcon-root) {
     margin-top: 2px;
@@ -8,4 +14,11 @@
 
 .tagTypeSearchText {
   color: #666;
+}
+
+.newTagType {
+  &:global(.MuiStack-root) {
+     align-items: center;
+     justify-content: space-between;
+  }
 }

@@ -44,7 +44,7 @@ const MediumItemFileUploadDialogBodyItem: FunctionComponent<MediumItemFileUpload
     <>
       <TableCell className={styles.imageCell}>
         <Image className={styles.imageWrapper}>
-          <Stack className={styles.imageWrapper} alignItems="center" justifyContent="center">
+          <Stack className={styles.imageWrapper}>
             <ImageBodyBlob className={styles.image} src={replica.blob} alt="" />
           </Stack>
         </Image>
@@ -67,7 +67,7 @@ const MediumItemFileUploadDialogBodyItem: FunctionComponent<MediumItemFileUpload
         <Stack spacing={1}>
           {status === 'uploading' && progress ? (
             <>
-              <Stack spacing={0.75} direction="row" alignItems="center">
+              <Stack className={styles.progressLabel} spacing={0.75} direction="row">
                 <CloudUploadOutlinedIcon fontSize="small" />
                 <Typography>アップロード中... ({Math.ceil(progress.loaded / progress.total * 100)}%)</Typography>
               </Stack>
@@ -75,7 +75,7 @@ const MediumItemFileUploadDialogBodyItem: FunctionComponent<MediumItemFileUpload
             </>
           ) : status === 'creating' ? (
             <>
-              <Stack spacing={0.75} direction="row" alignItems="center">
+              <Stack className={styles.progressLabel} spacing={0.75} direction="row">
                 <CloudUploadOutlinedIcon fontSize="small" />
                 <Typography>処理中...</Typography>
               </Stack>
@@ -83,7 +83,7 @@ const MediumItemFileUploadDialogBodyItem: FunctionComponent<MediumItemFileUpload
             </>
           ) : status === 'done' ? (
             <>
-              <Stack spacing={0.75} direction="row" alignItems="center">
+              <Stack className={styles.progressLabel} spacing={0.75} direction="row">
                 <CloudDoneOutlinedIcon fontSize="small" />
                 <Typography>完了</Typography>
               </Stack>
@@ -91,7 +91,7 @@ const MediumItemFileUploadDialogBodyItem: FunctionComponent<MediumItemFileUpload
             </>
           ) : status === 'aborted' ? (
             <>
-              <Stack spacing={0.75} direction="row" alignItems="center">
+              <Stack className={styles.progressLabel} spacing={0.75} direction="row">
                 <CloudOffOutlinedIcon fontSize="small" />
                 <Typography>キャンセル</Typography>
               </Stack>
@@ -99,7 +99,7 @@ const MediumItemFileUploadDialogBodyItem: FunctionComponent<MediumItemFileUpload
             </>
           ) : status === 'error' ? (
             <>
-              <Stack spacing={0.75} direction="row" alignItems="center">
+              <Stack className={styles.progressLabel} spacing={0.75} direction="row">
                 <CloudOffOutlinedIcon fontSize="small" />
                 {mediumReplicaDecodeFailed ? (
                   <Typography>エラー: メディアが読み込めません</Typography>
@@ -117,7 +117,7 @@ const MediumItemFileUploadDialogBodyItem: FunctionComponent<MediumItemFileUpload
             </>
           ) : (
             <>
-              <Stack spacing={0.75} direction="row" alignItems="center">
+              <Stack className={styles.progressLabel} spacing={0.75} direction="row">
                 <CloudQueueOutlinedIcon fontSize="small" />
                 <Typography>待機中</Typography>
               </Stack>

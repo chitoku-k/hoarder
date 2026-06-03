@@ -6,11 +6,24 @@
 
 .queries {
   &:global(.MuiStack-root) {
+    flex-wrap: wrap;
     padding: 16px 0;
 
     &:not(:empty) {
       padding: 24px 0;
     }
+  }
+}
+
+.tagTagType {
+  &:global(.MuiStack-root) {
+    align-items: start;
+  }
+}
+
+.tagType {
+  &:global(.MuiStack-root) {
+    align-items: start;
   }
 }
 

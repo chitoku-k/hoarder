@@ -13,7 +13,7 @@ const ImageError: FunctionComponent<ImageErrorProps> = ({
   children,
 }) => (
   <Stack className={clsx(styles.container, className)} style={style}>
-    <Stack alignItems="center" justifyContent="center" width={width} height={height}>
+    <Stack className={styles.inner} sx={{ width, height }}>
       <ImageNotSupportedIcon className={styles.icon} />
     </Stack>
     {children}

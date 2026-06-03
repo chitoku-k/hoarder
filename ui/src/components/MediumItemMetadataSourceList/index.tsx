@@ -35,12 +35,12 @@ const MediumItemMetadataSourceList: FunctionComponent<MediumItemMetadataSourceLi
       <Stack spacing={4}>
         {groups.length ? groups.map(({ externalService, sources }) => (
           <Stack key={externalService.id}>
-            <Stack className={styles.header} direction="row" alignItems="center">
+            <Stack className={styles.header} direction="row">
               <Typography className={styles.title} variant="h4">{externalService.name}</Typography>
             </Stack>
             <Stack spacing={0.5}>
               {sources.map(source => (
-                <Stack key={source.id} direction="row" alignItems="center">
+                <Stack key={source.id} className={styles.source} direction="row">
                   <SourceURL source={source} />
                   <Stack className={styles.buttonArea} />
                 </Stack>

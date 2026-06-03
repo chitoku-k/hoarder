@@ -1,5 +1,6 @@
 .container {
   &:global(.MuiStack-root) {
+    align-items: center;
     border-radius: 4px;
     background-color: rgba(255, 255, 255, 0.15);
 
@@ -44,6 +45,12 @@
         max-width: 75%;
       }
     }
+  }
+}
+
+.tagType {
+  &:global(.MuiStack-root) {
+    align-items: start;
   }
 }
 

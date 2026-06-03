@@ -7,10 +7,10 @@ import ImageListItemBar from '@mui/material/ImageListItemBar'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
+import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined'
 import ArrowCircleDownIcon from '@mui/icons-material/ArrowCircleDown'
 import ArrowCircleUpIcon from '@mui/icons-material/ArrowCircleUp'
-import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline'
+import RemoveCircleOutlineOutlinedIcon from '@mui/icons-material/RemoveCircleOutlineOutlined'
 
 import type { ReplicaCreate } from '@/components/MediumItemImageEdit'
 import { isReplica } from '@/components/MediumItemImageEdit'
@@ -58,7 +58,7 @@ const MediumItemImageItemBar: FunctionComponent<MediumItemImageItemBarProps> = (
     <ImageListItemBar
       className={styles.bar}
       title={
-        <Stack spacing={1.5} direction="row" alignItems="center">
+        <Stack className={styles.titleWrapper} spacing={1.5} direction="row">
           {currentIndex >= 0 ? (
             <Typography className={styles.title}>
               {currentIndex + 1}
@@ -89,11 +89,11 @@ const MediumItemImageItemBar: FunctionComponent<MediumItemImageItemBarProps> = (
           ) : null}
           {removing ? (
             <IconButton className={styles.icon} onClick={handleClickRestore}>
-              <AddCircleOutlineIcon />
+              <AddCircleOutlineOutlinedIcon />
             </IconButton>
           ) : (
             <IconButton className={styles.icon} onClick={handleClickRemove}>
-              <RemoveCircleOutlineIcon />
+              <RemoveCircleOutlineOutlinedIcon />
             </IconButton>
           )}
         </Stack>

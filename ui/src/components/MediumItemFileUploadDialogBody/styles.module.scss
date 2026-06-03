@@ -24,6 +24,18 @@
   }
 }
 
+.destinationContainer {
+  &:global(.MuiStack-root) {
+    align-items: center;
+  }
+}
+
+.destinationLabel {
+  &:global(.MuiTypography-root) {
+    flex-shrink: 0;
+  }
+}
+
 .destination {
   &:global(.MuiCard-root) {
     flex-grow: 1;

@@ -94,7 +94,7 @@ const TagTypeListColumnBodyCreate: FunctionComponent<TagTypeListColumnBodyCreate
   useBeforeUnload(changed)
 
   return (
-    <Stack className={styles.container} direction="column-reverse" justifyContent="flex-end">
+    <Stack className={styles.container} direction="column-reverse">
       <Stack>
         <TextField
           margin="normal"
@@ -131,7 +131,7 @@ const TagTypeListColumnBodyCreate: FunctionComponent<TagTypeListColumnBodyCreate
           />
         )}
       </Stack>
-      <Stack direction="row" justifyContent="flex-end">
+      <Stack className={styles.header} direction="row">
         <Stack className={styles.buttons} spacing={1} direction="row-reverse">
           <Button onClick={handleClickSubmit} loading={loading} disabled={!changed || isSlugDuplicate}>
             保存

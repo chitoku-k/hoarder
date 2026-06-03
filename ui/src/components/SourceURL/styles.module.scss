@@ -1,3 +1,9 @@
+.url {
+  &:global(.MuiStack-root) {
+    align-items: start;
+  }
+}
+
 .icon {
   &:global(.MuiSvgIcon-root) {
     margin-top: 2px;

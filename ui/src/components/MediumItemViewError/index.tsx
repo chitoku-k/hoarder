@@ -13,12 +13,12 @@ const MediumItemViewError: FunctionComponent = () => {
   const { resetBoundary } = useErrorBoundary()
 
   return (
-    <Stack flexGrow={1} alignItems="center" justifyContent="center" spacing={2}>
+    <Stack className={styles.container} spacing={2}>
       <CollectionsIcon className={styles.icon} />
       <Typography className={styles.text}>
         メディアを読み込めませんでした
       </Typography>
-      <Link className={styles.retry} fontSize={14} underline="hover" onClick={resetBoundary}>
+      <Link className={styles.retry} underline="hover" onClick={resetBoundary}>
         再読み込み
       </Link>
     </Stack>

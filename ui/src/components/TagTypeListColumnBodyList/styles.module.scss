@@ -35,9 +35,22 @@
   }
 }
 
+.tagTypeSearchContainer {
+  &:global(.MuiStack-root) {
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
 .tagTypeSearch {
   &:global(.MuiAutocomplete-root .MuiInputBase-input) {
     font-size: 0.875rem;
+  }
+}
+
+.tagTypeSearchItem {
+  &:global(.MuiStack-root) {
+    align-items: start;
   }
 }
 

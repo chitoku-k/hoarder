@@ -123,7 +123,7 @@ const ExternalServiceListColumnBodyEdit: FunctionComponent<ExternalServiceListCo
   const isUrlPatternInvalid = externalServiceUrlPatternInvalid?.extensions.details.data.urlPattern === externalService.urlPattern
 
   return (
-    <Stack className={styles.container} direction="column-reverse" justifyContent="flex-end">
+    <Stack className={styles.container} direction="column-reverse">
       <Stack>
         <TextField
           margin="normal"
@@ -168,7 +168,7 @@ const ExternalServiceListColumnBodyEdit: FunctionComponent<ExternalServiceListCo
               <Stack>
                 パターンが正しくありません
                 {externalServiceUrlPatternInvalidDescription ? (
-                  <Stack overflow="auto" whiteSpace="pre">
+                  <Stack className={styles.invalidDescription}>
                     <code>
                       {externalServiceUrlPatternInvalidDescription}
                     </code>
@@ -217,7 +217,7 @@ const ExternalServiceListColumnBodyEdit: FunctionComponent<ExternalServiceListCo
           />
         )}
       </Stack>
-      <Stack direction="row" justifyContent="flex-end">
+      <Stack className={styles.buttonsContainer} direction="row">
         <Stack className={styles.buttons} spacing={1} direction="row-reverse">
           <Button onClick={handleClickSubmit} loading={loading}>
             保存

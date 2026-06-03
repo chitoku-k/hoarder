@@ -79,13 +79,13 @@ const TagDeleteDialogBody: FunctionComponent<TagDeleteDialogBodyProps> = ({
           {hasChildren ? (
             <>
               タグ「
-              <Typography component="strong" fontWeight="bold">{tag.name}</Typography>
+              <Typography className={styles.name} component="strong">{tag.name}</Typography>
               」には子タグがあります。削除しますか？
             </>
           ) : (
             <>
               タグ「
-              <Typography component="strong" fontWeight="bold">{tag.name}</Typography>
+              <Typography className={styles.name} component="strong">{tag.name}</Typography>
               」を削除しますか？
             </>
           )}

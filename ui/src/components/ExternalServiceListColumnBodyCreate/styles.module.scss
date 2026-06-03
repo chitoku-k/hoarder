@@ -1,7 +1,21 @@
 .container {
   &:global(.MuiStack-root) {
+    justify-content: flex-end;
     padding: 12px 20px;
     height: 100%;
+  }
+}
+
+.invalidDescription {
+  &:global(.MuiStack-root) {
+    overflow: auto;
+    white-space: pre;
+  }
+}
+
+.buttonsContainer {
+  &:global(.MuiStack-root) {
+    justify-content: flex-end;
   }
 }
 

@@ -5,9 +5,25 @@
   }
 }
 
+.name {
+  font-weight: bold;
+}
+
 .tagList {
   &:global(.MuiCard-root) {
     height: 100%;
+  }
+}
+
+.body {
+  &:global(.MuiStack-root) {
+    align-items: center;
+  }
+}
+
+.label {
+  &:global(.MuiTypography-root) {
+   flex-shrink: 0;
   }
 }
 
