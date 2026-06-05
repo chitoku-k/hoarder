@@ -382,7 +382,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.29.2":
+"@babel/runtime@npm:^7.29.2, @babel/runtime@npm:^7.29.7":
   version: 7.29.7
   resolution: "@babel/runtime@npm:7.29.7"
   checksum: 10/9883b4951787779fd382b121f22f92966d85f19434841f65fb00b2dfec232107e139683f47c6f252891826ad8ee18317b46c3a0e4819116a9885f47b46d7126a
@@ -2590,11 +2590,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-date-pickers@npm:^9.3.0":
-  version: 9.3.0
-  resolution: "@mui/x-date-pickers@npm:9.3.0"
+"@mui/x-date-pickers@npm:^9.4.0":
+  version: 9.4.0
+  resolution: "@mui/x-date-pickers@npm:9.4.0"
   dependencies:
-    "@babel/runtime": "npm:^7.29.2"
+    "@babel/runtime": "npm:^7.29.7"
     "@mui/utils": "npm:9.0.1"
     "@mui/x-internals": "npm:^9.1.0"
     "@types/react-transition-group": "npm:^4.4.12"
@@ -2634,7 +2634,7 @@ __metadata:
       optional: true
     moment-jalaali:
       optional: true
-  checksum: 10/56269ee1abc741fd6cdd58c344ee4839eb1aa2b3094e7aaaecc2a30cbee33618d1cf03ddea456256e02794cb2b717ca2a44b13072183b7b0687de5f76ab02564
+  checksum: 10/7341a141a0a6cda2a3d0a2541dc520c2d0a992b05b0fb03ecde78d6ddf92116047ebb36e19c369a12564747c259ef8545418bebfd52881c5eac87e52ee958e43
   languageName: node
   linkType: hard
 
@@ -5798,7 +5798,7 @@ __metadata:
     "@mui/material": "npm:^9.0.1"
     "@mui/material-nextjs": "npm:^9.0.1"
     "@mui/system": "npm:^9.0.1"
-    "@mui/x-date-pickers": "npm:^9.3.0"
+    "@mui/x-date-pickers": "npm:^9.4.0"
     "@parcel/watcher": "npm:^2.5.6"
     "@react-aria/i18n": "npm:^3.13.1"
     "@stylistic/eslint-plugin": "npm:^5.10.0"
