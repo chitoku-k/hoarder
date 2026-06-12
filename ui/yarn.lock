@@ -49,9 +49,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/client@npm:^4.2.2":
-  version: 4.2.2
-  resolution: "@apollo/client@npm:4.2.2"
+"@apollo/client@npm:^4.2.3":
+  version: 4.2.3
+  resolution: "@apollo/client@npm:4.2.3"
   dependencies:
     "@graphql-typed-document-node/core": "npm:^3.1.1"
     "@wry/caches": "npm:^1.0.0"
@@ -61,7 +61,7 @@ __metadata:
     optimism: "npm:^0.18.0"
     tslib: "npm:^2.3.0"
   peerDependencies:
-    graphql: ^16.0.0
+    graphql: ^16.0.0 || ^17.0.0
     graphql-ws: ^5.5.5 || ^6.0.3
     react: ^17.0.0 || ^18.0.0 || >=19.0.0-rc
     react-dom: ^17.0.0 || ^18.0.0 || >=19.0.0-rc
@@ -76,7 +76,7 @@ __metadata:
       optional: true
     subscriptions-transport-ws:
       optional: true
-  checksum: 10/3b2ac8e50060b2ce9909af53e186f69d72a77c9898a052215994fd162de46b0feecd9c5b5d4e0b8946e2171dc04f7f1b459677dad553670bd8acdcc119988b47
+  checksum: 10/f2195d389601b9cf109f3e29b75a27292be2cb6be51ec4d1b57500d295867047565dd3932a762e646939b9d8953d9d868210710159df929c8ac152ad819b097c
   languageName: node
   linkType: hard
 
@@ -5815,7 +5815,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "hoarder-ui@workspace:."
   dependencies:
-    "@apollo/client": "npm:^4.2.2"
+    "@apollo/client": "npm:^4.2.3"
     "@apollo/client-integration-nextjs": "npm:^0.14.5"
     "@date-fns/tz": "npm:^1.5.0"
     "@emotion/cache": "npm:^11.14.0"
