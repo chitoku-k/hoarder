@@ -31,7 +31,7 @@
     "@react-aria/i18n": "^3.13.1",
     "@types/deep-equal": "^1.0.4",
     "@types/historykana": "^1.0.4",
-    "@types/node": "^24.13.0",
+    "@types/node": "^24.13.2",
     "@types/react": "^19.2.16",
     "@types/react-dom": "^19.2.3",
     "@types/strict-uri-encode": "^2.0.2",
