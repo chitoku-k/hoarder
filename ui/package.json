@@ -27,7 +27,7 @@
     "@mui/material": "^9.1.1",
     "@mui/material-nextjs": "^9.1.1",
     "@mui/system": "^9.1.1",
-    "@mui/x-date-pickers": "^9.5.0",
+    "@mui/x-date-pickers": "^9.6.0",
     "@react-aria/i18n": "^3.13.1",
     "@types/deep-equal": "^1.0.4",
     "@types/historykana": "^1.0.4",
