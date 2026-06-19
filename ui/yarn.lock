@@ -6007,10 +6007,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql@npm:^16.14.2":
-  version: 16.14.2
-  resolution: "graphql@npm:16.14.2"
-  checksum: 10/cd9a2581508f82621112a4dc625714e81ce725ab0a62502d97c14f61fee180e85276ac64bf9094f4fbf237737832ad4bb970aa26088f9dffece56f8919a49a29
+"graphql@npm:^17.0.1":
+  version: 17.0.1
+  resolution: "graphql@npm:17.0.1"
+  checksum: 10/f59d39448ec380e0378958cf834905e12e86cbcbe06bc6739a3d903b575f30a87cffee98bd838c40d2546253278e3faf0c4ec848817cda17f663185c511a80ae
   languageName: node
   linkType: hard
 
@@ -6138,7 +6138,7 @@ __metadata:
     deep-equal: "npm:^2.2.3"
     eslint: "npm:^9.39.4"
     eslint-config-next: "npm:^16.2.9"
-    graphql: "npm:^16.14.2"
+    graphql: "npm:^17.0.1"
     graphql-ws: "npm:^6.0.8"
     historykana: "npm:^1.0.6"
     image-size: "npm:^2.0.2"
