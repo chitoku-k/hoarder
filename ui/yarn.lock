@@ -416,13 +416,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@base-ui/utils@npm:^0.2.9":
-  version: 0.2.9
-  resolution: "@base-ui/utils@npm:0.2.9"
+"@base-ui/utils@npm:^0.3.0":
+  version: 0.3.1
+  resolution: "@base-ui/utils@npm:0.3.1"
   dependencies:
     "@babel/runtime": "npm:^7.29.2"
     "@floating-ui/utils": "npm:^0.2.11"
-    reselect: "npm:^5.1.1"
+    reselect: "npm:^5.2.0"
     use-sync-external-store: "npm:^1.6.0"
   peerDependencies:
     "@types/react": ^17 || ^18 || ^19
@@ -431,7 +431,7 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 10/3bc8b280c3f76a7ce81323df43669c08b50cb3418d84f328b8ee2784044ce3740e2e21594dbc901844ec1a0388315d1e6518dda023ec9813bd6a8365228168d3
+  checksum: 10/48fe7f0b1acf8c76457ac502f75e702f0c5d266311e58f96a192a73d1d3ce3e1f2f2fe9e612cb11631dbe3ecd4acc87664341e9973946ec0472163d6195a72bf
   languageName: node
   linkType: hard
 
@@ -2675,10 +2675,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/core-downloads-tracker@npm:^9.1.1":
-  version: 9.1.1
-  resolution: "@mui/core-downloads-tracker@npm:9.1.1"
-  checksum: 10/d036e08f7967664005f46c6820925ca2366997288bedfb8d5a34ec92880bb079a06a462e6ab2817ab777fabc85369ce19e8130b0d312e9eb3230e847b42f400a
+"@mui/core-downloads-tracker@npm:^9.1.2":
+  version: 9.1.2
+  resolution: "@mui/core-downloads-tracker@npm:9.1.2"
+  checksum: 10/25bf663e8798542a834faf4689148ee8860b7bad3b0587abc23fc9392511595cd217b6b990d5a680d78183f8642b6943e3aaa54f364d06f1f5b25a568dd77ade
   languageName: node
   linkType: hard
 
@@ -2721,13 +2721,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/material@npm:^9.1.1":
-  version: 9.1.1
-  resolution: "@mui/material@npm:9.1.1"
+"@mui/material@npm:^9.1.2":
+  version: 9.1.2
+  resolution: "@mui/material@npm:9.1.2"
   dependencies:
     "@babel/runtime": "npm:^7.29.2"
-    "@mui/core-downloads-tracker": "npm:^9.1.1"
-    "@mui/system": "npm:^9.1.1"
+    "@mui/core-downloads-tracker": "npm:^9.1.2"
+    "@mui/system": "npm:^9.1.2"
     "@mui/types": "npm:^9.1.1"
     "@mui/utils": "npm:^9.1.1"
     "@popperjs/core": "npm:^2.11.8"
@@ -2753,7 +2753,7 @@ __metadata:
       optional: true
     "@types/react":
       optional: true
-  checksum: 10/fc7db5209c9d42f41e68e46ff0da5a4c689be46ae66d4d369925db66da5235f9168d32e51c3bde504d330a669a3f6e3b5c8aa880033c932bec579f58d3731552
+  checksum: 10/0d8fc47f9024d3b6cd48bcb7b232312716a98b08fb97c5f5e9bc674f345b19ada5b28bc394874c99ca8db3da6a221c4dfca175dcbc27a056b1c334e7629b5f7a
   languageName: node
   linkType: hard
 
@@ -2797,9 +2797,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/system@npm:^9.1.1":
-  version: 9.1.1
-  resolution: "@mui/system@npm:9.1.1"
+"@mui/system@npm:^9.1.2":
+  version: 9.1.2
+  resolution: "@mui/system@npm:9.1.2"
   dependencies:
     "@babel/runtime": "npm:^7.29.2"
     "@mui/private-theming": "npm:^9.1.1"
@@ -2821,7 +2821,7 @@ __metadata:
       optional: true
     "@types/react":
       optional: true
-  checksum: 10/8689663d5a323a0efbd190f968bdd933ef7902eee92430e42f1bf7a55b072bb8884248024d4a456fa19198f094b5ee061accc3efad3dd22d2571628293c3be12
+  checksum: 10/4d311435388f6bc475a5590053ee8563fc19e308a10234c3b880b93b8f87e88c92fd7768bb0fcef9f7b1d85b0b7237ab63ebb650b7332cb1e498e791a3538333
   languageName: node
   linkType: hard
 
@@ -2839,7 +2839,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/utils@npm:^9.0.1, @mui/utils@npm:^9.1.1":
+"@mui/utils@npm:^9.1.1":
   version: 9.1.1
   resolution: "@mui/utils@npm:9.1.1"
   dependencies:
@@ -2859,13 +2859,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-date-pickers@npm:^9.6.0":
-  version: 9.6.0
-  resolution: "@mui/x-date-pickers@npm:9.6.0"
+"@mui/x-date-pickers@npm:^9.7.0":
+  version: 9.7.0
+  resolution: "@mui/x-date-pickers@npm:9.7.0"
   dependencies:
     "@babel/runtime": "npm:^7.29.7"
-    "@mui/utils": "npm:^9.0.1"
-    "@mui/x-internals": "npm:^9.6.0"
+    "@mui/utils": "npm:^9.1.1"
+    "@mui/x-internals": "npm:^9.7.0"
     "@types/react-transition-group": "npm:^4.4.12"
     clsx: "npm:^2.1.1"
     prop-types: "npm:^15.8.1"
@@ -2903,23 +2903,23 @@ __metadata:
       optional: true
     moment-jalaali:
       optional: true
-  checksum: 10/47b7c2994bc454e297b1ef6dd0ddadbd9f22f0734ce00fec2c2a484161402e6bdc27a6adccf33aec82db3015de4d881e8004ed72370169344de9c4b8fac91423
+  checksum: 10/6336e94a9d8895129a7d92f54bade08355cc9aa2653e798b4331a55a7986abc11cac51284011eccc88296670c6a9b7836c66df4942f4735d4bf19e8f2013959a
   languageName: node
   linkType: hard
 
-"@mui/x-internals@npm:^9.6.0":
-  version: 9.6.0
-  resolution: "@mui/x-internals@npm:9.6.0"
+"@mui/x-internals@npm:^9.7.0":
+  version: 9.7.0
+  resolution: "@mui/x-internals@npm:9.7.0"
   dependencies:
     "@babel/runtime": "npm:^7.29.7"
-    "@base-ui/utils": "npm:^0.2.9"
-    "@mui/utils": "npm:^9.0.1"
+    "@base-ui/utils": "npm:^0.3.0"
+    "@mui/utils": "npm:^9.1.1"
     core-js-pure: "npm:^3.49.0"
     reselect: "npm:^5.2.0"
     use-sync-external-store: "npm:^1.6.0"
   peerDependencies:
     react: ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10/04722442c011bf7e341af91cdd53be704ba3d16c4eb00a5b19c7910a97a1b2c73a7309dfa8c5ba58a239dc8a3bc592b53c2b153534d3921e48984552606510e1
+  checksum: 10/c429ea1c9d8050262781d752933803f04b2f481196a795577e47695e8746f024e8cbf7a39ca9204d01b11ca4d135eae93937b3bc964437ec2a7812389f5e7273
   languageName: node
   linkType: hard
 
@@ -6069,10 +6069,10 @@ __metadata:
     "@graphql-codegen/typescript-resolvers": "npm:^6.0.2"
     "@lifeomic/axios-fetch": "npm:^3.1.0"
     "@mui/icons-material": "npm:^9.1.1"
-    "@mui/material": "npm:^9.1.1"
+    "@mui/material": "npm:^9.1.2"
     "@mui/material-nextjs": "npm:^9.1.1"
-    "@mui/system": "npm:^9.1.1"
-    "@mui/x-date-pickers": "npm:^9.6.0"
+    "@mui/system": "npm:^9.1.2"
+    "@mui/x-date-pickers": "npm:^9.7.0"
     "@parcel/watcher": "npm:^2.5.6"
     "@react-aria/i18n": "npm:^3.13.1"
     "@stylistic/eslint-plugin": "npm:^5.10.0"
@@ -7994,13 +7994,6 @@ __metadata:
   version: 1.0.8
   resolution: "remove-trailing-spaces@npm:1.0.8"
   checksum: 10/81f615c5cd8dd6a5e3017dcc9af598965575d176d42ef99cfd7b894529991f464e629fd68aba089f5c6bebf5bb8070a5eee56f3b621aba55e8ef524d6a4d4f69
-  languageName: node
-  linkType: hard
-
-"reselect@npm:^5.1.1":
-  version: 5.1.1
-  resolution: "reselect@npm:5.1.1"
-  checksum: 10/1fdae11a39ed9c8d85a24df19517c8372ee24fefea9cce3fae9eaad8e9cefbba5a3d4940c6fe31296b6addf76e035588c55798f7e6e147e1b7c0855f119e7fa5
   languageName: node
   linkType: hard
 
