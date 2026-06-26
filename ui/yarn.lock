@@ -1066,13 +1066,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/typescript-operations@npm:^6.0.4":
-  version: 6.0.4
-  resolution: "@graphql-codegen/typescript-operations@npm:6.0.4"
+"@graphql-codegen/typescript-operations@npm:^6.0.5":
+  version: 6.0.5
+  resolution: "@graphql-codegen/typescript-operations@npm:6.0.5"
   dependencies:
     "@graphql-codegen/plugin-helpers": "npm:^7.0.1"
     "@graphql-codegen/schema-ast": "npm:^6.0.1"
-    "@graphql-codegen/visitor-plugin-common": "npm:^7.1.0"
+    "@graphql-codegen/visitor-plugin-common": "npm:^7.1.2"
     auto-bind: "npm:^5.0.0"
     tslib: "npm:^2.8.0"
   peerDependencies:
@@ -1081,7 +1081,7 @@ __metadata:
   peerDependenciesMeta:
     graphql-sock:
       optional: true
-  checksum: 10/f2707a564ef2582fb3b8b0fb338c0ac129b87b5249350561aaacdae50877ea5853dfba26cd272cb755448829fff8a4f0bda50edd4144976fcc5b4361e2b16da6
+  checksum: 10/184ae6485c4c3e82608db7272beaaed0d5d724375fe893a86d5ed1952544f21bc5e07adead3b55f3eed89edd7277dd215463c65ef6136a5018624978c603db86
   languageName: node
   linkType: hard
 
@@ -1177,6 +1177,26 @@ __metadata:
   peerDependencies:
     graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
   checksum: 10/e3f2979fafe17be1f489654e91943a4580a32a7d7a0e97c80e75f01df147e011b0cb265b52e3d9648bd749308bb47c063cc02df6b0d8e469ed5dd5469e4a1be1
+  languageName: node
+  linkType: hard
+
+"@graphql-codegen/visitor-plugin-common@npm:^7.1.2":
+  version: 7.1.2
+  resolution: "@graphql-codegen/visitor-plugin-common@npm:7.1.2"
+  dependencies:
+    "@graphql-codegen/plugin-helpers": "npm:^7.0.1"
+    "@graphql-tools/optimize": "npm:^2.0.0"
+    "@graphql-tools/relay-operation-optimizer": "npm:^7.1.1"
+    "@graphql-tools/utils": "npm:^11.0.0"
+    auto-bind: "npm:^5.0.0"
+    change-case-all: "npm:^2.1.0"
+    dependency-graph: "npm:^1.0.0"
+    graphql-tag: "npm:^2.11.0"
+    parse-filepath: "npm:^1.0.2"
+    tslib: "npm:^2.8.0"
+  peerDependencies:
+    graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
+  checksum: 10/55dcc96bde88deb97a5d3b55ffcd37e9265ef50d5f8991eef9d335ff127705aba94674846bbc661d74f2ac3fbe890899e8280d3e129ef35d2846460134255ebe
   languageName: node
   linkType: hard
 
@@ -6065,7 +6085,7 @@ __metadata:
     "@graphql-codegen/near-operation-file-preset": "npm:^5.2.1"
     "@graphql-codegen/typed-document-node": "npm:^7.0.3"
     "@graphql-codegen/typescript": "npm:^6.0.2"
-    "@graphql-codegen/typescript-operations": "npm:^6.0.4"
+    "@graphql-codegen/typescript-operations": "npm:^6.0.5"
     "@graphql-codegen/typescript-resolvers": "npm:^6.0.2"
     "@lifeomic/axios-fetch": "npm:^3.1.0"
     "@mui/icons-material": "npm:^9.1.1"
