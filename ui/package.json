@@ -54,7 +54,7 @@
     "sharp": "^0.35.1",
     "strict-uri-encode": "^2.0.0",
     "typescript": "^6.0.3",
-    "uuid": "^14.0.0"
+    "uuid": "^14.0.1"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^7.1.3",
