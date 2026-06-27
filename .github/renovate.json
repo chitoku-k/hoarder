@@ -47,6 +47,10 @@
   ],
   "packageRules": [
     {
+      "matchDatasources": ["npm"],
+      "minimumReleaseAge": "1 day"
+    },
+    {
       "matchManagers": ["dockerfile"],
       "addLabels": ["docker"]
     },
