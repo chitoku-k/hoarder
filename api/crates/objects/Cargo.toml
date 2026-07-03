@@ -45,7 +45,7 @@ version = "0.3.32"
 default-features = false
 
 [dev-dependencies.mockall]
-version = "0.14.0"
+version = "0.15.0"
 
 [dev-dependencies.pretty_assertions]
 version = "1.4.1"
