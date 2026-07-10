@@ -2799,26 +2799,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/utils@npm:^9.1.1":
-  version: 9.1.1
-  resolution: "@mui/utils@npm:9.1.1"
-  dependencies:
-    "@babel/runtime": "npm:^7.29.2"
-    "@mui/types": "npm:^9.1.1"
-    "@types/prop-types": "npm:^15.7.15"
-    clsx: "npm:^2.1.1"
-    prop-types: "npm:^15.8.1"
-    react-is: "npm:^19.2.6"
-  peerDependencies:
-    "@types/react": ^17.0.0 || ^18.0.0 || ^19.0.0
-    react: ^17.0.0 || ^18.0.0 || ^19.0.0
-  peerDependenciesMeta:
-    "@types/react":
-      optional: true
-  checksum: 10/e69e21fb1638cf3aab7d6bf5657218fc4dcea738a74e6553f1266c2e09910a0121825bba9240f05aa184ef9fd87eb9b24e96a91064f5afd06e2933e71f0e0584
-  languageName: node
-  linkType: hard
-
 "@mui/utils@npm:^9.2.0":
   version: 9.2.0
   resolution: "@mui/utils@npm:9.2.0"
@@ -2839,13 +2819,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-date-pickers@npm:^9.8.0":
-  version: 9.8.0
-  resolution: "@mui/x-date-pickers@npm:9.8.0"
+"@mui/x-date-pickers@npm:^9.9.0":
+  version: 9.9.0
+  resolution: "@mui/x-date-pickers@npm:9.9.0"
   dependencies:
     "@babel/runtime": "npm:^7.29.7"
-    "@mui/utils": "npm:^9.1.1"
-    "@mui/x-internals": "npm:^9.8.0"
+    "@mui/utils": "npm:^9.2.0"
+    "@mui/x-internals": "npm:^9.9.0"
     "@types/react-transition-group": "npm:^4.4.12"
     clsx: "npm:^2.1.1"
     prop-types: "npm:^15.8.1"
@@ -2883,22 +2863,22 @@ __metadata:
       optional: true
     moment-jalaali:
       optional: true
-  checksum: 10/fbb40eb3510df9098ec7a3c429d6d6c2523ac72ddaacf56332abf382b828755c20827a87e5782f2470afa27de0830ea473d2bfb807449ff5423484def572a4a7
+  checksum: 10/5f7b3087f21eb0207b54eb13b9a4b100e7105207bcb4ce8fa6ff824f7e72e6a7eda0e10c63c7e09a0925fccb248da8655bf797596dc0ff87353a1844f61e8e7f
   languageName: node
   linkType: hard
 
-"@mui/x-internals@npm:^9.8.0":
-  version: 9.8.0
-  resolution: "@mui/x-internals@npm:9.8.0"
+"@mui/x-internals@npm:^9.9.0":
+  version: 9.9.0
+  resolution: "@mui/x-internals@npm:9.9.0"
   dependencies:
     "@babel/runtime": "npm:^7.29.7"
     "@base-ui/utils": "npm:^0.3.0"
-    "@mui/utils": "npm:^9.1.1"
+    "@mui/utils": "npm:^9.2.0"
     reselect: "npm:^5.2.0"
     use-sync-external-store: "npm:^1.6.0"
   peerDependencies:
     react: ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10/02a767957ba84169af176f540736eb1e2d15be6ed24c731519d21e08546f0e09777a215f326488e2a90dc7d91590a7dc64cb5fcb3ebfdafbf167ca4048c2a106
+  checksum: 10/9145a89fb3bd86272e89650ea8c735a2b372c03f2a33b62c3e5a75e92bfdba36b6c70899366d40fb47eae7040f4f205abb68d7a986562a3eb4d206f149009526
   languageName: node
   linkType: hard
 
@@ -6044,7 +6024,7 @@ __metadata:
     "@mui/material": "npm:^9.2.0"
     "@mui/material-nextjs": "npm:^9.1.1"
     "@mui/system": "npm:^9.2.0"
-    "@mui/x-date-pickers": "npm:^9.8.0"
+    "@mui/x-date-pickers": "npm:^9.9.0"
     "@parcel/watcher": "npm:^2.5.6"
     "@react-aria/i18n": "npm:^3.13.1"
     "@stylistic/eslint-plugin": "npm:^5.10.0"
