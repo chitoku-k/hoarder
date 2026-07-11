@@ -79,20 +79,20 @@ impl ObjectsRepository for FilesystemObjectsRepository {
         let url = FilesystemEntryUrl::try_from(url)?;
         let fullpath = self.fullpath(url.as_path());
         if fullpath == self.root_dir {
-            return Err(Error::from(ErrorKind::ObjectUrlInvalid { url: url.into_url().into_inner() }))?;
+            return Err(Error::from(ErrorKind::ObjectUrlInvalid { url: url.into_url().into_inner() }));
         }
 
         if let Some(parent) = fullpath.parent() {
             match self.mkdir(parent).await {
                 Ok(()) => {},
                 Err(e) if e.kind() == io::ErrorKind::AlreadyExists => {
-                    return Err(Error::new(ErrorKind::ObjectAlreadyExists { url: url.into_url().into_inner(), entry: None }, e))?;
+                    return Err(Error::new(ErrorKind::ObjectAlreadyExists { url: url.into_url().into_inner(), entry: None }, e));
                 },
                 Err(e) if matches!(e.kind(), io::ErrorKind::InvalidFilename | io::ErrorKind::InvalidInput | io::ErrorKind::NotFound) => {
-                    return Err(Error::new(ErrorKind::ObjectUrlInvalid { url: url.into_url().into_inner() }, e))?
+                    return Err(Error::new(ErrorKind::ObjectUrlInvalid { url: url.into_url().into_inner() }, e));
                 },
                 Err(e) => {
-                    return Err(Error::new(ErrorKind::ObjectPutFailed { url: url.into_url().into_inner() }, e))?
+                    return Err(Error::new(ErrorKind::ObjectPutFailed { url: url.into_url().into_inner() }, e));
                 },
             }
         }
@@ -132,16 +132,16 @@ impl ObjectsRepository for FilesystemObjectsRepository {
                     .ok()
                     .filter(|entry| entry.kind == EntryKind::Object);
 
-                return Err(Error::new(ErrorKind::ObjectAlreadyExists { url: url.into_url().into_inner(), entry }, e))?;
+                return Err(Error::new(ErrorKind::ObjectAlreadyExists { url: url.into_url().into_inner(), entry }, e));
             },
             Err(e) if e.kind() == io::ErrorKind::IsADirectory || e.kind() == io::ErrorKind::PermissionDenied && self.is_dir(&fullpath).await.unwrap_or_default() => {
-                return Err(Error::new(ErrorKind::ObjectAlreadyExists { url: url.into_url().into_inner(), entry: None }, e))?
+                return Err(Error::new(ErrorKind::ObjectAlreadyExists { url: url.into_url().into_inner(), entry: None }, e));
             },
             Err(e) if matches!(e.kind(), io::ErrorKind::InvalidFilename | io::ErrorKind::InvalidInput | io::ErrorKind::NotFound) => {
-                return Err(Error::new(ErrorKind::ObjectUrlInvalid { url: url.into_url().into_inner() }, e))?
+                return Err(Error::new(ErrorKind::ObjectUrlInvalid { url: url.into_url().into_inner() }, e));
             },
             Err(e) => {
-                return Err(Error::new(ErrorKind::ObjectPutFailed { url: url.into_url().into_inner() }, e))?
+                return Err(Error::new(ErrorKind::ObjectPutFailed { url: url.into_url().into_inner() }, e));
             },
         };
 
@@ -159,9 +159,9 @@ impl ObjectsRepository for FilesystemObjectsRepository {
                 let entry = FilesystemEntry::from_file(url.as_path(), &file).await;
                 Ok((entry.into_entry(), file))
             },
-            Err(e) if e.kind() == io::ErrorKind::NotFound => Err(Error::new(ErrorKind::ObjectNotFound { url: url.into_url().into_inner() }, e))?,
-            Err(e) if matches!(e.kind(), io::ErrorKind::InvalidFilename | io::ErrorKind::InvalidInput) => Err(Error::new(ErrorKind::ObjectUrlInvalid { url: url.into_url().into_inner() }, e))?,
-            Err(e) => Err(Error::new(ErrorKind::ObjectGetFailed { url: url.into_url().into_inner() }, e))?,
+            Err(e) if e.kind() == io::ErrorKind::NotFound => Err(Error::new(ErrorKind::ObjectNotFound { url: url.into_url().into_inner() }, e)),
+            Err(e) if matches!(e.kind(), io::ErrorKind::InvalidFilename | io::ErrorKind::InvalidInput) => Err(Error::new(ErrorKind::ObjectUrlInvalid { url: url.into_url().into_inner() }, e)),
+            Err(e) => Err(Error::new(ErrorKind::ObjectGetFailed { url: url.into_url().into_inner() }, e)),
         }
     }
 
@@ -172,9 +172,9 @@ impl ObjectsRepository for FilesystemObjectsRepository {
 
         match metadata(&fullpath).await {
             Ok(metadata) => Ok(FilesystemEntry::from_metadata(url.as_path(), &metadata).into_entry()),
-            Err(e) if e.kind() == io::ErrorKind::NotFound => Err(Error::new(ErrorKind::ObjectNotFound { url: url.into_url().into_inner() }, e))?,
-            Err(e) if matches!(e.kind(), io::ErrorKind::InvalidFilename | io::ErrorKind::InvalidInput) => Err(Error::new(ErrorKind::ObjectUrlInvalid { url: url.into_url().into_inner() }, e))?,
-            Err(e) => Err(Error::new(ErrorKind::ObjectGetFailed { url: url.into_url().into_inner() }, e))?,
+            Err(e) if e.kind() == io::ErrorKind::NotFound => Err(Error::new(ErrorKind::ObjectNotFound { url: url.into_url().into_inner() }, e)),
+            Err(e) if matches!(e.kind(), io::ErrorKind::InvalidFilename | io::ErrorKind::InvalidInput) => Err(Error::new(ErrorKind::ObjectUrlInvalid { url: url.into_url().into_inner() }, e)),
+            Err(e) => Err(Error::new(ErrorKind::ObjectGetFailed { url: url.into_url().into_inner() }, e)),
         }
     }
 
@@ -185,9 +185,9 @@ impl ObjectsRepository for FilesystemObjectsRepository {
 
         match File::open(&fullpath).await {
             Ok(file) => Ok(file),
-            Err(e) if e.kind() == io::ErrorKind::NotFound => Err(Error::new(ErrorKind::ObjectNotFound { url: url.into_url().into_inner() }, e))?,
-            Err(e) if matches!(e.kind(), io::ErrorKind::InvalidFilename | io::ErrorKind::InvalidInput) => Err(Error::new(ErrorKind::ObjectUrlInvalid { url: url.into_url().into_inner() }, e))?,
-            Err(e) => Err(Error::new(ErrorKind::ObjectReadFailed { url: url.into_url().into_inner() }, e))?,
+            Err(e) if e.kind() == io::ErrorKind::NotFound => Err(Error::new(ErrorKind::ObjectNotFound { url: url.into_url().into_inner() }, e)),
+            Err(e) if matches!(e.kind(), io::ErrorKind::InvalidFilename | io::ErrorKind::InvalidInput) => Err(Error::new(ErrorKind::ObjectUrlInvalid { url: url.into_url().into_inner() }, e)),
+            Err(e) => Err(Error::new(ErrorKind::ObjectReadFailed { url: url.into_url().into_inner() }, e)),
         }
     }
 
@@ -210,9 +210,9 @@ impl ObjectsRepository for FilesystemObjectsRepository {
 
         let readdir = match read_dir(&fullpath).await {
             Ok(readdir) => readdir,
-            Err(e) if e.kind() == io::ErrorKind::NotFound => return Err(Error::new(ErrorKind::ObjectNotFound { url: url.into_url().into_inner() }, e))?,
-            Err(e) if matches!(e.kind(), io::ErrorKind::InvalidFilename | io::ErrorKind::InvalidInput) => return Err(Error::new(ErrorKind::ObjectUrlInvalid { url: url.into_url().into_inner() }, e))?,
-            Err(e) => return Err(Error::new(ErrorKind::ObjectListFailed { url: url.into_url().into_inner() }, e))?,
+            Err(e) if e.kind() == io::ErrorKind::NotFound => return Err(Error::new(ErrorKind::ObjectNotFound { url: url.into_url().into_inner() }, e)),
+            Err(e) if matches!(e.kind(), io::ErrorKind::InvalidFilename | io::ErrorKind::InvalidInput) => return Err(Error::new(ErrorKind::ObjectUrlInvalid { url: url.into_url().into_inner() }, e)),
+            Err(e) => return Err(Error::new(ErrorKind::ObjectListFailed { url: url.into_url().into_inner() }, e)),
         };
 
         let canonical_path = Path::new(MAIN_SEPARATOR_STR).join(canonicalize(&fullpath)
@@ -245,8 +245,8 @@ impl ObjectsRepository for FilesystemObjectsRepository {
         match remove_file(&fullpath).await {
             Ok(()) => Ok(DeleteResult::Deleted(1)),
             Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(DeleteResult::NotFound),
-            Err(e) if matches!(e.kind(), io::ErrorKind::InvalidFilename | io::ErrorKind::InvalidInput) => Err(Error::new(ErrorKind::ObjectUrlInvalid { url: url.into_url().into_inner() }, e))?,
-            Err(e) => Err(Error::new(ErrorKind::ObjectDeleteFailed { url: url.into_url().into_inner() }, e))?,
+            Err(e) if matches!(e.kind(), io::ErrorKind::InvalidFilename | io::ErrorKind::InvalidInput) => Err(Error::new(ErrorKind::ObjectUrlInvalid { url: url.into_url().into_inner() }, e)),
+            Err(e) => Err(Error::new(ErrorKind::ObjectDeleteFailed { url: url.into_url().into_inner() }, e)),
         }
     }
 }

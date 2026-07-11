@@ -483,7 +483,7 @@ impl MediaRepository for PostgresMediaRepository {
             let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
             match sqlx::query_with(sqlx::AssertSqlSafe(sql.as_str()), values).execute(&mut *tx).await {
                 Ok(_) => (),
-                Err(sqlx::Error::Database(e)) if e.is_foreign_key_violation() => return Err(ErrorKind::MediumSourceNotFound { id: medium.id })?,
+                Err(sqlx::Error::Database(e)) if e.is_foreign_key_violation() => return Err(Error::from(ErrorKind::MediumSourceNotFound { id: medium.id })),
                 Err(e) => return Err(Error::other(e)),
             }
         }
@@ -519,7 +519,7 @@ impl MediaRepository for PostgresMediaRepository {
             let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
             match sqlx::query_with(sqlx::AssertSqlSafe(sql.as_str()), values).execute(&mut *tx).await {
                 Ok(_) => (),
-                Err(sqlx::Error::Database(e)) if e.is_foreign_key_violation() => return Err(ErrorKind::MediumTagNotFound { id: medium.id })?,
+                Err(sqlx::Error::Database(e)) if e.is_foreign_key_violation() => return Err(Error::from(ErrorKind::MediumTagNotFound { id: medium.id })),
                 Err(e) => return Err(Error::other(e)),
             }
         }
@@ -891,7 +891,7 @@ impl MediaRepository for PostgresMediaRepository {
             if replica_orders.len() != replica_ids.len() || !replica_orders.is_subset(&replica_ids) {
                 let expected_replicas = replica_ids.into_iter().collect();
                 let actual_replicas = replica_orders.into_iter().collect();
-                return Err(ErrorKind::MediumReplicasNotMatch { medium_id: id, expected_replicas, actual_replicas })?;
+                return Err(Error::from(ErrorKind::MediumReplicasNotMatch { medium_id: id, expected_replicas, actual_replicas }));
             }
 
             let (sql, values) = Query::update()
@@ -946,7 +946,7 @@ impl MediaRepository for PostgresMediaRepository {
             let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
             match sqlx::query_with(sqlx::AssertSqlSafe(sql.as_str()), values).execute(&mut *tx).await {
                 Ok(_) => (),
-                Err(sqlx::Error::Database(e)) if e.is_foreign_key_violation() => return Err(ErrorKind::MediumSourceNotFound { id })?,
+                Err(sqlx::Error::Database(e)) if e.is_foreign_key_violation() => return Err(Error::from(ErrorKind::MediumSourceNotFound { id })),
                 Err(e) => return Err(Error::other(e)),
             }
         }
@@ -1004,7 +1004,7 @@ impl MediaRepository for PostgresMediaRepository {
             let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
             match sqlx::query_with(sqlx::AssertSqlSafe(sql.as_str()), values).execute(&mut *tx).await {
                 Ok(_) => (),
-                Err(sqlx::Error::Database(e)) if e.is_foreign_key_violation() => return Err(ErrorKind::MediumTagNotFound { id })?,
+                Err(sqlx::Error::Database(e)) if e.is_foreign_key_violation() => return Err(Error::from(ErrorKind::MediumTagNotFound { id })),
                 Err(e) => return Err(Error::other(e)),
             }
         }

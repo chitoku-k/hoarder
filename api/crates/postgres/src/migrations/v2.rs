@@ -117,7 +117,7 @@ impl Operation<Postgres> for ReplicaUrlOperation {
 
         if let Some(e) = errors.pop() {
             tracing::error!("{} error(s) found", errors.len() + 1);
-            return Err(sqlx::Error::Migrate(Box::new(MigrateError::Source(Box::new(e)))))?;
+            return Err(Error::from(sqlx::Error::Migrate(Box::new(MigrateError::Source(Box::new(e))))));
         }
 
         tx.commit().await?;

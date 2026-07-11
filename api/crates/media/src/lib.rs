@@ -17,7 +17,7 @@ impl MediaURLFactoryInterface for FileMediaURLFactory {
     fn public_url(&self, original_url: &str) -> Option<String> {
         original_url
             .strip_prefix(Self::URL_PREFIX)
-            .map(|s| format!("{}{}", &self.root_url, s))
+            .map(|s| format!("{}{}", self.root_url, s))
     }
 }
 

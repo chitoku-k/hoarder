@@ -5,7 +5,7 @@ use derive_more::{Deref, Display, From};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::{entity::external_services::{ExternalMetadata, ExternalService}, error::{ErrorKind, Result}};
+use crate::{entity::external_services::{ExternalMetadata, ExternalService}, error::{Error, ErrorKind, Result}};
 
 #[derive(Clone, Copy, Debug, Default, Deref, Deserialize, Display, Eq, From, Hash, Ord, PartialEq, PartialOrd, Serialize)]
 pub struct SourceId(Uuid);
@@ -28,7 +28,7 @@ impl Source {
         if self.external_metadata.kind().is_none_or(|kind| kind == self.external_service.kind) {
             Ok(())
         } else {
-            Err(ErrorKind::SourceMetadataNotMatch { kind: self.external_service.kind.clone() })?
+            Err(Error::from(ErrorKind::SourceMetadataNotMatch { kind: self.external_service.kind.clone() }))
         }
     }
 }

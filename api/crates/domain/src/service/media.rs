@@ -200,7 +200,7 @@ where
                 if let Some(url) = entry.url {
                     Ok((url, read))
                 } else {
-                    Err(ErrorKind::ObjectPathInvalid)?
+                    Err(Error::from(ErrorKind::ObjectPathInvalid))
                 }
             },
             Err(e) => {
@@ -216,7 +216,7 @@ where
                 if let Some(url) = entry.url {
                     Ok((url, status, write))
                 } else {
-                    Err(ErrorKind::ObjectPathInvalid)?
+                    Err(Error::from(ErrorKind::ObjectPathInvalid))
                 }
             },
             Err(e) => {
