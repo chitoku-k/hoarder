@@ -37,11 +37,11 @@ impl TryFrom<EntryUrl> for FilesystemEntryUrl {
         let path = url.to_path_string(Self::URL_PREFIX)?;
         let path = match path.strip_prefix('/') {
             Some(path) => path,
-            None => return Err(ErrorKind::ObjectUrlInvalid { url: url.into_inner() })?,
+            None => return Err(Error::from(ErrorKind::ObjectUrlInvalid { url: url.into_inner() })),
         };
         let path = match PathBuf::from(path).try_normalize() {
             Some(path) => path,
-            None => return Err(ErrorKind::ObjectUrlInvalid { url: url.into_inner() })?,
+            None => return Err(Error::from(ErrorKind::ObjectUrlInvalid { url: url.into_inner() })),
         };
 
         Ok(Self(url, path))

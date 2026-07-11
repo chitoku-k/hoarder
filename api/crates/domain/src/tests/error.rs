@@ -44,7 +44,7 @@ fn debug_fmt_succeeds() {
     let error = Error::new(ErrorKind::Other, "error communicating with database");
     let actual = {
         let mut s = String::new();
-        write!(&mut s, "{:?}", &error).unwrap();
+        write!(&mut s, "{:?}", error).unwrap();
         s
     };
     assert_eq!(actual, "error communicating with database");
@@ -52,7 +52,7 @@ fn debug_fmt_succeeds() {
     let error = Error::other("error communicating with database");
     let actual = {
         let mut s = String::new();
-        write!(&mut s, "{:?}", &error).unwrap();
+        write!(&mut s, "{:?}", error).unwrap();
         s
     };
     assert_eq!(actual, "error communicating with database");
@@ -63,7 +63,7 @@ fn debug_fmt_with_details_succeeds() {
     let error = Error::from(ErrorKind::Other);
     let actual = {
         let mut s = String::new();
-        write!(&mut s, "{:?}", &error).unwrap();
+        write!(&mut s, "{:?}", error).unwrap();
         s
     };
     assert_eq!(actual, indoc! {"
@@ -78,7 +78,7 @@ fn debug_fmt_with_single_source_succeeds() {
     let error = Error::new(ErrorKind::Other, anyhow!("error communicating with database").context("error fetching data"));
     let actual = {
         let mut s = String::new();
-        write!(&mut s, "{:?}", &error).unwrap();
+        write!(&mut s, "{:?}", error).unwrap();
         s
     };
     assert_eq!(actual, indoc! {"
@@ -90,7 +90,7 @@ fn debug_fmt_with_single_source_succeeds() {
     let error = Error::other(anyhow!("error communicating with database").context("error fetching data"));
     let actual = {
         let mut s = String::new();
-        write!(&mut s, "{:?}", &error).unwrap();
+        write!(&mut s, "{:?}", error).unwrap();
         s
     };
     assert_eq!(actual, indoc! {"
@@ -105,7 +105,7 @@ fn debug_fmt_with_multiple_sources_succeeds() {
     let error = Error::new(ErrorKind::Other, anyhow!("error communicating with database").context("error fetching data").context("query error"));
     let actual = {
         let mut s = String::new();
-        write!(&mut s, "{:?}", &error).unwrap();
+        write!(&mut s, "{:?}", error).unwrap();
         s
     };
     assert_eq!(actual, indoc! {"
@@ -118,7 +118,7 @@ fn debug_fmt_with_multiple_sources_succeeds() {
     let error = Error::other(anyhow!("error communicating with database").context("error fetching data").context("query error"));
     let actual = {
         let mut s = String::new();
-        write!(&mut s, "{:?}", &error).unwrap();
+        write!(&mut s, "{:?}", error).unwrap();
         s
     };
     assert_eq!(actual, indoc! {"

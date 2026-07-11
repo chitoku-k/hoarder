@@ -342,8 +342,8 @@ impl ReplicasRepository for PostgresReplicasRepository {
 
         let mut replica = match sqlx::query_as_with::<_, PostgresReplicaRow, _>(sqlx::AssertSqlSafe(sql.as_str()), values).fetch_one(&mut *tx).await {
             Ok(row) => Replica::from(row),
-            Err(sqlx::Error::Database(e)) if e.is_foreign_key_violation() => return Err(ErrorKind::MediumNotFound { id: medium_id })?,
-            Err(sqlx::Error::Database(e)) if e.is_unique_violation() => return Err(ErrorKind::ReplicaOriginalUrlDuplicate { original_url: original_url.to_string(), entry: None })?,
+            Err(sqlx::Error::Database(e)) if e.is_foreign_key_violation() => return Err(Error::from(ErrorKind::MediumNotFound { id: medium_id })),
+            Err(sqlx::Error::Database(e)) if e.is_unique_violation() => return Err(Error::from(ErrorKind::ReplicaOriginalUrlDuplicate { original_url: original_url.to_string(), entry: None })),
             Err(e) => return Err(Error::other(e)),
         };
 
@@ -468,7 +468,7 @@ impl ReplicasRepository for PostgresReplicasRepository {
 
         let (_, replica) = match sqlx::query_as_with::<_, PostgresReplicaThumbnailRow, _>(sqlx::AssertSqlSafe(sql.as_str()), values).fetch_one(&self.pool).await {
             Ok(row) => row.into(),
-            Err(sqlx::Error::RowNotFound) => return Err(ErrorKind::ReplicaNotFoundByUrl { original_url: original_url.to_string() })?,
+            Err(sqlx::Error::RowNotFound) => return Err(Error::from(ErrorKind::ReplicaNotFoundByUrl { original_url: original_url.to_string() })),
             Err(e) => return Err(Error::other(e)),
         };
 
@@ -487,7 +487,7 @@ impl ReplicasRepository for PostgresReplicasRepository {
 
         let thumbnail = match sqlx::query_as_with::<_, PostgresThumbnailDataRow, _>(sqlx::AssertSqlSafe(sql.as_str()), values).fetch_one(&self.pool).await {
             Ok(row) => row.into(),
-            Err(sqlx::Error::RowNotFound) => return Err(ErrorKind::ThumbnailNotFound { id })?,
+            Err(sqlx::Error::RowNotFound) => return Err(Error::from(ErrorKind::ThumbnailNotFound { id })),
             Err(e) => return Err(Error::other(e)),
         };
 
@@ -518,7 +518,7 @@ impl ReplicasRepository for PostgresReplicasRepository {
 
         let medium_id = match sqlx::query_as_with::<_, PostgresReplicaRow, _>(sqlx::AssertSqlSafe(sql.as_str()), values).fetch_one(&mut *tx).await {
             Ok(row) => MediumId::from(row.medium_id),
-            Err(sqlx::Error::RowNotFound) => return Err(ErrorKind::ReplicaNotFound { id })?,
+            Err(sqlx::Error::RowNotFound) => return Err(Error::from(ErrorKind::ReplicaNotFound { id })),
             Err(e) => return Err(Error::other(e)),
         };
 
@@ -564,7 +564,7 @@ impl ReplicasRepository for PostgresReplicasRepository {
             Ok(row) => Replica::from(row),
             Err(sqlx::Error::Database(e)) if e.is_unique_violation() => {
                 if let Some(original_url) = original_url {
-                    return Err(ErrorKind::ReplicaOriginalUrlDuplicate { original_url: original_url.to_string(), entry: None })?;
+                    return Err(Error::from(ErrorKind::ReplicaOriginalUrlDuplicate { original_url: original_url.to_string(), entry: None }));
                 }
                 return Err(Error::other(e));
             },
@@ -611,7 +611,7 @@ impl ReplicasRepository for PostgresReplicasRepository {
 
             let thumbnail = match sqlx::query_as_with::<_, PostgresThumbnailRow, _>(sqlx::AssertSqlSafe(sql.as_str()), values).fetch_one(&mut *tx).await {
                 Ok(row) => row.into(),
-                Err(sqlx::Error::Database(e)) if e.is_foreign_key_violation() => return Err(ErrorKind::ReplicaNotFound { id })?,
+                Err(sqlx::Error::Database(e)) if e.is_foreign_key_violation() => return Err(Error::from(ErrorKind::ReplicaNotFound { id })),
                 Err(e) => return Err(Error::other(e)),
             };
 

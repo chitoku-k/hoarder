@@ -431,7 +431,7 @@ async fn attach_parent(tx: &mut Transaction<'_, Postgres>, id: TagId, parent_id:
 
     match sqlx::query_with(sqlx::AssertSqlSafe(sql.as_str()), values).execute(&mut *tx).await {
         Ok(_) => (),
-        Err(sqlx::Error::Database(e)) if e.is_foreign_key_violation() => return Err(ErrorKind::TagNotFound { id })?,
+        Err(sqlx::Error::Database(e)) if e.is_foreign_key_violation() => return Err(Error::from(ErrorKind::TagNotFound { id })),
         Err(e) => return Err(Error::other(e)),
     }
 
@@ -829,7 +829,7 @@ impl TagsRepository for PostgresTagsRepository {
         U: Iterator<Item = String> + Send,
     {
         if id.is_root() {
-            return Err(ErrorKind::TagUpdatingRoot)?;
+            return Err(Error::from(ErrorKind::TagUpdatingRoot));
         }
 
         let mut tx = self.pool.begin().await.map_err(Error::other)?;
@@ -850,7 +850,7 @@ impl TagsRepository for PostgresTagsRepository {
 
         let mut tag = match sqlx::query_as_with::<_, PostgresTagRow, _>(sqlx::AssertSqlSafe(sql.as_str()), values).fetch_one(&mut *tx).await {
             Ok(row) => Tag::from(row),
-            Err(sqlx::Error::RowNotFound) => return Err(ErrorKind::TagNotFound { id })?,
+            Err(sqlx::Error::RowNotFound) => return Err(Error::from(ErrorKind::TagNotFound { id })),
             Err(e) => return Err(Error::other(e)),
         };
 
@@ -886,11 +886,11 @@ impl TagsRepository for PostgresTagsRepository {
     #[tracing::instrument(skip_all)]
     async fn attach_by_id(&self, id: TagId, parent_id: TagId, depth: TagDepth) -> Result<Tag> {
         if id.is_root() || parent_id.is_root() {
-            return Err(ErrorKind::TagAttachingRoot)?;
+            return Err(Error::from(ErrorKind::TagAttachingRoot));
         }
 
         if id == parent_id {
-            return Err(ErrorKind::TagAttachingToItself { id })?;
+            return Err(Error::from(ErrorKind::TagAttachingToItself { id }));
         }
 
         let mut tx = self.pool.begin().await.map_err(Error::other)?;
@@ -909,7 +909,7 @@ impl TagsRepository for PostgresTagsRepository {
             .map_err(Error::other)?;
 
         if count > 0 {
-            return Err(ErrorKind::TagAttachingToDescendant { id })?;
+            return Err(Error::from(ErrorKind::TagAttachingToDescendant { id }));
         }
 
         detach_parent(&mut tx, id).await?;
@@ -925,7 +925,7 @@ impl TagsRepository for PostgresTagsRepository {
     #[tracing::instrument(skip_all)]
     async fn detach_by_id(&self, id: TagId, depth: TagDepth) -> Result<Tag> {
         if id.is_root() {
-            return Err(ErrorKind::TagDetachingRoot)?;
+            return Err(Error::from(ErrorKind::TagDetachingRoot));
         }
 
         let mut tx = self.pool.begin().await.map_err(Error::other)?;
@@ -943,7 +943,7 @@ impl TagsRepository for PostgresTagsRepository {
     #[tracing::instrument(skip_all)]
     async fn delete_by_id(&self, id: TagId, recursive: bool) -> Result<DeleteResult> {
         if id.is_root() {
-            return Err(ErrorKind::TagDeletingRoot)?;
+            return Err(Error::from(ErrorKind::TagDeletingRoot));
         }
 
         let mut tx = self.pool.begin().await.map_err(Error::other)?;
@@ -973,7 +973,7 @@ impl TagsRepository for PostgresTagsRepository {
             .map_err(Error::other)?;
 
         if !recursive && !children.is_empty() {
-            return Err(ErrorKind::TagChildrenExist { id, children })?;
+            return Err(Error::from(ErrorKind::TagChildrenExist { id, children }));
         }
 
         let (sql, values) = Query::delete()
