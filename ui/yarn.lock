@@ -5882,13 +5882,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-ws@npm:^6.0.8":
-  version: 6.0.8
-  resolution: "graphql-ws@npm:6.0.8"
+"graphql-ws@npm:^6.1.0":
+  version: 6.1.0
+  resolution: "graphql-ws@npm:6.1.0"
   peerDependencies:
     "@fastify/websocket": ^10 || ^11
     crossws: ~0.3
-    graphql: ^15.10.1 || ^16
+    graphql: ^15.10.1 || ^16 || ^17
     ws: ^8
   peerDependenciesMeta:
     "@fastify/websocket":
@@ -5897,7 +5897,7 @@ __metadata:
       optional: true
     ws:
       optional: true
-  checksum: 10/503d581c7dab4b9a884dad844fa9642a896803161aa1f1c8d3f12619e4e428f43cb39fe06a198c30bb685a521689d525b2870539c07bd68bb4bf704d039bdd9a
+  checksum: 10/44b018f26c92f5feb20f725031ae16692f532536598da709b25a77e3d6070e61acdb57089ad5c45fa3cfb22ed564c353e83f4952e77d9e8ea4d2f03a950f807f
   languageName: node
   linkType: hard
 
@@ -6042,7 +6042,7 @@ __metadata:
     eslint: "npm:^9.39.5"
     eslint-config-next: "npm:^16.2.10"
     graphql: "npm:^17.0.2"
-    graphql-ws: "npm:^6.0.8"
+    graphql-ws: "npm:^6.1.0"
     historykana: "npm:^1.0.6"
     image-size: "npm:^2.0.2"
     next: "npm:^16.2.10"
