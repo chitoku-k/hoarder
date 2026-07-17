@@ -59,7 +59,7 @@ jobs:
           no-default-features: true
       - name: Set up Node.js
         if: ${{ matrix.target == 'ui' }}
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version-file: ui/.node-version
       - name: Install corepack
