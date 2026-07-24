@@ -44,7 +44,7 @@
     "graphql-ws": "^6.1.0",
     "historykana": "^1.0.6",
     "image-size": "^2.0.2",
-    "next": "^16.2.10",
+    "next": "^16.2.11",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-error-boundary": "^6.1.2",
