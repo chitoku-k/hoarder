@@ -22,7 +22,7 @@ POSTGRES_CONTAINER_ID=$(docker create \
     --env=POSTGRES_PASSWORD="$PGPASSWORD" \
     --publish=":$PGPORT" \
     --shm-size=512m \
-    --tmpfs=/var/lib/postgresql/data \
+    --tmpfs=/var/lib/postgresql \
     "$POSTGRES_IMAGE" \
     "${POSTGRES_OPTIONS[@]}")
 

@@ -54,7 +54,7 @@ services:
     volumes:
       - type: volume
         source: database
-        target: /var/lib/postgresql/data
+        target: /var/lib/postgresql
 
 volumes:
   database:
