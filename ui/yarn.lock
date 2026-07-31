@@ -3930,16 +3930,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"apollo-upload-client@npm:^19.0.0":
-  version: 19.0.0
-  resolution: "apollo-upload-client@npm:19.0.0"
+"apollo-upload-client@npm:^20.0.0":
+  version: 20.0.0
+  resolution: "apollo-upload-client@npm:20.0.0"
   dependencies:
-    extract-files: "npm:^13.0.0"
+    extract-files: "npm:^14.0.0"
   peerDependencies:
     "@apollo/client": ^4.0.0
-    graphql: 14 - 16
+    graphql: ^16.0.0 || ^17.0.0
     rxjs: ^7.3.0
-  checksum: 10/d1b23fb55d1d74ee16950686dd0d7cde3cf2ded9ad1a8a01d66e40d58c4e3f533351137bcf3b4fd568e6d76195d26ca73cbbabce527ba2ace17fe0328f51cf92
+  checksum: 10/19329362e75c84d2da9d0f94e1da4aca9b3261231ab174ab8e79d1b2a23a767c376246caab2119f56d032d7f5a822958996ae58d0704a15a03fe3618f2d853fd
   languageName: node
   linkType: hard
 
@@ -5414,12 +5414,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"extract-files@npm:^13.0.0":
-  version: 13.0.0
-  resolution: "extract-files@npm:13.0.0"
+"extract-files@npm:^14.0.0":
+  version: 14.0.0
+  resolution: "extract-files@npm:14.0.0"
   dependencies:
     is-plain-obj: "npm:^4.1.0"
-  checksum: 10/b6fa0eb69115416808b4e92bfdaf69895a50daf3b28320a1dd99bc8a3c9163ac0fa1c1f5494bff00c16bdc029f2b8a89b1b0b879e9a06d6148f6f6ec50305b7a
+  checksum: 10/ffb9f514c94ece034549a263fa41c5ce0ab84271f69bf9ae72063fce1ddaa82f7dc178c8299897b6b479c4de580cd69665fd1c34efd4d763a1b83b669671db90
   languageName: node
   linkType: hard
 
@@ -6054,7 +6054,7 @@ __metadata:
     "@types/react": "npm:^19.2.17"
     "@types/react-dom": "npm:^19.2.3"
     "@types/strict-uri-encode": "npm:^2.0.2"
-    apollo-upload-client: "npm:^19.0.0"
+    apollo-upload-client: "npm:^20.0.0"
     axios: "npm:^1.19.0"
     clsx: "npm:^2.1.1"
     date-fns: "npm:^4.4.0"
