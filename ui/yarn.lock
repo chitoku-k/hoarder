@@ -1042,13 +1042,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/typescript-operations@npm:^6.1.2":
-  version: 6.1.2
-  resolution: "@graphql-codegen/typescript-operations@npm:6.1.2"
+"@graphql-codegen/typescript-operations@npm:^6.1.5":
+  version: 6.1.5
+  resolution: "@graphql-codegen/typescript-operations@npm:6.1.5"
   dependencies:
     "@graphql-codegen/plugin-helpers": "npm:^7.1.0"
     "@graphql-codegen/schema-ast": "npm:^6.1.0"
-    "@graphql-codegen/visitor-plugin-common": "npm:^7.2.2"
+    "@graphql-codegen/visitor-plugin-common": "npm:^7.2.3"
     auto-bind: "npm:^5.0.0"
     tslib: "npm:^2.8.0"
   peerDependencies:
@@ -1057,7 +1057,7 @@ __metadata:
   peerDependenciesMeta:
     graphql-sock:
       optional: true
-  checksum: 10/fb062b02a7458a5dcc9bd9f5e1275bc569d93769da4a6990e1117e4c7c741f504ae91ee86b2798dab1722ecb43a9243a8efb872e6cae83967ac7572c9fbc3bbe
+  checksum: 10/fa7e2979fc57b083422c18d948d9c9296cee4332f4081471a4698df36c71bc72c0474bbf2def29c26f1fcac86e2c34a7feaf0dd8d760b092967e4f8fad3ab749
   languageName: node
   linkType: hard
 
@@ -1136,9 +1136,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/visitor-plugin-common@npm:^7.2.2":
-  version: 7.2.2
-  resolution: "@graphql-codegen/visitor-plugin-common@npm:7.2.2"
+"@graphql-codegen/visitor-plugin-common@npm:^7.2.3":
+  version: 7.2.3
+  resolution: "@graphql-codegen/visitor-plugin-common@npm:7.2.3"
   dependencies:
     "@graphql-codegen/plugin-helpers": "npm:^7.1.0"
     "@graphql-tools/optimize": "npm:^2.0.0"
@@ -1152,7 +1152,7 @@ __metadata:
     tslib: "npm:^2.8.0"
   peerDependencies:
     graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-  checksum: 10/3fc4da67b915a4d83af840f29e2816f791f6660a6b5da5a53d4d21c6c5071585a0011accfaa4268f1be60b43d9644df2de94815e00174e49eecc90b8e2d64128
+  checksum: 10/a6aca3ac6cc7d40098e557ad5f3367d96582544e2a1dc313398dd47105cf72590e5d7d30ca91b1424dff0b6cf48cead91aec0475afb2d6b373de60f158a1b8de
   languageName: node
   linkType: hard
 
@@ -6037,7 +6037,7 @@ __metadata:
     "@graphql-codegen/near-operation-file-preset": "npm:^5.2.1"
     "@graphql-codegen/typed-document-node": "npm:^7.1.0"
     "@graphql-codegen/typescript": "npm:^6.1.0"
-    "@graphql-codegen/typescript-operations": "npm:^6.1.2"
+    "@graphql-codegen/typescript-operations": "npm:^6.1.5"
     "@graphql-codegen/typescript-resolvers": "npm:^6.1.0"
     "@lifeomic/axios-fetch": "npm:^3.1.0"
     "@mui/icons-material": "npm:^9.2.0"
