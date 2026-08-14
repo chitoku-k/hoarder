@@ -7,7 +7,7 @@ export PGPASSWORD=hoarder_test
 
 echo -n 'starting postgres ... ' >&2
 
-POSTGRES_IMAGE="${POSTGRES_IMAGE:-postgres:18.4}"
+POSTGRES_IMAGE="${POSTGRES_IMAGE:-postgres:18.6}"
 POSTGRES_OPTIONS=(
     -c fsync=off
     -c full_page_writes=off
