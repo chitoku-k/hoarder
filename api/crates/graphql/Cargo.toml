@@ -41,7 +41,7 @@ features = ["constructor"]
 version = "1.17.0"
 
 [dependencies.futures]
-version = "0.3.33"
+version = "0.3.34"
 features = ["std"]
 default-features = false
 
