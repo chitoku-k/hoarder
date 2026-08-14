@@ -18,7 +18,7 @@ version = "2.1.1"
 features = ["display"]
 
 [dependencies.futures]
-version = "0.3.33"
+version = "0.3.34"
 features = ["std"]
 default-features = false
 
