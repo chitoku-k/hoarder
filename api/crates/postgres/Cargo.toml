@@ -57,7 +57,7 @@ features = ["derive"]
 version = "1.0.151"
 
 [dependencies.serde_with]
-version = "3.21.0"
+version = "3.22.0"
 features = ["macros"]
 default-features = false
 
