@@ -949,19 +949,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/near-operation-file-preset@npm:^5.2.1":
-  version: 5.2.1
-  resolution: "@graphql-codegen/near-operation-file-preset@npm:5.2.1"
+"@graphql-codegen/near-operation-file-preset@npm:^5.2.2":
+  version: 5.2.2
+  resolution: "@graphql-codegen/near-operation-file-preset@npm:5.2.2"
   dependencies:
     "@graphql-codegen/add": "npm:^7.0.0"
     "@graphql-codegen/plugin-helpers": "npm:^7.0.0"
-    "@graphql-codegen/visitor-plugin-common": "npm:^7.0.0"
+    "@graphql-codegen/visitor-plugin-common": "npm:^7.2.2"
     "@graphql-tools/utils": "npm:^11.0.0"
     parse-filepath: "npm:^1.0.2"
     tslib: "npm:^2.8.1"
   peerDependencies:
     graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
-  checksum: 10/beeaf451f7c704caaaa091ae0d24e5813958187c8ddd115ce1d88d3fe806f045de8dd4abf592ec1758b0c594a147e3b8ded7044d888eb471a4782b9b1887efe9
+  checksum: 10/88b709ad6aa708c52d2885e4e10c027a0f3fc6e078f836bf37023acf53629ae41861ced0cc8b5b6459ece7ead9ed59bdd95798566532b7a521c8a862b2b292af
   languageName: node
   linkType: hard
 
@@ -1096,26 +1096,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/visitor-plugin-common@npm:^7.0.0":
-  version: 7.0.0
-  resolution: "@graphql-codegen/visitor-plugin-common@npm:7.0.0"
-  dependencies:
-    "@graphql-codegen/plugin-helpers": "npm:^7.0.0"
-    "@graphql-tools/optimize": "npm:^2.0.0"
-    "@graphql-tools/relay-operation-optimizer": "npm:^7.1.1"
-    "@graphql-tools/utils": "npm:^11.0.0"
-    auto-bind: "npm:^5.0.0"
-    change-case-all: "npm:^2.1.0"
-    dependency-graph: "npm:^1.0.0"
-    graphql-tag: "npm:^2.11.0"
-    parse-filepath: "npm:^1.0.2"
-    tslib: "npm:^2.8.0"
-  peerDependencies:
-    graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
-  checksum: 10/a9cc2f59a826446a6313bd43631703c38399a670a954d18259ef20082403c27e55120a7e74ae0268fd39526276e08d03047470c61cd481a089d13d9375c7ff9f
-  languageName: node
-  linkType: hard
-
 "@graphql-codegen/visitor-plugin-common@npm:^7.2.0":
   version: 7.2.0
   resolution: "@graphql-codegen/visitor-plugin-common@npm:7.2.0"
@@ -1136,7 +1116,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/visitor-plugin-common@npm:^7.2.5":
+"@graphql-codegen/visitor-plugin-common@npm:^7.2.2, @graphql-codegen/visitor-plugin-common@npm:^7.2.5":
   version: 7.2.5
   resolution: "@graphql-codegen/visitor-plugin-common@npm:7.2.5"
   dependencies:
@@ -5808,7 +5788,7 @@ __metadata:
     "@emotion/styled": "npm:^11.14.1"
     "@fontsource/roboto": "npm:^5.3.0"
     "@graphql-codegen/cli": "npm:^7.2.0"
-    "@graphql-codegen/near-operation-file-preset": "npm:^5.2.1"
+    "@graphql-codegen/near-operation-file-preset": "npm:^5.2.2"
     "@graphql-codegen/typed-document-node": "npm:^7.1.0"
     "@graphql-codegen/typescript": "npm:^6.1.0"
     "@graphql-codegen/typescript-operations": "npm:^6.1.6"
