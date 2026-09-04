@@ -847,16 +847,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/cli@npm:^7.3.1":
-  version: 7.3.1
-  resolution: "@graphql-codegen/cli@npm:7.3.1"
+"@graphql-codegen/cli@npm:^7.4.0":
+  version: 7.4.0
+  resolution: "@graphql-codegen/cli@npm:7.4.0"
   dependencies:
     "@babel/generator": "npm:^7.18.13"
     "@babel/template": "npm:^7.18.10"
     "@babel/types": "npm:^7.18.13"
     "@graphql-codegen/client-preset": "npm:^6.1.3"
     "@graphql-codegen/core": "npm:^6.2.0"
-    "@graphql-codegen/plugin-helpers": "npm:^7.2.1"
+    "@graphql-codegen/plugin-helpers": "npm:^7.3.0"
     "@graphql-tools/apollo-engine-loader": "npm:^8.0.28"
     "@graphql-tools/code-file-loader": "npm:^8.1.28"
     "@graphql-tools/git-loader": "npm:^8.0.32"
@@ -898,7 +898,7 @@ __metadata:
     graphql-codegen: esm/bin.js
     graphql-codegen-cjs: cjs/bin.js
     graphql-codegen-esm: esm/bin.js
-  checksum: 10/dc518810e647258280c9ef800616e505c2e94ab04c1f03826781cf07bc31de9f9ccb309095dbe58917b9a08ec3b1d873a858e60e661f06c06c052bb7dbf9f322
+  checksum: 10/b4860f65698facf5f03a038279275d6c3ef1bead759399df21555da74b15158b99a766df77bdc978abc263fd61af67583ef5fa7d01ac20293063b943c03a7771
   languageName: node
   linkType: hard
 
@@ -1004,9 +1004,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/plugin-helpers@npm:^7.2.1":
-  version: 7.2.1
-  resolution: "@graphql-codegen/plugin-helpers@npm:7.2.1"
+"@graphql-codegen/plugin-helpers@npm:^7.3.0":
+  version: 7.3.0
+  resolution: "@graphql-codegen/plugin-helpers@npm:7.3.0"
   dependencies:
     "@graphql-tools/utils": "npm:^11.2.0"
     change-case-all: "npm:^2.1.0"
@@ -1015,7 +1015,7 @@ __metadata:
     tslib: "npm:^2.8.0"
   peerDependencies:
     graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-  checksum: 10/b096f2c957ce3adfdd2fe6737b3003a7b70e4f9af6661a60caad3c2feb8ba9ef3dc921892f6e1c8ce03c907d3c57149444c0acf0512301a0217b0805d20c0084
+  checksum: 10/eb49844b6148196100f0be705024d52eb432674bc9ec3a9358286e7a7be695aadc85f61b92a9ccd92f892c5c38c06ae739ed13e374777facfa0e86e60fc089f0
   languageName: node
   linkType: hard
 
@@ -6091,7 +6091,7 @@ __metadata:
     "@emotion/react": "npm:^11.14.0"
     "@emotion/styled": "npm:^11.14.1"
     "@fontsource/roboto": "npm:^5.3.0"
-    "@graphql-codegen/cli": "npm:^7.3.1"
+    "@graphql-codegen/cli": "npm:^7.4.0"
     "@graphql-codegen/near-operation-file-preset": "npm:^5.2.2"
     "@graphql-codegen/typed-document-node": "npm:^7.1.0"
     "@graphql-codegen/typescript": "npm:^6.1.0"
