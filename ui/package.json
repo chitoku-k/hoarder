@@ -48,7 +48,7 @@
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-error-boundary": "^6.1.5",
-    "react-virtuoso": "^4.18.12",
+    "react-virtuoso": "^4.18.13",
     "rxjs": "^7.8.2",
     "sass": "^1.103.1",
     "sharp": "^0.35.4",
