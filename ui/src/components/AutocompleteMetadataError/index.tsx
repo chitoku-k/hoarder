@@ -21,7 +21,7 @@ const AutocompleteMetadataError: FunctionComponent = () => {
           読み込めませんでした
         </Typography>
         <IconButton size="small" onClick={resetBoundary}>
-          <RefreshIcon fontSize="inherit" />
+          <RefreshIcon className={styles.icon} fontSize="inherit" />
         </IconButton>
       </Stack>
     </Stack>

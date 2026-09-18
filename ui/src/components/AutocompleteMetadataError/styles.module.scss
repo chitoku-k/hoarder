@@ -2,6 +2,8 @@
   &:global(.MuiStack-root) {
     flex-grow: 1;
     align-items: center;
+    min-height: 42px;
+    padding: 0 8px;
   }
 }
 
@@ -15,14 +17,14 @@
 
 .icon {
   &:global(.MuiSvgIcon-root) {
-    color: #666;
+    color: rgba(255, 255, 255, 0.42);
     min-height: 1.5rem;
   }
 }
 
 .text {
   &:global(.MuiTypography-root) {
-    color: #666;
-    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.42);
+    font-size: 1rem;
   }
 }
