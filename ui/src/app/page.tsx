@@ -110,14 +110,10 @@ const Page: FunctionComponent<PageProps> = async ({
   const query = await fetchSearchQuery(source ?? [], tag ?? []).catch(() => null)
   return (
     <Content>
-      {query ? (
-        <>
-          <SearchQueryList sources={query.sources} tagTagTypes={query.tagTagTypes} />
-          <MediumList number={48} sources={query.sources} tagTagTypes={query.tagTagTypes} />
-        </>
-      ) : (
-        <SearchQueryList />
-      )}
+      <>
+        <SearchQueryList sources={query?.sources} tagTagTypes={query?.tagTagTypes} />
+        <MediumList number={48} sources={query?.sources} tagTagTypes={query?.tagTagTypes} />
+      </>
     </Content>
   )
 }
