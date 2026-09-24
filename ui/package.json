@@ -43,7 +43,7 @@
     "graphql": "^17.0.2",
     "graphql-ws": "^6.2.1",
     "historykana": "^1.0.6",
-    "image-size": "^2.0.2",
+    "image-size": "^2.0.3",
     "next": "^16.3.4",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
