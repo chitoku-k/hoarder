@@ -71,7 +71,6 @@ const TagListColumnBodyCreate: FunctionComponent<TagListColumnBodyCreateProps> =
   }, [])
 
   const handleChangeAliases = useCallback((_e: SyntheticEvent, value: readonly string[]) => {
-    // eslint-disable-next-line @typescript-eslint/unbound-method
     const aliases = value.toSorted(collator.compare)
     setTag(tag => ({
       ...tag,
