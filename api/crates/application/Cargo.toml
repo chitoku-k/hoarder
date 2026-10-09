@@ -65,7 +65,7 @@ version = "0.1.21"
 features = ["client-legacy"]
 
 [dev-dependencies.indoc]
-version = "2.0.7"
+version = "2.0.8"
 
 [dev-dependencies.mockall]
 version = "0.15.0"
