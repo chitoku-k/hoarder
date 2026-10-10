@@ -225,6 +225,7 @@ const MediumItemFileUploadDialogBody: FunctionComponent<MediumItemFileUploadDial
           handleUploadProgress(replica, { status: 'aborted' })
           throw new Error('the uploading file already exists', { cause: e })
         }
+        // eslint-disable-next-line react-hooks/immutability
         return await processReplicaUpload(medium, replica, observable, true)
       }
 
