@@ -5760,6 +5760,7 @@ __metadata:
     react-virtuoso: "npm:^4.18.16"
     rxjs: "npm:^7.8.2"
     sass: "npm:^1.105.1"
+    sharp: "npm:^0.35.5"
     strict-uri-encode: "npm:^2.0.0"
     ts-node: "npm:^10.9.2"
     typescript: "npm:^6.0.3"
@@ -7961,7 +7962,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sharp@npm:^0.35.4":
+"sharp@npm:^0.35.4, sharp@npm:^0.35.5":
   version: 0.35.5
   resolution: "sharp@npm:0.35.5"
   dependencies:
