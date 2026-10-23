@@ -19,6 +19,14 @@ services:
       PGPASSWORD: hoarder
       PGSSLMODE: disable
       MEDIA_ROOT_DIR: /media
+    user: '65534'
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp:mode=1777,nodev,noexec,nosuid
     volumes:
       - type: bind
         source: .
@@ -37,6 +45,16 @@ services:
     environment:
       PORT: '3000'
       API_URL: http://api:8080
+    user: '1000'
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /home/node:uid=1000,gid=1000,nodev,noexec,nosuid
+      - /tmp:mode=1777,nodev,exec,nosuid
+      - /usr/src/.next:uid=1000,gid=1000,nodev,noexec,nosuid
     volumes:
       - type: bind
         source: ./ui
@@ -51,6 +69,15 @@ services:
       POSTGRES_DB: hoarder
       POSTGRES_USER: hoarder
       POSTGRES_PASSWORD: hoarder
+    user: '999'
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /run/postgresql:nodev,noexec,nosuid
+      - /tmp:mode=1777,nodev,noexec,nosuid
     volumes:
       - type: volume
         source: database
