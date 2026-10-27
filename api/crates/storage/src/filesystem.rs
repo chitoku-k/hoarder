@@ -7,7 +7,7 @@ use domain::{
 };
 use futures::{TryFutureExt, TryStreamExt};
 use icu_collator::CollatorBorrowed;
-use tokio::{fs::{DirBuilder, File, canonicalize, metadata, read_dir, remove_file}, io::{self, AsyncRead, AsyncSeekExt}};
+use tokio::{fs::{File, canonicalize, create_dir_all, metadata, read_dir, remove_file}, io::{self, AsyncRead, AsyncSeekExt}};
 use tokio_stream::wrappers::ReadDirStream;
 
 use crate::{filesystem::{entry::FilesystemEntry, url::FilesystemEntryUrl}, StorageEntry, StorageEntryUrl};
@@ -42,21 +42,6 @@ impl FilesystemObjectsRepository {
         self.root_dir.join(path.as_ref())
     }
 
-    async fn mkdir<P>(&self, path: P) -> io::Result<()>
-    where
-        P: AsRef<Path>,
-    {
-        let mut builder = DirBuilder::new();
-
-        #[cfg(unix)]
-        builder.mode(0o0755);
-
-        builder
-            .recursive(true)
-            .create(path)
-            .await
-    }
-
     async fn is_dir<P>(&self, path: P) -> io::Result<bool>
     where
         P: AsRef<Path>,
@@ -83,7 +68,7 @@ impl ObjectsRepository for FilesystemObjectsRepository {
         }
 
         if let Some(parent) = fullpath.parent() {
-            match self.mkdir(parent).await {
+            match create_dir_all(parent).await {
                 Ok(()) => {},
                 Err(e) if e.kind() == io::ErrorKind::AlreadyExists => {
                     return Err(Error::new(ErrorKind::ObjectAlreadyExists { url: url.into_url().into_inner(), entry: None }, e));
