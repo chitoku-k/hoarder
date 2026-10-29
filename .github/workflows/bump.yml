@@ -27,7 +27,7 @@ jobs:
       GIT_COMMITTER_EMAIL: '41898282+github-actions[bot]@users.noreply.github.com'
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 0
           filter: tree:0
@@ -38,7 +38,7 @@ jobs:
         with:
           strategy: ${{ inputs.strategy }}
       - name: Set up cargo-edit
-        uses: taiki-e/cache-cargo-install-action@v3
+        uses: taiki-e/cache-cargo-install-action@v3.0.8
         with:
           tool: cargo-edit
           features: set-version
