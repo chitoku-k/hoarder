@@ -61,7 +61,7 @@
     "@graphql-codegen/near-operation-file-preset": "^5.2.3",
     "@graphql-codegen/typed-document-node": "^7.2.0",
     "@graphql-codegen/typescript": "^6.1.2",
-    "@graphql-codegen/typescript-operations": "^6.1.10",
+    "@graphql-codegen/typescript-operations": "^6.2.0",
     "@graphql-codegen/typescript-resolvers": "^6.1.1",
     "@parcel/watcher": "^2.6.0",
     "@stylistic/eslint-plugin": "^5.10.0",
