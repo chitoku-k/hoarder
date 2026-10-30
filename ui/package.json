@@ -50,7 +50,7 @@
     "react-error-boundary": "^6.1.6",
     "react-virtuoso": "^4.18.20",
     "rxjs": "^7.8.2",
-    "sass": "^1.106.1",
+    "sass": "^1.107.0",
     "sharp": "^0.35.5",
     "strict-uri-encode": "^2.0.0",
     "typescript": "^6.0.3",
