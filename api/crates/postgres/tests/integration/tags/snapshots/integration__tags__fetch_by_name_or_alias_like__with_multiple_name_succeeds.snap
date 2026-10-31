@@ -56,21 +56,17 @@ queries:
       GROUP BY
         "tags"."id"
       HAVING
-        (
-          bool_or(
-            ("tag_ancestors"."name" ILIKE $5)
-            OR ("tag_ancestors"."kana" ILIKE $6)
-            OR "tag_ancestors_aliases"."count" > 0
-            OR "tags_aliases"."count" > 0
-          )
+        bool_or(
+          ("tag_ancestors"."name" ILIKE $5)
+          OR ("tag_ancestors"."kana" ILIKE $6)
+          OR "tag_ancestors_aliases"."count" > 0
+          OR "tags_aliases"."count" > 0
         )
-        AND (
-          bool_or(
-            ("tag_ancestors"."name" ILIKE $7)
-            OR ("tag_ancestors"."kana" ILIKE $8)
-            OR "tag_ancestors_aliases"."count" > 0
-            OR "tags_aliases"."count" > 0
-          )
+        AND bool_or(
+          ("tag_ancestors"."name" ILIKE $7)
+          OR ("tag_ancestors"."kana" ILIKE $8)
+          OR "tag_ancestors_aliases"."count" > 0
+          OR "tags_aliases"."count" > 0
         )
       ORDER BY
         UPPER("tags"."name") = UPPER($9)
@@ -78,18 +74,14 @@ queries:
         UPPER("tags"."kana") = UPPER($11)
         OR UPPER("tags"."kana") = UPPER($12) DESC,
         (
-          (
-            array_length(
-              string_to_array(UPPER("tags"."name"), UPPER($13)),
-              1
-            )
+          array_length(
+            string_to_array(UPPER("tags"."name"), UPPER($13)),
+            1
           ) - 1
         ) + (
-          (
-            array_length(
-              string_to_array(UPPER("tags"."name"), UPPER($14)),
-              1
-            )
+          array_length(
+            string_to_array(UPPER("tags"."name"), UPPER($14)),
+            1
           ) - 1
         ) DESC,
         (
@@ -111,35 +103,27 @@ queries:
         ) DESC,
         MAX(
           (
-            (
-              array_length(
-                string_to_array(UPPER("tag_ancestors"."name"), UPPER($23)),
-                1
-              )
+            array_length(
+              string_to_array(UPPER("tag_ancestors"."name"), UPPER($23)),
+              1
             ) - 1
           ) + (
-            (
-              array_length(
-                string_to_array(UPPER("tag_ancestors"."name"), UPPER($24)),
-                1
-              )
+            array_length(
+              string_to_array(UPPER("tag_ancestors"."name"), UPPER($24)),
+              1
             ) - 1
           )
         ) DESC,
         SUM(
           (
-            (
-              array_length(
-                string_to_array(UPPER("tag_ancestors"."name"), UPPER($25)),
-                1
-              )
+            array_length(
+              string_to_array(UPPER("tag_ancestors"."name"), UPPER($25)),
+              1
             ) - 1
           ) + (
-            (
-              array_length(
-                string_to_array(UPPER("tag_ancestors"."name"), UPPER($26)),
-                1
-              )
+            array_length(
+              string_to_array(UPPER("tag_ancestors"."name"), UPPER($26)),
+              1
             ) - 1
           )
         ) DESC,

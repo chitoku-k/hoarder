@@ -1,4 +1,4 @@
-use sea_query::Expr;
+use sea_query::{Expr, Func, Iden};
 
 pub(crate) struct ArrayExpr;
 
@@ -8,7 +8,11 @@ impl ArrayExpr {
         T1: Into<Expr>,
         T2: Into<Expr>,
     {
-        Expr::cust_with_exprs("array_length($1, $2)", [arg1.into(), arg2.into()])
+        #[derive(Iden)]
+        #[iden = "array_length"]
+        struct ArrayLength;
+
+        Func::cust(ArrayLength).arg(arg1).arg(arg2).into()
     }
 
     pub fn string_to_array<T1, T2>(arg1: T1, arg2: T2) -> Expr
@@ -16,13 +20,21 @@ impl ArrayExpr {
         T1: Into<Expr>,
         T2: Into<Expr>,
     {
-        Expr::cust_with_exprs("string_to_array($1, $2)", [arg1.into(), arg2.into()])
+        #[derive(Iden)]
+        #[iden = "string_to_array"]
+        struct StringToArray;
+
+        Func::cust(StringToArray).arg(arg1).arg(arg2).into()
     }
 
     pub fn unnest<T>(arg: T) -> Expr
     where
         T: Into<Expr>,
     {
-        Expr::cust_with_expr("unnest($1)", arg)
+        #[derive(Iden)]
+        #[iden = "unnest"]
+        struct Unnest;
+
+        Func::cust(Unnest).arg(arg).into()
     }
 }

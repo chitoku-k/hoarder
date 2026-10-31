@@ -1,4 +1,4 @@
-use sea_query::Expr;
+use sea_query::{Expr, Func, Iden};
 
 pub(crate) struct AggregateExpr;
 
@@ -7,6 +7,10 @@ impl AggregateExpr {
     where
         T: Into<Expr>,
     {
-        Expr::cust_with_expr("bool_or($1)", arg)
+        #[derive(Iden)]
+        #[iden = "bool_or"]
+        struct BoolOr;
+
+        Func::cust(BoolOr).arg(arg).into()
     }
 }

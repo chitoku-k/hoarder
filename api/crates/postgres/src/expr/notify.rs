@@ -1,4 +1,4 @@
-use sea_query::Expr;
+use sea_query::{Expr, Func, Iden};
 
 pub(crate) struct NotifyExpr;
 
@@ -8,6 +8,10 @@ impl NotifyExpr {
         T1: ToString,
         T2: ToString,
     {
-        Expr::cust_with_exprs("pg_notify($1, $2)", [Expr::value(arg1.to_string()), Expr::value(arg2.to_string())])
+        #[derive(Iden)]
+        #[iden = "pg_notify"]
+        struct PgNotify;
+
+        Func::cust(PgNotify).arg(arg1.to_string()).arg(arg2.to_string()).into()
     }
 }

@@ -63,11 +63,9 @@ queries:
       ORDER BY
         UPPER("tags"."name") = UPPER($5) DESC,
         UPPER("tags"."kana") = UPPER($6) DESC,
-        (
-          array_length(
-            string_to_array(UPPER("tags"."name"), UPPER($7)),
-            1
-          )
+        array_length(
+          string_to_array(UPPER("tags"."name"), UPPER($7)),
+          1
         ) - 1 DESC,
         (
           NULLIF(strpos(UPPER("tags"."name"), UPPER($8)), 0)
@@ -79,19 +77,15 @@ queries:
         bool_or(UPPER("tag_ancestors"."name") = UPPER($10)) DESC,
         bool_or(UPPER("tag_ancestors"."kana") = UPPER($11)) DESC,
         MAX(
-          (
-            array_length(
-              string_to_array(UPPER("tag_ancestors"."name"), UPPER($12)),
-              1
-            )
+          array_length(
+            string_to_array(UPPER("tag_ancestors"."name"), UPPER($12)),
+            1
           ) - 1
         ) DESC,
         SUM(
-          (
-            array_length(
-              string_to_array(UPPER("tag_ancestors"."name"), UPPER($13)),
-              1
-            )
+          array_length(
+            string_to_array(UPPER("tag_ancestors"."name"), UPPER($13)),
+            1
           ) - 1
         ) DESC,
         (
