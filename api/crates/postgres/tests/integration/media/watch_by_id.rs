@@ -7,7 +7,7 @@ use domain::{
     repository::media::MediaRepository,
 };
 use futures::{pin_mut, TryStreamExt};
-use insta::assert_toml_snapshot;
+use insta::assert_yaml_snapshot;
 use ordermap::OrderMap;
 use postgres::media::PostgresMediaRepository;
 use pretty_assertions::assert_eq;
@@ -165,5 +165,5 @@ async fn succeeds(ctx: &DatabaseContext) {
         updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 9).unwrap(),
     }));
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }

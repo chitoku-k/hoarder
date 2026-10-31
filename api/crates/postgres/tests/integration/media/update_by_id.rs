@@ -14,7 +14,7 @@ use domain::{
     repository::media::MediaRepository,
 };
 use futures::TryStreamExt;
-use insta::assert_toml_snapshot;
+use insta::assert_yaml_snapshot;
 use ordermap::OrderMap;
 use postgres::media::PostgresMediaRepository;
 use pretty_assertions::{assert_eq, assert_matches};
@@ -112,7 +112,7 @@ async fn succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual[2].get::<Uuid, &str>("id"), uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5"));
     assert_eq!(actual[2].get::<Option<i32>, &str>("display_order"), Some(3));
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -295,7 +295,7 @@ async fn with_tags_succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual[2].get::<Uuid, &str>("id"), uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5"));
     assert_eq!(actual[2].get::<Option<i32>, &str>("display_order"), Some(3));
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -429,7 +429,7 @@ async fn with_replicas_succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual[2].get::<Uuid, &str>("id"), uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5"));
     assert_eq!(actual[2].get::<Option<i32>, &str>("display_order"), Some(3));
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -548,7 +548,7 @@ async fn with_sources_succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual[2].get::<Uuid, &str>("id"), uuid!("12ca56e2-6e77-43b9-9da9-9d968c80a1a5"));
     assert_eq!(actual[2].get::<Option<i32>, &str>("display_order"), Some(3));
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -650,7 +650,7 @@ async fn reorder_replicas_succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual[2].get::<Uuid, &str>("id"), uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be"));
     assert_eq!(actual[2].get::<Option<i32>, &str>("display_order"), Some(3));
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -845,7 +845,7 @@ async fn reorder_replicas_with_tags_succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual[2].get::<Uuid, &str>("id"), uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be"));
     assert_eq!(actual[2].get::<Option<i32>, &str>("display_order"), Some(3));
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -991,7 +991,7 @@ async fn reorder_replicas_with_replicas_succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual[2].get::<Uuid, &str>("id"), uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be"));
     assert_eq!(actual[2].get::<Option<i32>, &str>("display_order"), Some(3));
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -1122,7 +1122,7 @@ async fn reorder_replicas_with_sources_succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual[2].get::<Uuid, &str>("id"), uuid!("1706c7bb-4152-44b2-9bbb-1179d09a19be"));
     assert_eq!(actual[2].get::<Option<i32>, &str>("display_order"), Some(3));
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -1177,7 +1177,7 @@ async fn reorder_too_few_replicas_fails(ctx: &DatabaseContext) {
         ],
     ));
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -1236,7 +1236,7 @@ async fn reorder_too_many_replicas_fails(ctx: &DatabaseContext) {
         ],
     ));
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -1293,5 +1293,5 @@ async fn reorder_replicas_mismatch_fails(ctx: &DatabaseContext) {
         ],
     ));
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }

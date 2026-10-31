@@ -2,7 +2,7 @@ use domain::{
     entity::tags::{TagDepth, TagId},
     repository::{tags::TagsRepository, Direction, Order},
 };
-use insta::assert_toml_snapshot;
+use insta::assert_yaml_snapshot;
 use postgres::tags::PostgresTagsRepository;
 use test_context::test_context;
 use tracing::Instrument;
@@ -25,5 +25,5 @@ async fn with_out_of_bounds_succeeds(ctx: &DatabaseContext) {
 
     assert!(actual.is_empty());
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }

@@ -6,7 +6,7 @@ use domain::{
     },
     repository::{media::MediaRepository, Direction, Order},
 };
-use insta::assert_toml_snapshot;
+use insta::assert_yaml_snapshot;
 use ordermap::OrderMap;
 use postgres::media::PostgresMediaRepository;
 use pretty_assertions::assert_eq;
@@ -62,7 +62,7 @@ async fn asc_succeeds(ctx: &DatabaseContext) {
         },
     ]);
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -111,7 +111,7 @@ async fn desc_succeeds(ctx: &DatabaseContext) {
         },
     ]);
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -152,7 +152,7 @@ async fn since_asc_succeeds(ctx: &DatabaseContext) {
         },
     ]);
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -185,7 +185,7 @@ async fn since_desc_succeeds(ctx: &DatabaseContext) {
         },
     ]);
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -226,7 +226,7 @@ async fn until_asc_succeeds(ctx: &DatabaseContext) {
         },
     ]);
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -259,5 +259,5 @@ async fn until_desc_succeeds(ctx: &DatabaseContext) {
         },
     ]);
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }

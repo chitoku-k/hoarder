@@ -3,7 +3,7 @@ use domain::{
     error::ErrorKind,
     repository::tag_types::TagTypesRepository,
 };
-use insta::assert_toml_snapshot;
+use insta::assert_yaml_snapshot;
 use postgres::tag_types::PostgresTagTypesRepository;
 use pretty_assertions::{assert_eq, assert_matches};
 use sqlx::Row;
@@ -38,7 +38,7 @@ async fn succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual.get::<&str, &str>("name"), "作品");
     assert_eq!(actual.get::<&str, &str>("kana"), "さくひん");
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -66,7 +66,7 @@ async fn with_slug_name_kana_succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual.get::<&str, &str>("name"), "版権");
     assert_eq!(actual.get::<&str, &str>("kana"), "はんけん");
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -82,5 +82,5 @@ async fn fails(ctx: &DatabaseContext) {
 
     assert_matches!(actual.kind(), ErrorKind::TagTypeNotFound { id } if id == &TagTypeId::from(uuid!("11111111-1111-1111-1111-111111111111")));
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }

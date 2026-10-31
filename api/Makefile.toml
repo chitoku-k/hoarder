@@ -8,6 +8,7 @@ script = '''
 #!/usr/bin/env bash
 set -euo pipefail
 
+export INSTA_YAML_BLOCK_STYLE=1
 source scripts/setup-postgres.bash
 cargo tarpaulin "$@"
 '''
@@ -19,6 +20,7 @@ script = '''
 #!/usr/bin/env bash
 set -euo pipefail
 
+export INSTA_YAML_BLOCK_STYLE=1
 source scripts/setup-postgres.bash
 cargo test "$@"
 '''

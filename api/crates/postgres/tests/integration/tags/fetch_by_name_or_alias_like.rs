@@ -5,7 +5,7 @@ use domain::{
     repository::tags::TagsRepository,
 };
 use chrono::{TimeZone, Utc};
-use insta::assert_toml_snapshot;
+use insta::assert_yaml_snapshot;
 use postgres::tags::PostgresTagsRepository;
 use pretty_assertions::assert_eq;
 use test_context::test_context;
@@ -21,7 +21,7 @@ async fn empty_succeeds(ctx: &DatabaseContext) {
     let actual = repository.fetch_by_name_or_alias_like([].into_iter(), TagDepth::new(2, 2)).instrument(ctx.span.clone()).await.unwrap();
     assert!(actual.is_empty());
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -296,7 +296,7 @@ async fn with_name_succeeds(ctx: &DatabaseContext) {
         },
     ]);
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -336,7 +336,7 @@ async fn with_multiple_name_succeeds(ctx: &DatabaseContext) {
         },
     ]);
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -475,7 +475,7 @@ async fn with_name_case_insensitive_succeeds(ctx: &DatabaseContext) {
         },
     ]);
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -516,7 +516,7 @@ async fn with_alias_succeeds(ctx: &DatabaseContext) {
         },
     ]);
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -538,7 +538,7 @@ async fn with_multiple_alias_succeeds(ctx: &DatabaseContext) {
         },
     ]);
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -598,5 +598,5 @@ async fn with_name_and_alias_succeeds(ctx: &DatabaseContext) {
         },
     ]);
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }

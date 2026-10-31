@@ -7,7 +7,7 @@ use domain::{
 };
 use chrono::{TimeZone, Utc};
 use futures::TryStreamExt;
-use insta::assert_toml_snapshot;
+use insta::assert_yaml_snapshot;
 use postgres::tags::PostgresTagsRepository;
 use pretty_assertions::{assert_eq, assert_matches};
 use sqlx::Row;
@@ -192,7 +192,7 @@ async fn with_depth_succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual[22].get::<Uuid, &str>("descendant_id"), uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb"));
     assert_eq!(actual[22].get::<i32, &str>("distance"), 0);
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -320,7 +320,7 @@ async fn without_depth_succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual[22].get::<Uuid, &str>("descendant_id"), uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb"));
     assert_eq!(actual[22].get::<i32, &str>("distance"), 0);
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -335,7 +335,7 @@ async fn root_fails(ctx: &DatabaseContext) {
 
     assert_matches!(actual.kind(), ErrorKind::TagAttachingRoot);
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -350,7 +350,7 @@ async fn root_parent_fails(ctx: &DatabaseContext) {
 
     assert_matches!(actual.kind(), ErrorKind::TagAttachingRoot);
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -365,7 +365,7 @@ async fn self_fails(ctx: &DatabaseContext) {
 
     assert_matches!(actual.kind(), ErrorKind::TagAttachingToItself { id } if id == &TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")));
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -380,7 +380,7 @@ async fn descendant_fails(ctx: &DatabaseContext) {
 
     assert_matches!(actual.kind(), ErrorKind::TagAttachingToDescendant { id } if id == &TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")));
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -395,5 +395,5 @@ async fn non_existing_fails(ctx: &DatabaseContext) {
 
     assert_matches!(actual.kind(), ErrorKind::TagNotFound { id } if id == &TagId::from(uuid!("11111111-1111-1111-1111-111111111111")));
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }

@@ -6,7 +6,7 @@ use domain::{
     },
     repository::sources::SourcesRepository,
 };
-use insta::assert_toml_snapshot;
+use insta::assert_yaml_snapshot;
 use postgres::sources::PostgresSourcesRepository;
 use pretty_assertions::assert_eq;
 use test_context::test_context;
@@ -55,5 +55,5 @@ async fn succeeds(ctx: &DatabaseContext) {
         },
     ]);
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }

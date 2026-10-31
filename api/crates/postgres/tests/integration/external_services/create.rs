@@ -3,7 +3,7 @@ use domain::{
     error::ErrorKind,
     repository::external_services::ExternalServicesRepository,
 };
-use insta::assert_toml_snapshot;
+use insta::assert_yaml_snapshot;
 use postgres::external_services::PostgresExternalServicesRepository;
 use pretty_assertions::{assert_eq, assert_matches};
 use sqlx::Row;
@@ -42,7 +42,7 @@ async fn succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual.get::<Option<&str>, &str>("base_url"), Some("https://foobar.example.com"));
     assert_eq!(actual.get::<Option<&str>, &str>("url_pattern"), Some(r"^https?://foobar\.example\.com/(?<id>\d+)(?:[/?#].*)?$"));
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -59,5 +59,5 @@ async fn fails(ctx: &DatabaseContext) {
 
     assert_matches!(actual.kind(), ErrorKind::ExternalServiceSlugDuplicate { slug } if slug == "x");
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }

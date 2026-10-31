@@ -2,7 +2,7 @@ use domain::{
     entity::external_services::{ExternalService, ExternalServiceId, ExternalServiceKind},
     repository::external_services::ExternalServicesRepository,
 };
-use insta::assert_toml_snapshot;
+use insta::assert_yaml_snapshot;
 use postgres::external_services::PostgresExternalServicesRepository;
 use pretty_assertions::assert_eq;
 use test_context::test_context;
@@ -52,5 +52,5 @@ async fn succeeds(ctx: &DatabaseContext) {
         },
     ]);
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }

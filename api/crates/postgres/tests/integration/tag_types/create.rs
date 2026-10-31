@@ -2,7 +2,7 @@ use domain::{
     error::ErrorKind,
     repository::tag_types::TagTypesRepository,
 };
-use insta::assert_toml_snapshot;
+use insta::assert_yaml_snapshot;
 use postgres::tag_types::PostgresTagTypesRepository;
 use pretty_assertions::{assert_eq, assert_matches};
 use sqlx::Row;
@@ -31,7 +31,7 @@ async fn succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual.get::<&str, &str>("name"), "FooBar");
     assert_eq!(actual.get::<&str, &str>("kana"), "foobar");
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -42,5 +42,5 @@ async fn fails(ctx: &DatabaseContext) {
 
     assert_matches!(actual.kind(), ErrorKind::TagTypeSlugDuplicate { slug } if slug == "character");
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }

@@ -5,7 +5,7 @@ use domain::{
     repository::replicas::ReplicasRepository,
 };
 use futures::{pin_mut, TryStreamExt};
-use insta::assert_toml_snapshot;
+use insta::assert_yaml_snapshot;
 use postgres::replicas::PostgresReplicasRepository;
 use pretty_assertions::{assert_eq, assert_matches};
 use serde_json::json;
@@ -75,7 +75,7 @@ async fn ready_succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual.get("id"), Some(&json!("1706c7bb-4152-44b2-9bbb-1179d09a19be")));
     assert_eq!(actual.get("medium_id"), Some(&json!("6356503d-6ab6-4e39-bb86-3311219c7fd1")));
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -128,7 +128,7 @@ async fn error_succeeds(ctx: &DatabaseContext) {
 
     assert!(actual.is_none());
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -145,5 +145,5 @@ async fn fails(ctx: &DatabaseContext) {
 
     assert_matches!(actual.kind(), ErrorKind::ReplicaNotFound { id } if id == &ReplicaId::from(uuid!("11111111-1111-1111-1111-111111111111")));
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
