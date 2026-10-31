@@ -73,43 +73,55 @@ queries:
         OR UPPER("tags"."name") = UPPER($10) DESC,
         UPPER("tags"."kana") = UPPER($11)
         OR UPPER("tags"."kana") = UPPER($12) DESC,
+        (UPPER("tags"."name") ^@ UPPER($13))
+        OR (UPPER("tags"."name") ^@ UPPER($14)) DESC,
+        (UPPER("tags"."kana") ^@ UPPER($15))
+        OR (UPPER("tags"."kana") ^@ UPPER($16)) DESC,
         (
           array_length(
-            string_to_array(UPPER("tags"."name"), UPPER($13)),
+            string_to_array(UPPER("tags"."name"), UPPER($17)),
             1
           ) - 1
         ) + (
           array_length(
-            string_to_array(UPPER("tags"."name"), UPPER($14)),
+            string_to_array(UPPER("tags"."name"), UPPER($18)),
             1
           ) - 1
         ) DESC,
         (
-          NULLIF(strpos(UPPER("tags"."name"), UPPER($15)), 0),
-          NULLIF(strpos(UPPER("tags"."name"), UPPER($16)), 0)
+          NULLIF(strpos(UPPER("tags"."name"), UPPER($19)), 0),
+          NULLIF(strpos(UPPER("tags"."name"), UPPER($20)), 0)
         ) ASC,
         (
-          NULLIF(strpos(UPPER("tags"."kana"), UPPER($17)), 0),
-          NULLIF(strpos(UPPER("tags"."kana"), UPPER($18)), 0)
+          NULLIF(strpos(UPPER("tags"."kana"), UPPER($21)), 0),
+          NULLIF(strpos(UPPER("tags"."kana"), UPPER($22)), 0)
         ) ASC,
         SUM(COALESCE("tags_aliases"."count", 0)) DESC,
         bool_or(
-          UPPER("tag_ancestors"."name") = UPPER($19)
-          OR UPPER("tag_ancestors"."name") = UPPER($20)
+          UPPER("tag_ancestors"."name") = UPPER($23)
+          OR UPPER("tag_ancestors"."name") = UPPER($24)
         ) DESC,
         bool_or(
-          UPPER("tag_ancestors"."kana") = UPPER($21)
-          OR UPPER("tag_ancestors"."kana") = UPPER($22)
+          UPPER("tag_ancestors"."kana") = UPPER($25)
+          OR UPPER("tag_ancestors"."kana") = UPPER($26)
+        ) DESC,
+        bool_or(
+          (UPPER("tag_ancestors"."name") ^@ UPPER($27))
+          OR (UPPER("tag_ancestors"."name") ^@ UPPER($28))
+        ) DESC,
+        bool_or(
+          (UPPER("tag_ancestors"."kana") ^@ UPPER($29))
+          OR (UPPER("tag_ancestors"."kana") ^@ UPPER($30))
         ) DESC,
         MAX(
           (
             array_length(
-              string_to_array(UPPER("tag_ancestors"."name"), UPPER($23)),
+              string_to_array(UPPER("tag_ancestors"."name"), UPPER($31)),
               1
             ) - 1
           ) + (
             array_length(
-              string_to_array(UPPER("tag_ancestors"."name"), UPPER($24)),
+              string_to_array(UPPER("tag_ancestors"."name"), UPPER($32)),
               1
             ) - 1
           )
@@ -117,12 +129,12 @@ queries:
         SUM(
           (
             array_length(
-              string_to_array(UPPER("tag_ancestors"."name"), UPPER($25)),
+              string_to_array(UPPER("tag_ancestors"."name"), UPPER($33)),
               1
             ) - 1
           ) + (
             array_length(
-              string_to_array(UPPER("tag_ancestors"."name"), UPPER($26)),
+              string_to_array(UPPER("tag_ancestors"."name"), UPPER($34)),
               1
             ) - 1
           )
@@ -130,13 +142,13 @@ queries:
         (
           MIN(
             NULLIF(
-              strpos(UPPER("tag_ancestors"."name"), UPPER($27)),
+              strpos(UPPER("tag_ancestors"."name"), UPPER($35)),
               0
             )
           ),
           MIN(
             NULLIF(
-              strpos(UPPER("tag_ancestors"."name"), UPPER($28)),
+              strpos(UPPER("tag_ancestors"."name"), UPPER($36)),
               0
             )
           )
@@ -144,13 +156,13 @@ queries:
         (
           MIN(
             NULLIF(
-              strpos(UPPER("tag_ancestors"."kana"), UPPER($29)),
+              strpos(UPPER("tag_ancestors"."kana"), UPPER($37)),
               0
             )
           ),
           MIN(
             NULLIF(
-              strpos(UPPER("tag_ancestors"."kana"), UPPER($30)),
+              strpos(UPPER("tag_ancestors"."kana"), UPPER($38)),
               0
             )
           )

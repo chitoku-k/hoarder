@@ -63,35 +63,39 @@ queries:
       ORDER BY
         UPPER("tags"."name") = UPPER($5) DESC,
         UPPER("tags"."kana") = UPPER($6) DESC,
+        UPPER("tags"."name") ^@ UPPER($7) DESC,
+        UPPER("tags"."kana") ^@ UPPER($8) DESC,
         array_length(
-          string_to_array(UPPER("tags"."name"), UPPER($7)),
+          string_to_array(UPPER("tags"."name"), UPPER($9)),
           1
         ) - 1 DESC,
         (
-          NULLIF(strpos(UPPER("tags"."name"), UPPER($8)), 0)
+          NULLIF(strpos(UPPER("tags"."name"), UPPER($10)), 0)
         ) ASC,
         (
-          NULLIF(strpos(UPPER("tags"."kana"), UPPER($9)), 0)
+          NULLIF(strpos(UPPER("tags"."kana"), UPPER($11)), 0)
         ) ASC,
         SUM(COALESCE("tags_aliases"."count", 0)) DESC,
-        bool_or(UPPER("tag_ancestors"."name") = UPPER($10)) DESC,
-        bool_or(UPPER("tag_ancestors"."kana") = UPPER($11)) DESC,
+        bool_or(UPPER("tag_ancestors"."name") = UPPER($12)) DESC,
+        bool_or(UPPER("tag_ancestors"."kana") = UPPER($13)) DESC,
+        bool_or(UPPER("tag_ancestors"."name") ^@ UPPER($14)) DESC,
+        bool_or(UPPER("tag_ancestors"."kana") ^@ UPPER($15)) DESC,
         MAX(
           array_length(
-            string_to_array(UPPER("tag_ancestors"."name"), UPPER($12)),
+            string_to_array(UPPER("tag_ancestors"."name"), UPPER($16)),
             1
           ) - 1
         ) DESC,
         SUM(
           array_length(
-            string_to_array(UPPER("tag_ancestors"."name"), UPPER($13)),
+            string_to_array(UPPER("tag_ancestors"."name"), UPPER($17)),
             1
           ) - 1
         ) DESC,
         (
           MIN(
             NULLIF(
-              strpos(UPPER("tag_ancestors"."name"), UPPER($14)),
+              strpos(UPPER("tag_ancestors"."name"), UPPER($18)),
               0
             )
           )
@@ -99,7 +103,7 @@ queries:
         (
           MIN(
             NULLIF(
-              strpos(UPPER("tag_ancestors"."kana"), UPPER($15)),
+              strpos(UPPER("tag_ancestors"."kana"), UPPER($19)),
               0
             )
           )
