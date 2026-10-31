@@ -1,4 +1,4 @@
-use sea_query::Expr;
+use sea_query::{Expr, Func, Iden};
 
 pub(crate) struct StringExpr;
 
@@ -9,7 +9,11 @@ impl StringExpr {
         T2: Into<Expr>,
         T3: Into<Expr>,
     {
-        Expr::cust_with_exprs("regexp_replace($1, $2, $3)", [arg1.into(), arg2.into(), arg3.into()])
+        #[derive(Iden)]
+        #[iden = "regexp_replace"]
+        struct RegexpReplace;
+
+        Func::cust(RegexpReplace).arg(arg1).arg(arg2).arg(arg3).into()
     }
 
     pub fn rtrim<T1, T2>(arg1: T1, arg2: T2) -> Expr
@@ -17,7 +21,11 @@ impl StringExpr {
         T1: Into<Expr>,
         T2: Into<Expr>,
     {
-        Expr::cust_with_exprs("rtrim($1, $2)", [arg1.into(), arg2.into()])
+        #[derive(Iden)]
+        #[iden = "rtrim"]
+        struct Rtrim;
+
+        Func::cust(Rtrim).arg(arg1).arg(arg2).into()
     }
 
     pub fn strpos<T1, T2>(arg1: T1, arg2: T2) -> Expr
@@ -25,6 +33,10 @@ impl StringExpr {
         T1: Into<Expr>,
         T2: Into<Expr>,
     {
-        Expr::cust_with_exprs("strpos($1, $2)", [arg1.into(), arg2.into()])
+        #[derive(Iden)]
+        #[iden = "strpos"]
+        struct Strpos;
+
+        Func::cust(Strpos).arg(arg1).arg(arg2).into()
     }
 }
