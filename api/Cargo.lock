@@ -1449,7 +1449,7 @@ dependencies = [
 
 [[package]]
 name = "hoarder"
-version = "0.9.1-dev"
+version = "0.10.0"
 dependencies = [
  "anstream",
  "anyhow",
