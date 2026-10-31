@@ -14,6 +14,7 @@ mod v7;
 mod v8;
 mod v9;
 mod v10;
+mod v11;
 
 pub struct Migrator(migrator::Migrator<Postgres>);
 
@@ -30,7 +31,8 @@ impl Migrator {
             v7::V7Migration::new(),
             v8::V8Migration::new(),
             v9::V9Migration::new(),
-            v10::V10Migration::new(langid),
+            v10::V10Migration::new(langid.clone()),
+            v11::V11Migration::new(langid),
         ]).map_err(Error::other)?;
 
         Ok(Self(migrator))
