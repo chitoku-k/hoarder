@@ -1,5 +1,6 @@
 use async_trait::async_trait;
 use chrono::{DateTime, Utc};
+use derive_more::Constructor;
 use domain::entity::tags::TagId;
 use sea_query::{ColumnDef, ColumnType, Expr, ExprTrait, ForeignKey, ForeignKeyAction, Index, OnConflict, PgFunc, PostgresQueryBuilder, Query, Table};
 use sea_query_sqlx::SqlxBinder;
@@ -16,6 +17,7 @@ use crate::{
     tags::{PostgresTag, PostgresTagId, PostgresTagPath},
 };
 
+#[derive(Constructor)]
 pub(super) struct V1Migration;
 
 impl Migration<Postgres> for V1Migration {
@@ -33,13 +35,14 @@ impl Migration<Postgres> for V1Migration {
 
     fn operations(&self) -> Vec<Box<dyn Operation<Postgres>>> {
         vec_box![
-            CreateTableOperation,
-            CreateIndexOperation,
-            InsertRootTagsOperation,
+            CreateTableOperation::new(),
+            CreateIndexOperation::new(),
+            InsertRootTagsOperation::new(),
         ]
     }
 }
 
+#[derive(Constructor)]
 struct CreateTableOperation;
 
 #[async_trait]
@@ -329,6 +332,7 @@ impl Operation<Postgres> for CreateTableOperation {
     }
 }
 
+#[derive(Constructor)]
 struct CreateIndexOperation;
 
 #[async_trait]
@@ -423,6 +427,7 @@ impl Operation<Postgres> for CreateIndexOperation {
     }
 }
 
+#[derive(Constructor)]
 struct InsertRootTagsOperation;
 
 #[async_trait]

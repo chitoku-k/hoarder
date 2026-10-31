@@ -19,15 +19,15 @@ impl Migrator {
     pub fn new() -> Result<Self> {
         let mut migrator = migrator::Migrator::new();
         migrator.add_migrations(vec_box![
-            v1::V1Migration,
-            v2::V2Migration,
-            v3::V3Migration,
-            v4::V4Migration,
-            v5::V5Migration,
-            v6::V6Migration,
-            v7::V7Migration,
-            v8::V8Migration,
-            v9::V9Migration,
+            v1::V1Migration::new(),
+            v2::V2Migration::new(),
+            v3::V3Migration::new(),
+            v4::V4Migration::new(),
+            v5::V5Migration::new(),
+            v6::V6Migration::new(),
+            v7::V7Migration::new(),
+            v8::V8Migration::new(),
+            v9::V9Migration::new(),
         ]).map_err(Error::other)?;
 
         Ok(Self(migrator))

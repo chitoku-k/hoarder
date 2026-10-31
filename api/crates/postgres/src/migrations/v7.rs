@@ -1,10 +1,12 @@
 use async_trait::async_trait;
+use derive_more::Constructor;
 use sea_query::{ColumnDef, PostgresQueryBuilder, Query, Table};
 use sqlx::{PgConnection, Postgres};
 use sqlx_migrator::{error::Error, migration::Migration, operation::Operation, vec_box};
 
 use crate::tag_types::PostgresTagType;
 
+#[derive(Constructor)]
 pub(super) struct V7Migration;
 
 impl Migration<Postgres> for V7Migration {
@@ -21,10 +23,11 @@ impl Migration<Postgres> for V7Migration {
     }
 
     fn operations(&self) -> Vec<Box<dyn Operation<Postgres>>> {
-        vec_box![TagTypeKanaOperation]
+        vec_box![TagTypeKanaOperation::new()]
     }
 }
 
+#[derive(Constructor)]
 struct TagTypeKanaOperation;
 
 #[async_trait]

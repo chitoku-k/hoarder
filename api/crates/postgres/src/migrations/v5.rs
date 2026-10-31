@@ -1,4 +1,5 @@
 use async_trait::async_trait;
+use derive_more::Constructor;
 use sea_query::{extension::postgres::PgExpr, BinOper, ColumnDef, Expr, ExprTrait, Iden, PostgresQueryBuilder, Query, Table};
 use sqlx::{PgConnection, Postgres};
 use sqlx_migrator::{error::Error, migration::Migration, operation::Operation, vec_box};
@@ -7,6 +8,7 @@ use crate::sources::PostgresSource;
 
 const EXTERNAL_SERVICE_EXTRA_FIELD_KINDS: [&str; 2] = ["threads", "twitter"];
 
+#[derive(Constructor)]
 pub(super) struct V5Migration;
 
 impl Migration<Postgres> for V5Migration {
@@ -23,10 +25,11 @@ impl Migration<Postgres> for V5Migration {
     }
 
     fn operations(&self) -> Vec<Box<dyn Operation<Postgres>>> {
-        vec_box![SourceExternalMetadataExtraOperation]
+        vec_box![SourceExternalMetadataExtraOperation::new()]
     }
 }
 
+#[derive(Constructor)]
 struct SourceExternalMetadataExtraOperation;
 
 #[derive(Iden)]
