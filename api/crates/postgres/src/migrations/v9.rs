@@ -108,12 +108,12 @@ impl Operation<Postgres> for ReplicasPhaseOperation {
 
         sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
-        let sql = r#"
-            ALTER TABLE "replicas"
-            DROP CONSTRAINT "replicas_phase"
-        "#;
+        let sql = Table::alter()
+            .table(PostgresReplica::Table)
+            .drop_constraint("replicas_phase")
+            .to_string(PostgresQueryBuilder);
 
-        sqlx::query(sql).execute(&mut *connection).await?;
+        sqlx::query(sqlx::AssertSqlSafe(sql.as_str())).execute(&mut *connection).await?;
 
         let sql = Table::alter()
             .table(PostgresReplica::Table)
