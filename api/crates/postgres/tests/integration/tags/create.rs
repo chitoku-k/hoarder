@@ -6,7 +6,7 @@ use domain::{
 };
 use chrono::{TimeZone, Utc};
 use futures::TryStreamExt;
-use insta::assert_toml_snapshot;
+use insta::assert_yaml_snapshot;
 use postgres::tags::PostgresTagsRepository;
 use pretty_assertions::assert_eq;
 use sqlx::Row;
@@ -78,7 +78,7 @@ async fn with_parent_succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual[2].get::<Uuid, &str>("descendant_id"), *actual_id);
     assert_eq!(actual[2].get::<i32, &str>("distance"), 0);
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -127,5 +127,5 @@ async fn without_parent_succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual[1].get::<Uuid, &str>("descendant_id"), *actual_id);
     assert_eq!(actual[1].get::<i32, &str>("distance"), 0);
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }

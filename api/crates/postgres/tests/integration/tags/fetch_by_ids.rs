@@ -5,7 +5,7 @@ use domain::{
     repository::tags::TagsRepository,
 };
 use chrono::{TimeZone, Utc};
-use insta::assert_toml_snapshot;
+use insta::assert_yaml_snapshot;
 use postgres::tags::PostgresTagsRepository;
 use pretty_assertions::assert_eq;
 use test_context::test_context;
@@ -149,5 +149,5 @@ async fn succeeds(ctx: &DatabaseContext) {
         },
     ]);
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }

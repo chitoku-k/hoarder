@@ -4,7 +4,7 @@ use domain::{
     error::ErrorKind,
     repository::replicas::ReplicasRepository,
 };
-use insta::assert_toml_snapshot;
+use insta::assert_yaml_snapshot;
 use postgres::replicas::PostgresReplicasRepository;
 use pretty_assertions::{assert_eq, assert_matches};
 use test_context::test_context;
@@ -36,7 +36,7 @@ async fn succeeds(ctx: &DatabaseContext) {
         updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 7).unwrap(),
     });
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -47,5 +47,5 @@ async fn fails(ctx: &DatabaseContext) {
 
     assert_matches!(actual.kind(), ErrorKind::ReplicaNotFoundByUrl { original_url } if original_url == "file:///not-found.png");
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }

@@ -6,7 +6,7 @@ use domain::{
     },
     repository::sources::SourcesRepository,
 };
-use insta::assert_toml_snapshot;
+use insta::assert_yaml_snapshot;
 use postgres::sources::PostgresSourcesRepository;
 use pretty_assertions::assert_eq;
 use test_context::test_context;
@@ -39,7 +39,7 @@ async fn succeeds(ctx: &DatabaseContext) {
         updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 14).unwrap(),
     }));
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -66,7 +66,7 @@ async fn succeeds_with_extra(ctx: &DatabaseContext) {
         updated_at: Utc.with_ymd_and_hms(2022, 3, 4, 5, 6, 15).unwrap(),
     }));
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -80,5 +80,5 @@ async fn not_found(ctx: &DatabaseContext) {
 
     assert!(actual.is_none());
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }

@@ -6,7 +6,7 @@ use domain::{
     repository::tags::TagsRepository,
 };
 use chrono::{TimeZone, Utc};
-use insta::assert_toml_snapshot;
+use insta::assert_yaml_snapshot;
 use postgres::tags::PostgresTagsRepository;
 use pretty_assertions::{assert_eq, assert_matches};
 use sqlx::Row;
@@ -97,7 +97,7 @@ async fn with_depth_succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual.get::<&str, &str>("kana"), "ごらくぶ");
     assert_eq!(actual.get::<Vec<String>, &str>("aliases"), vec!["七森中☆ごらく部".to_string()]);
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -131,7 +131,7 @@ async fn without_depth_succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual.get::<&str, &str>("kana"), "ごらくぶ");
     assert_eq!(actual.get::<Vec<String>, &str>("aliases"), vec!["七森中☆ごらく部".to_string()]);
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -149,7 +149,7 @@ async fn root_fails(ctx: &DatabaseContext) {
 
 assert_matches!(actual.kind(), ErrorKind::TagUpdatingRoot);
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -167,5 +167,5 @@ async fn fails(ctx: &DatabaseContext) {
 
     assert_matches!(actual.kind(), ErrorKind::TagNotFound { id } if id == &TagId::from(uuid!("11111111-1111-1111-1111-111111111111")));
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }

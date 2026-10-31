@@ -52,4 +52,5 @@ jobs:
           X86_64_PC_WINDOWS_MSVC_OPENSSL_INCLUDE_DIR: C:\Program Files\OpenSSL\include
           X86_64_PC_WINDOWS_MSVC_OPENSSL_LIB_DIR: C:\Program Files\OpenSSL\lib\VC\x64\MD
         run: |
+          export INSTA_YAML_BLOCK_STYLE=1
           cargo test --workspace

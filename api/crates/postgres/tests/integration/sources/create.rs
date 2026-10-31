@@ -2,7 +2,7 @@ use domain::{
     entity::external_services::{ExternalMetadata, ExternalService, ExternalServiceId, ExternalServiceKind},
     repository::sources::SourcesRepository,
 };
-use insta::assert_toml_snapshot;
+use insta::assert_yaml_snapshot;
 use postgres::sources::PostgresSourcesRepository;
 use pretty_assertions::assert_eq;
 use serde_json::json;
@@ -56,7 +56,7 @@ async fn succeeds_with_default(ctx: &DatabaseContext) {
         }),
     );
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -103,7 +103,7 @@ async fn succeeds_with_extra(ctx: &DatabaseContext) {
         }),
     );
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -146,7 +146,7 @@ async fn succeeds_with_custom_object(ctx: &DatabaseContext) {
         json!({}),
     );
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -187,7 +187,7 @@ async fn succeeds_with_custom_string(ctx: &DatabaseContext) {
         json!({}),
     );
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -228,5 +228,5 @@ async fn succeeds_with_custom_number(ctx: &DatabaseContext) {
         json!({}),
     );
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }

@@ -2,7 +2,7 @@ use domain::{
     entity::tag_types::{TagType, TagTypeId},
     repository::tag_types::TagTypesRepository,
 };
-use insta::assert_toml_snapshot;
+use insta::assert_yaml_snapshot;
 use postgres::tag_types::PostgresTagTypesRepository;
 use pretty_assertions::assert_eq;
 use test_context::test_context;
@@ -35,5 +35,5 @@ async fn succeeds(ctx: &DatabaseContext) {
         },
     ]);
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }

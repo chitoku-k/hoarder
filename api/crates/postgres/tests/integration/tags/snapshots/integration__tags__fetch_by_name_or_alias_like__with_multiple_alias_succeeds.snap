@@ -2,250 +2,250 @@
 source: crates/postgres/tests/integration/tags/fetch_by_name_or_alias_like.rs
 expression: ctx.queries()
 ---
-[[queries]]
-sql = '''
-SELECT
-  "tags"."id"
-FROM
-  "tags"
-INNER JOIN
-  "tag_paths" ON "tag_paths"."descendant_id" = "tags"."id"
-  AND "tag_paths"."ancestor_id" <> '00000000-0000-0000-0000-000000000000'
-INNER JOIN
-  "tags" AS "tag_ancestors" ON "tag_ancestors"."id" = "tag_paths"."ancestor_id"
-LEFT JOIN
-  (
-    SELECT
-      "id",
-      COUNT("id") AS "count"
-    FROM
-      (
-        SELECT
-          "id",
-          unnest("aliases") AS "alias"
-        FROM
-          "tags"
-      ) AS "tags_aliases"
-    WHERE
-      ("alias" ILIKE $1)
-      AND ("alias" ILIKE $2)
-    GROUP BY
-      "id"
-  ) AS "tags_aliases" ON "tags_aliases"."id" = "tags"."id"
-  AND "tag_paths"."ancestor_id" = "tag_paths"."descendant_id"
-LEFT JOIN
-  (
-    SELECT
-      "id",
-      COUNT("id") AS "count"
-    FROM
-      (
-        SELECT
-          "id",
-          unnest("aliases") AS "alias"
-        FROM
-          "tags"
-      ) AS "tag_ancestors_aliases"
-    WHERE
-      ("alias" ILIKE $3)
-      AND ("alias" ILIKE $4)
-    GROUP BY
-      "id"
-  ) AS "tag_ancestors_aliases" ON "tag_ancestors_aliases"."id" = "tags"."id"
-  AND "tag_paths"."ancestor_id" <> "tag_paths"."descendant_id"
-GROUP BY
-  "tags"."id"
-HAVING
-  (
-    bool_or(
-      ("tag_ancestors"."name" ILIKE $5)
-      OR ("tag_ancestors"."kana" ILIKE $6)
-      OR "tag_ancestors_aliases"."count" > 0
-      OR "tags_aliases"."count" > 0
-    )
-  )
-  AND (
-    bool_or(
-      ("tag_ancestors"."name" ILIKE $7)
-      OR ("tag_ancestors"."kana" ILIKE $8)
-      OR "tag_ancestors_aliases"."count" > 0
-      OR "tags_aliases"."count" > 0
-    )
-  )
-ORDER BY
-  UPPER("tags"."name") = UPPER($9)
-  OR UPPER("tags"."name") = UPPER($10) DESC,
-  UPPER("tags"."kana") = UPPER($11)
-  OR UPPER("tags"."kana") = UPPER($12) DESC,
-  (
-    (
-      array_length(
-        string_to_array(UPPER("tags"."name"), UPPER($13)),
-        1
-      )
-    ) - 1
-  ) + (
-    (
-      array_length(
-        string_to_array(UPPER("tags"."name"), UPPER($14)),
-        1
-      )
-    ) - 1
-  ) DESC,
-  (
-    NULLIF(strpos(UPPER("tags"."name"), UPPER($15)), 0),
-    NULLIF(strpos(UPPER("tags"."name"), UPPER($16)), 0)
-  ) ASC,
-  (
-    NULLIF(strpos(UPPER("tags"."kana"), UPPER($17)), 0),
-    NULLIF(strpos(UPPER("tags"."kana"), UPPER($18)), 0)
-  ) ASC,
-  SUM(COALESCE("tags_aliases"."count", 0)) DESC,
-  bool_or(
-    UPPER("tag_ancestors"."name") = UPPER($19)
-    OR UPPER("tag_ancestors"."name") = UPPER($20)
-  ) DESC,
-  bool_or(
-    UPPER("tag_ancestors"."kana") = UPPER($21)
-    OR UPPER("tag_ancestors"."kana") = UPPER($22)
-  ) DESC,
-  MAX(
-    (
-      (
-        array_length(
-          string_to_array(UPPER("tag_ancestors"."name"), UPPER($23)),
-          1
+queries:
+  - sql: |-
+      SELECT
+        "tags"."id"
+      FROM
+        "tags"
+      INNER JOIN
+        "tag_paths" ON "tag_paths"."descendant_id" = "tags"."id"
+        AND "tag_paths"."ancestor_id" <> '00000000-0000-0000-0000-000000000000'
+      INNER JOIN
+        "tags" AS "tag_ancestors" ON "tag_ancestors"."id" = "tag_paths"."ancestor_id"
+      LEFT JOIN
+        (
+          SELECT
+            "id",
+            COUNT("id") AS "count"
+          FROM
+            (
+              SELECT
+                "id",
+                unnest("aliases") AS "alias"
+              FROM
+                "tags"
+            ) AS "tags_aliases"
+          WHERE
+            ("alias" ILIKE $1)
+            AND ("alias" ILIKE $2)
+          GROUP BY
+            "id"
+        ) AS "tags_aliases" ON "tags_aliases"."id" = "tags"."id"
+        AND "tag_paths"."ancestor_id" = "tag_paths"."descendant_id"
+      LEFT JOIN
+        (
+          SELECT
+            "id",
+            COUNT("id") AS "count"
+          FROM
+            (
+              SELECT
+                "id",
+                unnest("aliases") AS "alias"
+              FROM
+                "tags"
+            ) AS "tag_ancestors_aliases"
+          WHERE
+            ("alias" ILIKE $3)
+            AND ("alias" ILIKE $4)
+          GROUP BY
+            "id"
+        ) AS "tag_ancestors_aliases" ON "tag_ancestors_aliases"."id" = "tags"."id"
+        AND "tag_paths"."ancestor_id" <> "tag_paths"."descendant_id"
+      GROUP BY
+        "tags"."id"
+      HAVING
+        (
+          bool_or(
+            ("tag_ancestors"."name" ILIKE $5)
+            OR ("tag_ancestors"."kana" ILIKE $6)
+            OR "tag_ancestors_aliases"."count" > 0
+            OR "tags_aliases"."count" > 0
+          )
         )
-      ) - 1
-    ) + (
-      (
-        array_length(
-          string_to_array(UPPER("tag_ancestors"."name"), UPPER($24)),
-          1
+        AND (
+          bool_or(
+            ("tag_ancestors"."name" ILIKE $7)
+            OR ("tag_ancestors"."kana" ILIKE $8)
+            OR "tag_ancestors_aliases"."count" > 0
+            OR "tags_aliases"."count" > 0
+          )
         )
-      ) - 1
-    )
-  ) DESC,
-  SUM(
-    (
-      (
-        array_length(
-          string_to_array(UPPER("tag_ancestors"."name"), UPPER($25)),
-          1
-        )
-      ) - 1
-    ) + (
-      (
-        array_length(
-          string_to_array(UPPER("tag_ancestors"."name"), UPPER($26)),
-          1
-        )
-      ) - 1
-    )
-  ) DESC,
-  (
-    MIN(
-      NULLIF(
-        strpos(UPPER("tag_ancestors"."name"), UPPER($27)),
-        0
-      )
-    ),
-    MIN(
-      NULLIF(
-        strpos(UPPER("tag_ancestors"."name"), UPPER($28)),
-        0
-      )
-    )
-  ) ASC,
-  (
-    MIN(
-      NULLIF(
-        strpos(UPPER("tag_ancestors"."kana"), UPPER($29)),
-        0
-      )
-    ),
-    MIN(
-      NULLIF(
-        strpos(UPPER("tag_ancestors"."kana"), UPPER($30)),
-        0
-      )
-    )
-  ) ASC,
-  SUM(COALESCE("tag_ancestors_aliases"."count", 0)) DESC,
-  "tags"."kana" ASC'''
-rows_affected = 1
-rows_returned = 1
+      ORDER BY
+        UPPER("tags"."name") = UPPER($9)
+        OR UPPER("tags"."name") = UPPER($10) DESC,
+        UPPER("tags"."kana") = UPPER($11)
+        OR UPPER("tags"."kana") = UPPER($12) DESC,
+        (
+          (
+            array_length(
+              string_to_array(UPPER("tags"."name"), UPPER($13)),
+              1
+            )
+          ) - 1
+        ) + (
+          (
+            array_length(
+              string_to_array(UPPER("tags"."name"), UPPER($14)),
+              1
+            )
+          ) - 1
+        ) DESC,
+        (
+          NULLIF(strpos(UPPER("tags"."name"), UPPER($15)), 0),
+          NULLIF(strpos(UPPER("tags"."name"), UPPER($16)), 0)
+        ) ASC,
+        (
+          NULLIF(strpos(UPPER("tags"."kana"), UPPER($17)), 0),
+          NULLIF(strpos(UPPER("tags"."kana"), UPPER($18)), 0)
+        ) ASC,
+        SUM(COALESCE("tags_aliases"."count", 0)) DESC,
+        bool_or(
+          UPPER("tag_ancestors"."name") = UPPER($19)
+          OR UPPER("tag_ancestors"."name") = UPPER($20)
+        ) DESC,
+        bool_or(
+          UPPER("tag_ancestors"."kana") = UPPER($21)
+          OR UPPER("tag_ancestors"."kana") = UPPER($22)
+        ) DESC,
+        MAX(
+          (
+            (
+              array_length(
+                string_to_array(UPPER("tag_ancestors"."name"), UPPER($23)),
+                1
+              )
+            ) - 1
+          ) + (
+            (
+              array_length(
+                string_to_array(UPPER("tag_ancestors"."name"), UPPER($24)),
+                1
+              )
+            ) - 1
+          )
+        ) DESC,
+        SUM(
+          (
+            (
+              array_length(
+                string_to_array(UPPER("tag_ancestors"."name"), UPPER($25)),
+                1
+              )
+            ) - 1
+          ) + (
+            (
+              array_length(
+                string_to_array(UPPER("tag_ancestors"."name"), UPPER($26)),
+                1
+              )
+            ) - 1
+          )
+        ) DESC,
+        (
+          MIN(
+            NULLIF(
+              strpos(UPPER("tag_ancestors"."name"), UPPER($27)),
+              0
+            )
+          ),
+          MIN(
+            NULLIF(
+              strpos(UPPER("tag_ancestors"."name"), UPPER($28)),
+              0
+            )
+          )
+        ) ASC,
+        (
+          MIN(
+            NULLIF(
+              strpos(UPPER("tag_ancestors"."kana"), UPPER($29)),
+              0
+            )
+          ),
+          MIN(
+            NULLIF(
+              strpos(UPPER("tag_ancestors"."kana"), UPPER($30)),
+              0
+            )
+          )
+        ) ASC,
+        SUM(COALESCE("tag_ancestors_aliases"."count", 0)) DESC,
+        "tags"."kana" ASC
 
-[[queries]]
-sql = '''
-SELECT
-  "tag_orders"."order",
-  "distance",
-  "tag_ancestors"."id" AS "ancestor_id",
-  "tag_ancestors"."name" AS "ancestor_name",
-  "tag_ancestors"."kana" AS "ancestor_kana",
-  "tag_ancestors"."aliases" AS "ancestor_aliases",
-  "tag_ancestors"."created_at" AS "ancestor_created_at",
-  "tag_ancestors"."updated_at" AS "ancestor_updated_at",
-  "tag_descendants"."id" AS "descendant_id",
-  "tag_descendants"."name" AS "descendant_name",
-  "tag_descendants"."kana" AS "descendant_kana",
-  "tag_descendants"."aliases" AS "descendant_aliases",
-  "tag_descendants"."created_at" AS "descendant_created_at",
-  "tag_descendants"."updated_at" AS "descendant_updated_at"
-FROM
-  "tag_paths"
-LEFT JOIN
-  (
-    SELECT
-      "column1" AS "order",
-      "column2" AS "id"
-    FROM
-      (
-        VALUES
-          ($1, $2), ($3, $4)) AS "tag_orders"
-  ) AS "tag_orders" ON "tag_orders"."id" = "descendant_id"
-  AND "ancestor_id" IN (
-    "descendant_id",
-    '00000000-0000-0000-0000-000000000000'
-  )
-INNER JOIN
-  "tags" AS "tag_ancestors" ON "tag_ancestors"."id" = "tag_paths"."ancestor_id"
-INNER JOIN
-  "tags" AS "tag_descendants" ON "tag_descendants"."id" = "tag_paths"."descendant_id"
-WHERE
-  (
-    "distance" = 0
-    AND "ancestor_id" IN ($5)
-  )
-  OR (
-    "distance" <= 1
-    AND "descendant_id" IN (
+    rows_affected: 1
+    rows_returned: 1
+  - sql: |-
       SELECT
-        "ancestor_id"
+        "tag_orders"."order",
+        "distance",
+        "tag_ancestors"."id" AS "ancestor_id",
+        "tag_ancestors"."name" AS "ancestor_name",
+        "tag_ancestors"."kana" AS "ancestor_kana",
+        "tag_ancestors"."aliases" AS "ancestor_aliases",
+        "tag_ancestors"."created_at" AS "ancestor_created_at",
+        "tag_ancestors"."updated_at" AS "ancestor_updated_at",
+        "tag_descendants"."id" AS "descendant_id",
+        "tag_descendants"."name" AS "descendant_name",
+        "tag_descendants"."kana" AS "descendant_kana",
+        "tag_descendants"."aliases" AS "descendant_aliases",
+        "tag_descendants"."created_at" AS "descendant_created_at",
+        "tag_descendants"."updated_at" AS "descendant_updated_at"
       FROM
         "tag_paths"
+      LEFT JOIN
+        (
+          SELECT
+            "column1" AS "order",
+            "column2" AS "id"
+          FROM
+            (
+              VALUES
+                ($1, $2), ($3, $4)) AS "tag_orders"
+        ) AS "tag_orders" ON "tag_orders"."id" = "descendant_id"
+        AND "ancestor_id" IN (
+          "descendant_id",
+          '00000000-0000-0000-0000-000000000000'
+        )
+      INNER JOIN
+        "tags" AS "tag_ancestors" ON "tag_ancestors"."id" = "tag_paths"."ancestor_id"
+      INNER JOIN
+        "tags" AS "tag_descendants" ON "tag_descendants"."id" = "tag_paths"."descendant_id"
       WHERE
-        "distance" <= $6
-        AND "descendant_id" IN ($7)
-    )
-  )
-  OR (
-    "distance" <= 1
-    AND "ancestor_id" IN (
-      SELECT
-        "descendant_id"
-      FROM
-        "tag_paths"
-      WHERE
-        "distance" <= $8
-        AND "ancestor_id" IN ($9)
-    )
-  )
-ORDER BY
-  "distance" ASC,
-  "tag_orders"."order" ASC,
-  "tag_ancestors"."kana" ASC,
-  "tag_descendants"."kana" ASC'''
-rows_affected = 3
-rows_returned = 3
+        (
+          "distance" = 0
+          AND "ancestor_id" IN ($5)
+        )
+        OR (
+          "distance" <= 1
+          AND "descendant_id" IN (
+            SELECT
+              "ancestor_id"
+            FROM
+              "tag_paths"
+            WHERE
+              "distance" <= $6
+              AND "descendant_id" IN ($7)
+          )
+        )
+        OR (
+          "distance" <= 1
+          AND "ancestor_id" IN (
+            SELECT
+              "descendant_id"
+            FROM
+              "tag_paths"
+            WHERE
+              "distance" <= $8
+              AND "ancestor_id" IN ($9)
+          )
+        )
+      ORDER BY
+        "distance" ASC,
+        "tag_orders"."order" ASC,
+        "tag_ancestors"."kana" ASC,
+        "tag_descendants"."kana" ASC
+
+    rows_affected: 3
+    rows_returned: 3

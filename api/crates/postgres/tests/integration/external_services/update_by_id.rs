@@ -3,7 +3,7 @@ use domain::{
     error::ErrorKind,
     repository::external_services::ExternalServicesRepository,
 };
-use insta::assert_toml_snapshot;
+use insta::assert_yaml_snapshot;
 use postgres::external_services::PostgresExternalServicesRepository;
 use pretty_assertions::{assert_eq, assert_matches};
 use sqlx::Row;
@@ -43,7 +43,7 @@ async fn succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual.get::<Option<&str>, &str>("base_url"), Some("https://x.com"));
     assert_eq!(actual.get::<Option<&str>, &str>("url_pattern"), Some(r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$"));
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -77,7 +77,7 @@ async fn with_slug_succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual.get::<Option<&str>, &str>("base_url"), Some("https://x.com"));
     assert_eq!(actual.get::<Option<&str>, &str>("url_pattern"), Some(r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$"));
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -111,7 +111,7 @@ async fn with_name_succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual.get::<Option<&str>, &str>("base_url"), Some("https://x.com"));
     assert_eq!(actual.get::<Option<&str>, &str>("url_pattern"), Some(r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$"));
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -145,7 +145,7 @@ async fn with_base_url_set_succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual.get::<Option<&str>, &str>("base_url"), Some("https://twitter.com"));
     assert_eq!(actual.get::<Option<&str>, &str>("url_pattern"), Some(r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$"));
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -179,7 +179,7 @@ async fn with_base_url_remove_succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual.get::<Option<&str>, &str>("base_url"), None);
     assert_eq!(actual.get::<Option<&str>, &str>("url_pattern"), Some(r"^https?://(?:twitter\.com|x\.com)/(?<creatorId>[^/]+)/status/(?<id>\d+)(?:[/?#].*)?$"));
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -213,7 +213,7 @@ async fn with_url_pattern_set_succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual.get::<Option<&str>, &str>("base_url"), Some("https://x.com"));
     assert_eq!(actual.get::<Option<&str>, &str>("url_pattern"), Some(r"^https?://twitter\.com/([^/]+)/status/(\d+)(?:[/?#].*)?$"));
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -247,7 +247,7 @@ async fn with_url_pattern_remove_succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual.get::<Option<&str>, &str>("base_url"), Some("https://x.com"));
     assert_eq!(actual.get::<Option<&str>, &str>("url_pattern"), None);
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -281,7 +281,7 @@ async fn with_all_succeeds(ctx: &DatabaseContext) {
     assert_eq!(actual.get::<Option<&str>, &str>("base_url"), Some("https://x.com"));
     assert_eq!(actual.get::<Option<&str>, &str>("url_pattern"), Some(r"^https?://x\.com/([^/]+)/status/(\d+)(?:[/?#].*)?$"));
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -298,5 +298,5 @@ async fn fails(ctx: &DatabaseContext) {
 
     assert_matches!(actual.kind(), ErrorKind::ExternalServiceNotFound { id } if id == &ExternalServiceId::from(uuid!("11111111-1111-1111-1111-111111111111")));
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }

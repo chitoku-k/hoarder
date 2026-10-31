@@ -2,7 +2,7 @@ use domain::{
     entity::sources::SourceId,
     repository::{sources::SourcesRepository, DeleteResult},
 };
-use insta::assert_toml_snapshot;
+use insta::assert_yaml_snapshot;
 use postgres::sources::PostgresSourcesRepository;
 use pretty_assertions::assert_eq;
 use sqlx::Row;
@@ -42,5 +42,5 @@ async fn succeeds(ctx: &DatabaseContext) {
 
     assert_eq!(actual, DeleteResult::NotFound);
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }

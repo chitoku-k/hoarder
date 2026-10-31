@@ -4,7 +4,7 @@ use domain::{
     repository::{replicas::ReplicasRepository, DeleteResult},
 };
 use futures::TryStreamExt;
-use insta::assert_toml_snapshot;
+use insta::assert_yaml_snapshot;
 use postgres::replicas::PostgresReplicasRepository;
 use pretty_assertions::assert_eq;
 use sqlx::Row;
@@ -44,7 +44,7 @@ async fn with_only_replica_succeeds(ctx: &DatabaseContext) {
 
     assert_eq!(actual, DeleteResult::NotFound);
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -96,7 +96,7 @@ async fn with_first_replica_succeeds(ctx: &DatabaseContext) {
 
     assert_eq!(actual, DeleteResult::NotFound);
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -148,7 +148,7 @@ async fn with_middle_replica_succeeds(ctx: &DatabaseContext) {
 
     assert_eq!(actual, DeleteResult::NotFound);
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -200,5 +200,5 @@ async fn with_last_replica_succeeds(ctx: &DatabaseContext) {
 
     assert_eq!(actual, DeleteResult::NotFound);
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }

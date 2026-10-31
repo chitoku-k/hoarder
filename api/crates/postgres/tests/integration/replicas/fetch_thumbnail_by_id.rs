@@ -3,7 +3,7 @@ use domain::{
     error::ErrorKind,
     repository::replicas::ReplicasRepository,
 };
-use insta::assert_toml_snapshot;
+use insta::assert_yaml_snapshot;
 use postgres::replicas::PostgresReplicasRepository;
 use pretty_assertions::{assert_eq, assert_matches};
 use test_context::test_context;
@@ -26,7 +26,7 @@ async fn succeeds(ctx: &DatabaseContext) {
         0x34, 0x25, 0xa4, 0x00, 0x03, 0x70, 0x00, 0xfe, 0xfb, 0xfd, 0x50, 0x00,
     ]);
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
 
 #[test_context(DatabaseContext)]
@@ -39,5 +39,5 @@ async fn fails(ctx: &DatabaseContext) {
 
     assert_matches!(actual.kind(), ErrorKind::ThumbnailNotFound { id } if id == &ThumbnailId::from(uuid!("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")));
 
-    assert_toml_snapshot!(ctx.queries());
+    assert_yaml_snapshot!(ctx.queries());
 }
