@@ -11,7 +11,7 @@ use domain::{
 use either::{Left, Right};
 use futures::{TryFutureExt, TryStreamExt};
 use ordermap::OrderMap;
-use sea_query::{extension::postgres::PgExpr, Asterisk, BinOper, Cond, Expr, ExprTrait, Func, Iden, IntoIden, JoinType, LikeExpr, LockType, Order, PostgresQueryBuilder, Query, SelectStatement};
+use sea_query::{Asterisk, BinOper, Cond, Expr, ExprTrait, Func, Iden, IntoIden, JoinType, LikeExpr, LockType, Order, PostgresQueryBuilder, Query, SelectStatement, extension::postgres::PgExpr};
 use sea_query_sqlx::SqlxBinder;
 use sqlx::{Acquire, FromRow, PgConnection, PgPool, Postgres, Row, Transaction};
 
@@ -668,22 +668,24 @@ impl TagsRepository for PostgresTagsRepository {
             (PostgresTag::Table.into_iden(), TAGS_ALIASES, false),
             (TAG_ANCESTORS.into_iden(), TAG_ANCESTORS_ALIASES, true),
         ] {
-            for column in [
-                Expr::col((table.clone(), PostgresTag::Name)),
-                Expr::col((table.clone(), PostgresTag::Kana)),
-            ] {
-                let expr = query
-                    .iter()
-                    .map(|query| Func::upper(column.clone()).eq(Func::upper(query)))
-                    .fold(Cond::any(), |conditions, expr| conditions.add(expr));
+            for oper in [BinOper::Equal, BinOper::Custom("^@")] {
+                for column in [
+                    Expr::col((table.clone(), PostgresTag::Name)),
+                    Expr::col((table.clone(), PostgresTag::Kana)),
+                ] {
+                    let expr = query
+                        .iter()
+                        .map(|query| Func::upper(column.clone()).binary(oper, Func::upper(query)))
+                        .fold(Cond::any(), |conditions, expr| conditions.add(expr));
 
-                sql.order_by_expr(
-                    match agg {
-                        true => AggregateExpr::bool_or(expr),
-                        false => Expr::value(expr),
-                    },
-                    Order::Desc,
-                );
+                    sql.order_by_expr(
+                        match agg {
+                            true => AggregateExpr::bool_or(expr),
+                            false => Expr::value(expr),
+                        },
+                        Order::Desc,
+                    );
+                }
             }
 
             let expr = query
