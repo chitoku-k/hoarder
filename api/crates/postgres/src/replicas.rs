@@ -18,7 +18,7 @@ use serde_json::json;
 use sqlx::{FromRow, PgPool, Row, Type};
 
 use crate::{
-    expr::{notify::NotifyExpr, ExprTrait as _},
+    expr::{notify::NotifyExpr, ValueTrait as _},
     media::{PostgresMedium, PostgresMediumId},
     sea_query_uuid_value,
 };

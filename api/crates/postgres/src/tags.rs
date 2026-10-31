@@ -11,12 +11,12 @@ use domain::{
 use either::{Left, Right};
 use futures::{TryFutureExt, TryStreamExt};
 use ordermap::OrderMap;
-use sea_query::{Asterisk, BinOper, Cond, Expr, ExprTrait, Func, Iden, IntoIden, JoinType, LikeExpr, LockType, Order, PostgresQueryBuilder, Query, SelectStatement, extension::postgres::PgExpr};
+use sea_query::{Asterisk, BinOper, Cond, Expr, ExprTrait, Func, Iden, IntoIden, JoinType, LikeExpr, LockType, Order, PostgresQueryBuilder, Query, SelectStatement};
 use sea_query_sqlx::SqlxBinder;
 use sqlx::{Acquire, FromRow, PgConnection, PgPool, Postgres, Row, Transaction};
 
 use crate::{
-    expr::{aggregate::AggregateExpr, array::ArrayExpr, conditional::ConditionalExpr, string::StringExpr, ExprTrait as _},
+    expr::{aggregate::AggregateExpr, array::ArrayExpr, conditional::ConditionalExpr, string::StringExpr, ExprTrait as _, ValueTrait as _},
     sea_query_uuid_value,
 };
 
@@ -582,6 +582,7 @@ impl TagsRepository for PostgresTagsRepository {
         const TAG_ANCESTORS: &str = "tag_ancestors";
         const TAG_ANCESTORS_ALIASES: &str = "tag_ancestors_aliases";
         const TAGS_ALIASES: &str = "tags_aliases";
+        const TAGS_COLLATION: &str = "tags";
         const COUNT: &str = "count";
         const ALIAS: &str = "alias";
 
@@ -615,7 +616,7 @@ impl TagsRepository for PostgresTagsRepository {
                     )
                     .cond_where(query
                         .iter()
-                        .map(|query| Expr::col(ALIAS).ilike(like(query)))
+                        .map(|query| Expr::col(ALIAS).like(like(query)).collate(TAGS_COLLATION))
                         .fold(Cond::all(), |conditions, expr| conditions.add(expr))
                     )
                     .group_by_col(PostgresTag::Id)
@@ -639,7 +640,7 @@ impl TagsRepository for PostgresTagsRepository {
                     )
                     .cond_where(query
                         .iter()
-                        .map(|query| Expr::col(ALIAS).ilike(like(query)))
+                        .map(|query| Expr::col(ALIAS).like(like(query)).collate(TAGS_COLLATION))
                         .fold(Cond::all(), |conditions, expr| conditions.add(expr))
                     )
                     .group_by_col(PostgresTag::Id)
@@ -654,8 +655,8 @@ impl TagsRepository for PostgresTagsRepository {
                 .map(|query| {
                     let query = like(query);
                     AggregateExpr::bool_or(Cond::any()
-                        .add(Expr::col((TAG_ANCESTORS, PostgresTag::Name)).ilike(LikeExpr::new(query.clone())))
-                        .add(Expr::col((TAG_ANCESTORS, PostgresTag::Kana)).ilike(LikeExpr::new(query.clone())))
+                        .add(Expr::col((TAG_ANCESTORS, PostgresTag::Name)).like(LikeExpr::new(query.clone())).collate(TAGS_COLLATION))
+                        .add(Expr::col((TAG_ANCESTORS, PostgresTag::Kana)).like(LikeExpr::new(query.clone())).collate(TAGS_COLLATION))
                         .add(Expr::col((TAG_ANCESTORS_ALIASES, COUNT)).gt(0.to_constant()))
                         .add(Expr::col((TAGS_ALIASES, COUNT)).gt(0.to_constant()))
                     )
@@ -668,24 +669,40 @@ impl TagsRepository for PostgresTagsRepository {
             (PostgresTag::Table.into_iden(), TAGS_ALIASES, false),
             (TAG_ANCESTORS.into_iden(), TAG_ANCESTORS_ALIASES, true),
         ] {
-            for oper in [BinOper::Equal, BinOper::Custom("^@")] {
-                for column in [
-                    Expr::col((table.clone(), PostgresTag::Name)),
-                    Expr::col((table.clone(), PostgresTag::Kana)),
-                ] {
-                    let expr = query
-                        .iter()
-                        .map(|query| Func::upper(column.clone()).binary(oper, Func::upper(query)))
-                        .fold(Cond::any(), |conditions, expr| conditions.add(expr));
+            for column in [
+                Expr::col((table.clone(), PostgresTag::Name)),
+                Expr::col((table.clone(), PostgresTag::Kana)),
+            ] {
+                let expr = query
+                    .iter()
+                    .map(|query| column.clone().eq(query).collate(TAGS_COLLATION))
+                    .fold(Cond::any(), |conditions, expr| conditions.add(expr));
 
-                    sql.order_by_expr(
-                        match agg {
-                            true => AggregateExpr::bool_or(expr),
-                            false => Expr::value(expr),
-                        },
-                        Order::Desc,
-                    );
-                }
+                sql.order_by_expr(
+                    match agg {
+                        true => AggregateExpr::bool_or(expr),
+                        false => Expr::value(expr),
+                    },
+                    Order::Desc,
+                );
+            }
+
+            for column in [
+                Expr::col((table.clone(), PostgresTag::Name)),
+                Expr::col((table.clone(), PostgresTag::Kana)),
+            ] {
+                let expr = query
+                    .iter()
+                    .map(|query| StringExpr::strpos(column.clone().collate(TAGS_COLLATION), query).eq(1.to_constant()))
+                    .fold(Cond::any(), |conditions, expr| conditions.add(expr));
+
+                sql.order_by_expr(
+                    match agg {
+                        true => AggregateExpr::bool_or(expr),
+                        false => Expr::value(expr),
+                    },
+                    Order::Desc,
+                );
             }
 
             let expr = query
@@ -693,8 +710,8 @@ impl TagsRepository for PostgresTagsRepository {
                 .map(|query| {
                     ArrayExpr::length(
                         ArrayExpr::string_to_array(
-                            Func::upper(Expr::col((table.clone(), PostgresTag::Name))),
-                            Func::upper(query),
+                            Expr::col((table.clone(), PostgresTag::Name)).collate(TAGS_COLLATION),
+                            query,
                         ),
                         1.to_constant(),
                     ).sub(1.to_constant())
@@ -723,8 +740,8 @@ impl TagsRepository for PostgresTagsRepository {
                         .map(|query| {
                             let expr = ConditionalExpr::null_if(
                                 StringExpr::strpos(
-                                    Func::upper(column.clone()),
-                                    Func::upper(query),
+                                    column.clone().collate(TAGS_COLLATION),
+                                    query,
                                 ),
                                 0.to_constant(),
                             );
@@ -747,7 +764,10 @@ impl TagsRepository for PostgresTagsRepository {
             );
         }
 
-        sql.order_by((PostgresTag::Table, PostgresTag::Kana), Order::Asc);
+        sql.order_by_expr(
+            Expr::col((PostgresTag::Table, PostgresTag::Kana)).collate(TAGS_COLLATION),
+            Order::Asc,
+        );
 
         let (sql, values) = sql.build_sqlx(PostgresQueryBuilder);
         let ids: Vec<_> = sqlx::query_as_with::<_, PostgresTagIdRow, _>(sqlx::AssertSqlSafe(sql.as_str()), values)

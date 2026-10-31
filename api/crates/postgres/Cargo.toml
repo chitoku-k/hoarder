@@ -36,6 +36,9 @@ version = "0.3.34"
 features = ["std"]
 default-features = false
 
+[dependencies.icu_locale_core]
+version = "2.4.0"
+
 [dependencies.ordermap]
 version = "1.2.2"
 features = ["serde"]
