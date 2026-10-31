@@ -27,8 +27,8 @@ queries:
                 "tags"
             ) AS "tags_aliases"
           WHERE
-            ("alias" LIKE $1 COLLATE "tags")
-            AND ("alias" LIKE $2 COLLATE "tags")
+            casefold("alias" COLLATE "tags") LIKE casefold($1 COLLATE "tags")
+            AND casefold("alias" COLLATE "tags") LIKE casefold($2 COLLATE "tags")
           GROUP BY
             "id"
         ) AS "tags_aliases" ON "tags_aliases"."id" = "tags"."id"
@@ -47,8 +47,8 @@ queries:
                 "tags"
             ) AS "tag_ancestors_aliases"
           WHERE
-            ("alias" LIKE $3 COLLATE "tags")
-            AND ("alias" LIKE $4 COLLATE "tags")
+            casefold("alias" COLLATE "tags") LIKE casefold($3 COLLATE "tags")
+            AND casefold("alias" COLLATE "tags") LIKE casefold($4 COLLATE "tags")
           GROUP BY
             "id"
         ) AS "tag_ancestors_aliases" ON "tag_ancestors_aliases"."id" = "tags"."id"
@@ -57,71 +57,131 @@ queries:
         "tags"."id"
       HAVING
         bool_or(
-          ("tag_ancestors"."name" LIKE $5 COLLATE "tags")
-          OR ("tag_ancestors"."kana" LIKE $6 COLLATE "tags")
+          casefold("tag_ancestors"."name" COLLATE "tags") LIKE casefold($5 COLLATE "tags")
+          OR casefold("tag_ancestors"."kana" COLLATE "tags") LIKE casefold($6 COLLATE "tags")
           OR "tag_ancestors_aliases"."count" > 0
           OR "tags_aliases"."count" > 0
         )
         AND bool_or(
-          ("tag_ancestors"."name" LIKE $7 COLLATE "tags")
-          OR ("tag_ancestors"."kana" LIKE $8 COLLATE "tags")
+          casefold("tag_ancestors"."name" COLLATE "tags") LIKE casefold($7 COLLATE "tags")
+          OR casefold("tag_ancestors"."kana" COLLATE "tags") LIKE casefold($8 COLLATE "tags")
           OR "tag_ancestors_aliases"."count" > 0
           OR "tags_aliases"."count" > 0
         )
       ORDER BY
-        ("tags"."name" = $9 COLLATE "tags")
-        OR ("tags"."name" = $10 COLLATE "tags") DESC,
-        ("tags"."kana" = $11 COLLATE "tags")
-        OR ("tags"."kana" = $12 COLLATE "tags") DESC,
-        strpos("tags"."name" COLLATE "tags", $13) = 1
-        OR strpos("tags"."name" COLLATE "tags", $14) = 1 DESC,
-        strpos("tags"."kana" COLLATE "tags", $15) = 1
-        OR strpos("tags"."kana" COLLATE "tags", $16) = 1 DESC,
+        casefold("tags"."name" COLLATE "tags") = casefold($9 COLLATE "tags")
+        OR casefold("tags"."name" COLLATE "tags") = casefold($10 COLLATE "tags") DESC,
+        casefold("tags"."kana" COLLATE "tags") = casefold($11 COLLATE "tags")
+        OR casefold("tags"."kana" COLLATE "tags") = casefold($12 COLLATE "tags") DESC,
+        strpos(
+          casefold("tags"."name" COLLATE "tags"),
+          casefold($13 COLLATE "tags")
+        ) = 1
+        OR strpos(
+          casefold("tags"."name" COLLATE "tags"),
+          casefold($14 COLLATE "tags")
+        ) = 1 DESC,
+        strpos(
+          casefold("tags"."kana" COLLATE "tags"),
+          casefold($15 COLLATE "tags")
+        ) = 1
+        OR strpos(
+          casefold("tags"."kana" COLLATE "tags"),
+          casefold($16 COLLATE "tags")
+        ) = 1 DESC,
         (
           array_length(
-            string_to_array("tags"."name" COLLATE "tags", $17),
+            string_to_array(
+              casefold("tags"."name" COLLATE "tags"),
+              casefold($17 COLLATE "tags")
+            ),
             1
           ) - 1
         ) + (
           array_length(
-            string_to_array("tags"."name" COLLATE "tags", $18),
+            string_to_array(
+              casefold("tags"."name" COLLATE "tags"),
+              casefold($18 COLLATE "tags")
+            ),
             1
           ) - 1
         ) DESC,
         (
-          NULLIF(strpos("tags"."name" COLLATE "tags", $19), 0),
-          NULLIF(strpos("tags"."name" COLLATE "tags", $20), 0)
+          NULLIF(
+            strpos(
+              casefold("tags"."name" COLLATE "tags"),
+              casefold($19 COLLATE "tags")
+            ),
+            0
+          ),
+          NULLIF(
+            strpos(
+              casefold("tags"."name" COLLATE "tags"),
+              casefold($20 COLLATE "tags")
+            ),
+            0
+          )
         ) ASC,
         (
-          NULLIF(strpos("tags"."kana" COLLATE "tags", $21), 0),
-          NULLIF(strpos("tags"."kana" COLLATE "tags", $22), 0)
+          NULLIF(
+            strpos(
+              casefold("tags"."kana" COLLATE "tags"),
+              casefold($21 COLLATE "tags")
+            ),
+            0
+          ),
+          NULLIF(
+            strpos(
+              casefold("tags"."kana" COLLATE "tags"),
+              casefold($22 COLLATE "tags")
+            ),
+            0
+          )
         ) ASC,
         SUM(COALESCE("tags_aliases"."count", 0)) DESC,
         bool_or(
-          ("tag_ancestors"."name" = $23 COLLATE "tags")
-          OR ("tag_ancestors"."name" = $24 COLLATE "tags")
+          casefold("tag_ancestors"."name" COLLATE "tags") = casefold($23 COLLATE "tags")
+          OR casefold("tag_ancestors"."name" COLLATE "tags") = casefold($24 COLLATE "tags")
         ) DESC,
         bool_or(
-          ("tag_ancestors"."kana" = $25 COLLATE "tags")
-          OR ("tag_ancestors"."kana" = $26 COLLATE "tags")
+          casefold("tag_ancestors"."kana" COLLATE "tags") = casefold($25 COLLATE "tags")
+          OR casefold("tag_ancestors"."kana" COLLATE "tags") = casefold($26 COLLATE "tags")
         ) DESC,
         bool_or(
-          strpos("tag_ancestors"."name" COLLATE "tags", $27) = 1
-          OR strpos("tag_ancestors"."name" COLLATE "tags", $28) = 1
+          strpos(
+            casefold("tag_ancestors"."name" COLLATE "tags"),
+            casefold($27 COLLATE "tags")
+          ) = 1
+          OR strpos(
+            casefold("tag_ancestors"."name" COLLATE "tags"),
+            casefold($28 COLLATE "tags")
+          ) = 1
         ) DESC,
         bool_or(
-          strpos("tag_ancestors"."kana" COLLATE "tags", $29) = 1
-          OR strpos("tag_ancestors"."kana" COLLATE "tags", $30) = 1
+          strpos(
+            casefold("tag_ancestors"."kana" COLLATE "tags"),
+            casefold($29 COLLATE "tags")
+          ) = 1
+          OR strpos(
+            casefold("tag_ancestors"."kana" COLLATE "tags"),
+            casefold($30 COLLATE "tags")
+          ) = 1
         ) DESC,
         MAX(
           (
             array_length(
-              string_to_array("tag_ancestors"."name" COLLATE "tags", $31),
+              string_to_array(
+                casefold("tag_ancestors"."name" COLLATE "tags"),
+                casefold($31 COLLATE "tags")
+              ),
               1
             ) - 1
           ) + (
             array_length(
-              string_to_array("tag_ancestors"."name" COLLATE "tags", $32),
+              string_to_array(
+                casefold("tag_ancestors"."name" COLLATE "tags"),
+                casefold($32 COLLATE "tags")
+              ),
               1
             ) - 1
           )
@@ -129,12 +189,18 @@ queries:
         SUM(
           (
             array_length(
-              string_to_array("tag_ancestors"."name" COLLATE "tags", $33),
+              string_to_array(
+                casefold("tag_ancestors"."name" COLLATE "tags"),
+                casefold($33 COLLATE "tags")
+              ),
               1
             ) - 1
           ) + (
             array_length(
-              string_to_array("tag_ancestors"."name" COLLATE "tags", $34),
+              string_to_array(
+                casefold("tag_ancestors"."name" COLLATE "tags"),
+                casefold($34 COLLATE "tags")
+              ),
               1
             ) - 1
           )
@@ -142,13 +208,19 @@ queries:
         (
           MIN(
             NULLIF(
-              strpos("tag_ancestors"."name" COLLATE "tags", $35),
+              strpos(
+                casefold("tag_ancestors"."name" COLLATE "tags"),
+                casefold($35 COLLATE "tags")
+              ),
               0
             )
           ),
           MIN(
             NULLIF(
-              strpos("tag_ancestors"."name" COLLATE "tags", $36),
+              strpos(
+                casefold("tag_ancestors"."name" COLLATE "tags"),
+                casefold($36 COLLATE "tags")
+              ),
               0
             )
           )
@@ -156,19 +228,25 @@ queries:
         (
           MIN(
             NULLIF(
-              strpos("tag_ancestors"."kana" COLLATE "tags", $37),
+              strpos(
+                casefold("tag_ancestors"."kana" COLLATE "tags"),
+                casefold($37 COLLATE "tags")
+              ),
               0
             )
           ),
           MIN(
             NULLIF(
-              strpos("tag_ancestors"."kana" COLLATE "tags", $38),
+              strpos(
+                casefold("tag_ancestors"."kana" COLLATE "tags"),
+                casefold($38 COLLATE "tags")
+              ),
               0
             )
           )
         ) ASC,
         SUM(COALESCE("tag_ancestors_aliases"."count", 0)) DESC,
-        "tags"."kana" COLLATE "tags" ASC
+        casefold("tags"."kana" COLLATE "tags") ASC
 
     rows_affected: 1
     rows_returned: 1

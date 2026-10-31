@@ -1,4 +1,4 @@
-use sea_query::{Expr, Value};
+use sea_query::{Expr, Func, Iden, Value};
 
 pub(crate) mod aggregate;
 pub(crate) mod array;
@@ -7,6 +7,8 @@ pub(crate) mod notify;
 pub(crate) mod string;
 
 pub(crate) trait ExprTrait {
+    fn casefold(self) -> Expr;
+
     fn collate<TArg>(self, arg: TArg) -> Expr
     where
         TArg: Into<String>;
@@ -20,6 +22,14 @@ impl<T> ExprTrait for T
 where
     T: Into<Expr>,
 {
+    fn casefold(self) -> Expr {
+        #[derive(Iden)]
+        #[iden = "casefold"]
+        struct Casefold;
+
+        Func::cust(Casefold).arg(self).into()
+    }
+
     fn collate<TArg>(self, arg: TArg) -> Expr
     where
         TArg: Into<String>,
