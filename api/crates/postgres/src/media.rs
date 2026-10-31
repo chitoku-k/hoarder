@@ -22,7 +22,7 @@ use sqlx::{postgres::PgListener, types::Json, FromRow, PgConnection, PgPool};
 use tracing_futures::Instrument;
 
 use crate::{
-    expr::ExprTrait as _,
+    expr::ValueTrait as _,
     external_services::{PostgresExternalService, PostgresExternalServiceId},
     replicas::{PostgresMediumReplica, PostgresReplica, PostgresReplicaId, PostgresReplicaNotification, PostgresReplicaThumbnail, PostgresReplicaThumbnailRow, PostgresThumbnail},
     sea_query_uuid_value,

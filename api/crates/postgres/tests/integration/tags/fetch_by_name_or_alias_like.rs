@@ -549,6 +549,25 @@ async fn with_name_and_alias_succeeds(ctx: &DatabaseContext) {
 
     assert_eq!(actual, vec![
         Tag {
+            id: TagId::from(uuid!("d65c551d-5a49-4ec7-8e8b-0054e116a18d")),
+            name: "フランドール・スカーレット".to_string(),
+            kana: "フランドール・スカーレット".to_string(),
+            aliases: AliasSet::new(BTreeSet::from(["フラン".to_string()])),
+            parent: Some(Box::new(Tag {
+                id: TagId::from(uuid!("fe81a56d-165b-446d-aebb-ca59e5acf3cb")),
+                name: "東方Project".to_string(),
+                kana: "とうほうProject".to_string(),
+                aliases: AliasSet::new(BTreeSet::from(["東方".to_string()])),
+                parent: None,
+                children: Vec::new(),
+                created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 8).unwrap(),
+                updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap(),
+            })),
+            children: Vec::new(),
+            created_at: Utc.with_ymd_and_hms(2022, 1, 2, 3, 4, 9).unwrap(),
+            updated_at: Utc.with_ymd_and_hms(2022, 2, 3, 4, 5, 10).unwrap(),
+        },
+        Tag {
             id: TagId::from(uuid!("d1a302b5-7b49-44be-9019-ac337077786a")),
             name: "魔女っ娘ミラクるん".to_string(),
             kana: "まじょっこミラクるん".to_string(),

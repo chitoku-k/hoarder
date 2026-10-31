@@ -1,5 +1,6 @@
 use domain::error::{Error, Result};
 
+use icu_locale_core::LanguageIdentifier;
 use sqlx::Postgres;
 use sqlx_migrator::{migrator::{self, Info}, vec_box};
 
@@ -12,11 +13,12 @@ mod v6;
 mod v7;
 mod v8;
 mod v9;
+mod v10;
 
 pub struct Migrator(migrator::Migrator<Postgres>);
 
 impl Migrator {
-    pub fn new() -> Result<Self> {
+    pub fn new(langid: LanguageIdentifier) -> Result<Self> {
         let mut migrator = migrator::Migrator::new();
         migrator.add_migrations(vec_box![
             v1::V1Migration::new(),
@@ -28,6 +30,7 @@ impl Migrator {
             v7::V7Migration::new(),
             v8::V8Migration::new(),
             v9::V9Migration::new(),
+            v10::V10Migration::new(langid),
         ]).map_err(Error::other)?;
 
         Ok(Self(migrator))

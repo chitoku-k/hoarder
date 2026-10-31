@@ -178,7 +178,7 @@ pub struct Application;
 impl Application {
     pub async fn start() -> anyhow::Result<()> {
         let config = env::init();
-        let collator = CollatorBorrowed::try_new(config.global.locale.into(), Default::default())
+        let collator = CollatorBorrowed::try_new(config.global.locale.as_ref().into(), Default::default())
             .context("error instantiating collator")?;
 
         match config.command {
@@ -249,7 +249,7 @@ impl Application {
             Commands::Migration(migration) => {
                 let pg_pool = pg_pool().await?;
 
-                let migrator = Migrator::new()?;
+                let migrator = Migrator::new(config.global.locale.id)?;
                 let mut conn = pg_pool.acquire().await?;
                 migration.command.run(&mut *conn, migrator.into_boxed_migrator()).await?;
             },

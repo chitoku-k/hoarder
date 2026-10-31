@@ -2580,6 +2580,7 @@ dependencies = [
  "either",
  "futures",
  "guardian",
+ "icu_locale_core",
  "include_dir",
  "insta",
  "ordermap",

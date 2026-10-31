@@ -27,7 +27,7 @@ queries:
                 "tags"
             ) AS "tags_aliases"
           WHERE
-            "alias" ILIKE $1
+            "alias" LIKE $1 COLLATE "tags"
           GROUP BY
             "id"
         ) AS "tags_aliases" ON "tags_aliases"."id" = "tags"."id"
@@ -46,7 +46,7 @@ queries:
                 "tags"
             ) AS "tag_ancestors_aliases"
           WHERE
-            "alias" ILIKE $2
+            "alias" LIKE $2 COLLATE "tags"
           GROUP BY
             "id"
         ) AS "tag_ancestors_aliases" ON "tag_ancestors_aliases"."id" = "tags"."id"
@@ -55,47 +55,51 @@ queries:
         "tags"."id"
       HAVING
         bool_or(
-          ("tag_ancestors"."name" ILIKE $3)
-          OR ("tag_ancestors"."kana" ILIKE $4)
+          ("tag_ancestors"."name" LIKE $3 COLLATE "tags")
+          OR ("tag_ancestors"."kana" LIKE $4 COLLATE "tags")
           OR "tag_ancestors_aliases"."count" > 0
           OR "tags_aliases"."count" > 0
         )
       ORDER BY
-        UPPER("tags"."name") = UPPER($5) DESC,
-        UPPER("tags"."kana") = UPPER($6) DESC,
-        UPPER("tags"."name") ^@ UPPER($7) DESC,
-        UPPER("tags"."kana") ^@ UPPER($8) DESC,
+        "tags"."name" = $5 COLLATE "tags" DESC,
+        "tags"."kana" = $6 COLLATE "tags" DESC,
+        strpos("tags"."name" COLLATE "tags", $7) = 1 DESC,
+        strpos("tags"."kana" COLLATE "tags", $8) = 1 DESC,
         array_length(
-          string_to_array(UPPER("tags"."name"), UPPER($9)),
+          string_to_array("tags"."name" COLLATE "tags", $9),
           1
         ) - 1 DESC,
         (
-          NULLIF(strpos(UPPER("tags"."name"), UPPER($10)), 0)
+          NULLIF(strpos("tags"."name" COLLATE "tags", $10), 0)
         ) ASC,
         (
-          NULLIF(strpos(UPPER("tags"."kana"), UPPER($11)), 0)
+          NULLIF(strpos("tags"."kana" COLLATE "tags", $11), 0)
         ) ASC,
         SUM(COALESCE("tags_aliases"."count", 0)) DESC,
-        bool_or(UPPER("tag_ancestors"."name") = UPPER($12)) DESC,
-        bool_or(UPPER("tag_ancestors"."kana") = UPPER($13)) DESC,
-        bool_or(UPPER("tag_ancestors"."name") ^@ UPPER($14)) DESC,
-        bool_or(UPPER("tag_ancestors"."kana") ^@ UPPER($15)) DESC,
+        bool_or("tag_ancestors"."name" = $12 COLLATE "tags") DESC,
+        bool_or("tag_ancestors"."kana" = $13 COLLATE "tags") DESC,
+        bool_or(
+          strpos("tag_ancestors"."name" COLLATE "tags", $14) = 1
+        ) DESC,
+        bool_or(
+          strpos("tag_ancestors"."kana" COLLATE "tags", $15) = 1
+        ) DESC,
         MAX(
           array_length(
-            string_to_array(UPPER("tag_ancestors"."name"), UPPER($16)),
+            string_to_array("tag_ancestors"."name" COLLATE "tags", $16),
             1
           ) - 1
         ) DESC,
         SUM(
           array_length(
-            string_to_array(UPPER("tag_ancestors"."name"), UPPER($17)),
+            string_to_array("tag_ancestors"."name" COLLATE "tags", $17),
             1
           ) - 1
         ) DESC,
         (
           MIN(
             NULLIF(
-              strpos(UPPER("tag_ancestors"."name"), UPPER($18)),
+              strpos("tag_ancestors"."name" COLLATE "tags", $18),
               0
             )
           )
@@ -103,13 +107,13 @@ queries:
         (
           MIN(
             NULLIF(
-              strpos(UPPER("tag_ancestors"."kana"), UPPER($19)),
+              strpos("tag_ancestors"."kana" COLLATE "tags", $19),
               0
             )
           )
         ) ASC,
         SUM(COALESCE("tag_ancestors_aliases"."count", 0)) DESC,
-        "tags"."kana" ASC
+        "tags"."kana" COLLATE "tags" ASC
 
     rows_affected: 5
     rows_returned: 5

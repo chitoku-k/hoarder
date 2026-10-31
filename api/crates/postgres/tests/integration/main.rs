@@ -1,6 +1,7 @@
 use std::{collections::HashMap, sync::{Arc, LazyLock, Mutex}};
 
 use guardian::ArcMutexGuardian;
+use icu_locale_core::LanguageIdentifier;
 use include_dir::{include_dir, Dir};
 use postgres::Migrator;
 use serde::Serialize;
@@ -58,7 +59,7 @@ async fn connect_database(name: &str) -> Result<PgPool, BoxDynError> {
 async fn setup_database(pool: &PgPool) -> Result<(), BoxDynError> {
     let mut conn = pool.acquire().await?;
 
-    let migrator = Migrator::new()?.into_boxed_migrator();
+    let migrator = Migrator::new(LanguageIdentifier::UNKNOWN)?.into_boxed_migrator();
     migrator.run(&mut *conn, &Plan::apply_all()).await?;
 
     for file in FIXTURES.files() {
@@ -75,7 +76,7 @@ async fn setup_database(pool: &PgPool) -> Result<(), BoxDynError> {
 async fn teardown_database(pool: PgPool) -> Result<(), BoxDynError> {
     let mut conn = pool.acquire().await?;
 
-    let migrator = Migrator::new()?.into_boxed_migrator();
+    let migrator = Migrator::new(LanguageIdentifier::UNKNOWN)?.into_boxed_migrator();
     migrator.run(&mut *conn, &Plan::revert_all()).await?;
 
     Ok(())
