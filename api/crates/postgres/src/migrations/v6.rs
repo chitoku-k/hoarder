@@ -1,10 +1,12 @@
 use async_trait::async_trait;
+use derive_more::Constructor;
 use sea_query::{extension::postgres::PgExpr, Expr, ExprTrait, PostgresQueryBuilder, Query};
 use sqlx::{PgConnection, Postgres};
 use sqlx_migrator::{error::Error, migration::Migration, operation::Operation, vec_box};
 
 use crate::{external_services::PostgresExternalService, sources::PostgresSource};
 
+#[derive(Constructor)]
 pub(super) struct V6Migration;
 
 impl Migration<Postgres> for V6Migration {
@@ -22,12 +24,13 @@ impl Migration<Postgres> for V6Migration {
 
     fn operations(&self) -> Vec<Box<dyn Operation<Postgres>>> {
         vec_box![
-            ExternalServiceTwitterToX,
-            SourceTwitterToX,
+            ExternalServiceTwitterToX::new(),
+            SourceTwitterToX::new(),
         ]
     }
 }
 
+#[derive(Constructor)]
 struct ExternalServiceTwitterToX;
 
 #[async_trait]
@@ -131,6 +134,7 @@ impl Operation<Postgres> for ExternalServiceTwitterToX {
     }
 }
 
+#[derive(Constructor)]
 struct SourceTwitterToX;
 
 #[async_trait]

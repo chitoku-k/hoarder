@@ -1,4 +1,5 @@
 use async_trait::async_trait;
+use derive_more::Constructor;
 use domain::entity::objects::{EntryUrl, EntryUrlPath};
 use sea_query::{Expr, ExprTrait, LockType, PostgresQueryBuilder, Query};
 use sea_query_sqlx::SqlxBinder;
@@ -10,6 +11,7 @@ use crate::replicas::{PostgresReplica, PostgresReplicaId};
 const URL_SCHEME: &str = "file";
 const URL_PREFIX: &str = "file://";
 
+#[derive(Constructor)]
 pub(super) struct V2Migration;
 
 impl Migration<Postgres> for V2Migration {
@@ -26,10 +28,11 @@ impl Migration<Postgres> for V2Migration {
     }
 
     fn operations(&self) -> Vec<Box<dyn Operation<Postgres>>> {
-        vec_box![ReplicaUrlOperation]
+        vec_box![ReplicaUrlOperation::new()]
     }
 }
 
+#[derive(Constructor)]
 struct ReplicaUrlOperation;
 
 #[derive(Debug, FromRow)]

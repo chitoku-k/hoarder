@@ -1,10 +1,12 @@
 use async_trait::async_trait;
+use derive_more::Constructor;
 use sea_query::{ColumnDef, Expr, ExprTrait, Iden, PostgresQueryBuilder, Query, Table};
 use sqlx::{PgConnection, Postgres};
 use sqlx_migrator::{error::Error, migration::Migration, operation::Operation, vec_box};
 
 use crate::external_services::PostgresExternalService;
 
+#[derive(Constructor)]
 pub(super) struct V3Migration;
 
 impl Migration<Postgres> for V3Migration {
@@ -21,10 +23,11 @@ impl Migration<Postgres> for V3Migration {
     }
 
     fn operations(&self) -> Vec<Box<dyn Operation<Postgres>>> {
-        vec_box![ExternalServiceKindOperation]
+        vec_box![ExternalServiceKindOperation::new()]
     }
 }
 
+#[derive(Constructor)]
 struct ExternalServiceKindOperation;
 
 #[derive(Iden)]

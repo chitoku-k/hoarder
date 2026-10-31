@@ -1,10 +1,12 @@
 use async_trait::async_trait;
+use derive_more::Constructor;
 use sea_query::{ColumnDef, Expr, ExprTrait, Iden, PostgresQueryBuilder, Query, Table};
 use sqlx::{PgConnection, Postgres};
 use sqlx_migrator::{error::Error, migration::Migration, operation::Operation, vec_box};
 
 use crate::replicas::{PostgresReplica, PostgresReplicaPhase};
 
+#[derive(Constructor)]
 pub(super) struct V9Migration;
 
 impl Migration<Postgres> for V9Migration {
@@ -21,10 +23,11 @@ impl Migration<Postgres> for V9Migration {
     }
 
     fn operations(&self) -> Vec<Box<dyn Operation<Postgres>>> {
-        vec_box![ReplicasPhaseOperation]
+        vec_box![ReplicasPhaseOperation::new()]
     }
 }
 
+#[derive(Constructor)]
 struct ReplicasPhaseOperation;
 
 #[derive(Iden)]
