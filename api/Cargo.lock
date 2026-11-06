@@ -361,14 +361,13 @@ dependencies = [
 
 [[package]]
 name = "axum-server"
-version = "0.8.0"
+version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b1df331683d982a0b9492b38127151e6453639cd34926eb9c07d4cd8c6d22bfc"
+checksum = "f2c55b0e6ae7c8951bc27682e97934423357c1a8208886305290a3adb1ce3c14"
 dependencies = [
  "arc-swap",
  "bytes",
  "either",
- "fs-err",
  "http",
  "http-body",
  "hyper",
@@ -376,6 +375,7 @@ dependencies = [
  "openssl",
  "openssl-sys",
  "pin-project-lite",
+ "socket2",
  "tokio",
  "tokio-openssl",
  "tower-service",
@@ -1107,16 +1107,6 @@ name = "fragile"
 version = "2.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6c2141d6d6c8512188a7891b4b01590a45f6dac67afb4f255c4124dbb86d4eaa"
-
-[[package]]
-name = "fs-err"
-version = "3.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1f89bda4c2a21204059a977ed3bfe746677dfd137b83c339e702b0ac91d482aa"
-dependencies = [
- "autocfg",
- "tokio",
-]
 
 [[package]]
 name = "futures"
