@@ -945,9 +945,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/near-operation-file-preset@npm:^5.2.3":
-  version: 5.2.3
-  resolution: "@graphql-codegen/near-operation-file-preset@npm:5.2.3"
+"@graphql-codegen/near-operation-file-preset@npm:^5.2.4":
+  version: 5.2.4
+  resolution: "@graphql-codegen/near-operation-file-preset@npm:5.2.4"
   dependencies:
     "@graphql-codegen/add": "npm:^7.0.0"
     "@graphql-codegen/plugin-helpers": "npm:^7.0.0"
@@ -957,7 +957,7 @@ __metadata:
     tslib: "npm:^2.8.1"
   peerDependencies:
     graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
-  checksum: 10/571ffe99b1f828dbfaca17ae2bf3e73092418b391626e9ea2e35c6633e4df14971b7ba47ff481ae2b17fd6164e6a7a98167b233b16cc114499eea9ef846c9d47
+  checksum: 10/97a389c76366441eb5b68efaf8e2843166d17ce5b6f1f850214a39d5a33d3d3fe1b0fb4ded3a1be169df564ec015e35c6841880e7078e7bb90a484c8308a7257
   languageName: node
   linkType: hard
 
@@ -5631,7 +5631,7 @@ __metadata:
     "@emotion/styled": "npm:^11.14.1"
     "@fontsource/roboto": "npm:^5.3.0"
     "@graphql-codegen/cli": "npm:^7.4.6"
-    "@graphql-codegen/near-operation-file-preset": "npm:^5.2.3"
+    "@graphql-codegen/near-operation-file-preset": "npm:^5.2.4"
     "@graphql-codegen/typed-document-node": "npm:^7.2.0"
     "@graphql-codegen/typescript": "npm:^6.1.2"
     "@graphql-codegen/typescript-operations": "npm:^6.2.0"
