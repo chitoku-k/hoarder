@@ -133,7 +133,6 @@ async fn start_https_succeeds_with_ipv4() {
 
     let mut https = HttpsConnector::with_connector(http, ssl).unwrap();
     https.set_callback(|config, _uri| {
-        config.set_use_server_name_indication(false);
         config.set_verify_hostname(false);
         config.param_mut().set_host("localhost")?;
         Ok(())
@@ -186,7 +185,6 @@ async fn start_https_succeeds_with_ipv6() {
 
     let mut https = HttpsConnector::with_connector(http, ssl).unwrap();
     https.set_callback(|config, _uri| {
-        config.set_use_server_name_indication(false);
         config.set_verify_hostname(false);
         config.param_mut().set_host("localhost")?;
         Ok(())
@@ -255,7 +253,6 @@ async fn auto_reload_certificate_succeeds() {
 
     let mut https = HttpsConnector::with_connector(http.clone(), ssl).unwrap();
     https.set_callback(|config, _uri| {
-        config.set_use_server_name_indication(false);
         config.set_verify_hostname(false);
         config.param_mut().set_host("localhost")?;
         Ok(())
@@ -280,7 +277,6 @@ async fn auto_reload_certificate_succeeds() {
 
     let mut https = HttpsConnector::with_connector(http.clone(), ssl).unwrap();
     https.set_callback(|config, _uri| {
-        config.set_use_server_name_indication(false);
         config.set_verify_hostname(false);
         config.param_mut().set_host("localhost")?;
         Ok(())
@@ -305,7 +301,6 @@ async fn auto_reload_certificate_succeeds() {
 
     let mut https = HttpsConnector::with_connector(http, ssl).unwrap();
     https.set_callback(|config, _uri| {
-        config.set_use_server_name_indication(false);
         config.set_verify_hostname(false);
         config.param_mut().set_host("localhost")?;
         Ok(())
