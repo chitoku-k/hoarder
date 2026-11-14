@@ -42,7 +42,7 @@ async fn generate_certificate() -> (Vec<u8>, NamedTempFile, NamedTempFile) {
     leaf_builder.set_pubkey(&leaf_pkey).unwrap();
     leaf_builder.set_not_before(&Asn1Time::days_from_now(0).unwrap()).unwrap();
     leaf_builder.set_not_after(&Asn1Time::days_from_now(365).unwrap()).unwrap();
-    leaf_builder.append_extension(SubjectAlternativeName::new().ip("127.0.0.1").ip("::1").build(&leaf_builder.x509v3_context(None, None)).unwrap()).unwrap();
+    leaf_builder.append_extension(SubjectAlternativeName::new().dns("localhost").ip("127.0.0.1").ip("::1").build(&leaf_builder.x509v3_context(None, None)).unwrap()).unwrap();
     leaf_builder.sign(&ca_pkey, MessageDigest::sha256()).unwrap();
 
     let ca = ca_builder.build().to_pem().unwrap();
