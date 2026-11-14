@@ -59,8 +59,8 @@ async fn connect_database(name: &str) -> Result<PgPool, BoxDynError> {
 async fn setup_database(pool: &PgPool) -> Result<(), BoxDynError> {
     let mut conn = pool.acquire().await?;
 
-    let migrator = Migrator::new(LanguageIdentifier::UNKNOWN)?.into_boxed_migrator();
-    migrator.run(&mut *conn, &Plan::apply_all()).await?;
+    let migrator = Migrator::new(LanguageIdentifier::UNKNOWN)?;
+    migrator.as_inner().run(&mut *conn, &Plan::apply_all()).await?;
 
     for file in FIXTURES.files() {
         let sql = file.contents_utf8().ok_or("invalid fixture")?;
@@ -76,8 +76,8 @@ async fn setup_database(pool: &PgPool) -> Result<(), BoxDynError> {
 async fn teardown_database(pool: PgPool) -> Result<(), BoxDynError> {
     let mut conn = pool.acquire().await?;
 
-    let migrator = Migrator::new(LanguageIdentifier::UNKNOWN)?.into_boxed_migrator();
-    migrator.run(&mut *conn, &Plan::revert_all()).await?;
+    let migrator = Migrator::new(LanguageIdentifier::UNKNOWN)?;
+    migrator.as_inner().run(&mut *conn, &Plan::revert_all()).await?;
 
     Ok(())
 }

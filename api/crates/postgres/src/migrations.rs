@@ -20,7 +20,7 @@ pub struct Migrator(migrator::Migrator<Postgres>);
 
 impl Migrator {
     pub fn new(langid: LanguageIdentifier) -> Result<Self> {
-        let mut migrator = migrator::Migrator::new();
+        let mut migrator = migrator::Migrator::default();
         migrator.add_migrations(vec_box![
             v1::V1Migration::new(),
             v2::V2Migration::new(),
@@ -38,7 +38,7 @@ impl Migrator {
         Ok(Self(migrator))
     }
 
-    pub fn into_boxed_migrator(self) -> Box<migrator::Migrator<Postgres>> {
-        Box::new(self.0)
+    pub fn as_inner(&self) -> &migrator::Migrator<Postgres> {
+        &self.0
     }
 }
