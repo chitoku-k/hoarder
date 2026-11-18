@@ -20,13 +20,18 @@ use crate::{
 #[derive(Constructor)]
 pub(super) struct V1Migration;
 
+impl V1Migration {
+    pub const APP: &str = "hoarder";
+    pub const NAME: &str = "init";
+}
+
 impl Migration<Postgres> for V1Migration {
     fn app(&self) -> &str {
-        "hoarder"
+        Self::APP
     }
 
     fn name(&self) -> &str {
-        "init"
+        Self::NAME
     }
 
     fn parents(&self) -> Vec<Box<dyn Migration<Postgres>>> {

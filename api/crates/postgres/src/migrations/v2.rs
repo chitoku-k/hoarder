@@ -12,19 +12,26 @@ const URL_SCHEME: &str = "file";
 const URL_PREFIX: &str = "file://";
 
 #[derive(Constructor)]
-pub(super) struct V2Migration;
+pub(super) struct V2Migration {
+    parent: (&'static str, &'static str),
+}
+
+impl V2Migration {
+    pub const APP: &str = "hoarder";
+    pub const NAME: &str = "replicas_urlencode_original_url";
+}
 
 impl Migration<Postgres> for V2Migration {
     fn app(&self) -> &str {
-        "hoarder"
+        Self::APP
     }
 
     fn name(&self) -> &str {
-        "replicas_urlencode_original_url"
+        Self::NAME
     }
 
     fn parents(&self) -> Vec<Box<dyn Migration<Postgres>>> {
-        vec_box![]
+        vec_box![self.parent]
     }
 
     fn operations(&self) -> Vec<Box<dyn Operation<Postgres>>> {
