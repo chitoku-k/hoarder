@@ -7,19 +7,26 @@ use sqlx_migrator::{error::Error, migration::Migration, operation::Operation, ve
 use crate::{expr::string::StringExpr, external_services::PostgresExternalService};
 
 #[derive(Constructor)]
-pub(super) struct V8Migration;
+pub(super) struct V8Migration {
+    parent: (&'static str, &'static str),
+}
+
+impl V8Migration {
+    pub const APP: &str = "hoarder";
+    pub const NAME: &str = "external_services_url_pattern";
+}
 
 impl Migration<Postgres> for V8Migration {
     fn app(&self) -> &str {
-        "hoarder"
+        Self::APP
     }
 
     fn name(&self) -> &str {
-        "external_services_url_pattern"
+        Self::NAME
     }
 
     fn parents(&self) -> Vec<Box<dyn Migration<Postgres>>> {
-        vec_box![]
+        vec_box![self.parent]
     }
 
     fn operations(&self) -> Vec<Box<dyn Operation<Postgres>>> {

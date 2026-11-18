@@ -11,7 +11,7 @@ use sqlx::{
     postgres::{PgConnectOptions, PgPoolOptions},
     Connection, Executor, PgConnection, PgPool,
 };
-use sqlx_migrator::migrator::{Migrate, Plan};
+use sqlx_migrator::Plan;
 use test_context::AsyncTestContext;
 use tracing::{field::{Field, Visit}, span::{Attributes, Id}, subscriber::Interest, Event, Level, Metadata, Span, Subscriber};
 use tracing_subscriber::{layer::{Context, SubscriberExt}, registry::LookupSpan, util::SubscriberInitExt};

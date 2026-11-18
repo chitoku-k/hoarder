@@ -7,19 +7,26 @@ use sqlx_migrator::{error::Error, migration::Migration, operation::Operation, ve
 use crate::replicas::{PostgresReplica, PostgresReplicaPhase};
 
 #[derive(Constructor)]
-pub(super) struct V9Migration;
+pub(super) struct V9Migration {
+    parent: (&'static str, &'static str),
+}
+
+impl V9Migration {
+    pub const APP: &str = "hoarder";
+    pub const NAME: &str = "replicas_phase";
+}
 
 impl Migration<Postgres> for V9Migration {
     fn app(&self) -> &str {
-        "hoarder"
+        Self::APP
     }
 
     fn name(&self) -> &str {
-        "replicas_phase"
+        Self::NAME
     }
 
     fn parents(&self) -> Vec<Box<dyn Migration<Postgres>>> {
-        vec_box![]
+        vec_box![self.parent]
     }
 
     fn operations(&self) -> Vec<Box<dyn Operation<Postgres>>> {

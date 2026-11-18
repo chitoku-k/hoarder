@@ -9,19 +9,26 @@ use crate::sources::PostgresSource;
 const EXTERNAL_SERVICE_EXTRA_FIELD_KINDS: [&str; 2] = ["threads", "twitter"];
 
 #[derive(Constructor)]
-pub(super) struct V5Migration;
+pub(super) struct V5Migration {
+    parent: (&'static str, &'static str),
+}
+
+impl V5Migration {
+    pub const APP: &str = "hoarder";
+    pub const NAME: &str = "sources_external_metadata_extra";
+}
 
 impl Migration<Postgres> for V5Migration {
     fn app(&self) -> &str {
-        "hoarder"
+        Self::APP
     }
 
     fn name(&self) -> &str {
-        "sources_external_metadata_extra"
+        Self::NAME
     }
 
     fn parents(&self) -> Vec<Box<dyn Migration<Postgres>>> {
-        vec_box![]
+        vec_box![self.parent]
     }
 
     fn operations(&self) -> Vec<Box<dyn Operation<Postgres>>> {

@@ -9,20 +9,26 @@ use crate::{expr::ExprTrait as _, tags::PostgresTag};
 
 #[derive(Constructor)]
 pub(super) struct V10Migration {
+    parent: (&'static str, &'static str),
     langid: LanguageIdentifier,
+}
+
+impl V10Migration {
+    pub const APP: &str = "hoarder";
+    pub const NAME: &str = "tags_collation";
 }
 
 impl Migration<Postgres> for V10Migration {
     fn app(&self) -> &str {
-        "hoarder"
+        Self::APP
     }
 
     fn name(&self) -> &str {
-        "tags_collation"
+        Self::NAME
     }
 
     fn parents(&self) -> Vec<Box<dyn Migration<Postgres>>> {
-        vec_box![]
+        vec_box![self.parent]
     }
 
     fn operations(&self) -> Vec<Box<dyn Operation<Postgres>>> {

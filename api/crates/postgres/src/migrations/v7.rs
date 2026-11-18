@@ -7,19 +7,26 @@ use sqlx_migrator::{error::Error, migration::Migration, operation::Operation, ve
 use crate::tag_types::PostgresTagType;
 
 #[derive(Constructor)]
-pub(super) struct V7Migration;
+pub(super) struct V7Migration {
+    parent: (&'static str, &'static str),
+}
+
+impl V7Migration {
+    pub const APP: &str = "hoarder";
+    pub const NAME: &str = "tag_types_kana";
+}
 
 impl Migration<Postgres> for V7Migration {
     fn app(&self) -> &str {
-        "hoarder"
+        Self::APP
     }
 
     fn name(&self) -> &str {
-        "tag_types_kana"
+        Self::NAME
     }
 
     fn parents(&self) -> Vec<Box<dyn Migration<Postgres>>> {
-        vec_box![]
+        vec_box![self.parent]
     }
 
     fn operations(&self) -> Vec<Box<dyn Operation<Postgres>>> {
